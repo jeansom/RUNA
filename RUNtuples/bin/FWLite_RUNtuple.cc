@@ -74,7 +74,6 @@ int main(int argc, char* argv[])
       for(ev.toBegin(); !ev.atEnd(); ++ev, ++ievt){
 	edm::EventBase const & event = ev;
 
-	LogDebug("Test") << "hola";
 	// break loop if maximal number of events is reached 
 	if(maxEvents_>0 ? ievt+1>maxEvents_ : false) break;
 	// simple event counter
@@ -96,6 +95,9 @@ int main(int argc, char* argv[])
 	event.getByLabel(std::string("AK4jetKinematics:AK4jetPhi"), jetsPhi);
 	for(const float &j1 : *jetsPhi ) jetsPhi_ ->Fill( j1 );
 
+	edm::Handle<std::vector<int> > genStatus;
+	event.getByLabel(std::string("genInfo:genstatus"), genStatus);
+	for(const int &p : *genStatus ) std::cout << p << std::endl; //LogDebug("GEN") << p;
       }  
       // close input file
       inFile->Close();
