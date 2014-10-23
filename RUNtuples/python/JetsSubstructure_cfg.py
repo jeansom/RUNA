@@ -19,6 +19,14 @@ substructure = cms.EDProducer( "CandViewNtpProducer",
     quantity = cms.untracked.string("userFloat('NjetinessAK8:tau3')")
     ),
     cms.PSet(
+    tag = cms.untracked.string("Tau4"),
+    quantity = cms.untracked.string("userFloat('NjetinessAK8:tau4')")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("Tau5"),
+    quantity = cms.untracked.string("userFloat('NjetinessAK8:tau5')")
+    ),
+    cms.PSet(
     tag = cms.untracked.string("QjetsVolatility"),
     quantity = cms.untracked.string("userFloat('QJetsAdderAK8:QjetsVolatility')")
     ), 

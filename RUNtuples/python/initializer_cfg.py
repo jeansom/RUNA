@@ -58,11 +58,11 @@ process.tIDak8PFJetsCHS = cms.EDFilter("PFJetIDSelectionFunctorFilter",
 		src = cms.InputTag("ak8PFJetsCHS")
 )
 
-'''
 process.tIDca8PFJetsCHS = cms.EDFilter("PFJetIDSelectionFunctorFilter",
 		filterParams = pfJetIDSelector.clone(quality=cms.string("TIGHT")),
 		src = cms.InputTag("ca8PFJetsCHS")
 )
+'''
 
 ### PATJets and Corrections
 from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
@@ -83,7 +83,7 @@ addJetCollection(
 addJetCollection(
     process,
     labelName = 'CA8PFCHS',
-    jetSource = cms.InputTag('tIDca8PFJetsCHS'),
+    jetSource = cms.InputTag('ca8PFJetsCHS'),
     algo = 'ca8',
     rParam = 0.8,
     jetCorrections = ('AK8PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
@@ -167,12 +167,15 @@ process.combinedSecondaryVertex.trackMultiplicityMin = 1 #silly sv, uses un filt
 #Load the toolbox
 process.load('RecoJets.JetProducers.jettoolbox_cff')
 
-process.patJetsCA8PFCHS.userData.userFloats.src += ['NjettinessCA8:tau1','NjettinessCA8:tau2','NjettinessCA8:tau3',
+process.NjettinessCA8.Njets = cms.vuint32(1,2,3,4,5)
+process.NjettinessAK8.Njets = cms.vuint32(1,2,3,4,5)
+
+process.patJetsCA8PFCHS.userData.userFloats.src += ['NjettinessCA8:tau1','NjettinessCA8:tau2','NjettinessCA8:tau3','NjettinessCA8:tau4','NjettinessCA8:tau5',
                                                     'QJetsAdderCA8:QjetsVolatility',
                                                     'ca8PFJetsCHSPrunedLinks','ca8PFJetsCHSTrimmedLinks','ca8PFJetsCHSFilteredLinks',
                                                     'cmsTopTagPFJetsCHSLinksCA8']
 
-process.patJetsAK8PFCHS.userData.userFloats.src += ['NjettinessAK8:tau1','NjettinessAK8:tau2','NjettinessAK8:tau3',
+process.patJetsAK8PFCHS.userData.userFloats.src += ['NjettinessAK8:tau1','NjettinessAK8:tau2','NjettinessAK8:tau3','NjettinessAK8:tau4','NjettinessAK8:tau5',
                                                     'QJetsAdderAK8:QjetsVolatility',
                                                     'ak8PFJetsCHSPrunedLinks','ak8PFJetsCHSTrimmedLinks','ak8PFJetsCHSFilteredLinks',
                                                     'cmsTopTagPFJetsCHSLinksAK8']

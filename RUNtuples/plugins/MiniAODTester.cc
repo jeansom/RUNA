@@ -75,10 +75,6 @@ class MiniAODtester : public edm::EDAnalyzer {
       edm::EDGetTokenT<pat::JetCollection> fatjetToken_;
       edm::EDGetTokenT<pat::METCollection> metToken_;
 
-      edm::Service<TFileService> fs_;
-      TTree *outTree_; 
-
-      std::vector<float> *pt_;
 };
 
 //
@@ -199,7 +195,6 @@ MiniAODtester::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     printf("\n");
 
 
-   outTree_->Fill();     
 }
 
 
@@ -207,20 +202,15 @@ MiniAODtester::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 void 
 MiniAODtester::beginJob()
 {
-	outTree_ = fs_->make<TTree>("events","events");
-	pt_             = new std::vector<float>;
-	outTree_->Branch("jetPt"                ,"vector<float>"     ,&pt_);
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void 
 MiniAODtester::endJob() 
 {
-	delete pt_;
 }
 
 void MiniAODtester::initialize(){
-	pt_ ->clear();
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

@@ -22,6 +22,4 @@
 <use   name="PhysicsTools/Utilities"/>
 <use   name="PhysicsTools/SelectorUtils"/>
 <flags   EDM_PLUGIN="1"/>
-<environment>
-	<bin file="FWLite_RUNtuple.cc"></bin>
-</environment>
+<!--<bin file="FWLite_RUNtuple.cc"></bin>-->
