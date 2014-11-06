@@ -22,3 +22,4 @@
 <use   name="PhysicsTools/Utilities"/>
 <use   name="PhysicsTools/SelectorUtils"/>
 <bin file="FWLite_RUNtuple.cc"></bin>
+<bin file="FWLite_Subjets.cc"></bin>
