@@ -38,6 +38,8 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 
+#include "DataFormats/Math/interface/deltaR.h"
+
 #include "TH1D.h"
 #include <TLorentzVector.h>
 //
@@ -47,6 +49,8 @@
 class Matching : public edm::EDAnalyzer {
    public:
       explicit Matching(const edm::ParameterSet&);
+      bool isAncestor(const reco::Candidate * ancestor, const reco::Candidate * particle);
+//      bool checkDeltaR(reco::CandidateCollection p1, reco::CandidateCollection jets, double minDeltaR);
       ~Matching();
 
       //static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
@@ -65,13 +69,20 @@ class Matching : public edm::EDAnalyzer {
       // ----------member data ---------------------------
       edm::EDGetTokenT<reco::PFJetCollection> jets_;
       edm::EDGetTokenT<reco::GenParticleCollection> genParticles_;
+      int particle1, particle2, particle3;
 
       std::map< std::string, TH1D* > histos1D_;
+      //std::map< std::size_t , reco::Candidate > decayStory_;
 };
 
 //
 // constants, enums and typedefs
 //
+typedef struct {
+	bool pass;
+	std::vector<double> deltaRVector;
+	int indexJet;
+} matched;
 
 //
 // static data member definitions
@@ -84,7 +95,9 @@ Matching::Matching(const edm::ParameterSet& iConfig):
     jets_(consumes<reco::PFJetCollection>(iConfig.getParameter<edm::InputTag>("jets"))),
     genParticles_(consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("genParticles")))
 {
-   //now do what ever initialization is needed
+    particle1 = iConfig.getParameter<int>("particle1");
+    particle2 = iConfig.getParameter<int>("particle2");
+    particle3 = iConfig.getParameter<int>("particle3");
 
 }
 
@@ -101,6 +114,66 @@ Matching::~Matching()
 //
 // member functions
 //
+//Check recursively if any ancestor of particle is the given one
+
+bool Matching::isAncestor(const reco::Candidate* ancestor, const reco::Candidate * particle)
+{
+	//particle is already the ancestor
+	//edm::LogWarning("testing") << ancestor->pdgId() << " " << ancestor->pt() << " " << particle->pdgId() << " " << particle->pt();
+        if( ( ancestor->pdgId() == particle->pdgId() ) && ( ancestor->mass() == particle->mass() ) ) {  
+		//edm::LogWarning("is ancestor") << ancestor->pdgId() << " " << ancestor->status() << " " << particle->mother()->pdgId() << " " << particle->pdgId();
+		if ( ( ancestor->pt() == particle->pt() ) && ( particle->status() == 22 ) ) return true;
+	}
+
+	//otherwise loop on mothers, if any and return true if the ancestor is found
+	if( particle->mother() != nullptr ) {
+		if( isAncestor( ancestor,particle->mother()) ) return true;
+	}
+	//if we did not return yet, then particle and ancestor are not relatives
+	return false;
+}
+
+matched checkDeltaR(reco::CandidateCollection partons, reco::CandidateCollection jets, double minDeltaR){
+
+	std::vector<int> index;
+	std::vector<double> deltaRVec;
+	for( size_t i=0; i<partons.size(); i++ ){
+		double deltaR = 99999;
+		int ind = -1;
+		const reco::Candidate & p1 = (partons)[i];
+		//edm::LogWarning("genParticle ")  << p1.pdgId();
+
+		for( unsigned int j=0; j<jets.size(); j++ ) {
+			const reco::Candidate & p2 = (jets)[j];
+			double tmpdeltaR = reco::deltaR2( p1.rapidity(), p1.phi(), p2.rapidity(), p2.phi() );
+			//edm::LogWarning("calc deltaR") << tmpdeltaR << " " << j;
+			if( tmpdeltaR < deltaR ) {
+				deltaR = tmpdeltaR;
+				ind = j;
+			}
+		}
+		//edm::LogWarning("deltaR") << deltaR << " " << ind ;
+		if( deltaR < minDeltaR) {
+			index.push_back(ind);
+			deltaRVec.push_back( deltaR );
+		}
+	}
+//	for ( unsigned int i = 0; i < index.size(); i++) edm::LogWarning("index") << index[i] << " " << deltaRVec[i];
+	
+	bool passed;
+	int finalindex = -9999;
+	if( ( partons.size() == index.size() )  && std::equal(index.begin() + 1, index.end(), index.begin()) ){
+		passed = true;
+		finalindex = index[0];
+	} else passed = false;
+
+	matched results;
+	results.pass = passed;
+	results.deltaRVector = deltaRVec;
+	results.indexJet = finalindex;
+
+	return results;
+}
 
 // ------------ method called for each event  ------------
 void
@@ -114,63 +187,180 @@ Matching::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	edm::Handle<reco::GenParticleCollection> genParticles;
 	iEvent.getByToken(genParticles_, genParticles);
 
-	std::vector<TLorentzVector> stopADaughter, stopBDaughter, p4Jets;
 
-	for( const reco::GenParticle &p : * genParticles){
+	reco::CandidateCollection p1Collection, p2Collection, p3Collection, finalParticlesCollection;
 
-		const reco::Candidate * mom = p.mother();
-		bool finalParticle =  (p.status() == 21 || p.status() == 22 || p.status() == 23);
-		if(!mom || !finalParticle ) continue;
+	for( size_t i = 0; i < genParticles->size(); i++ ) {
 
-		TLorentzVector tmp1, tmp2;
-		if( mom->pdgId() == 1000002 ){
-			//LogWarning("stopA") << mom->pdgId() << " " << p.pdgId();
-			tmp1.SetPtEtaPhiE( p.pt(), p.eta(), p.phi(), p.energy() );
-		       	stopADaughter.push_back( tmp1 );
-		}
-		if( mom->pdgId() == -1000002 ){
-			//LogWarning("stopB") << mom->pdgId() << " " << p.pdgId();
-			tmp2.SetPtEtaPhiE( p.pt(), p.eta(), p.phi(), p.energy() );
-		       	stopBDaughter.push_back( tmp2 );
-		}
+		const reco::Candidate &p = ( *genParticles )[i];
+
+		if( ( TMath::Abs( p.pdgId() ) == particle1 ) && p.status() == 22 ) p1Collection.push_back( p );
+		if( ( TMath::Abs( p.pdgId() ) == particle2 ) && p.status() == 22 ) p2Collection.push_back( p );
+		if( ( TMath::Abs( p.pdgId() ) == particle3 ) && p.status() == 22 ) p3Collection.push_back( p );
+
+		bool parton = ( ( TMath::Abs( p.pdgId() ) < 6 ) || ( p.pdgId() == 21 )  );
+		if( p.status() == 23 && parton ) finalParticlesCollection.push_back( p );
+
 	}
 
+	std::vector< reco::CandidateCollection  > daughtersParticle1, daughtersParticle2, daughtersParticle3;
+	if( finalParticlesCollection.size() > 0 ){
+
+		reco::CandidateCollection tmp1, tmp2, tmp3, tmp4, tmp5, tmp6;
+		if( p1Collection.size() == 2 ){
+
+			const reco::Candidate * jp1 = &(p1Collection)[0];
+			const reco::Candidate * jp2 = &(p1Collection)[1];
+
+			for( reco::Candidate & fp : finalParticlesCollection ) {
+
+				const reco::Candidate * finalMother = fp.mother();
+				if( isAncestor( jp1, finalMother ) ) tmp1.push_back( fp );   //LogWarning("Particle found 1") << jp1->pdgId() << " " << fp.pdgId();
+				if( isAncestor( jp2, finalMother ) ) tmp2.push_back( fp );  //LogWarning("Particle found 2") << jp2->pdgId() << " " << fp.pdgId();
+			}
+
+		}
+		daughtersParticle1.push_back( tmp1 );
+		daughtersParticle1.push_back( tmp2 );
+
+		if( p2Collection.size() == 2 ){
+
+			const reco::Candidate * ip1 = &(p2Collection)[0];
+			const reco::Candidate * ip2 = &(p2Collection)[1];
+
+			for( reco::Candidate & fp : finalParticlesCollection ) {
+
+				//edm::LogWarning("finalParticle") << fp.pdgId(); 
+				const reco::Candidate * finalMother = fp.mother();
+				if( isAncestor( ip1, finalMother ) ) tmp3.push_back( fp );    //LogWarning("Particle found 1") << ip1->pdgId() << " " << fp.pdgId();
+				if( isAncestor( ip2, finalMother ) ) tmp4.push_back( fp );  //LogWarning("Particle found 2") << jp2->pdgId() << " " << fp.pdgId();
+			}
+
+		}
+		daughtersParticle2.push_back( tmp3 );
+		daughtersParticle2.push_back( tmp4 );
+
+		if( p3Collection.size() == 2 ){
+
+			const reco::Candidate * kp1 = &(p3Collection)[0];
+			const reco::Candidate * kp2 = &(p3Collection)[1];
+
+			for( reco::Candidate & fp : finalParticlesCollection ) {
+
+				const reco::Candidate * finalMother = fp.mother();
+				if( isAncestor( kp1, finalMother ) ) tmp5.push_back( fp );   //LogWarning("Particle found 1") << jp1->pdgId() << " " << fp.pdgId();
+				if( isAncestor( kp2, finalMother ) ) tmp6.push_back( fp );  //LogWarning("Particle found 2") << jp2->pdgId() << " " << fp.pdgId();
+			}
+
+		}
+		daughtersParticle3.push_back( tmp5 );
+		daughtersParticle3.push_back( tmp6 );
+	} else LogWarning("No particles with status 23") << "No final particles";
+
+	/*LogWarning("number of daughters 1") << daughtersParticle1.size() << " " << daughtersParticle1[0].size();
+	LogWarning("number of daughters 2") << daughtersParticle2.size() << " " << daughtersParticle2[0].size();
+	LogWarning("number of daughters 3") << daughtersParticle3.size() << " " << daughtersParticle3[0].size();
+	*/
+
+	reco::CandidateCollection selectedJets;
 	for (const pat::Jet &ijet : *jets) {
 
-		if( ijet.pt() < 100 || TMath::Abs( ijet.eta() ) > 3.0 ) continue;
-		TLorentzVector tmpJet;
-		tmpJet.SetPtEtaPhiE( ijet.pt(), ijet.eta(), ijet.phi(), ijet.energy() );
-		p4Jets.push_back( tmpJet );
+		if( ijet.pt() < 100 || TMath::Abs( ijet.eta() ) > 2.5 ) continue;
+		selectedJets.push_back( ijet );
 		//LogWarning("jet pt") << ijet.pt() << " " << ijet.eta();
 	}
 
-	Int_t indexStopA[2] = { -1, -1};
-	Int_t indexStopB[2] = { -1, -1};
-	for (unsigned int i = 0; i < stopADaughter.size(); i++) {
-		double tmpDeltaR1 = 999;
-		double tmpDeltaR2 = 999;
-		for (unsigned int j = 0; j < p4Jets.size(); j++) {
+	if( ( daughtersParticle1[0].size() > 1 ) && ( selectedJets.size() > 0 ) ){
 
-			double deltaR1 = stopADaughter[i].DeltaR( p4Jets[j] );
-			if( deltaR1 < tmpDeltaR1 ) {
-				tmpDeltaR1 = deltaR1;
-				if( tmpDeltaR1 < 0.7 ) indexStopA[i] = j;
-				//LogWarning("deltaR1") << i << " " << j << " " << tmpDeltaR1;
-			}
+	       matched infoPar11;
+	       infoPar11 = checkDeltaR( daughtersParticle1[0], selectedJets, 0.6 );
+	       bool passPar11 = infoPar11.pass;
+	       std::vector<double> deltaR11 = infoPar11.deltaRVector;
+	       int index11 = infoPar11.indexJet;
 
-			double deltaR2 = stopBDaughter[i].DeltaR( p4Jets[j] );
-			if( deltaR2 < tmpDeltaR2 ){
-			       tmpDeltaR2 = deltaR2;
-			       if( tmpDeltaR2 < 0.7 ) indexStopB[i] = j;
-				//LogWarning("deltaR2") << i << " " << j << " " << tmpDeltaR2;
-			}
-		}
-		histos1D_[ "deltaR" ]->Fill( tmpDeltaR1 );
-		histos1D_[ "deltaR" ]->Fill( tmpDeltaR2 );
+	       if (passPar11 && ( index11 > 0 ) ){ 
+		       LogWarning( "Matching found" ) << "Particle " << particle1 << " has all its daughters in a single jet";
+		       for( unsigned int q=0; q< deltaR11.size(); q++ ) histos1D_[ "p1DeltaR" ]->Fill( deltaR11[q] );
+		       histos1D_[ "p1JetMass" ]->Fill( selectedJets[ index11 ].mass() );
+	       }
 	}
-	if( indexStopA[0] != -1 && indexStopA[0] == indexStopA[1] ) LogWarning("StopA") << indexStopA[0] << " " << indexStopA[1] ;
-	if( indexStopB[0] != -1 && indexStopB[0] == indexStopB[1] ) LogWarning("StopB") << indexStopB[0] << " " << indexStopB[1];
 
+	if( ( daughtersParticle1[1].size() > 1 ) && ( selectedJets.size() > 0 ) ){
+
+	       matched infoPar12;
+	       infoPar12 = checkDeltaR( daughtersParticle1[1], selectedJets, 0.6 );
+	       bool passPar12 = infoPar12.pass;
+	       std::vector<double> deltaR12 = infoPar12.deltaRVector;
+	       int index12 = infoPar12.indexJet;
+
+	       if (passPar12 && ( index12 > 0 ) ){ 
+		       LogWarning( "Matching found" ) << "Particle " << particle1 << " has all its daughters in a single jet";
+		       for( unsigned int q=0; q< deltaR12.size(); q++ ) histos1D_[ "p1DeltaR" ]->Fill( deltaR12[q] );
+		       histos1D_[ "p1JetMass" ]->Fill( selectedJets[ index12 ].mass() );
+	       }
+	}
+
+	if( ( daughtersParticle2[0].size() > 1 ) && ( selectedJets.size() > 0 ) ){
+
+	       matched infoPar21;
+	       infoPar21 = checkDeltaR( daughtersParticle2[0], selectedJets, 0.6 );
+	       bool passPar21 = infoPar21.pass;
+	       std::vector<double> deltaR21 = infoPar21.deltaRVector;
+	       int index21 = infoPar21.indexJet;
+
+	       if (passPar21 && ( index21 > 0 ) ){ 
+		       LogWarning( "Matching found" ) << "Particle " << particle2 << " has all its daughters in a single jet";
+		       for( unsigned int q=0; q< deltaR21.size(); q++ ) histos1D_[ "p2DeltaR" ]->Fill( deltaR21[q] );
+		       histos1D_[ "p2JetMass" ]->Fill( selectedJets[ index21 ].mass() );
+	       }
+	}
+
+	if( ( daughtersParticle2[1].size() > 1 ) && ( selectedJets.size() > 0 ) ){
+
+	       matched infoPar22;
+	       infoPar22 = checkDeltaR( daughtersParticle2[1], selectedJets, 0.6 );
+	       bool passPar22 = infoPar22.pass;
+	       std::vector<double> deltaR22 = infoPar22.deltaRVector;
+	       int index22 = infoPar22.indexJet;
+
+	       if (passPar22 && ( index22 > 0 ) ){ 
+		       LogWarning( "Matching found" ) << "Particle " << particle2 << " has all its daughters in a single jet";
+		       for( unsigned int q=0; q< deltaR22.size(); q++ ) histos1D_[ "p2DeltaR" ]->Fill( deltaR22[q] );
+		       histos1D_[ "p2JetMass" ]->Fill( selectedJets[ index22 ].mass() );
+	       }
+
+	}
+
+	if( ( daughtersParticle3[0].size() > 1 ) && ( selectedJets.size() > 0 ) ){
+
+	       matched infoPar31;
+	       infoPar31 = checkDeltaR( daughtersParticle3[0], selectedJets, 0.6 );
+	       bool passPar31 = infoPar31.pass;
+	       std::vector<double> deltaR31 = infoPar31.deltaRVector;
+	       int index31 = infoPar31.indexJet;
+
+	       if (passPar31 && ( index31 > 0 ) ){ 
+		       LogWarning( "Matching found" ) << "Particle " << particle3 << " has all its daughters in a single jet";
+		       for( unsigned int q=0; q< deltaR31.size(); q++ ) histos1D_[ "p3DeltaR" ]->Fill( deltaR31[q] );
+		       histos1D_[ "p3JetMass" ]->Fill( selectedJets[ index31 ].mass() );
+	       }
+	}
+
+	if( ( daughtersParticle3[1].size() > 1 ) && ( selectedJets.size() > 0 ) ){
+
+	       matched infoPar32;
+	       infoPar32 = checkDeltaR( daughtersParticle3[1], selectedJets, 0.6 );
+	       bool passPar32 = infoPar32.pass;
+	       std::vector<double> deltaR32 = infoPar32.deltaRVector;
+	       int index32 = infoPar32.indexJet;
+
+	       if (passPar32 && ( index32 > 0 ) ){ 
+		       LogWarning( "Matching found" ) << "Particle " << particle3 << " has all its daughters in a single jet";
+		       for( unsigned int q=0; q< deltaR32.size(); q++ ) histos1D_[ "p3DeltaR" ]->Fill( deltaR32[q] );
+		       histos1D_[ "p3JetMass" ]->Fill( selectedJets[ index32 ].mass() );
+	       }
+
+	}
 
 }
 
@@ -181,8 +371,20 @@ Matching::beginJob()
 {
 	edm::Service< TFileService > fileService;
 
-	histos1D_[ "deltaR" ] = fileService->make< TH1D >( "deltaR", "deltaR", 50, 0., 5. );
-	histos1D_[ "deltaR" ]->SetXTitle( "Delta R" );
+	histos1D_[ "p1DeltaR" ] = fileService->make< TH1D >( "p1DeltaR", "p1DeltaR", 50, 0., 5. );
+	histos1D_[ "p1DeltaR" ]->SetXTitle( "min #Delta R( jet, parton)" );
+	histos1D_[ "p1JetMass" ] = fileService->make< TH1D >( "p1JetMass", "p1JetMass", 120, 0., 1200. );
+	histos1D_[ "p1JetMass" ]->SetXTitle( "Mass Jet matched [GeV]" );
+
+	histos1D_[ "p2DeltaR" ] = fileService->make< TH1D >( "p2DeltaR", "p2DeltaR", 50, 0., 5. );
+	histos1D_[ "p2DeltaR" ]->SetXTitle( "min #Delta R( jet, parton)" );
+	histos1D_[ "p2JetMass" ] = fileService->make< TH1D >( "p2JetMass", "p2JetMass", 120, 0., 1200. );
+	histos1D_[ "p2JetMass" ]->SetXTitle( "Mass Jet matched [GeV]" );
+
+	histos1D_[ "p3DeltaR" ] = fileService->make< TH1D >( "p3DeltaR", "p3DeltaR", 50, 0., 5. );
+	histos1D_[ "p3DeltaR" ]->SetXTitle( "min #Delta R( jet, parton)" );
+	histos1D_[ "p3JetMass" ] = fileService->make< TH1D >( "p3JetMass", "p3JetMass", 120, 0., 1200. );
+	histos1D_[ "p3JetMass" ]->SetXTitle( "Mass Jet matched [GeV]" );
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
