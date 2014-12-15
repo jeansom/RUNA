@@ -3,18 +3,6 @@
 		for different PU scenarios 
 ##################################################################
 
-This instructions are for CMSSW_7_0_6_patch1 using sl6 machines. 
-
-###################
-#### Basic setup
-###################
-cmsrel CMSSW_7_0_6_patch1
-cd CMSSW_7_0_6_patch1/src/
-cmsenv
-git clone -b v706patch1 https://github.com/alefisico/jetSubsSimulation.git my13TeVSimulation/jetSubsSimulation
-scram b -j 18
-
-
 #######################
 #### Brief explanation
 #######################
@@ -39,7 +27,7 @@ We are going to split the entire generation in 4 pieces. (Four if you don't have
 ##### To run the code
 ########################
 
-Go to my13TeVSimulation/jetSubsSimulation/test/
+Go to RUNA/RUNSimulation/test/
 There you have a file called createJobs_CRAB.sh. You only need to modify the first part, PARAMETERS.
 To run: ./createJobs_CRAB.sh
 
