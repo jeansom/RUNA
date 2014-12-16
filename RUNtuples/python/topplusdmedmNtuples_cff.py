@@ -369,8 +369,16 @@ jetVars = (
      quantity = cms.untracked.string("? isPFJet ? chargedHadronMultiplicity : -1")
     ),
     cms.PSet(
+     tag = cms.untracked.string("ChargedHadronEnergyFraction"),
+     quantity = cms.untracked.string("? isPFJet ? chargedHadronEnergyFraction : -1")
+    ),
+    cms.PSet(
      tag = cms.untracked.string("neutralHadronMultiplicity"),
      quantity = cms.untracked.string("? isPFJet ? neutralHadronMultiplicity : -1")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("neutralHadronEnergyFraction"),
+     quantity = cms.untracked.string("? isPFJet ? neutralHadronEnergyFraction : -1")
     ),
     cms.PSet(
      tag = cms.untracked.string("photonMultiplicity"),
@@ -385,6 +393,10 @@ jetVars = (
      quantity = cms.untracked.string("? isPFJet ? HFHadronMultiplicity : -1")
     ),
     cms.PSet(
+     tag = cms.untracked.string("HFHadronEnergyFraction"),
+     quantity = cms.untracked.string("? isPFJet ? HFHadronEnergyFraction : -1")
+    ),
+    cms.PSet(
      tag = cms.untracked.string("HFEMMultiplicity"),
      quantity = cms.untracked.string("? isPFJet ? HFEMMultiplicity : -1")
     ),
@@ -395,6 +407,10 @@ jetVars = (
     cms.PSet(
      tag = cms.untracked.string("neutralMultiplicity"),
      quantity = cms.untracked.string("? isPFJet ? neutralMultiplicity : -1")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("jecFactor"),
+     quantity = cms.untracked.string("? isPFJet ? jecFactor(0) : -1")
     ),
 #### FOR SYSTEMATICS
     cms.PSet(
