@@ -40,7 +40,7 @@ options.register('version',
                  'ntuple version (53 or 71)')
 
 options.register('outputLabel',
-                 'EDMNtuples.root',
+                 'analysisTTDM.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Output label')
@@ -102,18 +102,20 @@ hltElectronFilterLabel  = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 lheLabel = "source"
 
 
-process = cms.Process("EDMNtuples")
+process = cms.Process("ttDManalysisEDMNtuples")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.categories.append('HLTrigReport')
 ### Output Report
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ### Number of maximum events to process
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvts) )
+#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvts) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 ### Source file
 process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(
-        options.sample
+ #       options.sample
+		 '/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/RPVSt100tojj_13TeV_pythia8_MiniAOD_v706_PU20bx25/b71e879835d2f0083a0e044b05216236/miniAOD-prod_PAT_424_1_Np7.root',
         )
 )
 
@@ -229,7 +231,7 @@ process.centrality = cms.EDProducer("CentralityUserData",
 )                                    
 
 ### Including ntuplizer 
-process.load("RUNA.RUNtuples.topplusdmedmNtuples_cff")
+process.load("ttbarDM.TopPlusDMAna.topplusdmedmNtuples_cff")
 
 ### definition of Analysis sequence
 process.analysisPath = cms.Path(

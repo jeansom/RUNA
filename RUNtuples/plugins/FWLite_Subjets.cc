@@ -15,8 +15,8 @@
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-//#include "DataFormats/JetsReco/interface/Jets.h"
-//#include "DataFormats/PatCandidates/interface/Jets.h"
+#include "DataFormats/JetReco/interface/Jet.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "PhysicsTools/FWLite/interface/TFileService.h"
 #include "PhysicsTools/FWLite/interface/CommandLineParser.h"
 
@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
   optutl::CommandLineParser parser ("Analyze FWLite Histograms");
 
   // set defaults
-  parser.integerValue ("maxEvents"  ) = 1000;
+  parser.integerValue ("maxEvents"  ) = 10;
   parser.integerValue ("outputEvery") =   10;
   parser.stringValue  ("outputFile" ) = "myOutputFile.root";
 
@@ -50,11 +50,12 @@ int main(int argc, char* argv[])
   std::vector<std::string> inputFiles_ = parser.stringVector("inputFiles");
 
   // book a set of histograms
-  fwlite::TFileService fs = fwlite::TFileService(outputFile_.c_str());
+/*  fwlite::TFileService fs = fwlite::TFileService(outputFile_.c_str());
   TFileDirectory dir = fs.mkdir("analyzePatJets");
   TH1F* jetsPt_  = dir.make<TH1F>("jetsPt"  , "pt"  ,   100,   0., 300.);
   TH1F* jetsEta_ = dir.make<TH1F>("jetsEta" , "eta" ,   100,  -3.,   3.);
   TH1F* jetsPhi_ = dir.make<TH1F>("jetsPhi" , "phi" ,   100,  -5.,   5.);  
+  */
 
   // loop the event/
   int ievt=0;  
@@ -81,12 +82,31 @@ int main(int argc, char* argv[])
 	  std::cout << "  processing event: " << ievt << std::endl;
 
 	// Handle to the jets pt
-	edm::Handle<std::vector<float> > jetsPt;
-	event.getByLabel(std::string("AK4jetKinematics:AK4jetPt"), jetsPt);
-	// loop jets collection and fill histograms
-	for(const float &j1 : *jetsPt )  jetsPt_ ->Fill( j1 );
+	edm::Handle< reco::BasicJetCollection > basicJets;
+	event.getByLabel(std::string("ca8PFJetsCHSPruned"), basicJets);
 
-	edm::Handle<std::vector<float> > jetsEta;
+	// loop jets collection and fill histograms
+	int dummy = 0;
+	for(const reco::BasicJet &j1 : *basicJets ){
+		if( (++dummy) < 3 ) {
+			edm::LogWarning("basic Jet") << j1.pt() << " " << j1.mass() << " " << j1.numberOfDaughters() ;
+			for (unsigned int i = 0; i < j1.numberOfDaughters(); i++) {
+				edm::LogWarning("subjet") << i << " "  << j1.daughter(i)->pt() << j1.daughter(i)->mass();
+			}
+		}
+	}
+	      	//jetsPt_ ->Fill( j1 );
+
+	edm::Handle< reco::PFJetCollection > PFJets;
+	event.getByLabel(std::string("ca8PFJetsCHS"), PFJets);
+	// loop jets collection and fill histograms
+	int dummy2 = 0;
+	for(const reco::PFJet &j1 : *PFJets ){
+		if( (++dummy2) < 3 ) {
+			edm::LogWarning("PF Jet") << j1.pt() << " " << j1.mass() << " " << j1.numberOfDaughters() ;
+		}
+	}
+	/*edm::Handle<std::vector<float> > jetsEta;
 	event.getByLabel(std::string("AK4jetKinematics:AK4jetEta"), jetsEta);
 	for(const float &j1 : *jetsEta ) jetsEta_ ->Fill( j1 );
 
@@ -97,10 +117,10 @@ int main(int argc, char* argv[])
 
 	edm::Handle<std::vector<int> > genStatus;
 	event.getByLabel(std::string("genInfo:genstatus"), genStatus);
-	for(const int &p : *genStatus ) std::cout << p << std::endl; //LogDebug("GEN") << p;
+	for(const int &p : *genStatus ) std::cout << p << std::endl; //LogDebug("GEN") << p;*/
       }  
       // close input file
-      inFile->Close();
+      //inFile->Close();
     }
     // break loop if maximal number of events is reached:
     // this has to be done twice to stop the file loop as well
