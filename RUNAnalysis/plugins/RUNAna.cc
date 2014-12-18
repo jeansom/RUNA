@@ -73,6 +73,18 @@ class RUNAna : public edm::EDAnalyzer {
       edm::EDGetTokenT<std::vector<float>> jetTau1_;
       edm::EDGetTokenT<std::vector<float>> jetTau2_;
       edm::EDGetTokenT<std::vector<float>> jetTau3_;
+
+      //Jet ID
+      edm::EDGetTokenT<std::vector<float>> neutralHadronEnergyFraction_;
+      edm::EDGetTokenT<std::vector<float>> HFHadronEnergyFraction_;
+      edm::EDGetTokenT<std::vector<float>> photonEnergy_; // neutral EM fraction
+      edm::EDGetTokenT<std::vector<float>> chargedHadronMultiplicity_;
+      edm::EDGetTokenT<std::vector<float>> neutralHadronMultiplicity_;
+      edm::EDGetTokenT<std::vector<float>> muonEnergy_; 
+      edm::EDGetTokenT<std::vector<float>> electronEnergy_; 
+      edm::EDGetTokenT<std::vector<float>> chargedHadronEnergyFraction_;
+      edm::EDGetTokenT<std::vector<float>> jecFactor_;
+
 };
 
 //
@@ -99,7 +111,17 @@ RUNAna::RUNAna(const edm::ParameterSet& iConfig):
 	jetFilteredMass_(consumes<std::vector<float>>(iConfig.getParameter<edm::InputTag>("jetFilteredMass"))),
 	jetTau1_(consumes<std::vector<float>>(iConfig.getParameter<edm::InputTag>("jetTau1"))),
 	jetTau2_(consumes<std::vector<float>>(iConfig.getParameter<edm::InputTag>("jetTau2"))),
-	jetTau3_(consumes<std::vector<float>>(iConfig.getParameter<edm::InputTag>("jetTau3")))
+	jetTau3_(consumes<std::vector<float>>(iConfig.getParameter<edm::InputTag>("jetTau3"))),
+	//Jet ID,
+	neutralHadronEnergyFraction_(consumes<std::vector<float>>(iConfig.getParameter<edm::InputTag>("neutralHadronEnergyFraction"))),
+	HFHadronEnergyFraction_(consumes<std::vector<float>>(iConfig.getParameter<edm::InputTag>("HFHadronEnergyFraction"))),
+	photonEnergy_(consumes<std::vector<float>>(iConfig.getParameter<edm::InputTag>("photonEnergy"))),
+	chargedHadronMultiplicity_(consumes<std::vector<float>>(iConfig.getParameter<edm::InputTag>("chargedHadronMultiplicity"))),
+	neutralHadronMultiplicity_(consumes<std::vector<float>>(iConfig.getParameter<edm::InputTag>("neutralHadronMultiplicity"))),
+	muonEnergy_(consumes<std::vector<float>>(iConfig.getParameter<edm::InputTag>("muonEnergy"))),
+	electronEnergy_(consumes<std::vector<float>>(iConfig.getParameter<edm::InputTag>("electronEnergy"))),
+	chargedHadronEnergyFraction_(consumes<std::vector<float>>(iConfig.getParameter<edm::InputTag>("chargedHadronEnergyFraction"))),
+	jecFactor_(consumes<std::vector<float>>(iConfig.getParameter<edm::InputTag>("jecFactor")))
 {
 	scale = iConfig.getParameter<double>("scale");
 //	callWhenNewProductsRegistered(getterOfProducts_);
@@ -162,26 +184,67 @@ RUNAna::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<std::vector<float> > jetTau3;
    iEvent.getByToken(jetTau3_, jetTau3);
 
-   //edm::LogWarning("test") << jetPt->size();
+   /// Jet ID
+   edm::Handle<std::vector<float> > neutralHadronEnergyFraction;
+   iEvent.getByToken(neutralHadronEnergyFraction_, neutralHadronEnergyFraction);
+
+   edm::Handle<std::vector<float> > HFHadronEnergyFraction;
+   iEvent.getByToken(HFHadronEnergyFraction_, HFHadronEnergyFraction);
+
+   edm::Handle<std::vector<float> > photonEnergy;
+   iEvent.getByToken(photonEnergy_, photonEnergy);
+
+   edm::Handle<std::vector<float> > chargedHadronMultiplicity;
+   iEvent.getByToken(chargedHadronMultiplicity_, chargedHadronMultiplicity);
+
+   edm::Handle<std::vector<float> > neutralHadronMultiplicity;
+   iEvent.getByToken(neutralHadronMultiplicity_, neutralHadronMultiplicity);
+
+   edm::Handle<std::vector<float> > muonEnergy;
+   iEvent.getByToken(muonEnergy_, muonEnergy);
+
+   edm::Handle<std::vector<float> > electronEnergy;
+   iEvent.getByToken(electronEnergy_, electronEnergy);
+
+   edm::Handle<std::vector<float> > chargedHadronEnergyFraction;
+   iEvent.getByToken(chargedHadronEnergyFraction_, chargedHadronEnergyFraction);
+
+   edm::Handle<std::vector<float> > jecFactor;
+   iEvent.getByToken(jecFactor_, jecFactor);
+
 
    int numJets = 0;
    double HT = 0;
    bool cutHT = 0;
    for (size_t i = 0; i < jetPt->size(); i++) {
 
-	   if( (*jetPt)[i] < 40 || abs( (*jetEta)[i] ) > 2.5 ) continue;
-	   //LogWarning("jetInfo") << i << " " << (*jetPt)[i] << " " << (*jetEta)[i] << " " << (*jetPhi)[i];
-	   HT += (*jetPt)[i];
-	   if (HT > 1000) cutHT = 1;
-	   ++numJets;
+	   if( TMath::Abs( (*jetEta)[i] ) > 2.5 ) continue;
 
-	   histos1D_[ "jetPt" ]->Fill( (*jetPt)[i], scale  );
-	   histos1D_[ "jetEta" ]->Fill( (*jetEta)[i], scale  );
-	   histos1D_[ "HT" ]->Fill( HT, scale  );
-	   histos1D_[ "jetMass" ]->Fill( (*jetMass)[i], scale  );
-	   histos1D_[ "jetTrimmedMass" ]->Fill( (*jetTrimmedMass)[i], scale  );
-	   histos1D_[ "jetPrunedMass" ]->Fill( (*jetPrunedMass)[i], scale  );
-	   histos1D_[ "jetFilteredMass" ]->Fill( (*jetFilteredMass)[i], scale  );
+	   double chf = (*chargedHadronEnergyFraction)[i];
+	   double nhf = (*neutralHadronEnergyFraction)[i] + (*HFHadronEnergyFraction)[i] ;
+	   double jec = 1. / ( (*jecFactor)[i] * (*jetE)[i] );
+	   double nEMf = (*photonEnergy)[i] * jec;
+	   double cEMf = (*electronEnergy)[i] * jec;
+	   double muf = (*muonEnergy)[i] * jec;
+	   int chm = (*chargedHadronMultiplicity)[i];
+	   int npr = (*chargedHadronMultiplicity)[i] + (*neutralHadronMultiplicity)[i] ;
+
+	   bool idL = ( (npr>1) && (nEMf<0.99) && (nhf<0.99) && (muf<0.8) && (cEMf<0.9) && (chf>0) && (chm>0) );
+
+	   if( (*jetPt)[i] > 150  && idL ) { 
+		   //LogWarning("jetInfo") << i << " " << (*jetPt)[i] << " " << (*jetEta)[i] << " " << (*jetPhi)[i];
+		   HT += (*jetPt)[i];
+		   if (HT > 700) cutHT = 1;
+		   ++numJets;
+
+		   histos1D_[ "jetPt" ]->Fill( (*jetPt)[i], scale  );
+		   histos1D_[ "jetEta" ]->Fill( (*jetEta)[i], scale  );
+		   histos1D_[ "HT" ]->Fill( HT, scale  );
+		   histos1D_[ "jetMass" ]->Fill( (*jetMass)[i], scale  );
+		   histos1D_[ "jetTrimmedMass" ]->Fill( (*jetTrimmedMass)[i], scale  );
+		   histos1D_[ "jetPrunedMass" ]->Fill( (*jetPrunedMass)[i], scale  );
+		   histos1D_[ "jetFilteredMass" ]->Fill( (*jetFilteredMass)[i], scale  );
+	   }
    }
 
    histos1D_[ "jetNum" ]->Fill( numJets );
