@@ -1,7 +1,5 @@
-#########################################################
-###             RU Simulations and Ntuples           ####
-#########################################################
+# RU Simulations and Ntuples  
 
-*** Disclaimer ***
+> Disclaimer
 
 Any of this code is official. Use it with your own risk.
