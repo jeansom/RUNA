@@ -23,33 +23,41 @@ gROOT.SetStyle('tdrStyle')
 
 gStyle.SetOptStat(0)
 
-def plot( inFileSignal, inFileQCD, name, xmax, log, PU ):
+def plot( inFileSignal, inFileQCD, Grom, name, xmax, log, PU, Norm=False ):
 	"""docstring for plot"""
 
-	outputFileName = name+'_RPVSt100tojj_QCD_AnalysisPlots.pdf' 
+	outputFileName = name+'_'+Grom+'_RPVSt100tojj_QCD_AnalysisPlots.pdf' 
 	print 'Processing.......', outputFileName
 
 	histos = {}
-	histos[ 'Signal' ] = inFileSignal.Get( 'AnalysisPlots/'+name )
-	histos[ 'QCD' ] = inFileQCD.Get( 'AnalysisPlots/'+name )
+	histos[ 'Signal' ] = inFileSignal.Get( 'AnalysisPlots'+Grom+'/'+name )
+	histos[ 'QCD' ] = inFileQCD.Get( 'AnalysisPlots'+Grom+'/'+name )
 
-	histos[ 'Signal' ].SetFillColor(30)
-	histos[ 'Signal' ].SetFillStyle(1001)
-	histos[ 'QCD' ].SetFillColor(9)
-	histos[ 'QCD' ].SetFillStyle(1001)
+	if not Norm:
+		#histos[ 'Signal' ].Scale(100)
+		histos[ 'Signal' ].SetFillColor(48)
+		histos[ 'Signal' ].SetFillStyle(1001)
+		#histos[ 'QCD' ].Scale(1)
+		histos[ 'QCD' ].SetFillColor(38)
+		histos[ 'QCD' ].SetFillStyle(1001)
+
+		stackHisto = THStack('stackHisto', 'stack')
+		stackHisto.Add( histos['QCD'] )
+		stackHisto.Add( histos['Signal'] )
+
+	else:
+		histos[ 'Signal' ].SetLineWidth(2)
+		histos[ 'Signal' ].SetLineColor(48)
+		histos[ 'QCD' ].SetLineColor(38)
+		histos[ 'QCD' ].SetLineWidth(2)
 
 #	histos.values()[0].SetMaximum( 2* max( listMax ) ) 
 #	histos.values()[0].GetXaxis().SetRange( 0, xmax )
+	binWidth = histos['Signal'].GetBinWidth(1)
 
 	legend=TLegend(0.65,0.70,0.90,0.90)
 	legend.SetFillStyle(0)
 	legend.SetTextSize(0.03)
-	legend.AddEntry( histos[ 'Signal' ], 'RPV Stop 100 GeV' , 'f' )
-	legend.AddEntry( histos[ 'QCD' ], 'QCD' , 'f' )
-
-	stackHisto = THStack('stackHisto', 'stack')
-	stackHisto.Add( histos['QCD'] )
-	stackHisto.Add( histos['Signal'] )
 
 	can = TCanvas('c1', 'c1',  10, 10, 800, 500 )
 	if log: 
@@ -57,36 +65,41 @@ def plot( inFileSignal, inFileQCD, name, xmax, log, PU ):
 		outName = outputFileName.replace('_AnalysisPlots','_Log_AnalysisPlots')
 	else:
 		outName = outputFileName 
-	stackHisto.Draw('hist')
-	histos['Signal'].Draw('hist same')
-	legend.Draw()
 
-	if 'massAve' in name:
-		if 'Trim' in name: stackHisto.GetXaxis().SetTitle( 'Average Trimmed Mass [GeV]' )
-		elif 'Prun' in name: stackHisto.GetXaxis().SetTitle( 'Average Pruned Mass [GeV]' )
-		elif 'Filt' in name: stackHisto.GetXaxis().SetTitle( 'Average Filtered Mass [GeV]' )
-		else: stackHisto.GetXaxis().SetTitle( 'Average Mass [GeV]' )
-	if 'massAsymmetry' in name:
-		if 'Trim' in name: stackHisto.GetXaxis().SetTitle( 'Trimmed Mass Asymmetry (A)' )
-		elif 'Prun' in name: stackHisto.GetXaxis().SetTitle( 'Pruned Mass Asymmetry (A)' )
-		elif 'Filt' in name: stackHisto.GetXaxis().SetTitle( 'Filtered Mass Asymmetry (A)' )
-		else: stackHisto.GetXaxis().SetTitle( 'Mass Asymmetry (A)' )
-	elif 'cosThetaStar' in name: 
-		if 'Trim' in name: stackHisto.GetXaxis().SetTitle( 'cos(#theta *)' )
-		elif 'Prun' in name: stackHisto.GetXaxis().SetTitle( 'cos(#theta *)' )
-		elif 'Filt' in name: stackHisto.GetXaxis().SetTitle( 'cos(#theta *)' )
-		else: stackHisto.GetXaxis().SetTitle( 'cos(#theta *)' )
-	else:
-		if 'jetPt' in name: stackHisto.GetXaxis().SetTitle( 'Jet p_{T} [GeV]' )
+	if not Norm:
+		legend.AddEntry( histos[ 'Signal' ], 'RPV Stop 100 GeV' , 'f' )
+		legend.AddEntry( histos[ 'QCD' ], 'QCD + Signal' , 'f' )
+		stackHisto.SetMinimum(10)
+		stackHisto.Draw('hist')
+		histos['Signal'].Draw('hist same')
+		stackHisto.GetYaxis().SetTitle( 'Events / '+str(binWidth) )
+
+		if 'massAve' in name: stackHisto.GetXaxis().SetTitle( 'Average Mass [GeV]' )
+		elif 'massAsymmetry' in name: stackHisto.GetXaxis().SetTitle( 'Mass Asymmetry (A)' )
+		elif 'cosThetaStar' in name: stackHisto.GetXaxis().SetTitle( 'cos(#theta *)' )
+		elif 'jetPt' in name: stackHisto.GetXaxis().SetTitle( 'Jet p_{T} [GeV]' )
 		elif 'jetEta' in name: stackHisto.GetXaxis().SetTitle( 'Jet #eta' )
 		elif 'HT' in name: stackHisto.GetXaxis().SetTitle( 'HT [GeV]' )
+	else:
+		legend.AddEntry( histos[ 'Signal' ], 'RPV Stop 100 GeV' , 'lp' )
+		legend.AddEntry( histos[ 'QCD' ], 'QCD' , 'lp' )
+		histos['Signal'].GetYaxis().SetTitle( 'Normalized / '+str(binWidth) )
+		if 'Tau1_' in name: histos['Signal'].GetXaxis().SetTitle( '#tau_{1}' )
+		elif 'Tau2_' in name: histos['Signal'].GetXaxis().SetTitle( '#tau_{2}' )
+		elif 'Tau3_' in name: histos['Signal'].GetXaxis().SetTitle( '#tau_{3}' )
+		elif 'Tau21_' in name: histos['Signal'].GetXaxis().SetTitle( '#tau_{21} ' )
+		elif 'Tau31_' in name: histos['Signal'].GetXaxis().SetTitle( '#tau_{31} ' )
+		elif 'Tau32_' in name: histos['Signal'].GetXaxis().SetTitle( '#tau_{32} ' )
 
-	binWidth = histos['Signal'].GetBinWidth(1)
-	stackHisto.GetYaxis().SetTitle( 'Events / '+str(binWidth) )
+		histos['Signal'].DrawNormalized('histe')
+		histos['QCD'].DrawNormalized('histe same')
 
-	if 'cutHT' in name: setSelection( '13 TeV - PU20bx25', 'Scaled to 10 fb^{-1}', 'jet p_{T} > 40 GeV', 'jet |#eta| < 2.4', 'HT > 1 TeV')
-	elif 'cutAsym' in name: setSelection( '13 TeV - PU20bx25', 'Scaled to 10 fb^{-1}', 'HT > 1 TeV', 'A < 0.1', '' )
-	elif 'cutCosTheta' in name: setSelection( '13 TeV - PU20bx25', 'Scaled to 10 fb^{-1}', 'HT > 1 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3' )
+	legend.Draw()
+
+	if 'cutHT' in name: setSelection( '13 TeV - PU40bx50', 'Scaled to 1 fb^{-1}', 'jet p_{T} > 150 GeV', 'jet |#eta| < 2.4', 'HT > 700 TeV')
+	elif 'cutAsym' in name: setSelection( '13 TeV - PU40bx50', 'Scaled to 1 fb^{-1}', 'HT > 700 TeV', 'A < 0.1', '' )
+	elif 'cutCosTheta' in name: setSelection( '13 TeV - PU40bx50', 'Scaled to 1 fb^{-1}', 'HT > 700 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3' )
+	elif 'cutSubjetPtRatio' in name: setSelection( '13 TeV - PU40bx50', 'Scaled to 1 fb^{-1}', 'HT > 700 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3' )
 	can.SaveAs( 'Plots/'+outName )
 	del can
 
@@ -116,10 +129,10 @@ def plot2D( inFile, trigger, name, outName, plotName, inPlotName, inPlotName2, x
 
 if __name__ == '__main__':
 
-	PU = 'PU20bx25'  #sys.argv[0]
+	PU = 'PU40bx50'  #sys.argv[0]
 	process = '1D' #sys.argv[1]
 	
-	inputFileSignal = TFile.Open('anaPlots_RPVSt100tojj_'+PU+'.root')
+	inputFileSignal = TFile.Open('anaPlots_RPVSt100tojj_13TeV_pythia8_'+PU+'.root')
 	inputFileQCD = TFile.Open('anaPlots_QCDALL_'+PU+'.root')
 
 	if process is '2D':
@@ -135,48 +148,85 @@ if __name__ == '__main__':
 			[ 'jetPt', '', False],
 			[ 'jetEta', '', True],
 			[ 'jetEta', '', False],
+			[ 'jetMass', '', True],
+			[ 'jetMass', '', False],
 			[ 'HT', '', True],
 			[ 'HT', '', False],
 			[ 'massAsymmetry_cutHT', '', True],
 			[ 'massAsymmetry_cutHT', '', False],
-			[ 'massAsymmetryTrim_cutHT', '', True],
-			[ 'massAsymmetryTrim_cutHT', '', False],
-			[ 'massAsymmetryPrun_cutHT', '', True],
-			[ 'massAsymmetryPrun_cutHT', '', False],
-			[ 'massAsymmetryFilt_cutHT', '', True],
-			[ 'massAsymmetryFilt_cutHT', '', False],
 			[ 'massAve_cutHT', '', True],
 			[ 'massAve_cutHT', '', False],
-			[ 'massAveTrim_cutHT', '', True],
-			[ 'massAveTrim_cutHT', '', False],
-			[ 'massAvePrun_cutHT', '', True],
-			[ 'massAvePrun_cutHT', '', False],
-			[ 'massAveFilt_cutHT', '', True],
-			[ 'massAveFilt_cutHT', '', False],
 			[ 'massAve_cutAsym', '', True],
 			[ 'massAve_cutAsym', '', False],
-			[ 'massAveTrim_cutAsym', '', True],
-			[ 'massAveTrim_cutAsym', '', False],
-			[ 'massAvePrun_cutAsym', '', True],
-			[ 'massAvePrun_cutAsym', '', False],
-			[ 'massAveFilt_cutAsym', '', True],
-			[ 'massAveFilt_cutAsym', '', False],
 			[ 'cosThetaStar_cutAsym', '', True],
 			[ 'cosThetaStar_cutAsym', '', False],
-			[ 'cosThetaStarTrim_cutAsym', '', True],
-			[ 'cosThetaStarTrim_cutAsym', '', False],
-			[ 'cosThetaStarPrun_cutAsym', '', True],
-			[ 'cosThetaStarPrun_cutAsym', '', False],
-			[ 'cosThetaStarFilt_cutAsym', '', True],
-			[ 'cosThetaStarFilt_cutAsym', '', False],
 			[ 'massAve_cutCosTheta', '', True],
 			[ 'massAve_cutCosTheta', '', False],
-			[ 'massAveTrim_cutCosTheta', '', True],
-			[ 'massAveTrim_cutCosTheta', '', False],
-			[ 'massAvePrun_cutCosTheta', '', True],
-			[ 'massAvePrun_cutCosTheta', '', False],
-			[ 'massAveFilt_cutCosTheta', '', True],
-			[ 'massAveFilt_cutCosTheta', '', False],
+			[ 'massAve_cutSubjetPtRatio', '', True],
+			[ 'massAve_cutSubjetPtRatio', '', False],
+			[ 'jet1Subjet1Pt_cutHT', '', True],
+			[ 'jet1Subjet1Pt_cutHT', '', False],
+			[ 'jet1Subjet2Pt_cutHT', '', True],
+			[ 'jet1Subjet2Pt_cutHT', '', False],
+			[ 'jet2Subjet1Pt_cutHT', '', True],
+			[ 'jet2Subjet1Pt_cutHT', '', False],
+			[ 'jet2Subjet2Pt_cutHT', '', True],
+			[ 'jet2Subjet2Pt_cutHT', '', False],
 			]
 
-		for i in Plots: plot( inputFileSignal, inputFileQCD, i[0], i[1], i[2], PU )
+		for i in Plots: 
+			plot( inputFileSignal, inputFileQCD, '', i[0], i[1], i[2], PU )
+			plot( inputFileSignal, inputFileQCD, 'Trimmed', i[0], i[1], i[2], PU )
+			plot( inputFileSignal, inputFileQCD, 'Pruned', i[0], i[1], i[2], PU )
+			plot( inputFileSignal, inputFileQCD, 'Filtered', i[0], i[1], i[2], PU )
+		
+		NormPlots = [
+			[ 'jet1Tau1_cutHT', '', True],
+			[ 'jet1Tau1_cutHT', '', False],
+			[ 'jet1Tau2_cutHT', '', True],
+			[ 'jet1Tau2_cutHT', '', False],
+			[ 'jet1Tau3_cutHT', '', True],
+			[ 'jet1Tau3_cutHT', '', False],
+			[ 'jet1Tau21_cutHT', '', True],
+			[ 'jet1Tau21_cutHT', '', False],
+			[ 'jet1Tau31_cutHT', '', True],
+			[ 'jet1Tau31_cutHT', '', False],
+			[ 'jet1Tau32_cutHT', '', True],
+			[ 'jet1Tau32_cutHT', '', False],
+			[ 'jet1SubjetPtRatio_cutHT', '', True],
+			[ 'jet1SubjetPtRatio_cutHT', '', False],
+			[ 'jet2SubjetPtRatio_cutHT', '', True],
+			[ 'jet2SubjetPtRatio_cutHT', '', False],
+			[ 'subjetPtRatio_cutHT', '', True],
+			[ 'subjetPtRatio_cutHT', '', False],
+			[ 'cosThetaStar_cutAsym', '', True],
+			[ 'cosThetaStar_cutAsym', '', False],
+			[ 'jet1Tau21_cutAsym', '', True],
+			[ 'jet1Tau21_cutAsym', '', False],
+			[ 'jet1Tau31_cutAsym', '', True],
+			[ 'jet1Tau31_cutAsym', '', False],
+			[ 'jet1Tau32_cutAsym', '', True],
+			[ 'jet1Tau32_cutAsym', '', False],
+			[ 'subjetPtRatio_cutAsym', '', True],
+			[ 'subjetPtRatio_cutAsym', '', False],
+			[ 'jet1Tau21_cutCosTheta', '', True],
+			[ 'jet1Tau21_cutCosTheta', '', False],
+			[ 'jet1Tau31_cutCosTheta', '', True],
+			[ 'jet1Tau31_cutCosTheta', '', False],
+			[ 'jet1Tau32_cutCosTheta', '', True],
+			[ 'jet1Tau32_cutCosTheta', '', False],
+			[ 'subjetPtRatio_cutCosTheta', '', True],
+			[ 'subjetPtRatio_cutCosTheta', '', False],
+			[ 'jet1Tau21_cutSubjetPtRatio', '', True],
+			[ 'jet1Tau21_cutSubjetPtRatio', '', False],
+			[ 'jet1Tau31_cutSubjetPtRatio', '', True],
+			[ 'jet1Tau31_cutSubjetPtRatio', '', False],
+			[ 'jet1Tau32_cutSubjetPtRatio', '', True],
+			[ 'jet1Tau32_cutSubjetPtRatio', '', False],
+			]
+
+		for i in NormPlots: 
+			plot( inputFileSignal, inputFileQCD, '', i[0], i[1], i[2], PU, True )
+			plot( inputFileSignal, inputFileQCD, 'Trimmed', i[0], i[1], i[2], PU, True )
+			plot( inputFileSignal, inputFileQCD, 'Pruned', i[0], i[1], i[2], PU, True )
+			plot( inputFileSignal, inputFileQCD, 'Filtered', i[0], i[1], i[2], PU, True )
