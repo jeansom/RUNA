@@ -1,31 +1,24 @@
-##################################################################
-	Instructions to generate samples 13TeV - pythia8 
-		for different PU scenarios 
-##################################################################
+# Instructions to generate samples 13TeV - pythia8 for different PU scenarios 
 
-#######################
-#### Brief explanation
-#######################
+## Brief explanation
 
 We are going to split the entire generation in 4 pieces. (Four if you don't have an lhe file)
 
-- Step0: 
+1. Step0: 
 	First we are going to hadronize our lhe file, and simulate how particles interact with the detector (GENSIM). 
 	This step is common for all the pileup scenarios, so this you should do it only ONCE.
-- Step1: 
+2. Step1: 
 	We add pileup, simulate L1 and digitalize the signal (RAWSIM). This step saves the RAW data.  
 	This step is different for each pileup case.
-- Step2: 
+3. Step2: 
 	We reconstruct your objects and save them in the CMS format (AODSIM). 
 	This step is the same for each pileup case. 
-- Step3:
+4. Step3:
 	We are going to take the AOD files an store only high level objets in a compress way, i.e. MiniAOD.
 	This step is the same for each pileup case. 
 
 
-########################
-##### To run the code
-########################
+## To run the code
 
 Go to RUNA/RUNSimulation/test/
 There you have a file called createJobs_CRAB.sh. You only need to modify the first part, PARAMETERS.
@@ -44,13 +37,13 @@ For Step1: go to crab_*_RAWIM_step1_*.cfg and add the dataset from step0. This s
 
 For Step2 and Step3: do should do the same as step1 but now your crab file is called crab_*_AODSIM_step2_*.cfg. 
 
-**** For a quick test, you can use the python script called analyzerMiniAOD.py on your MiniAOD files. It will print some quantities in your screen.  
+##### For a quick test
+You can use the python script called analyzerMiniAOD.py on your MiniAOD files. It will print some quantities in your screen.  
 
 Enjoy it!. 
 
 
-************ DISCLAIMER ****************
+** DISCLAIMER **
 This instructions are, by NO MEANS, any official 
 prescription to generate events in CMS. 
 Use it at your own risk!
-**************************************** 
