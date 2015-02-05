@@ -61,7 +61,7 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
 
 # Other statements
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'PHYS14_25_V1', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'PHYS14_25_V2', '')
 
 # Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)

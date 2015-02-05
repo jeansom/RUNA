@@ -21,13 +21,13 @@
 ### PARAMETERS
 #####################################
 
-stop1=200	## You can use this parameters later to make everything simpler. 
+stop1=100	## You can use this parameters later to make everything simpler. 
 stop2=250	## You can use this parameters later to make everything simpler. Now I am not using them at all
 
 totalNumberEvents=100000
 
 Name=RPVSt${stop1}tojj_13TeV_pythia8
-LHEFile=/store/user/algomez/RPVSttojj_13TeV/RPVSt200tojj_13TeV.lhe					#### DONT USE the entire eos path!!!!!
+LHEFile=/store/user/algomez/lhe/RPVSt100tojj_13TeV.lhe					#### DONT USE the entire eos path!!!!!
 
 PU=( 'PU20bx25' 'PU40bx25' 'PU40bx50' )									#### You can remove the PU scenario that you are not going to use.
 CRAB3=true
@@ -76,7 +76,7 @@ sed -i 's/process.mix.input.nbPileupEvents.averageNumber = cms.double(20.000000)
 sed -i 's/inputFile/'"${Name}"'_RAWSIM_PU40bx50/' ${step1PythonFile}'PU40bx50.py'
 sed -i 's/process.mix.bunchspace = cms.int32(25)/process.mix.bunchspace = cms.int32(50)/' ${step1PythonFile}'PU40bx50.py'
 sed -i 's/process.mix.input.nbPileupEvents.averageNumber = cms.double(20.000000)/process.mix.input.nbPileupEvents.averageNumber = cms.double(40.000000)/' ${step1PythonFile}'PU40bx50.py'
-sed -i 's/PHYS14_25_V1/PHYS14_50_V1/' ${step1PythonFile}'PU40bx50.py'
+sed -i 's/PHYS14_25_V2/PHYS14_50_V2/' ${step1PythonFile}'PU40bx50.py'
 
 echo " Creating python file for AODSIM (different PU scenarios).. "
 step2PythonFile="step2_${Name}_RAW2DIGI_L1Reco_RECO_"
@@ -86,7 +86,7 @@ cp ${Main_Dir}/step2_RAW2DIGI_L1Reco_RECO.py  ${step2PythonFile}'PU40bx50.py'
 sed -i 's/inputFile/'"${Name}"'_AODSIM_PU20bx25/' ${step2PythonFile}'PU20bx25.py'
 sed -i 's/inputFile/'"${Name}"'_AODSIM_PU40bx25/' ${step2PythonFile}'PU40bx25.py'
 sed -i 's/inputFile/'"${Name}"'_AODSIM_PU40bx50/' ${step2PythonFile}'PU40bx50.py'
-sed -i 's/PHYS14_25_V1/PHYS14_50_V1/' ${step2PythonFile}'PU40bx50.py'
+sed -i 's/PHYS14_25_V2/PHYS14_50_V2/' ${step2PythonFile}'PU40bx50.py'
 
 echo " Creating python file for MiniAOD (different PU scenarios).. "
 step3PythonFile="step3_${Name}_MiniAOD_"
@@ -96,7 +96,7 @@ cp ${Main_Dir}/step3_MiniAOD.py  ${step3PythonFile}'PU40bx50.py'
 sed -i 's/inputFile/'"${Name}"'_MiniAOD_PU20bx25/' ${step3PythonFile}'PU20bx25.py'
 sed -i 's/inputFile/'"${Name}"'_MiniAOD_PU40bx25/' ${step3PythonFile}'PU40bx25.py'
 sed -i 's/inputFile/'"${Name}"'_MiniAOD_PU40bx50/' ${step3PythonFile}'PU40bx50.py'
-sed -i 's/PHYS14_25_V1/PHYS14_50_V1/' ${step3PythonFile}'PU40bx50.py'
+sed -i 's/PHYS14_25_V2/PHYS14_50_V2/' ${step3PythonFile}'PU40bx50.py'
 
 ########################################################
 ######### Small file with the commands for condor
@@ -118,20 +118,23 @@ if ${CRAB3}; then
 		cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep1}${i}'.py'
 		sed -i 's/test/'"${step1PythonFile}${i}"'/' ${crabFileStep1}${i}'.py'
 		sed -i 's/NAME/'"${Name}"'_RAWSIM_v706_'"${i}"'/' ${crabFileStep1}${i}'.py'
+		sed -i 's/PROC/RAWSIM/' ${crabFileStep1}${i}'.py'
 		sed -i 's/None/ADD_YOUR_DATASET_HERE/' ${crabFileStep1}${i}'.py'
 
 		cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep2}${i}'.py'
 		cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep2}${i}'.py'
 		cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep2}${i}'.py'
-		sed -i 's/test/'"${step1PythonFile}${i}"'/' ${crabFileStep2}${i}'.py'
+		sed -i 's/test/'"${step2PythonFile}${i}"'/' ${crabFileStep2}${i}'.py'
 		sed -i 's/NAME/'"${Name}"'_AODSIM_v706_'"${i}"'/' ${crabFileStep2}${i}'.py'
+		sed -i 's/PROC/AODSIM/' ${crabFileStep2}${i}'.py'
 		sed -i 's/None/ADD_YOUR_DATASET_HERE/' ${crabFileStep2}${i}'.py'
 
 		cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep3}${i}'.py'
 		cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep3}${i}'.py'
 		cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep3}${i}'.py'
-		sed -i 's/test/'"${step1PythonFile}${i}"'/' ${crabFileStep3}${i}'.py'
-		sed -i 's/NAME/'"${Name}"'_RAWSIM_v706_'"${i}"'/' ${crabFileStep3}${i}'.py'
+		sed -i 's/test/'"${step3PythonFile}${i}"'/' ${crabFileStep3}${i}'.py'
+		sed -i 's/NAME/'"${Name}"'_MiniAOD_v706_'"${i}"'/' ${crabFileStep3}${i}'.py'
+		sed -i 's/PROC/MiniAOD/' ${crabFileStep3}${i}'.py'
 		sed -i 's/None/ADD_YOUR_DATASET_HERE/' ${crabFileStep3}${i}'.py'
 
 	done
