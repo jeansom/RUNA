@@ -76,7 +76,7 @@ sed -i 's/process.mix.input.nbPileupEvents.averageNumber = cms.double(20.000000)
 sed -i 's/inputFile/'"${Name}"'_RAWSIM_PU40bx50/' ${step1PythonFile}'PU40bx50.py'
 sed -i 's/process.mix.bunchspace = cms.int32(25)/process.mix.bunchspace = cms.int32(50)/' ${step1PythonFile}'PU40bx50.py'
 sed -i 's/process.mix.input.nbPileupEvents.averageNumber = cms.double(20.000000)/process.mix.input.nbPileupEvents.averageNumber = cms.double(40.000000)/' ${step1PythonFile}'PU40bx50.py'
-sed -i 's/PHYS14_25_V3/PHYS14_50_V3/' ${step1PythonFile}'PU40bx50.py'
+sed -i 's/PHYS14_25_V2/PHYS14_50_V2/' ${step1PythonFile}'PU40bx50.py'
 
 echo " Creating python file for AODSIM (different PU scenarios).. "
 step2PythonFile="step2_${Name}_RAW2DIGI_L1Reco_RECO_"
@@ -86,7 +86,7 @@ cp ${Main_Dir}/step2_RAW2DIGI_L1Reco_RECO.py  ${step2PythonFile}'PU40bx50.py'
 sed -i 's/inputFile/'"${Name}"'_AODSIM_PU20bx25/' ${step2PythonFile}'PU20bx25.py'
 sed -i 's/inputFile/'"${Name}"'_AODSIM_PU40bx25/' ${step2PythonFile}'PU40bx25.py'
 sed -i 's/inputFile/'"${Name}"'_AODSIM_PU40bx50/' ${step2PythonFile}'PU40bx50.py'
-sed -i 's/PHYS14_25_V3/PHYS14_50_V3/' ${step2PythonFile}'PU40bx50.py'
+sed -i 's/PHYS14_25_V2/PHYS14_50_V2/' ${step2PythonFile}'PU40bx50.py'
 
 echo " Creating python file for MiniAOD (different PU scenarios).. "
 step3PythonFile="step3_${Name}_MiniAOD_"
@@ -96,7 +96,7 @@ cp ${Main_Dir}/step3_MiniAOD.py  ${step3PythonFile}'PU40bx50.py'
 sed -i 's/inputFile/'"${Name}"'_MiniAOD_PU20bx25/' ${step3PythonFile}'PU20bx25.py'
 sed -i 's/inputFile/'"${Name}"'_MiniAOD_PU40bx25/' ${step3PythonFile}'PU40bx25.py'
 sed -i 's/inputFile/'"${Name}"'_MiniAOD_PU40bx50/' ${step3PythonFile}'PU40bx50.py'
-sed -i 's/PHYS14_25_V3/PHYS14_50_V3/' ${step3PythonFile}'PU40bx50.py'
+sed -i 's/PHYS14_25_V2/PHYS14_50_V2/' ${step3PythonFile}'PU40bx50.py'
 
 ########################################################
 ######### Small file with the commands for condor

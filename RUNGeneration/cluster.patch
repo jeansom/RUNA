@@ -1,0 +1,61 @@
+--- MG5_aMC_v2_2_1/madgraph/various/cluster.py	2014-10-27 15:31:49.441455116 -0400
++++ MG5_aMC_v2_2_2/madgraph/various/cluster.py	2014-11-06 11:28:34.000000000 -0500
+@@ -839,7 +839,8 @@
+                   error = %(stderr)s
+                   log = %(log)s
+                   %(argument)s
+-                  should_transfer_files = NO
++                  should_transfer_files = YES
++                  when_to_transfer_output = ON_EXIT
+                   transfer_input_files = %(input_files)s
+                   %(output_files)s
+                   Universe = vanilla
+@@ -1289,7 +1290,7 @@
+             me_dir = 'a' + me_dir[1:]
+         
+         text = ""
+-        command = ['bsub', '-J', me_dir]
++        command = ['bsub', '-C0', '-J', me_dir]
+         if cwd is None:
+             cwd = os.getcwd()
+         else: 
+@@ -1363,7 +1364,7 @@
+         cmd = "bjobs " + ' '.join(self.submitted_ids) 
+         status = misc.Popen([cmd], shell=True, stdout=subprocess.PIPE)
+ 
+-        idle, run, fail = 0, 0, 0
++        jobstatus = {}
+         for line in status.stdout:
+             line = line.strip()
+             if 'JOBID' in line:
+@@ -1372,19 +1373,24 @@
+             id = splitline[0]
+             if id not in self.submitted_ids:
+                 continue
+-            status = splitline[2]
++            jobstatus[id] = splitline[2]
++
++        idle, run, fail = 0, 0, 0
++        for id in self.submitted_ids[:]:
++            if id in jobstatus:
++                status = jobstatus[id]
++            else:
++                status = 'MISSING'
+             if status == 'RUN':
+                 run += 1
+             elif status == 'PEND':
+                 idle += 1
+-            elif status == 'DONE':
++            else:
+                 status = self.check_termination(id)
+                 if status == 'wait':
+                     run += 1
+                 elif status == 'resubmit':
+-                    idle += 1
+-            else:
+-                fail += 1
++                    idle += 1                
+ 
+         return idle, run, self.submitted - (idle+run+fail), fail
+ 
+
