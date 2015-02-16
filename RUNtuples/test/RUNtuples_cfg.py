@@ -52,7 +52,7 @@ options.register('isData',
                  'Is data?')
 
 options.register('LHE',
-                 True,
+                 False,
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.bool,
                  'Keep LHEProducts')
