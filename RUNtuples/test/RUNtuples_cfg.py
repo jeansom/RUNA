@@ -168,7 +168,9 @@ process.skimmedCMSTOPTAGSubJets = cms.EDFilter(
 
 
 process.EventUserData = cms.EDProducer(
-    'EventUserData'
+    'EventUserData',
+    pileup = cms.InputTag("addPileupInfo"),
+    pvSrc = cms.InputTag("offlineSlimmedPrimaryVertices")
 )
 
 process.muonUserData = cms.EDProducer(
@@ -263,7 +265,7 @@ process.TriggerUserData = cms.EDProducer(
 
 
 ### Including ntuplizer 
-process.load("RUNA.RUNtuples.RUNtuples_cff")
+process.load("Analysis.B2GAnaFW.b2gedmntuples_cff")
 
 
 process.options.allowUnscheduled = cms.untracked.bool(True)
