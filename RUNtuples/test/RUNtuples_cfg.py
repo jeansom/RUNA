@@ -21,6 +21,7 @@ options.register('sample',
                  #'/store/mc/Phys14DR/RSGluonToTT_M-3000_Tune4C_13TeV-pythia8/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/4EFDC292-9D67-E411-A370-0025905AA9CC.root',
                  #'file:/afs/cern.ch/work/d/decosa/public/DMtt/miniAOD_Phys14.root',
                  #'/TprimeJetToTH_allHdecays_M1200GeV_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM',
+                 #'/store/mc/Phys14DR/TprimeJetToTH_allHdecays_M1200GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/20000/94117DA2-009A-E411-9DFB-002590494CB2.root',
                  #'root://cmsxrootd.fnal.gov///store/mc/Phys14DR/TprimeJetToTH_allHdecays_M1200GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/20000/94117DA2-009A-E411-9DFB-002590494CB2.root',
 		 '/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/RPVSt100tojj_13TeV_pythia8_MiniAOD_v706_PU40bx50/b71e879835d2f0083a0e044b05216236/RPVSt100tojj_13TeV_pythia8_MiniAOD_PU40bx50_1000_1_Z6C.root',
                  opts.VarParsing.multiplicity.singleton,
@@ -34,7 +35,7 @@ options.register('lheLabel',
                  'LHE module label')
 
 options.register('outputLabel',
-                 'RUNtuples.root',
+                 'RUNtuple.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Output label')
@@ -66,10 +67,10 @@ if(options.isData):options.LHE = False
 muLabel  = 'slimmedMuons'
 elLabel  = 'slimmedElectrons'
 jLabel = 'slimmedJets'
-#jLabelAK8 = 'slimmedJetsAK8'
-jLabelAK8 = 'patJetsAK8PFCHS'
+jLabelAK8 = 'slimmedJetsAK8'
 
-ak8subjetLabel = 'selectedPatJetsAK8PFCHSPrunedSubjets'
+#ak8subjetLabel = 'selectedPatJetsAK8PFCHSPrunedSubjets'
+ak8subjetLabel = 'patJetsAK8PFCHSPrunedSubjets'
 
 pvLabel  = 'offlineSlimmedPrimaryVertices'
 convLabel = 'reducedEgamma:reducedConversions'
@@ -100,8 +101,7 @@ process.source = cms.Source("PoolSource",
 
 process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
 process.load("Configuration.EventContent.EventContent_cff")
-#process.load('Configuration.StandardSequences.Geometry_cff')    ### old version
-process.load('Configuration.Geometry.GeometryIdeal_cff')
+process.load('Configuration.StandardSequences.Geometry_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
@@ -118,7 +118,7 @@ process.GlobalTag.globaltag = options.globalTag
 #################################################
 
 from RecoJets.JetProducers.jetToolbox_cff import jetToolbox
-jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addPrunedSubjets=True, addTrimming=True, addFiltering=True, addNsub=True )
+jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addPrunedSubjets=True, addTrimming=True, addFiltering=True, addSoftDrop=True, addNsub=True )
 jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', addCMSTopTagger=True )
 
 
@@ -154,20 +154,8 @@ process.skimmedPatJetsAK8 = cms.EDFilter(
     cut = cms.string("pt > 100 && abs(eta) < 4.")    
     )
 
-process.skimmedPatSubJetsAK8 = cms.EDFilter(
-    "CandViewSelector",
-    src = cms.InputTag("selectedPatJetsAK8PFCHSPrunedSubjets"),
-    cut = cms.string("pt > 0")
-    )
 
-process.skimmedCMSTOPTAGSubJets = cms.EDFilter(
-    "CandViewSelector",
-    src = cms.InputTag("selectedPatJetsCMSTopTagCHSSubjets"),
-    cut = cms.string("pt > 0")
-)
-
-
-process.EventUserData = cms.EDProducer(
+process.eventUserData = cms.EDProducer(
     'EventUserData',
     pileup = cms.InputTag("addPileupInfo"),
     pvSrc = cms.InputTag("offlineSlimmedPrimaryVertices")
@@ -200,7 +188,8 @@ process.jetUserData = cms.EDProducer(
 
 process.jetUserDataAK8 = cms.EDProducer(
     'JetUserData',
-    jetLabel  = cms.InputTag(jLabelAK8), 
+    #jetLabel  = cms.InputTag("slimmedJetsAK8"),
+    jetLabel  = cms.InputTag("selectedPatJetsAK8PFCHS"),
     pv        = cms.InputTag(pvLabel),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
@@ -210,18 +199,13 @@ process.jetUserDataAK8 = cms.EDProducer(
     hlt2reco_deltaRmax = cms.double(0.2)
 )
 
-process.cmstoptagjetUserData = cms.EDProducer(
-    'JetUserData',
-    jetLabel  = cms.InputTag("patJetsCMSTopTagCHS"),
-    packedjetLabel  = cms.InputTag("patJetsCMSTopTagCHSPacked"),
-    subjetLabel  = cms.InputTag("patJetsCMSTopTagCHSSubjets"),
-    pv        = cms.InputTag(pvLabel),
-    ### TTRIGGER ###
-    triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
-    triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
-    hltJetFilter       = cms.InputTag("hltSixCenJet20L1FastJet"),
-    hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
-    hlt2reco_deltaRmax = cms.double(0.2)
+process.boostedJetUserDataAK8 = cms.EDProducer(
+    'BoostedJetUserData',
+    jetLabel  = cms.InputTag("jetUserDataAK8"),
+    topjetLabel  = cms.InputTag("patJetsCMSTopTagCHSPacked"),
+    #vjetLabel    = cms.InputTag("selectedPatJetsAK8PFCHSPrunedPacked"),
+    vjetLabel    = cms.InputTag("patJetsAK8PFCHSPrunedPacked"),
+    distMax = cms.double(0.8)
 )
 
 process.electronUserData = cms.EDProducer(
@@ -265,7 +249,8 @@ process.TriggerUserData = cms.EDProducer(
 
 
 ### Including ntuplizer 
-process.load("Analysis.B2GAnaFW.b2gedmntuples_cff")
+#process.load("Analysis.B2GAnaFW.b2gedmntuples_cff")
+process.load("RUNA.RUNtuples.RUNtuples_cff")
 
 
 process.options.allowUnscheduled = cms.untracked.bool(True)
