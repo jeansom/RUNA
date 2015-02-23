@@ -684,22 +684,22 @@ subjetsAK8 = copy.deepcopy(basic)
 subjetsAK8.variables += jetVars
 subjetsAK8.variables += subjetVars
 subjetsAK8.prefix = cms.untracked.string("subjetAK8")
-#subjetsAK8.src = cms.InputTag("selectedPatJetsAK8PFCHSPrunedSubjets")
-subjetsAK8.src = cms.InputTag("patJetsAK8PFCHSPrunedSubjets")
+subjetsAK8.src = cms.InputTag("selectedPatJetsAK8PFCHSPrunedSubjets")
+#subjetsAK8.src = cms.InputTag("patJetsAK8PFCHSPrunedSubjets")
 subjetKeysAK8 = copy.deepcopy( jetKeys )
-#subjetKeysAK8.jetLabel = cms.InputTag("selectedPatJetsAK8PFCHSPrunedSubjets")
-subjetKeysAK8.jetLabel = cms.InputTag("patJetsAK8PFCHSPrunedSubjets")
+subjetKeysAK8.jetLabel = cms.InputTag("selectedPatJetsAK8PFCHSPrunedSubjets")
+#subjetKeysAK8.jetLabel = cms.InputTag("patJetsAK8PFCHSPrunedSubjets")
 
 ###subjetsAK8
 subjetsCmsTopTag = copy.deepcopy(basic)
 subjetsCmsTopTag.variables += jetVars
 subjetsCmsTopTag.variables += subjetVars
 subjetsCmsTopTag.prefix = cms.untracked.string("subjetsCmsTopTag")
-#subjetsCmsTopTag.src = cms.InputTag("selectedPatJetsCMSTopTagCHSSubjets")
-subjetsCmsTopTag.src = cms.InputTag("patJetsCMSTopTagCHSSubjets")
+subjetsCmsTopTag.src = cms.InputTag("selectedPatJetsCMSTopTagCHSSubjets")
+#subjetsCmsTopTag.src = cms.InputTag("patJetsCMSTopTagCHSSubjets")
 subjetsCmsTopTagKeys = copy.deepcopy( jetKeys )
-#subjetsCmsTopTagKeys.jetLabel = cms.InputTag("selectedPatJetsCMSTopTagCHSSubjets")
-subjetsCmsTopTagKeys.jetLabel = cms.InputTag("patJetsCMSTopTagCHSSubjets")
+subjetsCmsTopTagKeys.jetLabel = cms.InputTag("selectedPatJetsCMSTopTagCHSSubjets")
+#subjetsCmsTopTagKeys.jetLabel = cms.InputTag("patJetsCMSTopTagCHSSubjets")
 
 
 ###genPart

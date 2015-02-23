@@ -203,8 +203,8 @@ process.boostedJetUserDataAK8 = cms.EDProducer(
     'BoostedJetUserData',
     jetLabel  = cms.InputTag("jetUserDataAK8"),
     topjetLabel  = cms.InputTag("patJetsCMSTopTagCHSPacked"),
-    #vjetLabel    = cms.InputTag("selectedPatJetsAK8PFCHSPrunedPacked"),
-    vjetLabel    = cms.InputTag("patJetsAK8PFCHSPrunedPacked"),
+    vjetLabel    = cms.InputTag("selectedPatJetsAK8PFCHSPrunedPacked"),
+    #vjetLabel    = cms.InputTag("patJetsAK8PFCHSPrunedPacked"),
     distMax = cms.double(0.8)
 )
 
