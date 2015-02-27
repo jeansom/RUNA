@@ -2,7 +2,7 @@ from CRABClient.UserUtilities import config
 config = config()
 
 
-config.General.requestName = 'RPVSt100tojj_13TeV_pythia8_EDMNtuple_PU40bx50_v2'
+config.General.requestName = 'RPVSt100tojj_13TeV_pythia8_RUNA_PU40bx50_v01'
 config.General.workArea = 'crab_projects'
 
 config.JobType.pluginName = 'Analysis'
@@ -19,7 +19,7 @@ config.Data.unitsPerJob = 1
 config.Data.outLFN = '/store/user/algomez/'
 config.Data.publication = True
 config.Data.ignoreLocality = True
-config.Data.publishDataName = 'EDMNtuple_PU40bx50_v2'
+config.Data.publishDataName = 'RUNA_PU40bx50_v01'
 #config.Data.publishDBS = 'https://cmsweb.cern.ch/dbs/prod/phys03/DBSWriter'
 
 config.Site.storageSite = 'T3_US_FNALLPC'

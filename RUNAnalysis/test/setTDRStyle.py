@@ -2,51 +2,51 @@
 from ROOT import *
 import ROOT as rt
 
-def setSelection( signal, sel1='', sel2='', sel3='', sel4='', sel5='', sel6='' ):
+def setSelection( signal, sel1='', sel2='', sel3='', sel4='', sel5='', sel6='', xMin=0.65, yMax=0.65 ):
 
 	textBox=TLatex()
 	textBox.SetNDC()
 	textBox.SetTextSize(0.05) 
-	textBox.SetTextColor(kBlue)
+	textBox.SetTextColor(61)
 	if 'Data' in signal:
-		textBox.DrawText(0.16,0.95,"CMS Preliminary ")
+		textBox.DrawText(0.12,0.95,"CMS Preliminary ")
 	else:
-	 	textBox.DrawText(0.16,0.95,"CMS Preliminary Simulation")
+	 	textBox.DrawText(0.12,0.95,"CMS Preliminary Simulation")
 
 	textBox1=TLatex()
 	textBox1.SetNDC()
 	textBox1.SetTextSize(0.04) 
-	textBox1.DrawText(0.70,0.65, signal)
+	textBox1.DrawLatex(xMin, yMax, signal)
 	
 	textBox3=TLatex()
 	textBox3.SetNDC()
 	textBox3.SetTextSize(0.04) 
-	textBox3.DrawLatex(0.70,0.60, sel1)
+	textBox3.DrawLatex(xMin, (yMax-0.05), sel1)
 		
 	textBox4=TLatex()
 	textBox4.SetNDC()
 	textBox4.SetTextSize(0.04) 
-	textBox4.DrawLatex(0.70,0.55, sel2)
+	textBox4.DrawLatex(xMin,(yMax-0.10), sel2)
 	
 	textBox5=TLatex()
 	textBox5.SetNDC()
 	textBox5.SetTextSize(0.04) 
-	textBox5.DrawLatex(0.70,0.50, sel3 )
+	textBox5.DrawLatex(xMin,(yMax-0.15), sel3 )
 	
 	textBox6=TLatex()
 	textBox6.SetNDC()
 	textBox6.SetTextSize(0.04) 
-	textBox6.DrawLatex(0.70,0.45, sel4)
+	textBox6.DrawLatex(xMin,(yMax-0.20), sel4)
 	
 	textBox7=TLatex()
 	textBox7.SetNDC()
 	textBox7.SetTextSize(0.04) 
-	textBox7.DrawLatex(0.70,0.40, sel5 )
+	textBox7.DrawLatex(xMin,(yMax-0.25), sel5 )
 	
 	textBox8=TLatex()
 	textBox8.SetNDC()
 	textBox8.SetTextSize(0.04) 
-	textBox8.DrawLatex(0.70,0.35, sel6 )
+	textBox8.DrawLatex(xMin,(yMax-0.30), sel6 )
 	
 def setSelectionTrigger2D( signal, trigger, sel1, sel2, sel3, sel4):
 

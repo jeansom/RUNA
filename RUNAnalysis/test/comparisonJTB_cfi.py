@@ -9,11 +9,15 @@ process.load("FWCore.MessageService.MessageLogger_cfi")
 
 #if 'QCD' in NAME:
 #else: process.load(NAME+'_RUNtuples_cfi')
-process.load('RPVStop_'+NAME+'_cfi')
+#process.load('RPVStop_'+NAME+'_cfi')
+#process.load('QCD_Pt-300to470_'+NAME+'_cfi')
+process.load('TTJets_13TeV_'+NAME+'_cfi')
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100000) )
 
-process.TFileService=cms.Service("TFileService",fileName=cms.string( 'comparisonJTB_'+NAME+'.root' ) )
+#process.TFileService=cms.Service("TFileService",fileName=cms.string( 'comparisonJTB_RPVStop_'+NAME+'.root' ) )
+#process.TFileService=cms.Service("TFileService",fileName=cms.string( 'comparisonJTB_QCD_Pt-300to470_'+NAME+'.root' ) )
+process.TFileService=cms.Service("TFileService",fileName=cms.string( 'comparisonJTB_TTjets_'+NAME+'.root' ) )
 
 
 process.ak8jets = cms.EDAnalyzer('comparisonJTB',

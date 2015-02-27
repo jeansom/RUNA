@@ -15,31 +15,26 @@ do
 		rm -rf $nameCRAB3File
 	fi
 
-	echo "from WMCore.Configuration import Configuration
-config = Configuration()
+	echo "from CRABClient.UserUtilities import config
+config = config()
 
-config.section_('General')
-config.General.requestName = 'QCD_Pt-"${bin}"_Tune4C_13TeV_pythia8_RUNPlots_PU40bx50_v0'
-#config.General.workArea = 'crab_projects'
+config.General.requestName = 'QCD_Pt-"${bin}"_Tune4C_13TeV_pythia8_RUNPlots_PU40bx50_v01'
+config.General.workArea = 'crab_projects'
 
-config.section_('JobType')
 config.JobType.pluginName = 'Analysis'
-config.JobType.psetName = 'RUNAPlots_cfg.py'
+config.JobType.psetName = 'RUNAnalysis_cfg.py'
 config.JobType.pyCfgParams = [ 'QCD_Pt-"${bin}"_Tune4C_13TeV_pythia8_PU40bx50' ]
 config.JobType.allowNonProductionCMSSW = True
 
-config.section_('Data')
-config.Data.inputDataset = '/QCD_Pt-"${bin}"_Tune4C_13TeV_pythia8/algomez-QCD_Pt-"${bin}"_Tune4C_13TeV_pythia8_EDMNtuple_PU40bx50_v3-12973f35cd7b5b825f439eacc298d434/USER'
+config.Data.inputDataset = '/QCD_Pt-"${bin}"_Tune4C_13TeV_pythia8/algomez-RUNA_PU40bx50_v01-e839e229a9e5d0ac5fa9b79d454f01f9/USER'
 config.Data.inputDBS = 'phys03'
 config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = 20
 #config.Data.totalUnits = 1000
 config.Data.outLFN = '/store/user/algomez/'
-#config.Data.ignoreLocality = True
 config.Data.publication = False
 config.Data.ignoreLocality = True
 
-config.section_('Site')
 config.Site.storageSite = 'T3_US_FNALLPC'
 " >> ${nameCRAB3File}
 	crab submit ${nameCRAB3File}
