@@ -1,6 +1,6 @@
 
 
-ptBins=( '80to120' '120to170' '170to300' '300to470' '470to600' '600to800' '800to1000' )
+ptBins=( '80to120' ) # '120to170' '170to300' '300to470' '470to600' '600to800' '800to1000' )
 #ptBins=( '120to170' '170to300' '300to470' '470to600' '600to800' '800to1000' )
 #fi
 
@@ -20,7 +20,7 @@ config = Configuration()
 
 config.section_('General')
 config.General.requestName = 'QCD_Pt-"${bin}"_Tune4C_13TeV_pythia8_RUNPlots_PU40bx50_v0'
-#config.General.workArea = 'crab_projects'
+config.General.workArea = 'crab_projects'
 
 config.section_('JobType')
 config.JobType.pluginName = 'Analysis'
@@ -34,13 +34,15 @@ config.Data.inputDBS = 'phys03'
 config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = 20
 #config.Data.totalUnits = 1000
-config.Data.outLFN = '/store/user/algomez/'
+#config.Data.outLFN = '/store/user/algomez/'
+config.Data.outLFN = '/store/user/algomez/data23/'
 #config.Data.ignoreLocality = True
 config.Data.publication = False
 config.Data.ignoreLocality = True
 
 config.section_('Site')
-config.Site.storageSite = 'T3_US_FNALLPC'
+#config.Site.storageSite = 'T3_US_FNALLPC'
+config.Site.storageSite = 'T3_US_Rutgers'
 " >> ${nameCRAB3File}
 	crab submit ${nameCRAB3File}
 

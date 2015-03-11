@@ -27,7 +27,8 @@ options.register('sample',
 #                 'file:/afs/cern.ch/work/o/oiorio/public/xDM/patTuple_tlbsm_train_tlbsm_71x_v1.root',
                  #'file:/afs/cern.ch/user/d/decosa/wdecosa/public/DMtt/miniAOD_TTDMDMJets_M200GeV_Pu20bx25_10C35665-4E2D-E411-A45E-0025901D4864.root', 
                  #'file:/afs/cern.ch/user/d/dpinna/scratch0/miniAOD.root',
-		 '/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/RPVSt100tojj_13TeV_pythia8_MiniAOD_v706_PU20bx25/b71e879835d2f0083a0e044b05216236/miniAOD-prod_PAT_424_1_Np7.root',
+#		 '/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/RPVSt100tojj_13TeV_pythia8_MiniAOD_v706_PU20bx25/b71e879835d2f0083a0e044b05216236/miniAOD-prod_PAT_424_1_Np7.root',
+		 '/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/RPVSt100tojj_13TeV_pythia8_MiniAOD_v706_PU40bx25/b71e879835d2f0083a0e044b05216236/RPVSt100tojj_13TeV_pythia8_MiniAOD_PU40bx25_525_1_JVY.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
@@ -106,6 +107,7 @@ process = cms.Process("EDMNtuples")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.categories.append('HLTrigReport')
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 ### Output Report
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ### Number of maximum events to process
@@ -118,16 +120,17 @@ process.source = cms.Source("PoolSource",
 )
 
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-from Configuration.AlCa.GlobalTag import GlobalTag as customiseGlobalTag
+process.GlobalTag.globaltag = 'PLS170_V7AN1::All'
+#from Configuration.AlCa.GlobalTag import GlobalTag as customiseGlobalTag
 #process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag = 'auto:startup_GRun')
-process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag = 'PLS170_V7AN1::All')
-process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
-process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
-for pset in process.GlobalTag.toGet.value():
-    pset.connect = pset.connect.value().replace('frontier://FrontierProd/', 'frontier://FrontierProd/')
-    #   Fix for multi-run processing:
-    process.GlobalTag.RefreshEachRun = cms.untracked.bool( False )
-    process.GlobalTag.ReconnectEachRun = cms.untracked.bool( False )
+#process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag = 'PLS170_V7AN1::All')
+#process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
+#process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
+#for pset in process.GlobalTag.toGet.value():
+#    pset.connect = pset.connect.value().replace('frontier://FrontierProd/', 'frontier://FrontierProd/')
+#    #   Fix for multi-run processing:
+#    process.GlobalTag.RefreshEachRun = cms.untracked.bool( False )
+#    process.GlobalTag.ReconnectEachRun = cms.untracked.bool( False )
     
 
 ### Selected leptons and jets
@@ -162,7 +165,7 @@ if (options.jetSubstructure):
 
 	from RecoJets.JetProducers.jetToolbox_cff import jetToolbox
 
-	jetToolbox( process, 'ak8', 'ak8JetSubs', 'edmNtuplesOut', addSubjets=True )
+	jetToolbox( process, 'ak8', 'ak8JetSubs', 'edmNtuplesOut', addSubjets=True, addPruning=True, addNsub=True )
 
 	process.skimmedPatAK8Jets = cms.EDFilter( "CandViewSelector",
 	    src = cms.InputTag('patJetsAK8withSubjets'),
