@@ -1,5 +1,5 @@
-from CRABClient.client_utilities import getBasicConfig
-config = getBasicConfig()
+from CRABClient.UserUtilities import config
+config = config()
 
 config.General.requestName = 'NAME_v720'
 config.General.workArea = 'crab_projects'
