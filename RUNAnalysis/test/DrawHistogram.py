@@ -74,7 +74,11 @@ def plot( inFileSignal, inFileQCD, Grom, name, xmax, log, PU, Norm=False ):
 		histos['Signal'].Draw('hist same')
 		stackHisto.GetYaxis().SetTitle( 'Events / '+str(binWidth) )
 
-		if 'massAve' in name: stackHisto.GetXaxis().SetTitle( 'Average Mass [GeV]' )
+		if 'massAve' in name: 
+			if 'Trim' in Grom: stackHisto.GetXaxis().SetTitle( 'Average Trimmed Mass [GeV]' )
+			elif 'Prun' in Grom: stackHisto.GetXaxis().SetTitle( 'Average Pruned Mass [GeV]' )
+			elif 'Fil' in Grom: stackHisto.GetXaxis().SetTitle( 'Average Filtered Mass [GeV]' )
+			else: stackHisto.GetXaxis().SetTitle( 'Average Mass [GeV]' )
 		elif 'massAsymmetry' in name: stackHisto.GetXaxis().SetTitle( 'Mass Asymmetry (A)' )
 		elif 'cosThetaStar' in name: stackHisto.GetXaxis().SetTitle( 'cos(#theta *)' )
 		elif 'jetPt' in name: stackHisto.GetXaxis().SetTitle( 'Jet p_{T} [GeV]' )
@@ -84,6 +88,7 @@ def plot( inFileSignal, inFileQCD, Grom, name, xmax, log, PU, Norm=False ):
 		legend.AddEntry( histos[ 'Signal' ], 'RPV Stop 100 GeV' , 'lp' )
 		legend.AddEntry( histos[ 'QCD' ], 'QCD' , 'lp' )
 		histos['Signal'].GetYaxis().SetTitle( 'Normalized / '+str(binWidth) )
+		if 'cutflow' in name: histos['Signal'].SetMinimum(0.01)
 		if 'Tau1_' in name: histos['Signal'].GetXaxis().SetTitle( '#tau_{1}' )
 		elif 'Tau2_' in name: histos['Signal'].GetXaxis().SetTitle( '#tau_{2}' )
 		elif 'Tau3_' in name: histos['Signal'].GetXaxis().SetTitle( '#tau_{3}' )
@@ -100,6 +105,7 @@ def plot( inFileSignal, inFileQCD, Grom, name, xmax, log, PU, Norm=False ):
 	elif 'cutAsym' in name: setSelection( '13 TeV - PU40bx50', 'Scaled to 1 fb^{-1}', 'HT > 700 TeV', 'A < 0.1', '' )
 	elif 'cutCosTheta' in name: setSelection( '13 TeV - PU40bx50', 'Scaled to 1 fb^{-1}', 'HT > 700 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3' )
 	elif 'cutSubjetPtRatio' in name: setSelection( '13 TeV - PU40bx50', 'Scaled to 1 fb^{-1}', 'HT > 700 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3' )
+	elif 'cutTau31' in name: setSelection( '13 TeV - PU40bx50', 'Scaled to 1 fb^{-1}', 'HT > 700 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3', '#tau_{31} > 0.6' )
 	can.SaveAs( 'Plots/'+outName )
 	del can
 
@@ -164,6 +170,8 @@ if __name__ == '__main__':
 			[ 'massAve_cutCosTheta', '', False],
 			[ 'massAve_cutSubjetPtRatio', '', True],
 			[ 'massAve_cutSubjetPtRatio', '', False],
+			[ 'massAve_cutTau31', '', True],
+			[ 'massAve_cutTau31', '', False],
 			[ 'jet1Subjet1Pt_cutHT', '', True],
 			[ 'jet1Subjet1Pt_cutHT', '', False],
 			[ 'jet1Subjet2Pt_cutHT', '', True],
@@ -223,6 +231,8 @@ if __name__ == '__main__':
 			[ 'jet1Tau31_cutSubjetPtRatio', '', False],
 			[ 'jet1Tau32_cutSubjetPtRatio', '', True],
 			[ 'jet1Tau32_cutSubjetPtRatio', '', False],
+			[ 'cutflow', '', True],
+			[ 'cutflow', '', False],
 			]
 
 		for i in NormPlots: 

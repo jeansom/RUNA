@@ -1,5 +1,5 @@
-from CRABClient.client_utilities import getBasicConfig
-config = getBasicConfig()
+from CRABClient.UserUtilities import config
+config = config()
 
 config.General.requestName = 'NAME'
 config.General.workArea = 'crab_projects'
@@ -19,7 +19,6 @@ config.Data.ignoreLocality = True
 
 config.Site.storageSite = 'T3_US_FNALLPC'
 
-#### Only for hexfarm.. it still does not work
+##### Only for hexfarm.. it still does not work
 #config.Data.outLFN = '/store/user/algomez/data23/'	### only for hexfarm
 #config.Site.storageSite = 'T3_US_Rutgers'
-

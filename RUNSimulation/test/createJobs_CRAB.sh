@@ -52,6 +52,8 @@ fi
 
 cd $Working_Dir/
 
+user=`echo $USER`
+sed -i 's/algomez/'"${user}"'/g' *
 
 ##############################################
 ##### Create the python file for Ntuples

@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import sys
 
-NAME = sys.argv[2]
+NAME = sys.argv[1]
 #NAME = 'RPV'
 process = cms.Process("Demo")
 
@@ -15,7 +15,7 @@ if 'QCD' in NAME:
 	    )
 	)
 else: process.load(NAME+'_RUNtuples_cfi')
-#process.load('RPVSt100tojj_13TeV_pythia8_RUNtuples_cfi')
+
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
@@ -24,13 +24,13 @@ if 'PU40bx50' in NAME:
 	Lumi = 1000
 
 	if 'QCD' in NAME:
-		if '80to120'in NAME: SF = 3000114.3*0.8456 / 2405333.  
-		elif '120to170'in NAME: SF = 493200. * 0.8355 / 2319812.
-		elif '170to300'in NAME: SF = 120300 / 1249192.
-		elif '300to470'in NAME: SF = 7475 / 1410272.
-		elif '470to600'in NAME: SF = 587.1 / 1425097.
-		elif '600to800'in NAME: SF = 167 / 1403209.
-		elif '800to1000'in NAME: SF = 28.25 / 1423109.
+		if '80to120'in NAME: SF = 3000114.3*0.8456 / 2498584.  
+		elif '120to170'in NAME: SF = 493200. * 0.8355 / 2497818.
+		elif '170to300'in NAME: SF = 120300 / 1295692.
+		elif '300to470'in NAME: SF = 7475 / 1498032.
+		elif '470to600'in NAME: SF = 587.1 / 1500297.
+		elif '600to800'in NAME: SF = 167 / 1465278.
+		elif '800to1000'in NAME: SF = 28.25 / 1500369.
 		else: SF = 1
 	else: 
 		SF = 559.757/ 98404.    ## PU40bx50  1 fb-1
