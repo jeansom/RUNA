@@ -22,4 +22,3 @@ config.Site.storageSite = 'T3_US_FNALLPC'
 #### Only for hexfarm.. it still does not work
 #config.Data.outLFN = '/store/user/algomez/data23/'	### only for hexfarm
 #config.Site.storageSite = 'T3_US_Rutgers'
-
