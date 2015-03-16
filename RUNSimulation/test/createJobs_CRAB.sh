@@ -116,11 +116,9 @@ if ${CRAB3}; then
 	crabFileStep3=crab3_${Name}_MiniAOD_step3_
 	for i in ${PU[@]}; do
 		cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep1}${i}'.py'
-		cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep1}${i}'.py'
-		cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep1}${i}'.py'
 		sed -i 's/test/'"${step1PythonFile}${i}"'/' ${crabFileStep1}${i}'.py'
 		sed -i 's/NAME/'"${Name}"'_RAWSIM_v706_'"${i}"'/' ${crabFileStep1}${i}'.py'
-		sed -i 's/PROC/RAWSIM/' ${crabFileStep1}${i}'.py'
+		sed -i 's/PROC/RAWSIM_PHYS14_v720_'"${i}"'/' ${crabFileStep1}${i}'.py'
 		sed -i 's/None/ADD_YOUR_DATASET_HERE/' ${crabFileStep1}${i}'.py'
 
 		cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep2}${i}'.py'
@@ -128,7 +126,7 @@ if ${CRAB3}; then
 		cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep2}${i}'.py'
 		sed -i 's/test/'"${step2PythonFile}${i}"'/' ${crabFileStep2}${i}'.py'
 		sed -i 's/NAME/'"${Name}"'_AODSIM_v706_'"${i}"'/' ${crabFileStep2}${i}'.py'
-		sed -i 's/PROC/AODSIM/' ${crabFileStep2}${i}'.py'
+		sed -i 's/PROC/AODSIM_PHYS14_v720_'"${i}"'/' ${crabFileStep2}${i}'.py'
 		sed -i 's/None/ADD_YOUR_DATASET_HERE/' ${crabFileStep2}${i}'.py'
 
 		cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep3}${i}'.py'
@@ -136,7 +134,7 @@ if ${CRAB3}; then
 		cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep3}${i}'.py'
 		sed -i 's/test/'"${step3PythonFile}${i}"'/' ${crabFileStep3}${i}'.py'
 		sed -i 's/NAME/'"${Name}"'_MiniAOD_v706_'"${i}"'/' ${crabFileStep3}${i}'.py'
-		sed -i 's/PROC/MiniAOD/' ${crabFileStep3}${i}'.py'
+		sed -i 's/PROC/MiniAOD_PHYS14_v720_'"${i}"'/' ${crabFileStep3}${i}'.py'
 		sed -i 's/None/ADD_YOUR_DATASET_HERE/' ${crabFileStep3}${i}'.py'
 
 	done
