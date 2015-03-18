@@ -26,8 +26,8 @@ stop2=250	## You can use this parameters later to make everything simpler. Now I
 
 totalNumberEvents=100000
 
-Name=RPVSt${stop1}tojj_13TeV_pythia8
-LHEFile=/store/user/algomez/lhe/RPVSt100tojj_13TeV.lhe					#### DONT USE the entire eos path!!!!!
+Name=RPVSt${stop1}tobj_13TeV_pythia8
+LHEFile=/store/user/algomez/lhe/RPVSt100tobj_13TeV.lhe					#### DONT USE the entire eos path!!!!!
 
 PU=( 'PU20bx25' 'PU40bx25' 'PU40bx50' )									#### You can remove the PU scenario that you are not going to use.
 CRAB3=true
@@ -51,9 +51,6 @@ else
 fi
 
 cd $Working_Dir/
-
-user=`echo $USER`
-sed -i 's/algomez/'"${user}"'/g' *
 
 ##############################################
 ##### Create the python file for Ntuples
@@ -232,3 +229,6 @@ else
 	echo 'Crab instructions in the README file'
 	echo 'Have a nice day :D '
 fi
+user=`echo $USER`
+sed -i 's/algomez/'"${user}"'/g' *.py
+
