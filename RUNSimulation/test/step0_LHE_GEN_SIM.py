@@ -67,60 +67,24 @@ process.genstepfilter.triggerConditions=cms.vstring("generation_step")
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'POSTLS170_V5::All', '')
 
+from Configuration.Generator.Pythia8CommonSettings_cfi import *
+from Configuration.Generator.Pythia8CUEP8M1Settings_cfi import *
+
 process.generator = cms.EDFilter("Pythia8HadronizerFilter",
-	ExternalDecays = cms.PSet(
-		Tauola = cms.untracked.PSet(
-			UseTauolaPolarization = cms.bool(True),
-			InputCards = cms.PSet(
-				mdtau = cms.int32(0),
-				pjak2 = cms.int32(0),
-				pjak1 = cms.int32(0)
-				)
-			),
-		parameterSets = cms.vstring('Tauola')
-		),
     maxEventsToPrint = cms.untracked.int32(1),
     pythiaPylistVerbosity = cms.untracked.int32(1),
     filterEfficiency = cms.untracked.double(1.0),
     pythiaHepMCVerbosity = cms.untracked.bool(False),
-    comEnergy = cms.double(13000.0),
-	UseExternalGenerators = cms.untracked.bool(True),
-#	    jetMatching = cms.untracked.PSet(
-#		MEMAIN_nqmatch = cms.int32(5),
-#		MEMAIN_showerkt = cms.double(0),
-#		MEMAIN_minjets = cms.int32(0),
-#		MEMAIN_qcut = cms.double(80),
-#		MEMAIN_excres = cms.string(''),
-#		MEMAIN_etaclmax = cms.double(5),
-#		outTree_flag = cms.int32(0),
-#		scheme = cms.string('Madgraph'),
-#		MEMAIN_maxjets = cms.int32(2),
-#		mode = cms.string('auto')
-#	    ),
+    comEnergy = cms.double(13000.),
     PythiaParameters = cms.PSet(
-        processParameters = cms.vstring('Main:timesAllowErrors    = 10000', 
-		'ParticleDecays:limitTau0 = on', 
-		'ParticleDecays:tauMax = 10', 
-		'Tune:ee 3', 
-		'Tune:pp 5',
-#		'SpaceShower:pTmaxMatch = 1',
-#		'SpaceShower:pTmaxFudge = 1',
-#		'SpaceShower:MEcorrections = off',
-#		'TimeShower:pTmaxMatch = 1',
-#		'TimeShower:pTmaxFudge = 1',
-#		'TimeShower:MEcorrections = off',
-#		'TimeShower:globalRecoil = on',
-#		#'TimeShower:limitPTmaxGlobal = on',
-#		'TimeShower:nMaxGlobalRecoil = 1',
-#		#'TimeShower:globalRecoilMode = 2',
-#		#'TimeShower:nMaxGlobalBranch = 1',
-#		'SLHA:keepSM = on',
-#		'SLHA:minMassSM = 1000.',       
-#		'Check:epTolErr = 0.01'
-	),
-        parameterSets = cms.vstring('processParameters')
+        pythia8CommonSettingsBlock,
+        pythia8CUEP8M1SettingsBlock,
+        parameterSets = cms.vstring('pythia8CommonSettings',
+                                    'pythia8CUEP8M1Settings',
+                                    )
     )
 )
+
 
 
 # Path and EndPath definitions
