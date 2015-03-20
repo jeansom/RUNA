@@ -26,12 +26,17 @@ gStyle.SetOptStat(0)
 def plot( inFileSignal, inFileQCD, Grom, name, xmax, log, PU, Norm=False ):
 	"""docstring for plot"""
 
-	outputFileName = name+'_'+Grom+'_RPVSt100tojj_QCD_AnalysisPlots.pdf' 
+	outputFileName = name+'_'+Grom+'_RPVSt100to'+jj+'_'+PU+'_QCD_AnalysisPlots.pdf' 
 	print 'Processing.......', outputFileName
 
 	histos = {}
 	histos[ 'Signal' ] = inFileSignal.Get( 'AnalysisPlots'+Grom+'/'+name )
 	histos[ 'QCD' ] = inFileQCD.Get( 'AnalysisPlots'+Grom+'/'+name )
+
+	hSignal = histos[ 'Signal' ].Clone()
+	hSignalQCD = histos[ 'Signal' ].Clone()
+	hSignalQCD.Add( histos[ 'QCD' ].Clone() )
+	hSignal.Divide( hSignalQCD )
 
 	if not Norm:
 		#histos[ 'Signal' ].Scale(100)
@@ -55,33 +60,44 @@ def plot( inFileSignal, inFileQCD, Grom, name, xmax, log, PU, Norm=False ):
 #	histos.values()[0].GetXaxis().SetRange( 0, xmax )
 	binWidth = histos['Signal'].GetBinWidth(1)
 
-	legend=TLegend(0.65,0.70,0.90,0.90)
+	legend=TLegend(0.60,0.75,0.90,0.90)
 	legend.SetFillStyle(0)
 	legend.SetTextSize(0.03)
 
-	can = TCanvas('c1', 'c1',  10, 10, 800, 500 )
+	can = TCanvas('c1', 'c1',  10, 10, 750, 750 )
+	pad1 = TPad("pad1", "Fit",0,0.25,1.00,1.00,-1)
+	pad2 = TPad("pad2", "Pull",0,0.00,1.00,0.25,-1);
+	pad1.Draw()
+	pad2.Draw()
+
+	pad1.cd()
 	if log: 
-		can.SetLogy()
+		pad1.SetLogy()
 		outName = outputFileName.replace('_AnalysisPlots','_Log_AnalysisPlots')
+		histos[ 'Signal' ].GetYaxis().SetTitleOffset(1.2)
 	else:
 		outName = outputFileName 
 
 	if not Norm:
-		legend.AddEntry( histos[ 'Signal' ], 'RPV Stop 100 GeV' , 'f' )
+		legend.AddEntry( histos[ 'Signal' ], 'RPV #tilde{t}#rightarrow '+jj+' 100 GeV' , 'f' )
 		legend.AddEntry( histos[ 'QCD' ], 'QCD + Signal' , 'f' )
 		stackHisto.SetMinimum(10)
 		stackHisto.Draw('hist')
 		histos['Signal'].Draw('hist same')
 		stackHisto.GetYaxis().SetTitle( 'Events / '+str(binWidth) )
 
-		if 'massAve' in name: stackHisto.GetXaxis().SetTitle( 'Average Mass [GeV]' )
+		if 'massAve' in name: 
+			if 'Trimmed' in Grom: stackHisto.GetXaxis().SetTitle( 'Average Trimmed Mass [GeV]' )
+			elif 'Pruned' in Grom: stackHisto.GetXaxis().SetTitle( 'Average Pruned Mass [GeV]' )
+			elif 'Filtered' in Grom: stackHisto.GetXaxis().SetTitle( 'Average Filtered Mass [GeV]' )
+			else: stackHisto.GetXaxis().SetTitle( 'Average Mass [GeV]' )
 		elif 'massAsymmetry' in name: stackHisto.GetXaxis().SetTitle( 'Mass Asymmetry (A)' )
 		elif 'cosThetaStar' in name: stackHisto.GetXaxis().SetTitle( 'cos(#theta *)' )
 		elif 'jetPt' in name: stackHisto.GetXaxis().SetTitle( 'Jet p_{T} [GeV]' )
 		elif 'jetEta' in name: stackHisto.GetXaxis().SetTitle( 'Jet #eta' )
 		elif 'HT' in name: stackHisto.GetXaxis().SetTitle( 'HT [GeV]' )
 	else:
-		legend.AddEntry( histos[ 'Signal' ], 'RPV Stop 100 GeV' , 'lp' )
+		legend.AddEntry( histos[ 'Signal' ], 'RPV #tilde{t}#rightarrow '+jj+' 100 GeV' , 'lp' )
 		legend.AddEntry( histos[ 'QCD' ], 'QCD' , 'lp' )
 		histos['Signal'].GetYaxis().SetTitle( 'Normalized / '+str(binWidth) )
 		if 'Tau1_' in name: histos['Signal'].GetXaxis().SetTitle( '#tau_{1}' )
@@ -96,10 +112,22 @@ def plot( inFileSignal, inFileQCD, Grom, name, xmax, log, PU, Norm=False ):
 
 	legend.Draw()
 
-	if 'cutHT' in name: setSelection( '13 TeV - PU40bx50', 'Scaled to 1 fb^{-1}', 'jet p_{T} > 150 GeV', 'jet |#eta| < 2.4', 'HT > 700 TeV')
-	elif 'cutAsym' in name: setSelection( '13 TeV - PU40bx50', 'Scaled to 1 fb^{-1}', 'HT > 700 TeV', 'A < 0.1', '' )
-	elif 'cutCosTheta' in name: setSelection( '13 TeV - PU40bx50', 'Scaled to 1 fb^{-1}', 'HT > 700 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3' )
-	elif 'cutSubjetPtRatio' in name: setSelection( '13 TeV - PU40bx50', 'Scaled to 1 fb^{-1}', 'HT > 700 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3' )
+	if 'cutHT' in name: setSelection( '13 TeV - '+PU, 'Scaled to '+lumi+' fb^{-1}', 'jet p_{T} > 150 GeV', 'jet |#eta| < 2.4', 'HT > 700 TeV')
+	elif 'cutAsym' in name: setSelection( '13 TeV - '+PU, 'Scaled to '+lumi+' fb^{-1}', 'HT > 700 TeV', 'A < 0.1', '' )
+	elif 'cutCosTheta' in name: setSelection( '13 TeV - '+PU, 'Scaled to '+lumi+' fb^{-1}', 'HT > 700 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3' )
+	elif 'cutSubjetPtRatio' in name: setSelection( '13 TeV - '+PU, 'Scaled to '+lumi+' fb^{-1}', 'HT > 700 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3' )
+	elif 'cutTau31' in name: setSelection( '13 TeV - '+PU, 'Scaled to '+lumi+' fb^{-1}', 'HT > 700 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3', '#tau_{31} > 0.6' )
+
+	pad2.cd()
+	hSignal.GetYaxis().SetTitle("S / S+B")
+	hSignal.GetYaxis().SetLabelSize(0.12)
+	hSignal.GetXaxis().SetLabelSize(0.12)
+	hSignal.GetYaxis().SetTitleSize(0.12)
+	hSignal.GetYaxis().SetTitleOffset(0.45)
+	hSignal.SetMaximum(0.7)
+	hSignal.Sumw2()
+	hSignal.Draw("hist")
+
 	can.SaveAs( 'Plots/'+outName )
 	del can
 
@@ -129,11 +157,20 @@ def plot2D( inFile, trigger, name, outName, plotName, inPlotName, inPlotName2, x
 
 if __name__ == '__main__':
 
-	PU = 'PU40bx50'  #sys.argv[0]
-	process = '1D' #sys.argv[1]
+	try:
+		process = sys.argv[1]
+		PU = sys.argv[2]
+		jj = sys.argv[3]
+	except IndexError:
+		process = '1D' 
+		jj = 'jj'
+		PU = 'PU40bx50' 
+		lumi = '1'
+		#PU = 'PU40bx50' 
+		#lumi = '1'
 	
 	#inputFileSignal = TFile.Open('Rootfiles/anaPlots_RPVSt100tojj_13TeV_pythia8_'+PU+'.root')
-	inputFileSignal = TFile.Open('Rootfiles/anaPlots_RPVSt100tojj_'+PU+'.root')
+	inputFileSignal = TFile.Open('Rootfiles/anaPlots_RPVSt100to'+jj+'_'+PU+'.root')
 	inputFileQCD = TFile.Open('Rootfiles/anaPlots_QCDALL_'+PU+'.root')
 
 	if process is '2D':
@@ -165,6 +202,8 @@ if __name__ == '__main__':
 			[ 'massAve_cutCosTheta', '', False],
 			[ 'massAve_cutSubjetPtRatio', '', True],
 			[ 'massAve_cutSubjetPtRatio', '', False],
+			[ 'massAve_cutTau31', '', True],
+			[ 'massAve_cutTau31', '', False],
 			[ 'jet1Subjet1Pt_cutHT', '', True],
 			[ 'jet1Subjet1Pt_cutHT', '', False],
 			[ 'jet1Subjet2Pt_cutHT', '', True],
