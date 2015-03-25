@@ -5,7 +5,7 @@ This part contains an example of how to use the Ntuples in an Analysis. The impo
 
 
 * plugins/RUNAna.cc: C++ code for your analysis.
-* test/RUNAPlots_cfi.py: python file to run your analysis.
+* test/RUNAna_cfi.py: python file to run your analysis.
 * test/***_RUNtuples_cfi.py: python input file for your analysis.
 * test/crab3.py: to send jobs for several datasets at ones.
 
