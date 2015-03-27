@@ -361,7 +361,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 	if ( HT > 0 ) histos1D_[ "HT" ]->Fill( HT, scale  );
 	if ( rawHT > 0 ) histos1D_[ "rawHT" ]->Fill( rawHT, scale  );
 	if ( HT > 700 ) cutHT = 1;
-	sort(jetTrimmedMass->begin(), jetTrimmedMass->end(), [](const float p1, const float p2) { return p1 > p2; }); 
+	//sort(jetTrimmedMass->begin(), jetTrimmedMass->end(), [](const float p1, const float p2) { return p1 > p2; }); 
 	if ( ( JETS.size()> 0 ) && ( JETS[0].mass > 50) ) cutMass = 1;
 
 	if( cutMass && cutHT ){

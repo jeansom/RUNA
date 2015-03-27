@@ -14,9 +14,8 @@ This package contains scripts:
 cmsrel CMSSW_7_3_1_patch2
 cd CMSSW_7_3_1_patch2/src/
 cmsenv
-git cms-addpkg RecoJets/JetProducers
-git cms-merge-topic alefisico:jetToolbox_73X
 git cms-merge-topic rappoccio:RecoJetsFromMiniAOD
+git clone https://github.com/cms-jet/JetToolbox JMEAnalysis/JetToolbox
 git clone https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW/
 git clone https://github.com/alefisico/RUNA.git -b v731patch2
 scram b -j 18
