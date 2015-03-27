@@ -264,11 +264,11 @@ jetVars = (
 ### B-TAGGING
     cms.PSet(
      tag = cms.untracked.string("CSV"),
-     quantity = cms.untracked.string("bDiscriminator('combinedInclusiveSecondaryVertexV2BJetTags')")
+     quantity = cms.untracked.string("bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')")
     ),
     cms.PSet(
      tag = cms.untracked.string("CSVV1"),
-     quantity = cms.untracked.string("bDiscriminator('combinedSecondaryVertexV1BJetTags')")
+     quantity = cms.untracked.string("bDiscriminator('pfCombinedSecondaryVertexBJetTags')")
     ),
 ### GEN PARTON
     cms.PSet(

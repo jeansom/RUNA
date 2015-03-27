@@ -48,7 +48,7 @@ else:
 	    )
 	)
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 if 'bj' in NAME: bjsample = True
 else: bjsample = False
@@ -83,51 +83,24 @@ elif 'PU20bx25' in NAME:
 
 else: SF = 1
 
-process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNAnalysis_'+NAME+'.root' ) )
+process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNMCAnalysis_'+NAME+'.root' ) )
 #process.TFileService=cms.Service("TFileService",fileName=cms.string( 'anaPlots.root' ) )
 
-print SF
-process.AnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
+process.AnalysisPlots = cms.EDAnalyzer('RUNMCAnalysis',
 		scale = cms.double(SF*Lumi),
 		bjSample = cms.bool( bjsample ),
-		jetPt = cms.InputTag('jetsAK8:jetAK8Pt'),
-		jetEta = cms.InputTag('jetsAK8:jetAK8Eta'),
-		jetPhi = cms.InputTag('jetsAK8:jetAK8Phi'),
-		jetE = cms.InputTag('jetsAK8:jetAK8E'),
-		jetMass = cms.InputTag('jetsAK8:jetAK8Mass'),
-		jetTau1 = cms.InputTag('jetsAK8:jetAK8tau1'),
-		jetTau2 = cms.InputTag('jetsAK8:jetAK8tau2'),
-		jetTau3 = cms.InputTag('jetsAK8:jetAK8tau3'),
-		jetNSubjets = cms.InputTag('jetsAK8:jetAK8nSubJets'),
-		jetSubjetIndex0 = cms.InputTag('jetsAK8:jetAK8vSubjetIndex0'),
-		jetSubjetIndex1 = cms.InputTag('jetsAK8:jetAK8vSubjetIndex1'),
-		jetSubjetIndex2 = cms.InputTag('jetsAK8:jetAK8vSubjetIndex0'),
-		jetSubjetIndex3 = cms.InputTag('jetsAK8:jetAK8vSubjetIndex1'),
-		jetKeys = cms.InputTag('jetKeysAK8'),
-		jetCSV = cms.InputTag('jetsAK8:jetAK8CSV'),
-		jetCSVV1 = cms.InputTag('jetsAK8:jetAK8CSVV1'),
-		#### JetID
-		jecFactor = cms.InputTag('jetsAK8:jetAK8jecFactor0'),
-		neutralHadronEnergy = cms.InputTag('jetsAK8:jetAK8neutralHadronEnergy'),
-		neutralEmEnergy = cms.InputTag('jetsAK8:jetAK8neutralEmEnergy'),
-		chargeEmEnergy = cms.InputTag('jetsAK8:jetAK8chargedEmEnergy'),
-		muonEnergy = cms.InputTag('jetsAK8:jetAK8MuonEnergy'),
-		#### Subjets
-		subjetPt = cms.InputTag('subjetsAK8:subjetAK8Pt'),
-		subjetEta = cms.InputTag('subjetsAK8:subjetAK8Eta'),
-		subjetPhi = cms.InputTag('subjetsAK8:subjetAK8Phi'),
-		subjetE = cms.InputTag('subjetsAK8:subjetAK8E'),
-		subjetMass = cms.InputTag('subjetsAK8:subjetAK8Mass'),
+		genPt = cms.InputTag('genPart:genPartPt'),
+		genEta = cms.InputTag('genPart:genPartEta'),
+		genPhi = cms.InputTag('genPart:genPartPhi'),
+		genE = cms.InputTag('genPart:genPartE'),
+		genMass = cms.InputTag('genPart:genPartMass'),
+		genID = cms.InputTag('genPart:genPartID'),
+		genMomID = cms.InputTag('genPart:genPartMomID'),
+		genStatus = cms.InputTag('genPart:genPartStatus'),
+		genCharge = cms.InputTag('genPart:genPartCharge'),
 
 )
 
-process.AnalysisPlotsTrimmed = process.AnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8trimmedMass') )
-process.AnalysisPlotsFiltered = process.AnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8filteredMass') )
-process.AnalysisPlotsPruned = process.AnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8prunedMass') )
 
-process.p = cms.Path(process.AnalysisPlots
-		* process.AnalysisPlotsTrimmed
-		* process.AnalysisPlotsPruned
-		* process.AnalysisPlotsFiltered
-		)
+process.p = cms.Path(process.AnalysisPlots )
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

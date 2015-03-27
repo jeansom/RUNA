@@ -388,8 +388,8 @@ if __name__ == '__main__':
 		option = ''
 		PU = 'PU40bx50'
 
-	inFileBkg = TFile('Rootfiles/RUNAPlots_QCDALL_'+PU+'.root')
-	inFileSignal = TFile('Rootfiles/RUNAPlots_RPVSt100tojj_'+PU+'.root')
+	inFileBkg = TFile('Rootfiles/RUNAPlots_QCDALL_'+PU+'_v01.root')
+	inFileSignal = TFile('Rootfiles/RUNAPlots_RPVSt100tojj_'+PU+'_v01.root')
 	inFileData = TFile('Rootfiles/RUNAPlots_QCDALL_RPVSt100tojj_'+PU+'.root')
 
 	###### Input parameters
