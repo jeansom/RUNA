@@ -254,6 +254,8 @@ void RUNMCAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 			double m34 = ( antiStopParticles[0] + antiStopParticles[1] ).M() ;
 			double m134 = ( stopParticles[0] + antiStopParticles[0] + antiStopParticles[1] ).M() ;
 			double m123 = ( stopParticles[0] + stopParticles[1] + antiStopParticles[0] ).M() ;
+			double m124 = ( stopParticles[0] + stopParticles[1] + antiStopParticles[1] ).M() ;
+			double m234 = ( stopParticles[1] + antiStopParticles[0] + antiStopParticles[1] ).M() ;
 			double m1234 = ( stopParticles[0] + stopParticles[1] + antiStopParticles[0] + antiStopParticles[1] ).M() ;
 			
 			double tmpX1 = pow(m1234,2) * ( ( 2 * ( pow(m12,2) + pow(m1,2) ) ) - pow(m2,2) ) ;
@@ -276,6 +278,68 @@ void RUNMCAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 			double cosPhi31234 = TMath::Abs( tmpy1 / sqrt( tmpy2 ) );
 			histos1D_[ "subjetPolAngle31234" ]->Fill( cosPhi31234 );
 			histos2D_[ "subjetPolAngle13412vs31234" ]->Fill( cosPhi13412, cosPhi31234 );
+
+			vector<double> dalitz1, Dalitz1, dalitz2, Dalitz2;
+			double tmptilde = pow( m1, 2 ) + pow( m2, 2) + pow( m34, 2 ) + pow( m1234, 2);
+			double mtilde12 = pow( m12, 2 ) / tmptilde;
+			double mtilde134 = pow( m134, 2 ) / tmptilde;
+			double mtilde234 = pow( m234, 2 ) / tmptilde;
+			//double tmpMtilde = pow( mtilde12, 2 ) + pow( mtilde134, 2 ) + pow( mtilde234, 2 );
+			//LogWarning("test") << tmpMtilde;
+			dalitz1.push_back( pow( mtilde12, 2 ) );
+			dalitz1.push_back( pow( mtilde134, 2 ) );
+			dalitz1.push_back( pow( mtilde234, 2 ) );
+			sort( dalitz1.begin(), dalitz1.end(), [](const double &p1, const double &p2) { return p1 > p2; }); 
+			histos1D_[ "mu1" ]->Fill( dalitz1[0] );
+			histos1D_[ "mu2" ]->Fill( dalitz1[1] );
+			histos1D_[ "mu3" ]->Fill( dalitz1[2] );
+			histos2D_[ "mu1234" ]->Fill( dalitz1[0], dalitz1[2] );
+			histos2D_[ "mu1234" ]->Fill( dalitz1[1], dalitz1[2] );
+			histos2D_[ "mu1234" ]->Fill( dalitz1[0], dalitz1[1] );
+
+			/// (a,b) = (mu1, mu2)
+			double dalitzY1 = dalitz1[0];
+			double dalitzX1 = ( dalitzY1 / sqrt(3) ) + ( ( 2 / sqrt(3) ) * dalitz1[1] );
+			histos2D_[ "dalitz1234" ]->Fill( dalitzY1, dalitzX1 );
+
+			/// (a,b) = (mu1, mu3)
+			double dalitzY2 = dalitz1[0];
+			double dalitzX2 = ( dalitzY2 / sqrt(3) ) + ( ( 2 / sqrt(3) ) * dalitz1[2] );
+			histos2D_[ "dalitz1234" ]->Fill( dalitzY2, dalitzX2 );
+
+			/// (a,b) = (mu2, mu3)
+			double dalitzY3 = dalitz1[1];
+			double dalitzX3 = ( dalitzY3 / sqrt(3) ) + ( ( 2 / sqrt(3) ) * dalitz1[2] );
+			histos2D_[ "dalitz1234" ]->Fill( dalitzY3, dalitzX3 );
+
+			double mtilde34 = pow( m34, 2 ) / tmptilde;
+			double mtilde123 = pow( m123, 2 ) / tmptilde;
+			double mtilde124 = pow( m124, 2 ) / tmptilde;
+			dalitz2.push_back( pow( mtilde34, 2 ) );
+			dalitz2.push_back( pow( mtilde123, 2 ) );
+			dalitz2.push_back( pow( mtilde124, 2 ) );
+			sort( dalitz2.begin(), dalitz2.end(), [](const double &p1, const double &p2) { return p1 > p2; }); 
+			histos1D_[ "mu4" ]->Fill( dalitz2[0] );
+			histos1D_[ "mu5" ]->Fill( dalitz2[1] );
+			histos1D_[ "mu6" ]->Fill( dalitz2[2] );
+			histos2D_[ "mu3412" ]->Fill( dalitz2[0], dalitz2[2] );
+			histos2D_[ "mu3412" ]->Fill( dalitz2[1], dalitz2[2] );
+			histos2D_[ "mu3412" ]->Fill( dalitz2[0], dalitz2[1] );
+
+			/// (a,b) = (mu1, mu2)
+			double dalitzY4 = dalitz2[0];
+			double dalitzX4 = ( dalitzY4 / sqrt(3) ) + ( ( 2 / sqrt(3) ) * dalitz2[1] );
+			histos2D_[ "dalitz3412" ]->Fill( dalitzY4, dalitzX4 );
+
+			/// (a,b) = (mu1, mu3)
+			double dalitzY5 = dalitz2[0];
+			double dalitzX5 = ( dalitzY5 / sqrt(3) ) + ( ( 2 / sqrt(3) ) * dalitz2[2] );
+			histos2D_[ "dalitz3412" ]->Fill( dalitzY5, dalitzX5 );
+
+			/// (a,b) = (mu2, mu3)
+			double dalitzY6 = dalitz2[1];
+			double dalitzX6 = ( dalitzY6 / sqrt(3) ) + ( ( 2 / sqrt(3) ) * dalitz2[2] );
+			histos2D_[ "dalitz3412" ]->Fill( dalitzY6, dalitzX6 );
 		}
 	}
 }
@@ -325,6 +389,27 @@ void RUNMCAnalysis::beginJob() {
 	histos1D_[ "subjetPolAngle31234" ]->Sumw2();
 	histos2D_[ "subjetPolAngle13412vs31234" ] = fs_->make< TH2D >( "subjetPolAngle13412vs31234", "subjetPolAngle13412vs31234", 20, 0., 1., 20, 0., 1. );
 	histos2D_[ "subjetPolAngle13412vs31234" ]->Sumw2();
+
+	histos1D_[ "mu1" ] = fs_->make< TH1D >( "mu1", "mu1", 40, 0., 1 );
+	histos1D_[ "mu1" ]->Sumw2();
+	histos1D_[ "mu2" ] = fs_->make< TH1D >( "mu2", "mu2", 40, 0., 1 );
+	histos1D_[ "mu2" ]->Sumw2();
+	histos1D_[ "mu3" ] = fs_->make< TH1D >( "mu3", "mu3", 40, 0., 1 );
+	histos1D_[ "mu3" ]->Sumw2();
+	histos2D_[ "mu1234" ] = fs_->make< TH2D >( "mu1234", "mu1234", 40, 0., 1, 40, 0., 1 );
+	histos2D_[ "mu1234" ]->Sumw2();
+	histos2D_[ "dalitz1234" ] = fs_->make< TH2D >( "dalitz1234", "dalitz1234", 40, 0., 1, 40, 0., 1 );
+	histos2D_[ "dalitz1234" ]->Sumw2();
+	histos1D_[ "mu4" ] = fs_->make< TH1D >( "mu4", "mu4", 40, 0., 1 );
+	histos1D_[ "mu4" ]->Sumw2();
+	histos1D_[ "mu5" ] = fs_->make< TH1D >( "mu5", "mu5", 40, 0., 1 );
+	histos1D_[ "mu5" ]->Sumw2();
+	histos1D_[ "mu6" ] = fs_->make< TH1D >( "mu6", "mu6", 40, 0., 1 );
+	histos1D_[ "mu6" ]->Sumw2();
+	histos2D_[ "mu3412" ] = fs_->make< TH2D >( "mu3412", "mu3412", 40, 0., 1, 40, 0., 1 );
+	histos2D_[ "mu3412" ]->Sumw2();
+	histos2D_[ "dalitz3412" ] = fs_->make< TH2D >( "dalitz3412", "dalitz3412", 40, 0., 1, 40, 0., 1 );
+	histos2D_[ "dalitz3412" ]->Sumw2();
 
 	cutLabels.push_back("Processed");
 	histos1D_[ "hcutflow" ] = fs_->make< TH1D >("cutflow","cut flow", cutLabels.size(), 0.5, cutLabels.size() +0.5 );

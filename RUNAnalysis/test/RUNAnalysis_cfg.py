@@ -72,13 +72,13 @@ if 'PU40bx50' in NAME:
 
 elif 'PU20bx25' in NAME: 
 	PU = 'PU20bx25'
-	Lumi = 4000
+	Lumi = 1000
 
 	if 'QCD' in NAME:
 		if '500To1000' in NAME: SF = 26740. / 4063345.
 		elif '1000ToInf' in NAME: SF =  769.7 / 1130720.
 	else: 
-		if bjsample: SF = 1521.11/ 49500. 
+		if bjsample: SF = 1521.11/ 91100. 
 		else: SF = 1521.11/ 98300.    
 
 else: SF = 1
@@ -86,38 +86,45 @@ else: SF = 1
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNAnalysis_'+NAME+'.root' ) )
 #process.TFileService=cms.Service("TFileService",fileName=cms.string( 'anaPlots.root' ) )
 
-print SF
 process.AnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
-		scale = cms.double(SF*Lumi),
-		bjSample = cms.bool( bjsample ),
-		jetPt = cms.InputTag('jetsAK8:jetAK8Pt'),
-		jetEta = cms.InputTag('jetsAK8:jetAK8Eta'),
-		jetPhi = cms.InputTag('jetsAK8:jetAK8Phi'),
-		jetE = cms.InputTag('jetsAK8:jetAK8E'),
-		jetMass = cms.InputTag('jetsAK8:jetAK8Mass'),
-		jetTau1 = cms.InputTag('jetsAK8:jetAK8tau1'),
-		jetTau2 = cms.InputTag('jetsAK8:jetAK8tau2'),
-		jetTau3 = cms.InputTag('jetsAK8:jetAK8tau3'),
-		jetNSubjets = cms.InputTag('jetsAK8:jetAK8nSubJets'),
-		jetSubjetIndex0 = cms.InputTag('jetsAK8:jetAK8vSubjetIndex0'),
-		jetSubjetIndex1 = cms.InputTag('jetsAK8:jetAK8vSubjetIndex1'),
-		jetSubjetIndex2 = cms.InputTag('jetsAK8:jetAK8vSubjetIndex0'),
-		jetSubjetIndex3 = cms.InputTag('jetsAK8:jetAK8vSubjetIndex1'),
-		jetKeys = cms.InputTag('jetKeysAK8'),
-		jetCSV = cms.InputTag('jetsAK8:jetAK8CSV'),
-		jetCSVV1 = cms.InputTag('jetsAK8:jetAK8CSVV1'),
+		scale 			= cms.double(SF*Lumi),
+		cutHTvalue 		= cms.double( 700. ),
+		cutAsymvalue 		= cms.double( 0.1 ),
+		cutCosThetavalue 	= cms.double( 0.3 ),
+		cutSubjetPtRatiovalue 	= cms.double( 0.3 ),
+		cutTau31value 		= cms.double( 0.5 ),
+		cutTau21value 		= cms.double( 0.6 ),
+		bjSample		= cms.bool( bjsample ),
+		jetPt 			= cms.InputTag('jetsAK8:jetAK8Pt'),
+		jetEta			= cms.InputTag('jetsAK8:jetAK8Eta'),
+		jetPhi 			= cms.InputTag('jetsAK8:jetAK8Phi'),
+		jetE 			= cms.InputTag('jetsAK8:jetAK8E'),
+		jetMass 		= cms.InputTag('jetsAK8:jetAK8Mass'),
+		jetTau1 		= cms.InputTag('jetsAK8:jetAK8tau1'),
+		jetTau2 		= cms.InputTag('jetsAK8:jetAK8tau2'),
+		jetTau3 		= cms.InputTag('jetsAK8:jetAK8tau3'),
+		jetNSubjets 		= cms.InputTag('jetsAK8:jetAK8nSubJets'),
+		jetSubjetIndex0 	= cms.InputTag('jetsAK8:jetAK8vSubjetIndex0'),
+		jetSubjetIndex1 	= cms.InputTag('jetsAK8:jetAK8vSubjetIndex1'),
+		jetSubjetIndex2 	= cms.InputTag('jetsAK8:jetAK8vSubjetIndex0'),
+		jetSubjetIndex3 	= cms.InputTag('jetsAK8:jetAK8vSubjetIndex1'),
+		jetKeys 		= cms.InputTag('jetKeysAK8'),
+		jetCSV 			= cms.InputTag('jetsAK8:jetAK8CSV'),
+		jetCSVV1 		= cms.InputTag('jetsAK8:jetAK8CSVV1'),
 		#### JetID
-		jecFactor = cms.InputTag('jetsAK8:jetAK8jecFactor0'),
-		neutralHadronEnergy = cms.InputTag('jetsAK8:jetAK8neutralHadronEnergy'),
-		neutralEmEnergy = cms.InputTag('jetsAK8:jetAK8neutralEmEnergy'),
-		chargeEmEnergy = cms.InputTag('jetsAK8:jetAK8chargedEmEnergy'),
-		muonEnergy = cms.InputTag('jetsAK8:jetAK8MuonEnergy'),
+		jecFactor 		= cms.InputTag('jetsAK8:jetAK8jecFactor0'),
+		neutralHadronEnergy 	= cms.InputTag('jetsAK8:jetAK8neutralHadronEnergy'),
+		neutralEmEnergy 	= cms.InputTag('jetsAK8:jetAK8neutralEmEnergy'),
+		chargeEmEnergy 		= cms.InputTag('jetsAK8:jetAK8chargedEmEnergy'),
+		muonEnergy 		= cms.InputTag('jetsAK8:jetAK8MuonEnergy'),
 		#### Subjets
-		subjetPt = cms.InputTag('subjetsAK8:subjetAK8Pt'),
-		subjetEta = cms.InputTag('subjetsAK8:subjetAK8Eta'),
-		subjetPhi = cms.InputTag('subjetsAK8:subjetAK8Phi'),
-		subjetE = cms.InputTag('subjetsAK8:subjetAK8E'),
-		subjetMass = cms.InputTag('subjetsAK8:subjetAK8Mass'),
+		subjetPt 		= cms.InputTag('subjetsAK8:subjetAK8Pt'),
+		subjetEta 		= cms.InputTag('subjetsAK8:subjetAK8Eta'),
+		subjetPhi 		= cms.InputTag('subjetsAK8:subjetAK8Phi'),
+		subjetE 		= cms.InputTag('subjetsAK8:subjetAK8E'),
+		subjetMass 		= cms.InputTag('subjetsAK8:subjetAK8Mass'),
+		##### Trigger
+		jetTrimmedMass 		= cms.InputTag('jetsAK8:jetAK8trimmedMass'),
 
 )
 
