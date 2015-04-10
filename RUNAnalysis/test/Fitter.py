@@ -8,6 +8,7 @@ from ROOT import RooFit, RooStats
 from ROOT import *
 from setTDRStyle import *
 from array import array
+import argparse
 import glob,sys, os
 import warnings
 
@@ -381,28 +382,33 @@ def rooFitterTree( inFileBkg, inFileSignal, inFileData, hist, folder ):
 
 if __name__ == '__main__':
 
-	try: 
-		option = sys.argv[1]
-		PU = sys.argv[2]
-	except IndexError: 
-		option = ''
-		PU = 'PU40bx50'
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-p', '--process', action='store', default='Full', help='Type of fit to use.' )
+	parser.add_argument('-d', '--decay', action='store', default='jj', help='Decay, example: jj, bj.' )
+	parser.add_argument('-pu', '--PU', action='store', default='PU20bx25', help='PU, example: PU40bx25.' )
+	parser.add_argument('-l', '--lumi', action='store', default='1', help='Luminosity, example: 1.' )
+	args = parser.parse_args()
+
+	process = args.proc
+	jj = args.decay
+	PU = args.PU
+	lumi = args.lumi
 
 	inFileBkg = TFile('Rootfiles/RUNAPlots_QCDALL_'+PU+'_v01.root')
-	inFileSignal = TFile('Rootfiles/RUNAPlots_RPVSt100tojj_'+PU+'_v01.root')
+	inFileSignal = TFile('Rootfiles/RUNAPlots_RPVSt100tojj_'+PU+'.root')
 	inFileData = TFile('Rootfiles/RUNAPlots_QCDALL_RPVSt100tojj_'+PU+'.root')
 
 	###### Input parameters
 	hist = 'massAve_cutSubjetPtRatio'  # str ( sys.argv[1] )
 	folder = "AnalysisPlotsPruned"      # str ( sys.argv[2] )
 
-	if 'simple' in option:
+	if 'simple' in process:
 		Fitter( 'QCDALL', "Plots/", hist, folder, P4, 30.0, 200.0 )
 		Fitter( 'RPVSt100tojj', "Plots/", hist, folder, 'gaus', 50.0, 50.0 )
 
-	elif 'full' in option:
+	elif 'full' in process:
 		FitterCombination( inFileBkg, inFileSignal, hist, folder, P4 )
-	elif 'rooFit' in option:
+	elif 'rooFit' in process:
 		rooFitter( inFileBkg, inFileSignal, hist, folder )
 	else:
 		rooFitterTree( inFileBkg, inFileSignal, inFileData, hist, folder )

@@ -48,7 +48,7 @@ else:
 	    )
 	)
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 if 'bj' in NAME: bjsample = True
 else: bjsample = False
@@ -75,8 +75,17 @@ elif 'PU20bx25' in NAME:
 	Lumi = 1000
 
 	if 'QCD' in NAME:
-		if '500To1000' in NAME: SF = 26740. / 4063345.
-		elif '1000ToInf' in NAME: SF =  769.7 / 1130720.
+		if 'QCD_HT' in NAME:
+			if '500To1000' in NAME: SF = 26740. / 4063345.
+			elif '1000ToInf' in NAME: SF =  769.7 / 1130720.
+		else:
+			if '170to300'in NAME: SF = 120300 / 2794554.
+			elif '300to470'in NAME: SF = 7475 / 2705941.
+			elif '470to600'in NAME: SF = 587.1 /  2926313.
+			elif '600to800'in NAME: SF = 167 / 2857014.
+			elif '800to1000'in NAME: SF = 28.25 / 2916394.
+			elif '1000to1400'in NAME: SF = 8.195 / 2884228.
+			elif '1400to1800'in NAME: SF = 0.7346 / 2931706.
 	else: 
 		if bjsample: SF = 1521.11/ 91100. 
 		else: SF = 1521.11/ 98300.    
@@ -111,6 +120,7 @@ process.AnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 		jetKeys 		= cms.InputTag('jetKeysAK8'),
 		jetCSV 			= cms.InputTag('jetsAK8:jetAK8CSV'),
 		jetCSVV1 		= cms.InputTag('jetsAK8:jetAK8CSVV1'),
+		NPV	 		= cms.InputTag('eventUserData:npv'),
 		#### JetID
 		jecFactor 		= cms.InputTag('jetsAK8:jetAK8jecFactor0'),
 		neutralHadronEnergy 	= cms.InputTag('jetsAK8:jetAK8neutralHadronEnergy'),
@@ -132,9 +142,18 @@ process.AnalysisPlotsTrimmed = process.AnalysisPlots.clone( jetMass = cms.InputT
 process.AnalysisPlotsFiltered = process.AnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8filteredMass') )
 process.AnalysisPlotsPruned = process.AnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8prunedMass') )
 
+process.AnalysisPlotsNOSCALE = process.AnalysisPlots.clone( scale = cms.double(1) )
+process.AnalysisPlotsTrimmedNOSCALE = process.AnalysisPlotsTrimmed.clone( scale = cms.double(1) )
+process.AnalysisPlotsPrunedNOSCALE = process.AnalysisPlotsPruned.clone( scale = cms.double(1) )
+process.AnalysisPlotsFilteredNOSCALE = process.AnalysisPlotsFiltered.clone( scale = cms.double(1) )
+
 process.p = cms.Path(process.AnalysisPlots
 		* process.AnalysisPlotsTrimmed
 		* process.AnalysisPlotsPruned
 		* process.AnalysisPlotsFiltered
+		* process.AnalysisPlotsNOSCALE
+		* process.AnalysisPlotsTrimmedNOSCALE
+		* process.AnalysisPlotsPrunedNOSCALE
+		* process.AnalysisPlotsFilteredNOSCALE
 		)
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

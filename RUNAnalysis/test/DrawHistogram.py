@@ -41,7 +41,6 @@ def labelAxis(name, histo, Grom ):
 		else: histo.GetXaxis().SetTitle( 'Average Mass [GeV]' )
 	elif 'massAsymmetry' in name: histo.GetXaxis().SetTitle( 'Mass Asymmetry (A)' )
 	elif 'cosThetaStar' in name: histo.GetXaxis().SetTitle( 'cos(#theta *)' )
-	elif 'jetPt' in name: histo.GetXaxis().SetTitle( 'Jet p_{T} [GeV]' )
 	elif 'jetEta' in name: histo.GetXaxis().SetTitle( 'Jet #eta' )
 	elif 'Tau1_' in name: histo.GetXaxis().SetTitle( '#tau_{1}' )
 	elif 'Tau2_' in name: histo.GetXaxis().SetTitle( '#tau_{2}' )
@@ -56,6 +55,8 @@ def labelAxis(name, histo, Grom ):
 	elif 'PolAngle13412_' in name: histo.GetXaxis().SetTitle( 'cos \psi_{1(34)}^{[12]}' )
 	elif 'PolAngle31234_' in name: histo.GetXaxis().SetTitle( 'cos \psi_{3(12)}^{[34]}' )
 	elif 'HT' in name: histo.GetXaxis().SetTitle( 'HT [GeV]' )
+	elif 'jetPt' in name: histo.GetXaxis().SetTitle( 'Jet p_{T} [GeV]' )
+	elif 'NPV' in name: histo.GetXaxis().SetTitle( 'Number of Primary Vertex' )
 
 
 def plot( inFileSignal, inFileQCD, Grom, name, xmax, labX, labY, log, PU, Norm=False ):
@@ -90,9 +91,11 @@ def plot( inFileSignal, inFileQCD, Grom, name, xmax, labX, labY, log, PU, Norm=F
 		histos[ 'Signal' ].SetFillColor(48)
 		histos[ 'Signal' ].SetFillStyle(1001)
 		histos[ 'Signal' ].SetFillColor(48)
-		#histos[ 'QCD' ].Scale(1)
 		histos[ 'QCD' ].SetFillColor(38)
 		histos[ 'QCD' ].SetFillStyle(1001)
+		histos[ 'Signal' ].Scale(0.25)
+		histos[ 'QCD' ].Scale(0.25)
+		tmpHisto.Scale(0.25)
 
 		stackHisto = THStack('stackHisto', 'stack')
 		stackHisto.Add( histos['QCD'] )
@@ -219,13 +222,21 @@ def plotCutFlow( inFileSignal, inFileQCD, Grom, name, xmax, log, PU, Norm=False 
 	totalEventsQCD = histos[ 'QCD' ].GetBinContent(1)
 	#print totalEventsSignal, totalEventsQCD
 
+	cutFlowSignalList = []
+	cutFlowQCDList = []
+
 	for ibin in range(0, hQCD.GetNbinsX()+1):
 	
-		#print  histos[ 'Signal' ].GetBinContent(ibin) / totalEventsSignal
+		cutFlowSignalList.append( histos[ 'Signal' ].GetBinContent(ibin) )
+		cutFlowQCDList.append( histos[ 'QCD' ].GetBinContent(ibin) )
+
 		hSignal.SetBinContent( ibin , histos[ 'Signal' ].GetBinContent(ibin) / totalEventsSignal )
 		hQCD.SetBinContent( ibin , histos[ 'QCD' ].GetBinContent(ibin) / totalEventsQCD )
 		hSB.GetXaxis().SetBinLabel( ibin, '')
 		
+	print "Signal", cutFlowSignalList
+	print "QCD", cutFlowQCDList
+
 	#hSB = hSignal.Clone()
 	#hSB.Divide( hQCD )
 
@@ -320,7 +331,7 @@ def plotSimple( inFile, sample, name, xmax, labX, labY, log, PU, Norm=False ):
 	can.SaveAs( 'Plots/'+outName )
 	del can
 
-def plotDiff( inFileSample1, inFileSample2, sample1, sample2, Grom, name, xmax, labX, labY, log, Diff , Norm=False):
+def plotDiffSample( inFileSample1, inFileSample2, sample1, sample2, Grom, name, xmax, labX, labY, log, Diff , Norm=False):
 	"""docstring for plot"""
 
 	outputFileName = name+'_'+Grom+'_RPVSt100to'+jj+'_Diff'+Diff+'.pdf' 
@@ -345,7 +356,7 @@ def plotDiff( inFileSample1, inFileSample2, sample1, sample2, Grom, name, xmax, 
 		histos[ 'Sample1' ].SetLineColor(48)
 		histos[ 'Sample2' ].SetLineColor(38)
 		histos[ 'Sample2' ].SetLineWidth(2)
-		histos[ 'Sample1' ].Scale(0.25)
+		#histos[ 'Sample1' ].Scale(0.25)
 		#histos[ 'Sample1' ].SetMaximum( 1.2* max( histos[ 'Sample1' ].GetMaximum(), histos[ 'Sample2' ].GetMaximum() ) ) 
 		#histos.values()[0].GetXaxis().SetRange( 0, xmax )
 
@@ -418,6 +429,101 @@ def plotDiff( inFileSample1, inFileSample2, sample1, sample2, Grom, name, xmax, 
 		can.SaveAs( 'Plots/'+outName )
 		del can
 
+def plotDiffPU( inFileSample, Grom, name, xmax, labX, labY, log, Diff , Norm=False):
+	"""docstring for plot"""
+
+	outputFileName = name+'_'+Grom+'_RPVSt100to'+jj+'_Diff'+Diff+'s.pdf' 
+	print 'Processing.......', outputFileName
+
+	histos = {}
+	histos[ 'Sample1' ] = inFileSample.Get( 'AnalysisPlots'+Grom+'/'+name.replace('_','LowPU_' ) )
+	histos[ 'Sample2' ] = inFileSample.Get( 'AnalysisPlots'+Grom+'/'+name.replace('_','MedPU_' ) )
+	histos[ 'Sample3' ] = inFileSample.Get( 'AnalysisPlots'+Grom+'/'+name.replace('_','HighPU_' ) )
+
+	binWidth = histos['Sample1'].GetBinWidth(1)
+
+	legend=TLegend(0.60,0.75,0.90,0.90)
+	legend.SetFillStyle(0)
+	legend.SetTextSize(0.03)
+
+	histos[ 'Sample1' ].SetLineWidth(2)
+	histos[ 'Sample1' ].SetLineColor(48)
+	histos[ 'Sample2' ].SetLineColor(38)
+	histos[ 'Sample2' ].SetLineWidth(2)
+	histos[ 'Sample3' ].SetLineColor(30)
+	histos[ 'Sample3' ].SetLineWidth(2)
+	histos[ 'Sample1' ].SetMaximum( 1.2* max( histos[ 'Sample1' ].GetMaximum(), histos[ 'Sample2' ].GetMaximum() ) ) 
+	#histos.values()[0].GetXaxis().SetRange( 0, xmax )
+
+	can = TCanvas('c1', 'c1',  10, 10, 750, 500 )
+	if log: 
+		outName = outputFileName.replace('_Diff','_Log_Diff')
+	else:
+		outName = outputFileName 
+
+	legend.AddEntry( histos[ 'Sample1' ], 'Low PU', 'l' )
+	legend.AddEntry( histos[ 'Sample2' ], 'Med PU', 'l' )
+	legend.AddEntry( histos[ 'Sample3' ], 'High PU', 'l' )
+	#histos['Sample1'].SetMinimum(10)
+	histos['Sample1'].Draw('hist')
+	histos['Sample1'].GetYaxis().SetTitleOffset(1.2)
+	histos['Sample2'].Draw('hist same')
+	histos['Sample3'].Draw('hist same')
+	histos['Sample1'].GetYaxis().SetTitle( 'Events / '+str(binWidth) )
+
+	labelAxis( name, histos['Sample1'], Grom )
+	legend.Draw()
+	if not (labX and labY): labels( name, 'Scaled to '+lumi+' fb^{-1}', '' )
+	else: labels( name, 'Scaled to '+lumi+' fb^{-1}', '', labX, labY )
+
+	can.SaveAs( 'Plots/'+outName )
+	del can
+
+	'''
+		pad2.cd()
+		hSample1.SetLineColor(48)
+		#hSample1.SetFillStyle(1001)
+		hSample1.GetYaxis().SetTitle("Ratio")
+		hSample1.GetYaxis().SetLabelSize(0.12)
+		hSample1.GetXaxis().SetLabelSize(0.12)
+		hSample1.GetYaxis().SetTitleSize(0.12)
+		hSample1.GetYaxis().SetTitleOffset(0.45)
+		#hSample1.SetMaximum(1.0)
+		hSample1.Sumw2()
+		hSample1.Draw("histe")
+
+		can.SaveAs( 'Plots/'+outName )
+		del can
+	else:
+		histos[ 'Sample1' ].SetLineWidth(2)
+		histos[ 'Sample1' ].SetLineColor(48)
+		histos[ 'Sample2' ].SetLineColor(38)
+		histos[ 'Sample2' ].SetLineWidth(2)
+
+		can = TCanvas('c1', 'c1',  10, 10, 750, 500 )
+		if log: 
+			can.SetLogy()
+			outName = outputFileName.replace('_Diff','_Log_Norm_Diff')
+			histos[ 'Sample1' ].GetYaxis().SetTitleOffset(1.2)
+		else:
+			outName = outputFileName.replace('_Diff','_Norm_Diff')
+
+		legend.AddEntry( histos[ 'Sample1' ], sample1 , 'l' )
+		legend.AddEntry( histos[ 'Sample2' ], sample2 , 'l' )
+		histos['Sample1'].GetYaxis().SetTitle( 'Normalized / '+str(binWidth) )
+
+		histos['Sample1'].DrawNormalized()
+		histos['Sample2'].DrawNormalized('same')
+
+		legend.Draw()
+		labelAxis( name, histos['Sample1'], Grom )
+		if not (labX and labY): labels( name, 'Scaled to '+lumi+' fb^{-1}', '' )
+		else: labels( name, 'Scaled to '+lumi+' fb^{-1}', '', labX, labY )
+
+		can.SaveAs( 'Plots/'+outName )
+		del can
+	'''
+
 if __name__ == '__main__':
 
 	parser = argparse.ArgumentParser()
@@ -432,6 +538,7 @@ if __name__ == '__main__':
 	PU = args.PU
 	lumi = args.lumi
 	
+	inputFileSample = TFile.Open('RUNAnalysis_RPVSt100tojj_pythia8_13TeV_PU40bx50_PHYS14.root')
 	inputFileSignal = TFile.Open('Rootfiles/RUNAnalysis_RPVSt100to'+jj+'_'+PU+'.root')
 	inputFileMCSignal = TFile.Open('RUNMCAnalysis_RPVSt100tojj_pythia8_13TeV_PU20bx25.root')
 	inputFileQCD = TFile.Open('Rootfiles/RUNAnalysis_QCDALL_'+PU+'.root')
@@ -772,7 +879,7 @@ if __name__ == '__main__':
 		for i in MCPlots_2D: 
 			plot2D( inputFileMCSignal, 'RPVSt100to'+jj, '', i[0], i[1], i[2], i[3], i[4], i[5], i[6], PU )
 
-	elif 'diffPU' in process:
+	elif 'diffSample' in process:
 
 		diffPlots = [
 			[ 'jetPt', '', '', '', True],
@@ -801,15 +908,56 @@ if __name__ == '__main__':
 			[ 'cosThetaStar_cutHT', '', '', '', False],
 			]
 
-		inputFileSample1 = TFile.Open('Rootfiles/RUNAnalysis_RPVSt100to'+jj+'_PU40bx50.root')
+		inputFileSample1 = TFile.Open('Rootfiles/RUNAnalysis_RPVSt100to'+jj+'_PU40bx50_CSA14.root')
 		inputFileSample2 = TFile.Open('Rootfiles/RUNAnalysis_RPVSt100to'+jj+'_PU20bx25.root')
+		inputFileSample3 = TFile.Open('Rootfiles/RUNAnalysis_RPVSt100to'+jj+'_PU40bx50.root')
 
 		for i in diffPlots: 
-			plotDiff( inputFileSample2, inputFileSample1, 'PU20bx25', 'PU40bx50', '', i[0], i[1], i[2], i[3], i[4], 'PU'  )
-			plotDiff( inputFileSample2, inputFileSample1, 'PU20bx25', 'PU40bx50', 'Trimmed', i[0], i[1], i[2], i[3], i[4], 'PU' )
-			plotDiff( inputFileSample2, inputFileSample1, 'PU20bx25', 'PU40bx50', 'Pruned', i[0], i[1], i[2], i[3], i[4], 'PU' )
-			plotDiff( inputFileSample2, inputFileSample1, 'PU20bx25', 'PU40bx50', 'Filtered', i[0], i[1], i[2], i[3], i[4], 'PU' )
-			plotDiff( inputFileSample2, inputFileSample1, 'PU20bx25', 'PU40bx50', '', i[0], i[1], i[2], i[3], i[4], 'PU', True  )
-			plotDiff( inputFileSample2, inputFileSample1, 'PU20bx25', 'PU40bx50', 'Trimmed', i[0], i[1], i[2], i[3], i[4], 'PU', True )
-			plotDiff( inputFileSample2, inputFileSample1, 'PU20bx25', 'PU40bx50', 'Pruned', i[0], i[1], i[2], i[3], i[4], 'PU', True )
-			plotDiff( inputFileSample2, inputFileSample1, 'PU20bx25', 'PU40bx50', 'Filtered', i[0], i[1], i[2], i[3], i[4], 'PU', True )
+			'''
+			plotDiffSample( inputFileSample2, inputFileSample1, 'PU20bx25', 'PU40bx50', '', i[0], i[1], i[2], i[3], i[4], 'PU'  )
+			plotDiffSample( inputFileSample2, inputFileSample1, 'PU20bx25', 'PU40bx50', 'Trimmed', i[0], i[1], i[2], i[3], i[4], 'PU' )
+			plotDiffSample( inputFileSample2, inputFileSample1, 'PU20bx25', 'PU40bx50', 'Pruned', i[0], i[1], i[2], i[3], i[4], 'PU' )
+			plotDiffSample( inputFileSample2, inputFileSample1, 'PU20bx25', 'PU40bx50', 'Filtered', i[0], i[1], i[2], i[3], i[4], 'PU' )
+			plotDiffSample( inputFileSample2, inputFileSample1, 'PU20bx25', 'PU40bx50', '', i[0], i[1], i[2], i[3], i[4], 'PU', True  )
+			plotDiffSample( inputFileSample2, inputFileSample1, 'PU20bx25', 'PU40bx50', 'Trimmed', i[0], i[1], i[2], i[3], i[4], 'PU', True )
+			plotDiffSample( inputFileSample2, inputFileSample1, 'PU20bx25', 'PU40bx50', 'Pruned', i[0], i[1], i[2], i[3], i[4], 'PU', True )
+			plotDiffSample( inputFileSample2, inputFileSample1, 'PU20bx25', 'PU40bx50', 'Filtered', i[0], i[1], i[2], i[3], i[4], 'PU', True )
+			'''
+
+			plotDiffSample( inputFileSample3, inputFileSample1, 'PHYS14', 'CSA14', '', i[0], i[1], i[2], i[3], i[4], 'SIM'  )
+			plotDiffSample( inputFileSample3, inputFileSample1, 'PHYS14', 'CSA14', 'Trimmed', i[0], i[1], i[2], i[3], i[4], 'SIM' )
+			plotDiffSample( inputFileSample3, inputFileSample1, 'PHYS14', 'CSA14', 'Pruned', i[0], i[1], i[2], i[3], i[4], 'SIM' )
+			plotDiffSample( inputFileSample3, inputFileSample1, 'PHYS14', 'CSA14', 'Filtered', i[0], i[1], i[2], i[3], i[4], 'SIM' )
+			plotDiffSample( inputFileSample3, inputFileSample1, 'PHYS14', 'CSA14', '', i[0], i[1], i[2], i[3], i[4], 'SIM', True  )
+			plotDiffSample( inputFileSample3, inputFileSample1, 'PHYS14', 'CSA14', 'Trimmed', i[0], i[1], i[2], i[3], i[4], 'SIM', True )
+			plotDiffSample( inputFileSample3, inputFileSample1, 'PHYS14', 'CSA14', 'Pruned', i[0], i[1], i[2], i[3], i[4], 'SIM', True )
+			plotDiffSample( inputFileSample3, inputFileSample1, 'PHYS14', 'CSA14', 'Filtered', i[0], i[1], i[2], i[3], i[4], 'SIM', True )
+
+	elif 'diffPU' in process:
+
+		diffPUPlots = [
+			[ 'massAve_cutHT', '', '', '', True],
+			[ 'massAve_cutHT', '', '', '', False],
+			[ 'massAve_cutAsym', '', '', '', True],
+			[ 'massAve_cutAsym', '', '', '', False],
+			[ 'massAve_cutCosTheta', '', '', '', True],
+			[ 'massAve_cutCosTheta', '', '', '', False],
+			[ 'massAve_cutSubjetPtRatio', '', '', '', True],
+			[ 'massAve_cutSubjetPtRatio', '', '', '', False],
+			]
+
+		for i in diffPUPlots: 
+
+			plotDiffPU( inputFileSample, '', i[0], i[1], i[2], i[3], i[4], 'PU'  )
+			plotDiffPU( inputFileSample, 'Trimmed', i[0], i[1], i[2], i[3], i[4], 'PU' )
+			plotDiffPU( inputFileSample, 'Pruned', i[0], i[1], i[2], i[3], i[4], 'PU' )
+			plotDiffPU( inputFileSample, 'Filtered', i[0], i[1], i[2], i[3], i[4], 'PU' )
+
+	elif 'NPV' in process:
+		Plots = [
+			[ 'NPV', '', '', '', False],
+			#[ '', '', '', '', True],
+			#[ '', '', '', '', False],
+			]
+		for i in Plots: 
+			plotSimple( inputFileSample, 'RPVSt100tojj', i[0], i[1], i[2], i[3], i[4], PU, True )

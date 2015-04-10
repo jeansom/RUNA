@@ -18,6 +18,7 @@ options.register('maxEvts',
                  'Number of events to process')
 
 options.register('sample',
+		 #'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/MiniAOD_PHYS14_v720/150315_015619/0000/RPVSt200tojj_13TeV_PU20bx25_MiniAOD_1.root',
 		 '/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/RPVSt100tojj_13TeV_pythia8_MiniAOD_v706_PU40bx50/b71e879835d2f0083a0e044b05216236/RPVSt100tojj_13TeV_pythia8_MiniAOD_PU40bx50_1000_1_Z6C.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
@@ -37,6 +38,7 @@ options.register('outputLabel',
 
 options.register('globalTag',
                  'PHYS14_25_V1',
+                 #'PHYS14_50_V1',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Global Tag')
@@ -96,7 +98,8 @@ process.source = cms.Source("PoolSource",
 
 process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
 process.load("Configuration.EventContent.EventContent_cff")
-process.load('Configuration.Geometry.GeometryIdeal_cff')
+process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
+#process.load('Configuration.Geometry.GeometryIdeal_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
@@ -112,7 +115,7 @@ process.GlobalTag.globaltag = options.globalTag
 ## Make jets
 #################################################
 
-from RecoJets.JetProducers.jetToolbox_cff import jetToolbox
+from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
 jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addPrunedSubjets=True, addTrimming=True, addFiltering=True, addSoftDrop=True, addNsub=True )
 jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', addCMSTopTagger=True )
 

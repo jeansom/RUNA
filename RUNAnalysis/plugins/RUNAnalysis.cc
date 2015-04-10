@@ -110,6 +110,7 @@ class RUNAnalysis : public EDAnalyzer {
       EDGetTokenT<vector<vector<int>>> jetKeys_;
       EDGetTokenT<vector<float>> jetCSV_;
       EDGetTokenT<vector<float>> jetCSVV1_;
+      EDGetTokenT<int> NPV_;
 
       //Jet ID
       EDGetTokenT<vector<float>> jecFactor_;
@@ -154,6 +155,7 @@ RUNAnalysis::RUNAnalysis(const ParameterSet& iConfig):
 	jetKeys_(consumes<vector<vector<int>>>(iConfig.getParameter<InputTag>("jetKeys"))),
 	jetCSV_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetCSV"))),
 	jetCSVV1_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetCSVV1"))),
+	NPV_(consumes<int>(iConfig.getParameter<InputTag>("NPV"))),
 	//Jet ID,
 	jecFactor_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jecFactor"))),
 	neutralHadronEnergy_(consumes<vector<float>>(iConfig.getParameter<InputTag>("neutralHadronEnergy"))),
@@ -250,6 +252,9 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 	Handle<vector<float> > jetCSVV1;
 	iEvent.getByToken(jetCSVV1_, jetCSVV1);
 
+	Handle<int> NPV;
+	iEvent.getByToken(NPV_, NPV);
+
 	/// Jet ID
 	Handle<vector<float> > jecFactor;
 	iEvent.getByToken(jecFactor_, jecFactor);
@@ -285,6 +290,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 	cutmap["Processed"] += 1;
 
+	int numPV = *NPV;
 	vector< JETtype > JETS;
 	vector< float > tmpTriggerMass;
 	int numJets = 0;
@@ -363,6 +369,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 	sort(JETS.begin(), JETS.end(), [](const JETtype &p1, const JETtype &p2) { TLorentzVector tmpP1, tmpP2; tmpP1 = p1.p4; tmpP2 = p2.p4;  return tmpP1.M() > tmpP2.M(); }); 
 	histos1D_[ "jetNum" ]->Fill( numJets );
+	histos1D_[ "NPV" ]->Fill( numPV );
 	if ( HT > 0 ) histos1D_[ "HT" ]->Fill( HT, scale  );
 	if ( rawHT > 0 ) histos1D_[ "rawHT" ]->Fill( rawHT, scale  );
 	if ( HT > 700 ) cutHT = 1;
@@ -388,6 +395,9 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 			histos1D_[ "massAsymmetry_cutHT" ]->Fill( massAsym, scale  );
 			histos1D_[ "massAve_cutHT" ]->Fill( massAve, scale  );
+			if( numPV < 25 )  histos1D_[ "massAveLowPU_cutHT" ]->Fill( massAve, scale  );
+			else if( ( numPV > 25 ) && ( numPV < 35 ) )  histos1D_[ "massAveMedPU_cutHT" ]->Fill( massAve, scale  );
+			else  histos1D_[ "massAveHighPU_cutHT" ]->Fill( massAve, scale  );
 			histos2D_[ "massAvevsJet1Mass_cutHT" ]->Fill( massAve, jet1Mass );
 			histos2D_[ "massAvevsJet2Mass_cutHT" ]->Fill( massAve, jet2Mass );
 			histos2D_[ "jet1vs2Mass_cutHT" ]->Fill( jet1Mass, jet2Mass );
@@ -670,6 +680,9 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 			if( massAsym < cutAsymvalue ){
 				cutmap["Asymmetry"] += 1;
 				histos1D_[ "massAve_cutAsym" ]->Fill( massAve, scale  );
+				if( numPV < 25 )  histos1D_[ "massAveLowPU_cutAsym" ]->Fill( massAve, scale  );
+				else if( ( numPV > 25 ) && ( numPV < 35 ) )  histos1D_[ "massAveMedPU_cutAsym" ]->Fill( massAve, scale  );
+				else  histos1D_[ "massAveHighPU_cutAsym" ]->Fill( massAve, scale  );
 				histos1D_[ "cosThetaStar_cutAsym" ]->Fill( cosThetaStar, scale  );
 				histos1D_[ "jet1Tau21_cutAsym" ]->Fill( jet1Tau21, scale  );
 				histos1D_[ "jet1Tau31_cutAsym" ]->Fill( jet1Tau31, scale  );
@@ -707,6 +720,9 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 				if( TMath::Abs( cosThetaStar ) < cutCosThetavalue ){
 					cutmap["CosTheta"] += 1;
 					histos1D_[ "massAve_cutCosTheta" ]->Fill( massAve, scale  );
+					if( numPV < 25 )  histos1D_[ "massAveLowPU_cutCosTheta" ]->Fill( massAve, scale  );
+					else if( ( numPV > 25 ) && ( numPV < 35 ) )  histos1D_[ "massAveMedPU_cutCosTheta" ]->Fill( massAve, scale  );
+					else  histos1D_[ "massAveHighPU_cutCosTheta" ]->Fill( massAve, scale  );
 					histos1D_[ "jet1Tau21_cutCosTheta" ]->Fill( jet1Tau21, scale  );
 					histos1D_[ "jet1Tau31_cutCosTheta" ]->Fill( jet1Tau31, scale  );
 					histos1D_[ "jet1Tau32_cutCosTheta" ]->Fill( jet1Tau32, scale  );
@@ -746,6 +762,9 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 						cutmap["SubjetPtRatio"] += 1;
 						//massAveForFit = massAve;
 						histos1D_[ "massAve_cutSubjetPtRatio" ]->Fill( massAve, scale  );
+						if( numPV < 25 )  histos1D_[ "massAveLowPU_cutSubjetPtRatio" ]->Fill( massAve, scale  );
+						else if( ( numPV > 25 ) && ( numPV < 35 ) )  histos1D_[ "massAveMedPU_cutSubjetPtRatio" ]->Fill( massAve, scale  );
+						else  histos1D_[ "massAveHighPU_cutSubjetPtRatio" ]->Fill( massAve, scale  );
 						histos1D_[ "jet1Tau21_cutSubjetPtRatio" ]->Fill( jet1Tau21, scale  );
 						histos1D_[ "jet1Tau31_cutSubjetPtRatio" ]->Fill( jet1Tau31, scale  );
 						histos1D_[ "jet1Tau32_cutSubjetPtRatio" ]->Fill( jet1Tau32, scale  );
@@ -858,6 +877,8 @@ void RUNAnalysis::beginJob() {
 	histos1D_[ "jetMass" ]->Sumw2();
 	histos1D_[ "HT" ] = fs_->make< TH1D >( "HT", "HT", 150, 0., 1500. );
 	histos1D_[ "HT" ]->Sumw2();
+	histos1D_[ "NPV" ] = fs_->make< TH1D >( "NPV", "NPV", 80, 0., 80. );
+	histos1D_[ "NPV" ]->Sumw2();
 
 	histos1D_[ "jetMass_cutHT_Ptsort" ] = fs_->make< TH1D >( "jetMass_cutHT_Ptsort", "jetMass_cutHT_Ptsort", 30, 0., 300. );
 	histos1D_[ "jetMass_cutHT_Ptsort" ]->Sumw2();
@@ -867,6 +888,12 @@ void RUNAnalysis::beginJob() {
 	histos1D_[ "massAsymmetry_cutHT" ]->Sumw2();
 	histos1D_[ "massAve_cutHT" ] = fs_->make< TH1D >( "massAve_cutHT", "massAve_cutHT", 30, 0., 300. );
 	histos1D_[ "massAve_cutHT" ]->Sumw2();
+	histos1D_[ "massAveLowPU_cutHT" ] = fs_->make< TH1D >( "massAveLowPU_cutHT", "massAveLowPU_cutHT", 30, 0., 300. );
+	histos1D_[ "massAveLowPU_cutHT" ]->Sumw2();
+	histos1D_[ "massAveMedPU_cutHT" ] = fs_->make< TH1D >( "massAveMedPU_cutHT", "massAveMedPU_cutHT", 30, 0., 300. );
+	histos1D_[ "massAveMedPU_cutHT" ]->Sumw2();
+	histos1D_[ "massAveHighPU_cutHT" ] = fs_->make< TH1D >( "massAveHighPU_cutHT", "massAveHighPU_cutHT", 30, 0., 300. );
+	histos1D_[ "massAveHighPU_cutHT" ]->Sumw2();
 	histos2D_[ "massAvevsJet1Mass_cutHT" ] = fs_->make< TH2D >( "massAvevsJet1Mass_cutHT", "massAvevsJet1Mass_cutHT", 30, 0., 300., 30, 0., 300. );
 	histos2D_[ "massAvevsJet1Mass_cutHT" ]->Sumw2();
 	histos2D_[ "massAvevsJet2Mass_cutHT" ] = fs_->make< TH2D >( "massAvevsJet2Mass_cutHT", "massAvevsJet2Mass_cutHT", 30, 0., 300., 30, 0., 300. );
@@ -993,6 +1020,12 @@ void RUNAnalysis::beginJob() {
 
 	histos1D_[ "massAve_cutAsym" ] = fs_->make< TH1D >( "massAve_cutAsym", "massAve_cutAsym", 30, 0., 300. );
 	histos1D_[ "massAve_cutAsym" ]->Sumw2();
+	histos1D_[ "massAveLowPU_cutAsym" ] = fs_->make< TH1D >( "massAveLowPU_cutAsym", "massAveLowPU_cutAsym", 30, 0., 300. );
+	histos1D_[ "massAveLowPU_cutAsym" ]->Sumw2();
+	histos1D_[ "massAveMedPU_cutAsym" ] = fs_->make< TH1D >( "massAveMedPU_cutAsym", "massAveMedPU_cutAsym", 30, 0., 300. );
+	histos1D_[ "massAveMedPU_cutAsym" ]->Sumw2();
+	histos1D_[ "massAveHighPU_cutAsym" ] = fs_->make< TH1D >( "massAveHighPU_cutAsym", "massAveHighPU_cutAsym", 30, 0., 300. );
+	histos1D_[ "massAveHighPU_cutAsym" ]->Sumw2();
 	histos1D_[ "cosThetaStar_cutAsym" ] = fs_->make< TH1D >( "cosThetaStar_cutAsym", "cosThetaStar_cutAsym", 20, 0., 1. );
 	histos1D_[ "cosThetaStar_cutAsym" ]->Sumw2();
 	histos1D_[ "jet1Tau21_cutAsym" ] = fs_->make< TH1D >( "jet1Tau21_cutAsym", "jet1Tau21_cutAsym", 20, 0., 1. );
@@ -1038,6 +1071,12 @@ void RUNAnalysis::beginJob() {
 
 	histos1D_[ "massAve_cutCosTheta" ] = fs_->make< TH1D >( "massAve_cutCosTheta", "massAve_cutCosTheta", 30, 0., 300. );
 	histos1D_[ "massAve_cutCosTheta" ]->Sumw2();
+	histos1D_[ "massAveLowPU_cutCosTheta" ] = fs_->make< TH1D >( "massAveLowPU_cutCosTheta", "massAveLowPU_cutCosTheta", 30, 0., 300. );
+	histos1D_[ "massAveLowPU_cutCosTheta" ]->Sumw2();
+	histos1D_[ "massAveMedPU_cutCosTheta" ] = fs_->make< TH1D >( "massAveMedPU_cutCosTheta", "massAveMedPU_cutCosTheta", 30, 0., 300. );
+	histos1D_[ "massAveMedPU_cutCosTheta" ]->Sumw2();
+	histos1D_[ "massAveHighPU_cutCosTheta" ] = fs_->make< TH1D >( "massAveHighPU_cutCosTheta", "massAveHighPU_cutCosTheta", 30, 0., 300. );
+	histos1D_[ "massAveHighPU_cutCosTheta" ]->Sumw2();
 	histos1D_[ "jet1Tau21_cutCosTheta" ] = fs_->make< TH1D >( "jet1Tau21_cutCosTheta", "jet1Tau21_cutCosTheta", 20, 0., 1. );
 	histos1D_[ "jet1Tau21_cutCosTheta" ]->Sumw2();
 	histos1D_[ "jet1Tau31_cutCosTheta" ] = fs_->make< TH1D >( "jet1Tau31_cutCosTheta", "jet1Tau31_cutCosTheta", 20, 0., 1. );
@@ -1081,6 +1120,12 @@ void RUNAnalysis::beginJob() {
 
 	histos1D_[ "massAve_cutSubjetPtRatio" ] = fs_->make< TH1D >( "massAve_cutSubjetPtRatio", "massAve_cutSubjetPtRatio", 30, 0., 300. );
 	histos1D_[ "massAve_cutSubjetPtRatio" ]->Sumw2();
+	histos1D_[ "massAveLowPU_cutSubjetPtRatio" ] = fs_->make< TH1D >( "massAveLowPU_cutSubjetPtRatio", "massAveLowPU_cutSubjetPtRatio", 30, 0., 300. );
+	histos1D_[ "massAveLowPU_cutSubjetPtRatio" ]->Sumw2();
+	histos1D_[ "massAveMedPU_cutSubjetPtRatio" ] = fs_->make< TH1D >( "massAveMedPU_cutSubjetPtRatio", "massAveMedPU_cutSubjetPtRatio", 30, 0., 300. );
+	histos1D_[ "massAveMedPU_cutSubjetPtRatio" ]->Sumw2();
+	histos1D_[ "massAveHighPU_cutSubjetPtRatio" ] = fs_->make< TH1D >( "massAveHighPU_cutSubjetPtRatio", "massAveHighPU_cutSubjetPtRatio", 30, 0., 300. );
+	histos1D_[ "massAveHighPU_cutSubjetPtRatio" ]->Sumw2();
 	histos1D_[ "jet1Tau21_cutSubjetPtRatio" ] = fs_->make< TH1D >( "jet1Tau21_cutSubjetPtRatio", "jet1Tau21_cutSubjetPtRatio", 20, 0., 1. );
 	histos1D_[ "jet1Tau21_cutSubjetPtRatio" ]->Sumw2();
 	histos1D_[ "jet1Tau31_cutSubjetPtRatio" ] = fs_->make< TH1D >( "jet1Tau31_cutSubjetPtRatio", "jet1Tau31_cutSubjetPtRatio", 20, 0., 1. );
