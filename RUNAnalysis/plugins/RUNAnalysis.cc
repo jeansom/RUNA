@@ -609,12 +609,13 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 				double mtilde12 = pow( m12, 2 ) / tmptilde;
 				double mtilde134 = pow( m134, 2 ) / tmptilde;
 				double mtilde234 = pow( m234, 2 ) / tmptilde;
-				//double tmpMtilde = pow( mtilde12, 2 ) + pow( mtilde134, 2 ) + pow( mtilde234, 2 );
-				//LogWarning("test") << tmpMtilde;
-				dalitz1.push_back( pow( mtilde12, 2 ) );
-				dalitz1.push_back( pow( mtilde134, 2 ) );
-				dalitz1.push_back( pow( mtilde234, 2 ) );
+				//double tmpMtilde = mtilde12 + mtilde134 + mtilde234;
+				//LogWarning("test") << tmpMtilde << " " << tmptilde << " " << mtilde12 << " " << mtilde134 << " " <<  mtilde234;
+				dalitz1.push_back( mtilde12 );
+				dalitz1.push_back( mtilde134 );
+				dalitz1.push_back( mtilde234 );
 				sort( dalitz1.begin(), dalitz1.end(), [](const double &p1, const double &p2) { return p1 > p2; }); 
+				//LogWarning("mus") << mtilde12 << " " << mtilde134 << " " << mtilde234 << " " << dalitz1[0] << " " << dalitz1[1] << " " << dalitz1[2];
 				histos1D_[ "mu1_cutHT" ]->Fill( dalitz1[0], scale );
 				histos1D_[ "mu2_cutHT" ]->Fill( dalitz1[1], scale );
 				histos1D_[ "mu3_cutHT" ]->Fill( dalitz1[2], scale );
@@ -623,26 +624,29 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 				histos2D_[ "mu1234_cutHT" ]->Fill( dalitz1[0], dalitz1[1] );
 
 				/// (a,b) = (mu1, mu2)
-				dalitzY1 = dalitz1[0];
-				dalitzX1 = ( dalitzY1 / sqrt(3) ) + ( ( 2 / sqrt(3) ) * dalitz1[1] );
-				histos2D_[ "dalitz1234_cutHT" ]->Fill( dalitzY1, dalitzX1 );
+				dalitzY1 = dalitz1[1];
+				dalitzX1 = ( dalitzY1 / TMath::Sqrt(3) ) + ( ( 2 / TMath::Sqrt(3) ) * dalitz1[0] );
+				histos2D_[ "dalitz1234_cutHT" ]->Fill( dalitzX1, dalitzY1 );
 
 				/// (a,b) = (mu1, mu3)
-				dalitzY2 = dalitz1[0];
-				dalitzX2 = ( dalitzY2 / sqrt(3) ) + ( ( 2 / sqrt(3) ) * dalitz1[2] );
-				histos2D_[ "dalitz1234_cutHT" ]->Fill( dalitzY2, dalitzX2 );
+				dalitzY2 = dalitz1[2];
+				dalitzX2 = ( dalitzY2 / TMath::Sqrt(3) ) + ( ( 2 / TMath::Sqrt(3) ) * dalitz1[0] );
+				histos2D_[ "dalitz1234_cutHT" ]->Fill( dalitzX2, dalitzY2 );
 
 				/// (a,b) = (mu2, mu3)
-				dalitzY3 = dalitz1[1];
-				dalitzX3 = ( dalitzY3 / sqrt(3) ) + ( ( 2 / sqrt(3) ) * dalitz1[2] );
-				histos2D_[ "dalitz1234_cutHT" ]->Fill( dalitzY3, dalitzX3 );
+				dalitzY3 = dalitz1[2];
+				dalitzX3 = ( dalitzY3 / TMath::Sqrt(3) ) + ( ( 2 / TMath::Sqrt(3) ) * dalitz1[1] );
+				histos2D_[ "dalitz1234_cutHT" ]->Fill( dalitzX3, dalitzY3 );
+				LogWarning("dalitz") << dalitzX1 << " " << dalitzY1 << " " << dalitzX2 << " " << dalitzY2 << " " << dalitzX3 << " " << dalitzY3;
+
+
 
 				double mtilde34 = pow( m34, 2 ) / tmptilde;
 				double mtilde123 = pow( m123, 2 ) / tmptilde;
 				double mtilde124 = pow( m124, 2 ) / tmptilde;
-				dalitz2.push_back( pow( mtilde34, 2 ) );
-				dalitz2.push_back( pow( mtilde123, 2 ) );
-				dalitz2.push_back( pow( mtilde124, 2 ) );
+				dalitz2.push_back( mtilde34 );
+				dalitz2.push_back( mtilde123 );
+				dalitz2.push_back( mtilde124 );
 				sort( dalitz2.begin(), dalitz2.end(), [](const double &p1, const double &p2) { return p1 > p2; }); 
 				histos1D_[ "mu4_cutHT" ]->Fill( dalitz2[0], scale );
 				histos1D_[ "mu5_cutHT" ]->Fill( dalitz2[1], scale );
@@ -666,12 +670,6 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 				dalitzX6 = ( dalitzY6 / sqrt(3) ) + ( ( 2 / sqrt(3) ) * dalitz2[2] );
 				histos2D_[ "dalitz3412_cutHT" ]->Fill( dalitzY6, dalitzX6 );
 
-				/*double tmpTilde = pow( m1, 2 ) + pow( m2, 2) + pow( M34, 2 ) + pow( M1234, 2);
-				double mTilde12 = M12 / tmpTilde;
-				double mTilde134 = M134 / tmpTilde;
-				double mTilde234 = M234 / tmpTilde;
-				double tmpMTilde = mTilde12 + mTilde134 + mTilde234;
-				LogWarning("mTilde") << tmpMtilde << " " << tmpMTilde;*/
 
 			}
 
