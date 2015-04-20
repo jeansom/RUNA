@@ -23,12 +23,12 @@ gROOT.SetStyle('tdrStyle')
 
 gStyle.SetOptStat(0)
 
-def labels( name, sample, PU, X=0.6, Y=0.70 ):
-	if 'cutHT' in name: setSelection( sample, '13 TeV - '+PU, 'jet p_{T} > 150 GeV', 'jet |#eta| < 2.4', 'HT > 700 TeV', '', '', X, Y)
-	elif 'cutAsym' in name: setSelection( sample, '13 TeV - '+PU, 'HT > 700 TeV', 'A < 0.1', '', '', '', X, Y )
-	elif 'cutCosTheta' in name: setSelection( sample, '13 TeV - '+PU, 'HT > 700 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3', '', '', X, Y )
-	elif 'cutSubjetPtRatio' in name: setSelection( sample, '13 TeV - '+PU, 'HT > 700 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3', '', X, Y )
-	elif 'cutTau31' in name: setSelection( sample, '13 TeV - '+PU, 'HT > 700 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3', '#tau_{31} < 0.5', '', X, Y )
+def labels( name, sample, PU, camp, X=0.6, Y=0.70 ):
+	if 'cutHT' in name: setSelection( sample, camp+' - '+PU, 'jet p_{T} > 150 GeV', 'jet |#eta| < 2.4', 'HT > 700 TeV', '', '', X, Y)
+	elif 'cutAsym' in name: setSelection( sample, camp+' - '+PU, 'HT > 700 TeV', 'A < 0.1', '', '', '', X, Y )
+	elif 'cutCosTheta' in name: setSelection( sample, camp+' - '+PU, 'HT > 700 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3', '', '', X, Y )
+	elif 'cutSubjetPtRatio' in name: setSelection( sample, camp+' - '+PU, 'HT > 700 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3', '', X, Y )
+	elif 'cutTau31' in name: setSelection( sample, camp+' - '+PU, 'HT > 700 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3', '#tau_{31} < 0.5', '', X, Y )
 	elif '' in name: setSelection( sample, '', '', '', '', '', '', X, Y) 
 	else: setSelection( ' ' )
 
@@ -62,7 +62,7 @@ def labelAxis(name, histo, Grom ):
 def plot( inFileSignal, inFileQCD, Grom, name, xmax, labX, labY, log, PU, Norm=False ):
 	"""docstring for plot"""
 
-	outputFileName = name+'_'+Grom+'_RPVSt100to'+jj+'_'+PU+'_QCD_AnalysisPlots.pdf' 
+	outputFileName = name+'_'+Grom+'_RPVSt100to'+jj+'_'+PU+'_QCD'+qcd+'_AnalysisPlots.pdf' 
 	print 'Processing.......', outputFileName
 
 	histos = {}
@@ -115,7 +115,7 @@ def plot( inFileSignal, inFileQCD, Grom, name, xmax, labX, labY, log, PU, Norm=F
 			outName = outputFileName 
 
 		legend.AddEntry( histos[ 'Signal' ], 'RPV #tilde{t}#rightarrow '+jj+' 100 GeV' , 'f' )
-		legend.AddEntry( histos[ 'QCD' ], 'QCD' , 'f' )
+		legend.AddEntry( histos[ 'QCD' ], 'QCD binned in '+qcd , 'f' )
 		stackHisto.SetMinimum(10)
 		stackHisto.Draw('hist')
 		stackHisto.GetYaxis().SetTitleOffset(1.2)
@@ -125,8 +125,8 @@ def plot( inFileSignal, inFileQCD, Grom, name, xmax, labX, labY, log, PU, Norm=F
 
 		labelAxis( name, stackHisto, Grom )
 		legend.Draw()
-		if not (labX and labY): labels( name, 'Scaled to '+lumi+' fb^{-1}', PU )
-		else: labels( name, 'Scaled to '+lumi+' fb^{-1}', PU, labX, labY )
+		if not (labX and labY): labels( name, '13 TeV - Scaled to '+lumi+' fb^{-1}', PU, camp )
+		else: labels( name, '13 TeV - Scaled to '+lumi+' fb^{-1}', PU, camp, labX, labY )
 
 		pad2.cd()
 		hSignal.SetFillColor(48)
@@ -136,7 +136,7 @@ def plot( inFileSignal, inFileQCD, Grom, name, xmax, labX, labY, log, PU, Norm=F
 		hSignal.GetXaxis().SetLabelSize(0.12)
 		hSignal.GetYaxis().SetTitleSize(0.12)
 		hSignal.GetYaxis().SetTitleOffset(0.45)
-		hSignal.SetMaximum(0.7)
+		#hSignal.SetMaximum(0.7)
 		hSignal.Sumw2()
 		hSignal.Draw("hist")
 
@@ -157,7 +157,7 @@ def plot( inFileSignal, inFileQCD, Grom, name, xmax, labX, labY, log, PU, Norm=F
 			outName = outputFileName 
 
 		legend.AddEntry( histos[ 'Signal' ], 'RPV #tilde{t}#rightarrow '+jj+' 100 GeV' , 'l' )
-		legend.AddEntry( histos[ 'QCD' ], 'QCD' , 'l' )
+		legend.AddEntry( histos[ 'QCD' ], 'QCD binned in '+qcd , 'l' )
 		histos['Signal'].GetYaxis().SetTitle( 'Normalized / '+str(binWidth) )
 
 		histos['Signal'].DrawNormalized()
@@ -165,8 +165,8 @@ def plot( inFileSignal, inFileQCD, Grom, name, xmax, labX, labY, log, PU, Norm=F
 
 		legend.Draw()
 		labelAxis( name, histos['Signal'], Grom )
-		if not (labX and labY): labels( name, 'Scaled to '+lumi+' fb^{-1}', PU )
-		else: labels( name, 'Scaled to '+lumi+' fb^{-1}', PU, labX, labY )
+		if not (labX and labY): labels( name, '13 TeV - Scaled to '+lumi+' fb^{-1}', PU, camp )
+		else: labels( name, '13 TeV - Scaled to '+lumi+' fb^{-1}', PU, labX, labY, camp )
 
 		can.SaveAs( 'Plots/'+outName )
 		del can
@@ -175,7 +175,7 @@ def plot( inFileSignal, inFileQCD, Grom, name, xmax, labX, labY, log, PU, Norm=F
 def plot2D( inFile, sample, Grom, name, titleXAxis, titleXAxis2, xmax, xmax2, legX, legY, PU ):
 	"""docstring for plot"""
 
-	outputFileName = name+'_'+Grom+'_'+sample+'_'+PU+'_AnalysisPlots.pdf' 
+	outputFileName = name+'_'+Grom+'_'+sample+'_'+camp+'_'+PU+'_AnalysisPlots.pdf' 
 	print 'Processing.......', outputFileName
 	h1 = inFile.Get( 'AnalysisPlots'+Grom+'/'+name )
 
@@ -190,8 +190,8 @@ def plot2D( inFile, sample, Grom, name, titleXAxis, titleXAxis2, xmax, xmax2, le
 	#can.SetLogz()
 	h1.Draw('colz')
 
-	if not (legX and legY): labels( name, sample, PU )
-	else: labels( name, sample, PU, legX, legY )
+	if not (legX and legY): labels( name, sample, PU, camp )
+	else: labels( name, sample, PU, camp, legX, legY )
 
 	can.SaveAs( 'Plots/'+outputFileName )
 	del can
@@ -383,8 +383,8 @@ def plotDiffSample( inFileSample1, inFileSample2, sample1, sample2, Grom, name, 
 
 		labelAxis( name, histos['Sample1'], Grom )
 		legend.Draw()
-		if not (labX and labY): labels( name, 'Scaled to '+lumi+' fb^{-1}', '' )
-		else: labels( name, 'Scaled to '+lumi+' fb^{-1}', '', labX, labY )
+		if not (labX and labY): labels( name, '13 TeV - Scaled to '+lumi+' fb^{-1}', '' )
+		else: labels( name, '13 TeV - Scaled to '+lumi+' fb^{-1}', '', labX, labY )
 
 		pad2.cd()
 		hSample1.SetLineColor(48)
@@ -423,8 +423,8 @@ def plotDiffSample( inFileSample1, inFileSample2, sample1, sample2, Grom, name, 
 
 		legend.Draw()
 		labelAxis( name, histos['Sample1'], Grom )
-		if not (labX and labY): labels( name, 'Scaled to '+lumi+' fb^{-1}', '' )
-		else: labels( name, 'Scaled to '+lumi+' fb^{-1}', '', labX, labY )
+		if not (labX and labY): labels( name, '13 TeV - Scaled to '+lumi+' fb^{-1}', '' )
+		else: labels( name, '13 TeV - Scaled to '+lumi+' fb^{-1}', '', labX, labY )
 
 		can.SaveAs( 'Plots/'+outName )
 		del can
@@ -473,8 +473,8 @@ def plotDiffPU( inFileSample, Grom, name, xmax, labX, labY, log, Diff , Norm=Fal
 
 	labelAxis( name, histos['Sample1'], Grom )
 	legend.Draw()
-	if not (labX and labY): labels( name, 'Scaled to '+lumi+' fb^{-1}', '' )
-	else: labels( name, 'Scaled to '+lumi+' fb^{-1}', '', labX, labY )
+	if not (labX and labY): labels( name, '13 TeV - Scaled to '+lumi+' fb^{-1}', '' )
+	else: labels( name, '13 TeV - Scaled to '+lumi+' fb^{-1}', '', labX, labY )
 
 	can.SaveAs( 'Plots/'+outName )
 	del can
@@ -517,8 +517,8 @@ def plotDiffPU( inFileSample, Grom, name, xmax, labX, labY, log, Diff , Norm=Fal
 
 		legend.Draw()
 		labelAxis( name, histos['Sample1'], Grom )
-		if not (labX and labY): labels( name, 'Scaled to '+lumi+' fb^{-1}', '' )
-		else: labels( name, 'Scaled to '+lumi+' fb^{-1}', '', labX, labY )
+		if not (labX and labY): labels( name, '13 TeV - Scaled to '+lumi+' fb^{-1}', '' )
+		else: labels( name, '13 TeV - Scaled to '+lumi+' fb^{-1}', '', labX, labY )
 
 		can.SaveAs( 'Plots/'+outName )
 		del can
@@ -530,18 +530,23 @@ if __name__ == '__main__':
 	parser.add_argument('-p', '--proc', action='store', default='1D', help='Process to draw, example: 1D, 2D, MC.' )
 	parser.add_argument('-d', '--decay', action='store', default='jj', help='Decay, example: jj, bj.' )
 	parser.add_argument('-pu', '--PU', action='store', default='PU20bx25', help='PU, example: PU40bx25.' )
+	parser.add_argument('-q', '--QCD', action='store', default='HT', help='Type of QCD binning, example: HT.' )
+	parser.add_argument('-c', '--campaign', action='store', default='PHYS14', help='Campaign, example: PHYS14.' )
 	parser.add_argument('-l', '--lumi', action='store', default='1', help='Luminosity, example: 1.' )
 	args = parser.parse_args()
 
 	process = args.proc
 	jj = args.decay
 	PU = args.PU
+	qcd = args.QCD
+	camp = args.campaign
 	lumi = args.lumi
 	
-	inputFileSample = TFile.Open('RUNAnalysis_RPVSt100tojj_pythia8_13TeV_PU40bx50_PHYS14.root')
-	inputFileSignal = TFile.Open('Rootfiles/RUNAnalysis_RPVSt100to'+jj+'_'+PU+'.root')
-	inputFileMCSignal = TFile.Open('RUNMCAnalysis_RPVSt100tojj_pythia8_13TeV_PU20bx25.root')
-	inputFileQCD = TFile.Open('Rootfiles/RUNAnalysis_QCDALL_'+PU+'.root')
+	#inputFileSample = TFile.Open('RUNAnalysis_RPVSt100tojj_pythia8_13TeV_PU40bx50_PHYS14.root')
+	#inputFileMCSignal = TFile.Open('RUNMCAnalysis_RPVSt100tojj_pythia8_13TeV_PU20bx25.root')
+	inputFileSignal = TFile.Open('Rootfiles/RUNAnalysis_RPVSt100to'+jj+'_'+camp+'_'+PU+'_v03_v06.root')
+	#inputFileSignal = TFile.Open('Rootfiles/RUNAnalysis_RPVSt100to'+jj+'_GENSIM_'+camp+'_'+PU+'_v03_v06.root')
+	inputFileQCD = TFile.Open('Rootfiles/RUNAnalysis_QCD'+qcd+'All_'+camp+'_'+PU+'_v03_v06.root')
 
 	if '2D' in process:
 
@@ -564,8 +569,8 @@ if __name__ == '__main__':
 			[ 'tmpSubjetPolAngle13412vs31234_cutHT', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', '', '', '', ''  ],
 			[ 'mu1234_cutHT', '', '', '', '', dijetlabX, dijetlabY  ],
 			[ 'mu3412_cutHT', '', '', '', '', dijetlabX, dijetlabY  ],
-			[ 'dalitz1234_cutHT', 'y', 'x', '', '', dijetlabX, dijetlabY  ],
-			[ 'dalitz3412_cutHT', 'y', 'x', '', '', dijetlabX, dijetlabY  ],
+			[ 'dalitz1234_cutHT', 'X', 'Y', '', '', dijetlabX, dijetlabY  ],
+			[ 'dalitz3412_cutHT', 'X', 'Y', '', '', dijetlabX, dijetlabY  ],
 
 			[ 'subjet12Mass_cutAsym', 'm_{1}', 'm_{2}', '', '', dijetlabX, dijetlabY  ],
 			[ 'dijetCorr_cutAsym', '#eta_{sjet1}', '#eta_{sjet2}', '', '', dijetlabX, dijetlabY  ],
@@ -574,10 +579,10 @@ if __name__ == '__main__':
 			[ 'subjet1JetvsSubjet2JetMassRatio_cutAsym', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', subjet112vs212labX, subjet112vs212labY  ],
 			[ 'subjetPolAngle13412vs31234_cutAsym', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', '', '', '', ''  ],
 			[ 'tmpSubjetPolAngle13412vs31234_cutAsym', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', '', '', '', ''  ],
-			#[ 'mu1234_cutAsym', '', '', '', '', dijetlabX, dijetlabY  ],
-			#[ 'mu3412_cutAsym', '', '', '', '', dijetlabX, dijetlabY  ],
-			[ 'dalitz1234_cutAsym', 'y', 'x', '', '', dijetlabX, dijetlabY  ],
-			[ 'dalitz3412_cutAsym', 'y', 'x', '', '', dijetlabX, dijetlabY  ],
+			[ 'mu1234_cutAsym', '', '', '', '', dijetlabX, dijetlabY  ],
+			[ 'mu3412_cutAsym', '', '', '', '', dijetlabX, dijetlabY  ],
+			[ 'dalitz1234_cutAsym', 'X', 'Y', '', '', dijetlabX, dijetlabY  ],
+			[ 'dalitz3412_cutAsym', 'X', 'Y', '', '', dijetlabX, dijetlabY  ],
 
 			[ 'subjet12Mass_cutCosTheta', 'm_{1}', 'm_{2}', '', '', dijetlabX, dijetlabY  ],
 			[ 'dijetCorr_cutCosTheta', '#eta_{sjet1}', '#eta_{sjet2}', '', '', dijetlabX, dijetlabY  ],
@@ -586,10 +591,10 @@ if __name__ == '__main__':
 			[ 'subjet1JetvsSubjet2JetMassRatio_cutCosTheta', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', subjet112vs212labX, subjet112vs212labY  ],
 			[ 'subjetPolAngle13412vs31234_cutCosTheta', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', '', '', '', ''  ],
 			[ 'tmpSubjetPolAngle13412vs31234_cutCosTheta', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', '', '', '', ''  ],
-			#[ 'mu1234_cutCosTheta', '', '', '', '', dijetlabX, dijetlabY  ],
-			#[ 'mu3412_cutCosTheta', '', '', '', '', dijetlabX, dijetlabY  ],
-			[ 'dalitz1234_cutCosTheta', 'y', 'x', '', '', dijetlabX, dijetlabY  ],
-			[ 'dalitz3412_cutCosTheta', 'y', 'x', '', '', dijetlabX, dijetlabY  ],
+			[ 'mu1234_cutCosTheta', '', '', '', '', dijetlabX, dijetlabY  ],
+			[ 'mu3412_cutCosTheta', '', '', '', '', dijetlabX, dijetlabY  ],
+			[ 'dalitz1234_cutCosTheta', 'X', 'Y', '', '', dijetlabX, dijetlabY  ],
+			[ 'dalitz3412_cutCosTheta', 'X', 'Y', '', '', dijetlabX, dijetlabY  ],
 
 			[ 'subjet12Mass_cutSubjetPtRatio', 'm_{1}', 'm_{2}', '', '', dijetlabX, dijetlabY  ],
 			[ 'dijetCorr_cutSubjetPtRatio', '#eta_{sjet1}', '#eta_{sjet2}', '', '', dijetlabX, dijetlabY  ],
@@ -598,10 +603,10 @@ if __name__ == '__main__':
 			[ 'subjet1JetvsSubjet2JetMassRatio_cutSubjetPtRatio', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', subjet112vs212labX, subjet112vs212labY  ],
 			[ 'subjetPolAngle13412vs31234_cutSubjetPtRatio', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', '', '', '', ''  ],
 			[ 'tmpSubjetPolAngle13412vs31234_cutSubjetPtRatio', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', '', '', '', ''  ],
-			#[ 'mu1234_cutSubjetPtRatio', '', '', '', '', dijetlabX, dijetlabY  ],
-			#[ 'mu3412_cutSubjetPtRatio', '', '', '', '', dijetlabX, dijetlabY  ],
-			[ 'dalitz1234_cutSubjetPtRatio', 'y', 'x', '', '', dijetlabX, dijetlabY  ],
-			[ 'dalitz3412_cutSubjetPtRatio', 'y', 'x', '', '', dijetlabX, dijetlabY  ],
+			[ 'mu1234_cutSubjetPtRatio', '', '', '', '', dijetlabX, dijetlabY  ],
+			[ 'mu3412_cutSubjetPtRatio', '', '', '', '', dijetlabX, dijetlabY  ],
+			[ 'dalitz1234_cutSubjetPtRatio', 'X', 'Y', '', '', dijetlabX, dijetlabY  ],
+			[ 'dalitz3412_cutSubjetPtRatio', 'X', 'Y', '', '', dijetlabX, dijetlabY  ],
 
 			[ 'subjet12Mass_cutTau31', 'm_{1}', 'm_{2}', '', '', dijetlabX, dijetlabY  ],
 			[ 'dijetCorr_cutTau31', '#eta_{sjet1}', '#eta_{sjet2}', '', '', dijetlabX, dijetlabY  ],
@@ -621,10 +626,10 @@ if __name__ == '__main__':
 			plot2D( inputFileSignal, 'RPVSt100to'+jj, 'Trimmed', i[0], i[1], i[2], i[3], i[4], i[5], i[6], PU )
 			plot2D( inputFileSignal, 'RPVSt100to'+jj, 'Pruned', i[0], i[1], i[2], i[3], i[4], i[5], i[6], PU )
 			plot2D( inputFileSignal, 'RPVSt100to'+jj, 'Filtered', i[0], i[1], i[2], i[3], i[4], i[5], i[6], PU )
-			plot2D( inputFileQCD, 'QCD', '', i[0], i[1], i[2], i[3], i[4], i[5], i[6], PU )
-			plot2D( inputFileQCD, 'QCD', 'Trimmed', i[0], i[1], i[2], i[3], i[4], i[5], i[6], PU )
-			plot2D( inputFileQCD, 'QCD', 'Pruned', i[0], i[1], i[2], i[3], i[4], i[5], i[6], PU )
-			plot2D( inputFileQCD, 'QCD', 'Filtered', i[0], i[1], i[2], i[3], i[4], i[5], i[6], PU )
+			plot2D( inputFileQCD, 'QCD'+qcd, '', i[0], i[1], i[2], i[3], i[4], i[5], i[6], PU )
+			plot2D( inputFileQCD, 'QCD'+qcd, 'Trimmed', i[0], i[1], i[2], i[3], i[4], i[5], i[6], PU )
+			plot2D( inputFileQCD, 'QCD'+qcd, 'Pruned', i[0], i[1], i[2], i[3], i[4], i[5], i[6], PU )
+			plot2D( inputFileQCD, 'QCD'+qcd, 'Filtered', i[0], i[1], i[2], i[3], i[4], i[5], i[6], PU )
 
 	elif '1D' in process:
 

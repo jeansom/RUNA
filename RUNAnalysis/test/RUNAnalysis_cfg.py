@@ -26,6 +26,48 @@ options.register('local',
 		VarParsing.varType.bool,
 		"Run locally or crab"
 		)
+options.register('TMass', 
+		50.0,
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.float,
+		"Trimmed Mass (trigger) cut"
+		)
+options.register('HT', 
+		700.0,
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.float,
+		"HT cut"
+		)
+options.register('Asym', 
+		0.1,
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.float,
+		"Asymmetry cut"
+		)
+options.register('CosTheta', 
+		0.3,
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.float,
+		"CosThetaStar cut"
+		)
+options.register('SubPt', 
+		0.3,
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.float,
+		"Subjet Pt Ratio cut"
+		)
+options.register('Tau31', 
+		0.5,
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.float,
+		"Tau31 cut"
+		)
+options.register('Tau21', 
+		0.3,
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.float,
+		"Tau21 cut"
+		)
 ## 'maxEvents' is already registered by the Framework, changing default value
 options.setDefault('maxEvents', 100)
 
@@ -58,14 +100,17 @@ if 'PU40bx50' in NAME:
 	Lumi = 1000
 
 	if 'QCD' in NAME:
-		if '80to120'in NAME: SF = 3000114.3*0.8456 / 2497232. 
-		elif '120to170'in NAME: SF = 493200. * 0.8355 / 2472588. 
-		elif '170to300'in NAME: SF = 120300 / 1473894.
-		elif '300to470'in NAME: SF = 7475 / 1494912.
-		elif '470to600'in NAME: SF = 587.1 /  1496537.
-		elif '600to800'in NAME: SF = 167 /  1455578.
-		elif '800to1000'in NAME: SF = 28.25 / 1483569.
-		else: SF = 1
+		if 'QCD_HT' in NAME:
+			if '500To1000' in NAME: SF = 26740. / 4063345.
+			elif '1000ToInf' in NAME: SF =  769.7 / 1130720.
+		else:
+			if '170to300'in NAME: SF = 120300 / 2794554.
+			elif '300to470'in NAME: SF = 7475 / 2705941.
+			elif '470to600'in NAME: SF = 587.1 /  2926313.
+			elif '600to800'in NAME: SF = 167 / 2857014.
+			elif '800to1000'in NAME: SF = 28.25 / 2916394.
+			elif '1000to1400'in NAME: SF = 8.195 / 2884228.
+			elif '1400to1800'in NAME: SF = 0.7346 / 2931706.
 	else: 
 		if bjsample: SF = 1521.11/ 49500. 
 		else: SF = 1521.11/ 98208.    ## PU40bx50  1 fb-1
@@ -97,12 +142,13 @@ process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNAnalysi
 
 process.AnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 		scale 			= cms.double(SF*Lumi),
-		cutHTvalue 		= cms.double( 700. ),
-		cutAsymvalue 		= cms.double( 0.1 ),
-		cutCosThetavalue 	= cms.double( 0.3 ),
-		cutSubjetPtRatiovalue 	= cms.double( 0.3 ),
-		cutTau31value 		= cms.double( 0.5 ),
-		cutTau21value 		= cms.double( 0.6 ),
+		cutHTvalue 		= cms.double( options.HT ),
+		cutTrimmedMassvalue	= cms.double( options.TMass ),
+		cutAsymvalue 		= cms.double( options.Asym ),
+		cutCosThetavalue 	= cms.double( options.CosTheta ),
+		cutSubjetPtRatiovalue 	= cms.double( options.SubPt ),
+		cutTau31value 		= cms.double( options.Tau31 ),
+		cutTau21value 		= cms.double( options.Tau21 ),
 		bjSample		= cms.bool( bjsample ),
 		jetPt 			= cms.InputTag('jetsAK8:jetAK8Pt'),
 		jetEta			= cms.InputTag('jetsAK8:jetAK8Eta'),
