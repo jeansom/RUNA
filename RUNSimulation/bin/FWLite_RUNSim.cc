@@ -97,6 +97,7 @@ int main(int argc, char* argv[]) {
 
 				TLorentzVector stop1, stop2;				
 				vector<TLorentzVector> pStop1, pStop2;
+				int dumm = 0;
 				for(const reco::GenParticle &p : *particles ) {
 
 					if ( p.status() == 22 ) {
@@ -108,7 +109,10 @@ int main(int argc, char* argv[]) {
 					}
 					
 					TLorentzVector tmp;
+
 					if ( p.status() == 23 ) {
+
+						dumm++;
 
 						if ( ( p.pdgId() == 3 ) || ( p.pdgId() == 1 )  ) {
 
@@ -125,6 +129,9 @@ int main(int argc, char* argv[]) {
 					} 
 
 				}
+
+				if ( dumm > 4 ) continue;
+				cout << dumm << endl;
 
 				if ( pStop1.size() == 2 ) {
 
