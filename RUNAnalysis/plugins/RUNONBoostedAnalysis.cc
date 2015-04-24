@@ -404,7 +404,7 @@ void RUNONBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup
 				
 		cutmap["Trigger"] += 1;
 
-		if( ( numJets > 4 ) && ( HT > cutHTvalue ) ){
+		if( ( numJets == 4 ) && ( HT > cutHTvalue ) ){
 			cutmap["HT"] += 1;
 			histos1D_[ "HT_cutHT" ]->Fill( HT, scale  );
 			histos1D_[ "NPV_cutHT" ]->Fill( numPV, scale );
@@ -416,22 +416,43 @@ void RUNONBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup
 			histos1D_[ "jetMass_cutHT_Ptsort" ]->Fill( (*jetMass)[0], scale );
 			histos1D_[ "jetMass_cutHT" ]->Fill( JETS[0].mass, scale );
 
-			/*
-			map<double, int[2]> tmpDeltaVec;
-			int index[2] = { -999, -999};
-			for ( size_t a = 0; a < JETS.size(); a++) {	
+		
+			vector<double> tmpDijetR;
+			double dR12 = JETS[0].p4.DeltaR( JETS[1].p4 );
+			double dR34 = JETS[2].p4.DeltaR( JETS[3].p4 );
+			double dijetR1234 = abs( dR12 - 1 )  + abs( dR34 - 1 );
+			tmpDijetR.push_back( dijetR1234 );
 
-				for ( size_t b = 1; b < JETS.size(); b++) {
-					
-					if( a >= b ) continue;
-					index[0] = a;
-					index[1] = b;
-					double tmpDelta = JETS[a].p4.DeltaR( JETS[b].p4 );
+			double dR13 = JETS[0].p4.DeltaR( JETS[2].p4 );
+			double dR24 = JETS[1].p4.DeltaR( JETS[3].p4 );
+			double dijetR1324 = abs( dR13 - 1 )  + abs( dR24 - 1 );
+			tmpDijetR.push_back( dijetR1324 );
 
-				 	LogWarning("test") << a << " " << b << " " << index[0] << " " << index[1] << " " << tmpDelta;
+			double dR14 = JETS[0].p4.DeltaR( JETS[3].p4 );
+			double dR23 = JETS[1].p4.DeltaR( JETS[2].p4 );
+			double dijetR1423 = abs( dR14 - 1 )  + abs( dR23 - 1 );
+			tmpDijetR.push_back( dijetR1423 );
 
-				}
-			}*/
+			//LogWarning("test") << min_element(tmpDijetR.begin(), tmpDijetR.end()) - tmpDijetR.begin()  << " " << dijetR1234 << " " << dijetR1324 << " " << dijetR1423 ;
+			int minDeltaR = min_element(tmpDijetR.begin(), tmpDijetR.end()) - tmpDijetR.begin();
+			TLorentzVector j1, j2, j3, j4;
+
+			if( minDeltaR == 0 ){
+				j1 = JETS[0].p4;
+				j2 = JETS[1].p4;
+				j3 = JETS[2].p4;
+				j4 = JETS[3].p4;
+			} else if ( minDeltaR == 1 ) {
+				j1 = JETS[0].p4;
+				j2 = JETS[2].p4;
+				j3 = JETS[1].p4;
+				j4 = JETS[3].p4;
+			} else if ( minDeltaR == 2 ) {
+				j1 = JETS[0].p4;
+				j2 = JETS[3].p4;
+				j3 = JETS[1].p4;
+				j4 = JETS[2].p4;
+			}
 
 
 			vector<double> dalitz1, dalitz2;
@@ -450,18 +471,18 @@ void RUNONBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup
 
 
 			
-			double m1 = JETS[0].p4.M();
-			double m2 = JETS[1].p4.M();
+			double m1 = j1.M();
+			double m2 = j2.M();
 			//double m3 = JETS[2].p4.M();
 			//double m4 = JETS[3].p4.M();
 
-			double m12 = ( JETS[0].p4 + JETS[1].p4 ).M() ;
-			double m34 = ( JETS[2].p4 + JETS[3].p4 ).M() ;
-			double m134 = ( JETS[0].p4 + JETS[2].p4 + JETS[3].p4 ).M() ;
-			double m123 = ( JETS[0].p4 + JETS[1].p4 + JETS[2].p4 ).M() ;
-			double m124 = ( JETS[0].p4 + JETS[1].p4 + JETS[3].p4 ).M() ;
-			double m234 = ( JETS[1].p4 + JETS[2].p4 + JETS[3].p4 ).M() ;
-			double m1234 = ( JETS[0].p4 + JETS[1].p4 + JETS[2].p4 + JETS[4].p4 ).M() ;
+			double m12 = ( j1 + j2 ).M() ;
+			double m34 = ( j3 + j4 ).M() ;
+			double m134 = ( j1 + j3 + j4 ).M() ;
+			double m123 = ( j1 + j2 + j3 ).M() ;
+			double m124 = ( j1 + j2 + j4 ).M() ;
+			double m234 = ( j2 + j3 + j4 ).M() ;
+			double m1234 = ( j1 + j2 + j3 + j4 ).M() ;
 			
 
 			double tmptilde = pow( m1, 2 ) + pow( m2, 2) + pow( m34, 2 ) + pow( m1234, 2);
