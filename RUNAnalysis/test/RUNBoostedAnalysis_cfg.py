@@ -33,13 +33,13 @@ options.register('debug',
 		"Run just pruned"
 		)
 options.register('TMass', 
-		0.0,
+		50.0,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
 		"Trimmed Mass (trigger) cut"
 		)
 options.register('HT', 
-		0.0,
+		700.0,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
 		"HT cut"
@@ -89,8 +89,8 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
-		#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/B2g_PU40bx50_v0/150219_165100/0000/B2GEDMNtuple_1.root',
-		'file:RUNtuple_1.root'
+		'/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/B2g_PU40bx50_v0/150219_165100/0000/B2GEDMNtuple_1.root',
+	#	#'file:../../RUNtuples/test/RUNAEDMNtuple.root'
 	    )
 	)
 
@@ -102,17 +102,17 @@ else: bjsample = False
 Lumi = 1000
 
 from scaleFactors import scaleFactor
-SF = 1 #scaleFactor(NAME)
+SF = scaleFactor(NAME)
 
 if 'PU40bx50' in NAME: PU = 'PU40bx50'
 elif 'PU30BX50' in NAME: PU = 'PU30BX50'
 elif 'PU20bx25' in NAME: PU = 'PU20bx25'
 else: PU = 'NOPU'
 
-process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNAnalysis_'+NAME+'.root' ) )
+process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNBoostedAnalysis_'+NAME+'.root' ) )
 #process.TFileService=cms.Service("TFileService",fileName=cms.string( 'anaPlots.root' ) )
 
-process.AnalysisPlots = cms.EDAnalyzer('RUNONBoostedAnalysis',
+process.AnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		scale 			= cms.double(SF*Lumi),
 		cutHTvalue 		= cms.double( options.HT ),
 		cutTrimmedMassvalue	= cms.double( options.TMass ),
@@ -122,11 +122,11 @@ process.AnalysisPlots = cms.EDAnalyzer('RUNONBoostedAnalysis',
 		cutTau31value 		= cms.double( options.Tau31 ),
 		cutTau21value 		= cms.double( options.Tau21 ),
 		bjSample		= cms.bool( bjsample ),
-		jetPt 			= cms.InputTag('jetsAK4:jetAK4Pt'),
-		jetEta			= cms.InputTag('jetsAK4:jetAK4Eta'),
-		jetPhi 			= cms.InputTag('jetsAK4:jetAK4Phi'),
-		jetE 			= cms.InputTag('jetsAK4:jetAK4E'),
-		jetMass 		= cms.InputTag('jetsAK4:jetAK4Mass'),
+		jetPt 			= cms.InputTag('jetsAK8:jetAK8Pt'),
+		jetEta			= cms.InputTag('jetsAK8:jetAK8Eta'),
+		jetPhi 			= cms.InputTag('jetsAK8:jetAK8Phi'),
+		jetE 			= cms.InputTag('jetsAK8:jetAK8E'),
+		jetMass 		= cms.InputTag('jetsAK8:jetAK8Mass'),
 		jetTau1 		= cms.InputTag('jetsAK8:jetAK8tau1'),
 		jetTau2 		= cms.InputTag('jetsAK8:jetAK8tau2'),
 		jetTau3 		= cms.InputTag('jetsAK8:jetAK8tau3'),
@@ -140,11 +140,11 @@ process.AnalysisPlots = cms.EDAnalyzer('RUNONBoostedAnalysis',
 		jetCSVV1 		= cms.InputTag('jetsAK8:jetAK8CSVV1'),
 		NPV	 		= cms.InputTag('eventUserData:npv'),
 		#### JetID
-		jecFactor 		= cms.InputTag('jetsAK4:jetAK4jecFactor0'),
-		neutralHadronEnergy 	= cms.InputTag('jetsAK4:jetAK4neutralHadronEnergy'),
-		neutralEmEnergy 	= cms.InputTag('jetsAK4:jetAK4neutralEmEnergy'),
-		chargeEmEnergy 		= cms.InputTag('jetsAK4:jetAK4chargedEmEnergy'),
-		muonEnergy 		= cms.InputTag('jetsAK4:jetAK4MuonEnergy'),
+		jecFactor 		= cms.InputTag('jetsAK8:jetAK8jecFactor0'),
+		neutralHadronEnergy 	= cms.InputTag('jetsAK8:jetAK8neutralHadronEnergy'),
+		neutralEmEnergy 	= cms.InputTag('jetsAK8:jetAK8neutralEmEnergy'),
+		chargeEmEnergy 		= cms.InputTag('jetsAK8:jetAK8chargedEmEnergy'),
+		muonEnergy 		= cms.InputTag('jetsAK8:jetAK8MuonEnergy'),
 		#### Subjets
 		subjetPt 		= cms.InputTag('subjetsAK8:subjetAK8Pt'),
 		subjetEta 		= cms.InputTag('subjetsAK8:subjetAK8Eta'),
