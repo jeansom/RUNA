@@ -301,15 +301,9 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 	if( ( numJets == 4 ) && ( HT > cutHT ) ){
 		cutmap["Trigger"] += 1;
-		histos1D_[ "HT_allCuts" ]->Fill( HT, scale  );
-		histos1D_[ "NPV_allCuts" ]->Fill( numPV, scale );
-		histos1D_[ "jetNum_allCuts" ]->Fill( numJets, scale );
-		histos1D_[ "jetPt_allCuts" ]->Fill( (*jetPt)[0], scale  );
-		histos1D_[ "jetPt_allCuts" ]->Fill( (*jetPt)[1], scale  );
-		histos1D_[ "jetEta_allCuts" ]->Fill( (*jetEta)[0], scale  );
-		histos1D_[ "jetEta_allCuts" ]->Fill( (*jetEta)[1], scale  );
-		histos1D_[ "jetMass_allCuts_Ptsort" ]->Fill( (*jetMass)[0], scale );
-		histos1D_[ "jetMass_allCuts" ]->Fill( JETS[0].M(), scale );
+		histos1D_[ "HT_triggerCuts" ]->Fill( HT, scale  );
+		histos1D_[ "NPV_triggerCuts" ]->Fill( numPV, scale );
+		histos1D_[ "jetNum_triggerCuts" ]->Fill( numJets, scale );
 
 	
 		vector<double> tmpDijetR;
@@ -359,7 +353,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 		double eta1 = ( j1 + j2 ).Eta();
 		double eta2 = ( j3 + j4 ).Eta();
 
-		histos1D_[ "jet4Pt_best" ]->Fill( JETS[3].Pt(), scale );
+		histos1D_[ "jet4Pt_best" ]->Fill( j4.Pt(), scale );
 		histos1D_[ "massAve_best" ]->Fill( avgMass, scale );
 		histos1D_[ "massRes_best" ]->Fill( massRes, scale );
 		histos1D_[ "deltaEta_best" ]->Fill( TMath::Abs( eta1 - eta2 ), scale );
@@ -378,7 +372,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 		if ( passcutsdR ) {
 
-			histos1D_[ "jet4Pt_allCuts" ]->Fill( JETS[3].Pt(), scale );
+			histos1D_[ "jet4Pt_allCuts" ]->Fill( j4.Pt(), scale );
 			histos1D_[ "massAve_allCuts" ]->Fill( avgMass, scale );
 			histos1D_[ "massRes_allCuts" ]->Fill( massRes, scale );
 			histos1D_[ "deltaEta_allCuts" ]->Fill( TMath::Abs( eta1 - eta2 ), scale );
@@ -535,6 +529,20 @@ void RUNAnalysis::beginJob() {
 	histos1D_[ "HT" ]->Sumw2();
 	histos1D_[ "NPV" ] = fs_->make< TH1D >( "NPV", "NPV", 80, 0., 80. );
 	histos1D_[ "NPV" ]->Sumw2();
+
+
+	histos1D_[ "jetPt_triggerCuts" ] = fs_->make< TH1D >( "jetPt_triggerCuts", "jetPt_triggerCuts", 100, 0., 1000. );
+	histos1D_[ "jetPt_triggerCuts" ]->Sumw2();
+	histos1D_[ "jetEta_triggerCuts" ] = fs_->make< TH1D >( "jetEta_triggerCuts", "jetEta_triggerCuts", 100, -5., 5. );
+	histos1D_[ "jetEta_triggerCuts" ]->Sumw2();
+	histos1D_[ "jetNum_triggerCuts" ] = fs_->make< TH1D >( "jetNum_triggerCuts", "jetNum_triggerCuts", 10, 0., 10. );
+	histos1D_[ "jetNum_triggerCuts" ]->Sumw2();
+	histos1D_[ "jetMass_triggerCuts" ] = fs_->make< TH1D >( "jetMass_triggerCuts", "jetMass_triggerCuts", 30, 0., 300. );
+	histos1D_[ "jetMass_triggerCuts" ]->Sumw2();
+	histos1D_[ "HT_triggerCuts" ] = fs_->make< TH1D >( "HT_triggerCuts", "HT_triggerCuts", 150, 0., 1500. );
+	histos1D_[ "HT_triggerCuts" ]->Sumw2();
+	histos1D_[ "NPV_triggerCuts" ] = fs_->make< TH1D >( "NPV_triggerCuts", "NPV_triggerCuts", 80, 0., 80. );
+	histos1D_[ "NPV_triggerCuts" ]->Sumw2();
 
 	histos1D_[ "jet4Pt_best" ] = fs_->make< TH1D >( "jet4Pt_best", "jet4Pt_best", 100, 0., 1000. );
 	histos1D_[ "jet4Pt_best" ]->Sumw2();
