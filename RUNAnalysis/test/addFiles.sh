@@ -15,26 +15,20 @@ if [[ $1 == *"QCD"* ]]; then
 	if [[ $1 == *"Pt"* ]]; then
 		for bin in $ptBinList
 		do
-			rm -rf RUNAnalysis_QCD_${bin}_${camp}_${PU}_${version}.root 
-			hadd RUNAnalysis_QCD_${bin}_${camp}_${PU}_${version}.root /eos/uscms/store/user/algomez/QCD_${bin}_Tune4C_13TeV_pythia8/crab_QCD_${bin}_Tune4C_13TeV_pythia8_${camp}_${PU}_${version}/*/*/*root
+			hadd -f RUNAnalysis_QCD_${bin}_${camp}_${PU}_${version}.root /eos/uscms/store/user/algomez/QCD_${bin}_Tune4C_13TeV_pythia8/crab_QCD_${bin}_Tune4C_13TeV_pythia8_${camp}_${PU}_${version}/*/*/*root
 		done
-		rm -rf RUNAnalysis_QCDPtAll_${camp}_${PU}_${version}.root 
-		hadd RUNAnalysis_QCDPtAll_${camp}_${PU}_${version}.root RUNAnalysis_QCD_Pt*_${camp}_${PU}_${version}.root
+		hadd -f RUNAnalysis_QCDPtAll_${camp}_${PU}_${version}.root RUNAnalysis_QCD_Pt*_${camp}_${PU}_${version}.root
 	else
 		for bin in $htBinList
 		do
-			rm -rf RUNAnalysis_QCD_${bin}_${camp}_${PU}_${version}.root 
-			hadd RUNAnalysis_QCD_${bin}_${camp}_${PU}_${version}.root /eos/uscms/store/user/algomez/QCD_${bin}_13TeV-madgraph/crab_QCD_${bin}_13TeV-madgraph_${camp}_${PU}_${version}/*/*/*root
+			hadd -f RUNAnalysis_QCD_${bin}_${camp}_${PU}_${version}.root /eos/uscms/store/user/algomez/QCD_${bin}_13TeV-madgraph/crab_QCD_${bin}_13TeV-madgraph_${camp}_${PU}_${version}/*/*/*root
 		done
-		rm -rf RUNAnalysis_QCDHTAll_${camp}_${PU}_${version}.root 
-		hadd RUNAnalysis_QCDHTAll_${camp}_${PU}_${version}.root RUNAnalysis_QCD_HT*_${camp}_${PU}_${version}.root
+		hadd -f RUNAnalysis_QCDHTAll_${camp}_${PU}_${version}.root RUNAnalysis_QCD_HT*_${camp}_${PU}_${version}.root
 	fi
 
 else
-	rm -rf RUNAnalysis_RPVSt100tojj_${camp}_${PU}_${version}.root 
-	hadd RUNAnalysis_RPVSt100tojj_GENSIM_${camp}_${PU}_${version}.root /eos/uscms/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/crab_RPVSt100tojj_13TeV_pythia8_*${version}/*/*/*root
-	#rm -rf RUNAnalysis_RPVSt100tojj_${camp}_${PU}_${version}.root 
-	#hadd RUNAnalysis_RPVSt100tojj_${camp}_${PU}_${version}.root /eos/uscms/store/user/algomez/RPVSt100tojj_13TeV_pythia8/crab_RPVSt100tojj_13TeV_pythia8_*${version}/*/*/*root
+	#hadd -f RUNAnalysis_RPVSt100tojj_GENSIM_${camp}_${PU}_${version}.root /eos/uscms/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/crab_RPVSt100tojj_13TeV_pythia8_*${version}/*/*/*root
+	hadd -f RUNAnalysis_RPVSt100tojj_${camp}_${PU}_${version}.root /eos/uscms/store/user/algomez/RPVSt100tojj_13TeV_pythia8/crab_RPVSt100tojj_13TeV_pythia8_*${version}/*/*/*root
 fi
 #	done
 #done 

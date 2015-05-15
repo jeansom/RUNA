@@ -14,7 +14,7 @@ options = VarParsing ('python')
 #			    "Run this on real data"
 #			    )
 options.register('PROC', 
-		'RPVSt100tojj_pythia8_13TeV_PU20bx25',
+		'RPVSt350tojj_pythia8_13TeV_PU20bx25',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
 		"name"
@@ -32,12 +32,38 @@ options.register('debug',
 		VarParsing.varType.bool,
 		"Run just pruned"
 		)
-options.register('TMass', 
-		50.0,
+options.register('HT', 
+		0.0,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
-		"Trimmed Mass (trigger) cut"
+		"HT cut"
 		)
+options.register('MassRes', 
+		0.15,
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.float,
+		"MassRes cut"
+		)
+options.register('Delta', 
+		70.0,
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.float,
+		"Delta cut"
+		)
+options.register('EtaBand', 
+		1.0,
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.float,
+		"EtaBand cut"
+		)
+options.register('JetPt', 
+		80.0,
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.float,
+		"JetPt cut"
+		)
+
+#### Boosted thresholds
 options.register('AK4HT', 
 		0.0,
 		VarParsing.multiplicity.singleton,
@@ -50,18 +76,25 @@ options.register('jetAK4Pt',
 		VarParsing.varType.float,
 		"jetAK4Pt cut"
 		)
-options.register('HT', 
+options.register('TMass', 
+		50.0,
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.float,
+		"Trimmed Mass (trigger) cut"
+		)
+options.register('boostedHT', 
 		700.0,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
 		"HT cut"
 		)
-options.register('jetPt', 
+options.register('boostedJetPt', 
 		150.0,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
-		"jetPt cut"
+		"JetPt cut"
 		)
+
 options.register('Asym', 
 		0.1,
 		VarParsing.multiplicity.singleton,
@@ -93,6 +126,7 @@ options.register('Tau21',
 		"Tau21 cut"
 		)
 
+
 options.parseArguments()
 
 process = cms.Process("Demo")
@@ -107,8 +141,8 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
-		'/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/B2g_PU40bx50_v0/150219_165100/0000/B2GEDMNtuple_1.root',
-	#	#'file:../../RUNtuples/test/RUNAEDMNtuple.root'
+		#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/B2g_PU40bx50_v0/150219_165100/0000/B2GEDMNtuple_1.root',
+		'file:RUNtuple_1.root'
 	    )
 	)
 
@@ -127,15 +161,44 @@ elif 'PU30BX50' in NAME: PU = 'PU30BX50'
 elif 'PU20bx25' in NAME: PU = 'PU20bx25'
 else: PU = 'NOPU'
 
-process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNBoostedAnalysis_'+NAME+'.root' ) )
-#process.TFileService=cms.Service("TFileService",fileName=cms.string( 'anaPlots.root' ) )
+process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNFullAnalysis_'+NAME+'.root' ) )
 
-process.AnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
+process.AnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 		scale 			= cms.double(SF*Lumi),
-		cutAK4HTvalue 		= cms.double( options.AK4HT ),
-		cutjetAK4Ptvalue 	= cms.double( options.jetAK4Pt ),
-		cutHTvalue 		= cms.double( options.HT ),
-		cutjetPtvalue 		= cms.double( options.jetPt ),
+		cutHT	 		= cms.double( options.HT ),
+		cutMassRes 		= cms.double( options.MassRes ),
+		cutDelta 		= cms.double( options.Delta ),
+		cutEtaBand 		= cms.double( options.EtaBand ),
+		cutJetPt 		= cms.double( options.JetPt ),
+		bjSample		= cms.bool( bjsample ),
+		jetPt 			= cms.InputTag('jetsAK4:jetAK4Pt'),
+		jetEta			= cms.InputTag('jetsAK4:jetAK4Eta'),
+		jetPhi 			= cms.InputTag('jetsAK4:jetAK4Phi'),
+		jetE 			= cms.InputTag('jetsAK4:jetAK4E'),
+		jetMass 		= cms.InputTag('jetsAK4:jetAK4Mass'),
+		jetTau1 		= cms.InputTag('jetsAK8:jetAK8tau1'),
+		jetTau2 		= cms.InputTag('jetsAK8:jetAK8tau2'),
+		jetTau3 		= cms.InputTag('jetsAK8:jetAK8tau3'),
+		jetKeys 		= cms.InputTag('jetKeysAK8'),
+		jetCSV 			= cms.InputTag('jetsAK4:jetAK4CSV'),
+		jetCSVV1 		= cms.InputTag('jetsAK4:jetAK4CSVV1'),
+		NPV	 		= cms.InputTag('eventUserData:npv'),
+		#### JetID
+		jecFactor 		= cms.InputTag('jetsAK4:jetAK4jecFactor0'),
+		neutralHadronEnergy 	= cms.InputTag('jetsAK4:jetAK4neutralHadronEnergy'),
+		neutralEmEnergy 	= cms.InputTag('jetsAK4:jetAK4neutralEmEnergy'),
+		chargeEmEnergy 		= cms.InputTag('jetsAK4:jetAK4chargedEmEnergy'),
+		muonEnergy 		= cms.InputTag('jetsAK4:jetAK4MuonEnergy'),
+)
+
+process.AnalysisPlotsNOSCALE = process.AnalysisPlots.clone( scale = cms.double(1) )
+
+process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
+		scale 			= cms.double(SF*Lumi),
+		cutAK4HTvalue 		= cms.double( 0.0 ),
+		cutjetAK4Ptvalue 	= cms.double( 0.0 ),
+		cutHTvalue 		= cms.double( options.boostedHT ),
+		cutjetPtvalue 		= cms.double( options.boostedJetPt ),
 		cutTrimmedMassvalue	= cms.double( options.TMass ),
 		cutAsymvalue 		= cms.double( options.Asym ),
 		cutCosThetavalue 	= cms.double( options.CosTheta ),
@@ -185,27 +248,39 @@ process.AnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 
 )
 
-process.test = process.AnalysisPlots.clone( mkTree = cms.bool( True ) )
-process.AnalysisPlotsTrimmed = process.AnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8trimmedMass') )
-process.AnalysisPlotsFiltered = process.AnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8filteredMass') )
-process.AnalysisPlotsPruned = process.AnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8prunedMass') )
+process.BoostedAnalysisPlotsTrimmed = process.BoostedAnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8trimmedMass') )
+process.BoostedAnalysisPlotsFiltered = process.BoostedAnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8filteredMass') )
+process.BoostedAnalysisPlotsPruned = process.BoostedAnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8prunedMass') )
 
-process.AnalysisPlotsNOSCALE = process.AnalysisPlots.clone( scale = cms.double(1) )
-process.AnalysisPlotsTrimmedNOSCALE = process.AnalysisPlotsTrimmed.clone( scale = cms.double(1) )
-process.AnalysisPlotsPrunedNOSCALE = process.AnalysisPlotsPruned.clone( scale = cms.double(1) )
-process.AnalysisPlotsFilteredNOSCALE = process.AnalysisPlotsFiltered.clone( scale = cms.double(1) )
+process.BoostedAnalysisPlotsNOSCALE = process.BoostedAnalysisPlots.clone( scale = cms.double(1) )
+process.BoostedAnalysisPlotsTrimmedNOSCALE = process.BoostedAnalysisPlotsTrimmed.clone( scale = cms.double(1) )
+process.BoostedAnalysisPlotsPrunedNOSCALE = process.BoostedAnalysisPlotsPruned.clone( scale = cms.double(1) )
+process.BoostedAnalysisPlotsFilteredNOSCALE = process.BoostedAnalysisPlotsFiltered.clone( scale = cms.double(1) )
+
+process.BoostedAnalysisPlotsPrunedPFHT900 = process.BoostedAnalysisPlotsPruned.clone( 
+		cutHTvalue 		= cms.double( 0. ), 
+		cutTrimmedMassvalue 	= cms.double( 0. ), 
+		cutjetAK4Ptvalue 	= cms.double( options.jetAK4Pt ),
+		cutAK4HTvalue 		= cms.double( options.AK4HT ),
+		)
+process.RUNATreePruned = process.BoostedAnalysisPlotsPruned.clone( mkTree = cms.bool( True ) )
 
 if options.debug:
-	process.p = cms.Path( process.AnalysisPlotsPruned * process.test )
+	process.p = cms.Path( process.AnalysisPlots
+			* process.BoostedAnalysisPlots )
 else:
 
 	process.p = cms.Path( process.AnalysisPlots
-		* process.AnalysisPlotsTrimmed
-		* process.AnalysisPlotsPruned
-		* process.AnalysisPlotsFiltered
 		* process.AnalysisPlotsNOSCALE
-		* process.AnalysisPlotsTrimmedNOSCALE
-		* process.AnalysisPlotsPrunedNOSCALE
-		* process.AnalysisPlotsFilteredNOSCALE
+		#* process.BoostedAnalysisPlots
+		#* process.BoostedAnalysisPlotsTrimmed
+		* process.BoostedAnalysisPlotsPruned
+		#* process.BoostedAnalysisPlotsFiltered
+		#* process.BoostedAnalysisPlotsNOSCALE
+		#* process.BoostedAnalysisPlotsTrimmedNOSCALE
+		* process.BoostedAnalysisPlotsPrunedNOSCALE
+		#* process.BoostedAnalysisPlotsFilteredNOSCALE
+		* process.BoostedAnalysisPlotsPrunedPFHT900
+		* process.RUNATreePruned
 		)
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

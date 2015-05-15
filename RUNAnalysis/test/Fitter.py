@@ -42,14 +42,11 @@ landau = TF1("landau","[0]*TMath::Landau(-x,[1],[2])",50,300)
 gaus = TF1("gaus", "gaus", 0, 2000);
 P4Gaus = TF1("P4Gaus", "[0]*pow(1-x/13000.0,[1])/pow(x/13000.0,[2]+[3]*log(x/13000.))+gaus(4)",50,500);
 
-def Fitter( Signal, outputDir, hist, folder, fitFunction, minX, maxX ):
+def Fitter( inFile, Signal, outputDir, hist, folder, fitFunction, minX, maxX ):
 	"""Main Fitter"""
 
-	inputFile = 'Rootfiles/RUNAPlots_'+Signal+'_'+PU+'.root'
 	binSize = 1
 	massBins = [0, 30, 60, 90, 120, 150, 180, 210, 250, 290, 330, 370, 410, 460, 510, 560, 610, 670, 730, 790, 860, 930, 1000, 1080, 1160, 1240, 1330, 1420, 1520, 1620, 1730, 1840, 2000]
-
-	inFile = TFile(inputFile)
 
 	h1 = inFile.Get(folder+'/' + hist)
 	histo = h1.Clone(hist)
@@ -92,26 +89,22 @@ def FitterCombination( inFileBkg, inFileSignal, hist, folder, bkgFunction ):
 
 	binSize = 10
 	h1 = inFileBkg.Get(folder+'/' + hist)
-	histoBkg = h1.Clone(hist)
-	histoBkg.Scale( 10 )
-	hBkg = h1.Clone(hist)
-	hBkg.Scale( 10 )
+	histoBkg = h1.Clone()
+	hBkg = h1.Clone()
 	h2 = inFileSignal.Get(folder+'/' + hist)
 	histoSignal = h2.Clone(hist)
-	histoSignal.Scale( 10 )
-	hSignal = h2.Clone(hist)
-	hSignal.Scale( 10 )
+	hSignal = h2.Clone()
 
-	bkgFitStart= 60#histoBkg.GetMaximumBin()*binSize-30.   #### I found that 60 and 190 are good values for the fit by doing several test by hand.
-	bkgFitEnd  = 190 #histoBkg.GetMaximumBin()*binSize+300.
+	bkgFitStart= histoBkg.GetMaximumBin()*binSize-20.  
+	bkgFitEnd  = histoBkg.GetMaximumBin()*binSize+160.
 	histoBkg.Fit(bkgFunction,"MR","",bkgFitStart,bkgFitEnd)
 	bkgFunction.SetParameter(0,1.)
 	histoBkg.Fit(bkgFunction,"MR","",bkgFitStart,bkgFitEnd)
 	histoBkg.Fit(bkgFunction,"MR","",bkgFitStart,bkgFitEnd)
 	histoBkg.Fit(bkgFunction,"MR","",bkgFitStart,bkgFitEnd)
 			
-	signalFitStart= histoSignal.GetMaximumBin()*binSize-40.
-	signalFitEnd  = histoSignal.GetMaximumBin()*binSize+40.
+	signalFitStart= histoSignal.GetMaximumBin()*binSize-30.
+	signalFitEnd  = histoSignal.GetMaximumBin()*binSize+30.
 	histoSignal.Fit( gaus, "MR","",signalFitStart,signalFitEnd)
 	histoSignal.Fit( gaus, "MR","",signalFitStart,signalFitEnd)
 	histoSignal.Fit( gaus, "MR","",signalFitStart,signalFitEnd)
@@ -243,7 +236,7 @@ def FitterCombination( inFileBkg, inFileSignal, hist, folder, bkgFunction ):
 	hPull.GetYaxis().SetTitleSize(0.10)
 	hPull.GetYaxis().SetTitleOffset(0.60)
 	hPull.SetMarkerStyle(7)
-	hPull.SetMaximum(3)
+	#hPull.SetMaximum(3)
 	hPull.Sumw2()
 	hPull.Draw("e")
 	line.Draw("same")
@@ -270,13 +263,19 @@ def rooFitter( inFileBkg, inFileSignal, hist, folder ):
 	
 	myWS = RooWorkspace("myWS")
 
-	x = RooRealVar( "x", "x", 50., 180. )
-	myWS.factory("EXPR:bkg_pdf('pow(1-(x/13000.0),p1)/pow(x/13000.0,p2+p3*log(x/13000.))', {x[50,180],p1[0,1000],p2[0,100],p3[0,10]})")
-	myWS.factory("Gaussian:sig_pdf(x, mean[90,110], sigma[0,10])")
-	myWS.factory("SUM:model(nsig[0,10000]*sig_pdf, nbkg[0,1000000]*bkg_pdf)")
+	#myWS.factory("x[50,240]")
+	#myWS.factory("EXPR:bkg_pdf('pow(1-(x/13000.0),p1)/pow(x/13000.0,p2+p3*log(x/13000.))', {x,p1[100,1000],p2[-50,50],p3[-10,10]})")
+	#myWS.factory("Gaussian:sig_pdf(x, mean[90,105], sigma[0,10])")
+	x = RooRealVar( "x", "x", 50., 230. )
+	myWS.factory("EXPR:bkg_pdf('pow(1-(x/13000.0),p1)/pow(x/13000.0,p2+p3*log(x/13000.))', {x[50,230],p1[100,1000],p2[-50,50],p3[-10,10]})")
+	myWS.factory("Gaussian:sig_pdf(x, mean[80,105], sigma[-10,10])")
+	#myWS.factory("EXPR:bkg_pdf('pow(1-(x/13000.0),p1)/pow(x/13000.0,p2+p3*log(x/13000.))', {x[40,230],p1[800,1200],p2[-50,50],p3[-10.,10]})")
+	#myWS.factory("Gaussian:sig_pdf(x, mean[80.,100.], sigma[0.,10.])")
+	myWS.factory("SUM:model(nsig[0,100000]*sig_pdf, nbkg[0,1000000]*bkg_pdf)")
+	myWS.factory("SUM:model_b(nbkg[0,1000000]*bkg_pdf)")
 	myWS.Print()
 
-	#x = myWS.var("x")
+	x = myWS.var("x")
 	#mass = myWS.var("mass")
 	pdf = myWS.pdf("model")
 
@@ -301,8 +300,8 @@ def rooFitter( inFileBkg, inFileSignal, hist, folder ):
 	data_obs.plotOn( xframe )
 	xframe.Draw()
 	xframe.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
-	pdf.fitTo( data_obs, RooFit.Save(true) ) #, RooFit.Minimizer("Minuit2", "Migrad") )
-	#pdf.fitTo( data_obs, RooFit.Save(true) , RooFit.Minimizer("Minuit2", "Migrad"), RooFit.SumW2Error(kTRUE) )
+	pdf.fitTo( data_obs, RooFit.Save(true), RooFit.PrintEvalErrors(-1) ) # RooFit.Minimizer("Minuit2", "Migrad") )
+	#pdf.fitTo( data_obs,RooFit.Save(true),RooFit.Minimizer("Minuit2", "Migrad"),RooFit.SumW2Error(kTRUE), RooFit.PrintEvalErrors(-1) )
 	pdf.plotOn( xframe )
 	pdf.plotOn( xframe, RooFit.Components("bkg_pdf"), RooFit.LineStyle(kDashed) )
 	pdf.plotOn( xframe, RooFit.Components("sig_pdf"), RooFit.LineColor(kRed), RooFit.LineStyle(kDashed) );
@@ -387,24 +386,29 @@ if __name__ == '__main__':
 	parser.add_argument('-d', '--decay', action='store', default='jj', help='Decay, example: jj, bj.' )
 	parser.add_argument('-pu', '--PU', action='store', default='PU20bx25', help='PU, example: PU40bx25.' )
 	parser.add_argument('-l', '--lumi', action='store', default='1', help='Luminosity, example: 1.' )
-	args = parser.parse_args()
+	try:
+		args = parser.parse_args()
+	except:
+		parser.print_help()
+		sys.exit(0)
 
-	process = args.proc
+	process = args.process
 	jj = args.decay
 	PU = args.PU
 	lumi = args.lumi
 
-	inFileBkg = TFile('Rootfiles/RUNAPlots_QCDALL_'+PU+'_v01.root')
-	inFileSignal = TFile('Rootfiles/RUNAPlots_RPVSt100tojj_'+PU+'.root')
-	inFileData = TFile('Rootfiles/RUNAPlots_QCDALL_RPVSt100tojj_'+PU+'.root')
+	inFileBkg = TFile('Rootfiles/RUNAnalysis_QCDPtAll_PHYS14_'+PU+'_v03_v06.root')
+	inFileSignal = TFile('Rootfiles/RUNAnalysis_RPVSt100tojj_PHYS14_'+PU+'_v03_v06.root')
+	#inFileData = TFile('Rootfiles/RUNAnalysis_QCDPtAll_RPVSt100tojj_PHYS14_'+PU+'_v03_v06.root')
+	inFileData = TFile('Rootfiles/RUNAnalysis_QCDPtAll_PHYS14_'+PU+'_v03_v06.root')
 
 	###### Input parameters
 	hist = 'massAve_cutSubjetPtRatio'  # str ( sys.argv[1] )
 	folder = "AnalysisPlotsPruned"      # str ( sys.argv[2] )
 
 	if 'simple' in process:
-		Fitter( 'QCDALL', "Plots/", hist, folder, P4, 30.0, 200.0 )
-		Fitter( 'RPVSt100tojj', "Plots/", hist, folder, 'gaus', 50.0, 50.0 )
+		Fitter( inFileBkg, 'QCDALL', "Plots/", hist, folder, P4, 30.0, 200.0 )
+		Fitter( inFileSignal, 'RPVSt100tojj', "Plots/", hist, folder, 'gaus', 50.0, 50.0 )
 
 	elif 'full' in process:
 		FitterCombination( inFileBkg, inFileSignal, hist, folder, P4 )

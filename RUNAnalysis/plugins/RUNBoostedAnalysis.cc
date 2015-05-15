@@ -1009,6 +1009,7 @@ void RUNBoostedAnalysis::beginJob() {
 		RUNAtree->Branch( "jet1Phi", &jet1Phi, "jet1Phi/F" );
 		RUNAtree->Branch( "jet1E", &jet1E, "jet1E/F" );
 		RUNAtree->Branch( "jet1Mass", &jet1Mass, "jet1Mass/F" );
+		RUNAtree->Branch( "jet1Mass", &jet1Mass, "jet1Mass/F" );
 		RUNAtree->Branch( "jet2Pt", &jet2Pt, "jet2Pt/F" );
 		RUNAtree->Branch( "jet2Eta", &jet2Eta, "jet2Eta/F" );
 		RUNAtree->Branch( "jet2Phi", &jet2Phi, "jet2Phi/F" );
