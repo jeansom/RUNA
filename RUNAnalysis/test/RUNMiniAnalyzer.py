@@ -12,6 +12,7 @@ import optparse
 #from collections import defaultdict
 from ROOT import TFile, TTree, TDirectory, gDirectory, gROOT, TH1F, TMath
 from array import array
+from scaleFactors import scaleFactor
 
 gROOT.SetBatch()
 
@@ -20,7 +21,7 @@ def myAnalyzer( sample, couts, grooming):
 
 
 	inputFile = TFile( 'Rootfiles/RUNAnalysis_'+sample+'_v03_v09.root', 'read' )
-	outputFile = TFile( 'test.root', 'RECREATE' )
+	outputFile = TFile( 'Rootfiles/RUNMiniAnalysis_'+sample+'_v03_v09.root', 'RECREATE' )
 
 	###################################### output Tree
 	tree = TTree('RUNAFinTree'+grooming, 'RUNAFinTree'+grooming)
@@ -35,16 +36,13 @@ def myAnalyzer( sample, couts, grooming):
 	maxMass		= 500
 
 	massAve_allCuts 	= TH1F('h_massAve_allCuts', 'h_massAve_allCuts', nBinsMass, 0, maxMass )
-	#TriggerPass 	= TH1F('h_TriggerPass', 'h_TriggerPass', 8, 0, 8 )
-	#ht_HT350	= TH1F('h_ht_HT350_'+jetAlgo+'_'+grooming, 	'h_ht_HT350_'+jetAlgo, 	nBinsHT,  	0, 	maxHT)
-	#ht_HT750	= TH1F('h_ht_HT750_'+jetAlgo+'_'+grooming, 	'h_ht_HT750_'+jetAlgo, 	nBinsHT,  	0, 	maxHT)
-	#ht_PFHT350	= TH1F('h_ht_PFHT350_'+jetAlgo+'_'+grooming, 	'h_ht_PFHT350_'+jetAlgo, 	nBinsHT,  	0, 	maxHT)
-	#ht_PFHT650	= TH1F('h_ht_PFHT650_'+jetAlgo+'_'+grooming, 	'h_ht_PFHT650_'+jetAlgo, 	nBinsHT,  	0, 	maxHT)
-	#ht_PFHT650_1	= TH1F('h_ht_PFHT650_1_'+jetAlgo+'_'+grooming, 	'h_ht_PFHT650_1_'+jetAlgo, 	nBinsHT,  	0, 	maxHT)
 
 	###################################### Get GenTree 
 	events = inputFile.Get( 'RUNATree'+grooming+'/RUNATree' )
 	numEntries = events.GetEntriesFast()
+
+	SF = scaleFactor(sample)
+	SF = SF*1000
 
 	print '------> Number of events: '+str(numEntries)
 	d = 0
@@ -71,7 +69,6 @@ def myAnalyzer( sample, couts, grooming):
 		cosThetaStar	= events.cosThetaStar
 		jet1SubjetPtRatio	= events.jet1SubjetPtRatio
 		jet2SubjetPtRatio	= events.jet2SubjetPtRatio
-		scale		= events.scale
 		numPV           = events.numPV
 		AK4HT           = events.AK4HT
 		jet1Pt          = events.jet1Pt
@@ -107,41 +104,22 @@ def myAnalyzer( sample, couts, grooming):
 		cosPhi31234     = events.cosPhi31234
 
 		#### Apply selection
-		triggerCut = ( ( HT > 750 ) and ( trimmedMass > 50 ) )
+		triggerCut = ( ( HT > 700 ) and ( trimmedMass > 50 ) )
 
 		if triggerCut:
 			subjetPtRatio = ( ( jet1SubjetPtRatio > 0.3 ) and ( jet2SubjetPtRatio > 0.3 )  )
-			analysisCut = ( ( numJets > 2 ) and ( massAsym < 0.1 ) and ( abs( cosThetaStar ) < 0.3 ) and ( subjetPtRatio )  )
+			analysisCut = ( ( numJets > 1 ) and ( massAsym < 0.1 ) and ( abs( cosThetaStar ) < 0.3 ) and ( subjetPtRatio )  )
 
 			if analysisCut:
 
 				eventsPassed +=1
-				AvgMass = massAve
-				Scale = scale
-				massAve_allCuts.Fill( massAve, scale )
-				print AvgMass, Scale
+				AvgMass[0] = massAve
+				Scale[0] = SF
+				massAve_allCuts.Fill( massAve, SF )
+				#print AvgMass, SF
 
 		tree.Fill()
-	print eventsPassed
-				#print triggerCut, analysisCut, massAsym, cosThetaStar, subjetPtRatio
-
-
-	##### write output file 
-	#outputFile.cd()
-	#for key in inputFile.GetListOfKeys():
-	#	print key
-	#	saveDir = TDirectory()
-		#adir = saveDir.mkdir( key.GetName() )
-		#adir.cd()
-		#if key.GetClassName() == 'TDirectoryFile':
-		#	if not 'Tree' in key.GetName():
-		#		newDir = outputFile.mkdir( key.GetName() )
-		#		newDir.cd()
-		#for q in key.GetList():
-		#	print q
-				#	print key.GetName(), q
-
-
+	print 'Raw number of events: ',eventsPassed
 	outputFile.Write()
 
 	##### Closing
@@ -175,6 +153,11 @@ if __name__ == '__main__':
 	grooming = options.grooming
 	samples = options.samples
 
-	sample = 'RPVSt'+str(mass)+'tojj_PHYS14_'+PU
-
-	myAnalyzer( sample, couts, grooming )
+	if 'QCD' in samples:
+		QCDBins = [ '170to300', '300to470', '470to600', '600to800', '800to1000', '1000to1400', '1400to1800' ]
+		for bin in QCDBins:
+			sample = 'QCD_Pt-'+bin+'_PHYS14_'+PU
+			myAnalyzer( sample, couts, grooming )
+	else:
+		sample = 'RPVSt'+str(mass)+'tojj_PHYS14_'+PU
+		myAnalyzer( sample, couts, grooming )
