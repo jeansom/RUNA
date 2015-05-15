@@ -160,20 +160,24 @@ if __name__ == '__main__':
 
 	usage = 'usage: %prog [options]'
 	
-	parser = optparse.OptionParser(usage=usage)
-	parser.add_option( '-m', '--mass', action='store', type='int', dest='mass', default=100, help='Mass of the Stop' )
-	parser.add_option( '-g', '--grooming', action='store', type='string', dest='grooming', default='Pruned', help='Jet Algorithm' )
-	parser.add_option( '-p', '--pileup', action='store', type='string', dest='pileup', default='PU20bx25', help='Pileup' )
-	parser.add_option( '-d', '--debug', action='store_true', dest='couts', default=False, help='True print couts in screen, False print in a file' )
-	parser.add_option( '-s', '--sample', action='store',  type='string', dest='samples', default='Signal', help='Type of sample' )
+	parser = argparse.ArgumentParser()
+	parser.add_argument( '-m', '--mass', action='store', type='int', dest='mass', default=100, help='Mass of the Stop' )
+	parser.add_argument( '-g', '--grooming', action='store', type='string', dest='grooming', default='Pruned', help='Jet Algorithm' )
+	parser.add_argument( '-p', '--pileup', action='store', type='string', dest='pileup', default='PU20bx25', help='Pileup' )
+	parser.add_argument( '-d', '--debug', action='store_true', dest='couts', default=False, help='True print couts in screen, False print in a file' )
+	parser.add_argument( '-s', '--sample', action='store',  type='string', dest='samples', default='Signal', help='Type of sample' )
 
-	(options, args) = parser.parse_args()
+	try:
+		args = parser.parse_args()
+	except:
+		parser.print_help()
+		sys.exit(0)
 
-	mass = options.mass
-	PU = options.pileup
-	couts = options.couts
-	grooming = options.grooming
-	samples = options.samples
+	mass = args.mass
+	PU = args.pileup
+	couts = args.couts
+	grooming = args.grooming
+	samples = args.samples
 
 	sample = 'RPVSt'+str(mass)+'tojj_PHYS14_'+PU
 
