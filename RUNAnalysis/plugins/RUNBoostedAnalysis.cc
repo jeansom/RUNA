@@ -101,7 +101,7 @@ class RUNBoostedAnalysis : public EDAnalyzer {
       ULong64_t event = 0;
       int numJets = 0, numPV = 0;
       unsigned int lumi = 0, run=0;
-      float AK4HT = 0, HT = 0, trimmedMass = -999, 
+      float AK4HT = 0, HT = 0, trimmedMass = -999, Scale = 0,
 	    jet1Pt = -999, jet1Eta = -999, jet1Phi = -999, jet1E = -999, jet1Mass = -999, 
 	    jet2Pt = -999, jet2Eta = -999, jet2Phi = -999, jet2E = -999, jet2Mass = -999,
 	    subjet11Pt = -999, subjet11Eta = -999, subjet11Phi = -999, subjet11E = -999, 
@@ -362,6 +362,8 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	}
 	if ( AK4HT > cutAK4HTvalue ) cutAK4HT = 1;
 	////////////////////////////////////////////////////
+
+	Scale = scale;
 
 	/// Applying kinematic, trigger and jet ID
 	cutmap["Processed"] += 1;
@@ -998,7 +1000,7 @@ void RUNBoostedAnalysis::beginJob() {
 		RUNAtree->Branch( "run", &run, "run/I" );
 		RUNAtree->Branch( "lumi", &lumi, "lumi/I" );
 		RUNAtree->Branch( "event", &event, "event/I" );
-		RUNAtree->Branch( "scale", &scale, "scale/F" );
+		RUNAtree->Branch( "Scale", &Scale, "Scale/F" );
 		RUNAtree->Branch( "numJets", &numJets, "numJets/I" );
 		RUNAtree->Branch( "numPV", &numPV, "numPV/I" );
 		RUNAtree->Branch( "HT", &HT, "HT/F" );

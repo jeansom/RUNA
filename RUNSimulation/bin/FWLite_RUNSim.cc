@@ -63,6 +63,11 @@ int main(int argc, char* argv[]) {
 	TH1F* jetsEta_ = dir.make<TH1F>("jetsEta" , "eta" ,   100,  -3.,   3.);
 	TH1F* stopPt_ = dir.make<TH1F>("stopPt" , "stopPt",   100,   0., 300.);  
 	TH1F* stopMass_ = dir.make<TH1F>("stopMass" , "stopMass",   100,   0., 300.);  
+	TH1F* jetsPt_2j_  = dir.make<TH1F>("jetsPt_2j"  , "pt"  ,   100,   0., 300.);
+	TH1F* jetsEta_2j_ = dir.make<TH1F>("jetsEta_2j" , "eta" ,   100,  -3.,   3.);
+	TH1F* stopPt_2j_ = dir.make<TH1F>("stopPt_2j" , "stopPt",   100,   0., 300.);  
+	TH1F* stopMass_2j_ = dir.make<TH1F>("stopMass_2j" , "stopMass",   100,   0., 300.);  
+	TH1F* numFinalPart_ = dir.make<TH1F>("numFinalPart" , "numFinPart" ,   10,  0.,   10.);
 
 	// loop the event/
 	int ievt=0;  
@@ -100,10 +105,12 @@ int main(int argc, char* argv[]) {
 				int dumm = 0;
 				for(const reco::GenParticle &p : *particles ) {
 
+					if( !p.mother() ) continue;
+
 					if ( p.status() == 22 ) {
 
-						if ( p.pdgId() == 1000002 ) stop1.SetPtEtaPhiE( p.pt(), p.eta(), p.phi(), p.energy()  );
-						else if ( p.pdgId() == -1000002 ) stop2.SetPtEtaPhiE( p.pt(), p.eta(), p.phi(), p.energy()  );
+						if ( p.pdgId() > 0 )  stop1.SetPtEtaPhiE( p.pt(), p.eta(), p.phi(), p.energy()  );
+						else if ( p.pdgId() < 0 )  stop2.SetPtEtaPhiE( p.pt(), p.eta(), p.phi(), p.energy()  );
 						else cout << "No Stop in this event" << endl;
 					       	
 					}
@@ -114,51 +121,77 @@ int main(int argc, char* argv[]) {
 
 						dumm++;
 
-						if ( ( p.pdgId() == 3 ) || ( p.pdgId() == 1 )  ) {
+						if( abs( p.mother()->pdgId() ) > 100000 ) {
 
-							tmp.SetPtEtaPhiE( p.pt(), p.eta(), p.phi(), p.energy() );
-							pStop2.push_back( tmp );
-							//cout << p.pdgId() << " " << p.status() << " 3 or 1 " << endl;
+							if ( ( p.pdgId() == 3 ) || ( p.pdgId() == 1 )  ) {
 
-						} else if ( ( p.pdgId() == -3 ) || ( p.pdgId() == -1 )  ) {
+								tmp.SetPtEtaPhiE( p.pt(), p.eta(), p.phi(), p.energy() );
+								pStop2.push_back( tmp );
+								//cout << p.pdgId() << " " << p.status() << " 3 or 1 " << endl;
 
-							tmp.SetPtEtaPhiE( p.pt(), p.eta(), p.phi(), p.energy() );
-							pStop1.push_back( tmp );
-							//cout << p.pdgId() << " " << p.status() << " -3 or -1 " << endl;
+							} else if ( ( p.pdgId() == -3 ) || ( p.pdgId() == -1 )  ) {
+
+								tmp.SetPtEtaPhiE( p.pt(), p.eta(), p.phi(), p.energy() );
+								pStop1.push_back( tmp );
+								//cout << p.pdgId() << " " << p.status() << " -3 or -1 " << endl;
+							}
 						}
 					} 
 
 				}
 
-				if ( dumm > 4 ) continue;
-				cout << dumm << endl;
-
+				numFinalPart_->Fill( dumm );
 				if ( pStop1.size() == 2 ) {
 
-					stopPt_->Fill( stop1.Pt() );
-					stopMass_->Fill( stop1.M() );
 					double stop1Mass = ( pStop1[0] + pStop1[1] ).M();
+				
+					stopPt_2j_->Fill( stop1.Pt() );
+					stopMass_2j_->Fill( stop1.M() );
 					if ( ( stop1Mass - stop1.M() ) < 5 ){
-						jetsPt_->Fill( pStop1[0].Pt() );
-						jetsPt_->Fill( pStop1[1].Pt() );
-						jetsEta_->Fill( pStop1[0].Eta() );
-						jetsEta_->Fill( pStop1[1].Eta() );
+						jetsPt_2j_->Fill( pStop1[0].Pt() );
+						jetsPt_2j_->Fill( pStop1[1].Pt() );
+						jetsEta_2j_->Fill( pStop1[0].Eta() );
+						jetsEta_2j_->Fill( pStop1[1].Eta() );
 					}
-					else cout << "not stop" << stop1Mass << endl;
+
+					if( dumm == 4 ){
+						stopPt_->Fill( stop1.Pt() );
+						stopMass_->Fill( stop1.M() );
+						if ( ( stop1Mass - stop1.M() ) < 5 ){
+							jetsPt_->Fill( pStop1[0].Pt() );
+							jetsPt_->Fill( pStop1[1].Pt() );
+							jetsEta_->Fill( pStop1[0].Eta() );
+							jetsEta_->Fill( pStop1[1].Eta() );
+						}
+						else cout << "not stop" << stop1Mass << endl;
+					}
+
 				} else cout << "event " << ievt << " have more than 2 antiquarks with 23 status." << endl;
 
 				if ( pStop2.size() == 2 ) {
 
-					stopPt_->Fill( stop2.Pt() );
-					stopMass_->Fill( stop2.M() );
 					double stop2Mass = ( pStop2[0] + pStop2[1] ).M();
+					stopPt_2j_->Fill( stop2.Pt() );
+					stopMass_2j_->Fill( stop2.M() );
 					if ( ( stop2Mass - stop2.M() ) < 5 ){
-						jetsPt_->Fill( pStop2[0].Pt() );
-						jetsPt_->Fill( pStop2[1].Pt() );
-						jetsEta_->Fill( pStop2[0].Eta() );
-						jetsEta_->Fill( pStop2[1].Eta() );
+						jetsPt_2j_->Fill( pStop2[0].Pt() );
+						jetsPt_2j_->Fill( pStop2[1].Pt() );
+						jetsEta_2j_->Fill( pStop2[0].Eta() );
+						jetsEta_2j_->Fill( pStop2[1].Eta() );
 					}
-					else cout << "not stop" << stop2Mass << endl;
+					
+					if( dumm == 4 ){
+						stopPt_->Fill( stop2.Pt() );
+						stopMass_->Fill( stop2.M() );
+						if ( ( stop2Mass - stop2.M() ) < 5 ){
+							jetsPt_->Fill( pStop2[0].Pt() );
+							jetsPt_->Fill( pStop2[1].Pt() );
+							jetsEta_->Fill( pStop2[0].Eta() );
+							jetsEta_->Fill( pStop2[1].Eta() );
+						}
+						else cout << "not stop" << stop2Mass << endl;
+					}
+
 				} else cout << "event " << ievt << " have more than 2 antiquarks with 23 status." << endl;
 
 			}

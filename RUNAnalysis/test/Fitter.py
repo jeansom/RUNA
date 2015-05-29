@@ -96,7 +96,7 @@ def FitterCombination( inFileBkg, inFileSignal, hist, folder, bkgFunction ):
 	hSignal = h2.Clone()
 
 	bkgFitStart= histoBkg.GetMaximumBin()*binSize-20.  
-	bkgFitEnd  = histoBkg.GetMaximumBin()*binSize+160.
+	bkgFitEnd  = histoBkg.GetMaximumBin()*binSize+120.
 	histoBkg.Fit(bkgFunction,"MR","",bkgFitStart,bkgFitEnd)
 	bkgFunction.SetParameter(0,1.)
 	histoBkg.Fit(bkgFunction,"MR","",bkgFitStart,bkgFitEnd)
@@ -151,7 +151,7 @@ def FitterCombination( inFileBkg, inFileSignal, hist, folder, bkgFunction ):
 	
 		diff = (binCont - valIntegral)/ valIntegral
 		errDiff = diff * TMath.Sqrt( TMath.Power( P4Gaus.GetParError(0) / P4Gaus.GetParameter(0),2 ) + TMath.Power( P4Gaus.GetParError(1)/ P4Gaus.GetParameter(1), 2 )  + TMath.Power( P4Gaus.GetParError(2)/ P4Gaus.GetParameter(2), 2 )  + TMath.Power( P4Gaus.GetParError(3)/ P4Gaus.GetParameter(3), 2 ) )
-		if (( ibin >= bkgFitStart/binSize) and (binCont != 0) and (ibin <= bkgFitEnd/binSize)):
+		if (( ibin > bkgFitStart/binSize) and (binCont != 0) and (ibin < bkgFitEnd/binSize)):
 			pull = (binCont - valIntegral)/ binErr
 			#print pull
 			hPull.SetBinContent(ibin, pull)
@@ -219,6 +219,7 @@ def FitterCombination( inFileBkg, inFileSignal, hist, folder, bkgFunction ):
 	hBkg.Sumw2()
 	#hBkg.SetMaximum( 1.5 * hBkg.GetMaximum() )
 	hBkg.Draw()
+	hBkg.GetXaxis().SetRangeUser( 0, bkgFitEnd+30 )
 	P4Gaus.Draw("same")
 	gaus2.SetLineColor(1)
 	gaus2.Draw("same")
@@ -237,6 +238,7 @@ def FitterCombination( inFileBkg, inFileSignal, hist, folder, bkgFunction ):
 	hPull.GetYaxis().SetTitleOffset(0.60)
 	hPull.SetMarkerStyle(7)
 	#hPull.SetMaximum(3)
+	hPull.GetXaxis().SetRangeUser( 0, bkgFitEnd+30 )
 	hPull.Sumw2()
 	hPull.Draw("e")
 	line.Draw("same")
@@ -251,6 +253,7 @@ def FitterCombination( inFileBkg, inFileSignal, hist, folder, bkgFunction ):
 	hResidual.GetYaxis().SetTitleOffset(0.60)
 	hResidual.SetMarkerStyle(7)
 	hResidual.SetMaximum(1)
+	hResidual.GetXaxis().SetRangeUser( 0, bkgFitEnd+30 )
 	#hResidual.Sumw2()
 	hResidual.Draw("e")
 	line.Draw("same")
@@ -266,9 +269,9 @@ def rooFitter( inFileBkg, inFileSignal, hist, folder ):
 	#myWS.factory("x[50,240]")
 	#myWS.factory("EXPR:bkg_pdf('pow(1-(x/13000.0),p1)/pow(x/13000.0,p2+p3*log(x/13000.))', {x,p1[100,1000],p2[-50,50],p3[-10,10]})")
 	#myWS.factory("Gaussian:sig_pdf(x, mean[90,105], sigma[0,10])")
-	x = RooRealVar( "x", "x", 50., 230. )
-	myWS.factory("EXPR:bkg_pdf('pow(1-(x/13000.0),p1)/pow(x/13000.0,p2+p3*log(x/13000.))', {x[50,230],p1[100,1000],p2[-50,50],p3[-10,10]})")
-	myWS.factory("Gaussian:sig_pdf(x, mean[80,105], sigma[-10,10])")
+	x = RooRealVar( "x", "x", 50., 190. )
+	myWS.factory("EXPR:bkg_pdf('pow(1-(x/13000.0),p1)/pow(x/13000.0,p2+p3*log(x/13000.))', {x[50,190],p1[2116,2117],p2[-62,63],p3[-5,-4]})")
+	myWS.factory("Gaussian:sig_pdf(x, mean[93,94], sigma[5,6])")
 	#myWS.factory("EXPR:bkg_pdf('pow(1-(x/13000.0),p1)/pow(x/13000.0,p2+p3*log(x/13000.))', {x[40,230],p1[800,1200],p2[-50,50],p3[-10.,10]})")
 	#myWS.factory("Gaussian:sig_pdf(x, mean[80.,100.], sigma[0.,10.])")
 	myWS.factory("SUM:model(nsig[0,100000]*sig_pdf, nbkg[0,1000000]*bkg_pdf)")
@@ -397,14 +400,14 @@ if __name__ == '__main__':
 	PU = args.PU
 	lumi = args.lumi
 
-	inFileBkg = TFile('Rootfiles/RUNAnalysis_QCDPtAll_PHYS14_'+PU+'_v03_v06.root')
-	inFileSignal = TFile('Rootfiles/RUNAnalysis_RPVSt100tojj_PHYS14_'+PU+'_v03_v06.root')
+	inFileBkg = TFile('Rootfiles/RUNAnalysis_QCDPtAll_PHYS14_'+PU+'_v03_v09.root')
+	inFileSignal = TFile('Rootfiles/RUNAnalysis_RPVSt100tojj_PHYS14_'+PU+'_v03_v09.root')
 	#inFileData = TFile('Rootfiles/RUNAnalysis_QCDPtAll_RPVSt100tojj_PHYS14_'+PU+'_v03_v06.root')
-	inFileData = TFile('Rootfiles/RUNAnalysis_QCDPtAll_PHYS14_'+PU+'_v03_v06.root')
+	inFileData = TFile('Rootfiles/RUNAnalysis_QCDPtAll_PHYS14_'+PU+'_v03_v09.root')
 
 	###### Input parameters
 	hist = 'massAve_cutSubjetPtRatio'  # str ( sys.argv[1] )
-	folder = "AnalysisPlotsPruned"      # str ( sys.argv[2] )
+	folder = "BoostedAnalysisPlotsPruned"      # str ( sys.argv[2] )
 
 	if 'simple' in process:
 		Fitter( inFileBkg, 'QCDALL', "Plots/", hist, folder, P4, 30.0, 200.0 )
