@@ -1,7 +1,7 @@
 ### *****************************************************************************************
 ### Usage:
 ###
-### cmsRun b2gedmntuples_cfg.py maxEvts=N 
+### cmsRun RUNtuples_cfg.py maxEvts=N 
 ###
 ### Default values for the options are set:
 ### maxEvts     = -1
@@ -12,13 +12,13 @@ import FWCore.ParameterSet.VarParsing as opts
 options = opts.VarParsing ('analysis')
 
 options.register('maxEvts',
-                 200,# default value: process all events
+                 10,# default value: process all events
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.int,
                  'Number of events to process')
 
 options.register('sample',
-		 #'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/MiniAOD_PHYS14_v720/150315_015619/0000/RPVSt200tojj_13TeV_PU20bx25_MiniAOD_1.root',
+                 #'/store/relval/CMSSW_7_4_1/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/MCRUN2_74_V9_gensim_740pre7-v1/00000/2E7A3E3E-F3EC-E411-9FDD-002618943833.root',
 		 '/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/RPVSt100tojj_13TeV_pythia8_MiniAOD_v706_PU40bx50/b71e879835d2f0083a0e044b05216236/RPVSt100tojj_13TeV_pythia8_MiniAOD_PU40bx50_1000_1_Z6C.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
@@ -31,14 +31,13 @@ options.register('lheLabel',
                  'LHE module label')
 
 options.register('outputLabel',
-                 'RUNtuple.root',
+                 'RUNtuples.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Output label')
 
 options.register('globalTag',
-                 'PHYS14_25_V1',
-                 #'PHYS14_50_V1',
+                 'MCRUN2_74_V7',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Global Tag')
@@ -55,6 +54,12 @@ options.register('LHE',
                  opts.VarParsing.varType.bool,
                  'Keep LHEProducts')
 
+options.register('is74XSample',
+                 False,
+                 opts.VarParsing.multiplicity.singleton,
+                 opts.VarParsing.varType.bool,
+                 'Sample made in newest release? (74X or above)')
+
 options.parseArguments()
 
 if(options.isData):options.LHE = False
@@ -65,9 +70,6 @@ muLabel  = 'slimmedMuons'
 elLabel  = 'slimmedElectrons'
 jLabel = 'slimmedJets'
 jLabelAK8 = 'slimmedJetsAK8'
-
-#ak8subjetLabel = 'selectedPatJetsAK8PFCHSPrunedSubjets'
-ak8subjetLabel = 'patJetsAK8PFCHSPrunedSubjets'
 
 pvLabel  = 'offlineSlimmedPrimaryVertices'
 convLabel = 'reducedEgamma:reducedConversions'
@@ -84,7 +86,7 @@ lheLabel = "source"
 process = cms.Process("RUNtuples")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-#process.MessageLogger.categories.append('HLTrigReport')
+process.MessageLogger.categories.append('HLTrigReport')
 ### Output Report
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ### Number of maximum events to process
@@ -98,8 +100,7 @@ process.source = cms.Source("PoolSource",
 
 process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
 process.load("Configuration.EventContent.EventContent_cff")
-process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
-#process.load('Configuration.Geometry.GeometryIdeal_cff')
+process.load('Configuration.StandardSequences.GeometryDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
@@ -107,30 +108,55 @@ process.GlobalTag.globaltag = options.globalTag
     
 
 
-###
-### AK8 jets with subjet b-tagging
-###
-
-#################################################
-## Make jets
-#################################################
 
 from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
-jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addPrunedSubjets=True, addTrimming=True, addFiltering=True, addSoftDrop=True, addNsub=True )
-jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', addCMSTopTagger=True )
+from RecoJets.JetProducers.SubJetParameters_cfi import SubJetParameters
+from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
 
+jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True )
+if not (options.is74XSample) :
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True )
+	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', addCMSTopTagger=True )
+	jLabelAK8 = 'selectedPatJetsAK8PFCHS'
+else:
+	#################################################
+	## After 7.4.0, only need to make AK8 gen jets.
+	## The rest are stored by default in MiniAOD directly. 
+	#################################################
+
+	## Filter out neutrinos from packed GenParticles
+	process.packedGenParticlesForJetsNoNu = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedGenParticles"), cut = cms.string("abs(pdgId) != 12 && abs(pdgId) != 14 && abs(pdgId) != 16"))
+	## Fat GenJets
+	from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
+	process.ak8GenJetsNoNu = ak4GenJets.clone(
+	    rParam = cms.double(0.8),
+	    src = cms.InputTag("packedGenParticlesForJetsNoNu")
+	)
+
+	## SoftDrop fat GenJets (two jet collections are produced, fat jets and subjets)
+	process.ak8GenJetsNoNuSoftDrop = ak4GenJets.clone(
+	    rParam = cms.double(0.8),
+	    src = cms.InputTag("packedGenParticlesForJetsNoNu"),
+	    useSoftDrop = cms.bool(True),
+	    zcut = cms.double(0.1),
+	    beta = cms.double(0.0),
+	    R0   = cms.double(0.8),
+	    useExplicitGhosts = cms.bool(True),
+	    writeCompound = cms.bool(True),
+	    jetCollInstanceName=cms.string("SubJets")    
+	)
 
 ### Selected leptons and jets
 process.skimmedPatMuons = cms.EDFilter(
     "PATMuonSelector",
     src = cms.InputTag(muLabel),
-    cut = cms.string("pt > 30 && abs(eta) < 2.4")
+    cut = cms.string("pt > 10 && abs(eta) < 2.4")
     )
 
 process.skimmedPatElectrons = cms.EDFilter(
     "PATElectronSelector",
     src = cms.InputTag(elLabel),
-    cut = cms.string("pt > 30 && abs(eta) < 2.5")
+    cut = cms.string("pt > 10 && abs(eta) < 2.5")
     )
 
 process.skimmedPatMET = cms.EDFilter(
@@ -143,13 +169,20 @@ process.skimmedPatMET = cms.EDFilter(
 process.skimmedPatJets = cms.EDFilter(
     "PATJetSelector",
     src = cms.InputTag(jLabel),
-    cut = cms.string(" pt > 25 && abs(eta) < 4.")
+    cut = cms.string(" pt > 25 && abs(eta) < 5.")
     )
 
 process.skimmedPatJetsAK8 = cms.EDFilter(
     "CandViewSelector",
     src = cms.InputTag(jLabelAK8),
-    cut = cms.string("pt > 100 && abs(eta) < 4.")    
+    cut = cms.string("pt > 100 && abs(eta) < 5.")    
+    )
+
+process.skimmedPatJetsAK8Puppi = cms.EDFilter(
+    "CandViewSelector",
+    #src = cms.InputTag(jLabelAK8.replace('CHS', 'Puppi')),
+    src = cms.InputTag('selectedPatJetsAK8PFPuppi'),
+    cut = cms.string("pt > 100 && abs(eta) < 5.")    
     )
 
 
@@ -174,7 +207,7 @@ process.muonUserData = cms.EDProducer(
 
 process.jetUserData = cms.EDProducer(
     'JetUserData',
-    jetLabel  = cms.InputTag("slimmedJets"),
+    jetLabel  = cms.InputTag(jLabel),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -186,8 +219,27 @@ process.jetUserData = cms.EDProducer(
 
 process.jetUserDataAK8 = cms.EDProducer(
     'JetUserData',
-    #jetLabel  = cms.InputTag("slimmedJetsAK8"),
-    jetLabel  = cms.InputTag("selectedPatJetsAK8PFCHS"),
+    jetLabel  = cms.InputTag(jLabelAK8),
+    pv        = cms.InputTag(pvLabel),
+    ### TTRIGGER ###
+    triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
+    triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
+    hltJetFilter       = cms.InputTag("hltSixCenJet20L1FastJet"),
+    hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
+    hlt2reco_deltaRmax = cms.double(0.2)
+)
+process.boostedJetUserDataAK8 = cms.EDProducer(
+    'BoostedJetToolboxUserData',
+    jetLabel  = cms.InputTag('jetUserDataAK8'),
+    topjetLabel = cms.InputTag('patJetsCMSTopTagCHSPacked'),
+    vjetLabel = cms.InputTag('selectedPatJetsAK8PFCHSSoftDropPacked'),
+    distMax = cms.double(0.8)
+)
+
+process.jetUserDataAK8Puppi = cms.EDProducer(
+    'JetUserData',
+    #jetLabel  = cms.InputTag(jLabelAK8.replace('CHS','Puppi') ),
+    jetLabel  = cms.InputTag( 'selectedPatJetsAK8PFPuppi' ),
     pv        = cms.InputTag(pvLabel),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
@@ -197,14 +249,14 @@ process.jetUserDataAK8 = cms.EDProducer(
     hlt2reco_deltaRmax = cms.double(0.2)
 )
 
-process.boostedJetUserDataAK8 = cms.EDProducer(
-    'BoostedJetUserData',
-    jetLabel  = cms.InputTag("jetUserDataAK8"),
-    topjetLabel  = cms.InputTag("patJetsCMSTopTagCHSPacked"),
-    vjetLabel    = cms.InputTag("selectedPatJetsAK8PFCHSPrunedPacked"),
-    #vjetLabel    = cms.InputTag("patJetsAK8PFCHSPrunedPacked"),
+process.boostedJetUserDataAK8Puppi = cms.EDProducer(
+    'BoostedJetToolboxUserData',
+    jetLabel  = cms.InputTag('jetUserDataAK8Puppi'),
+    topjetLabel = cms.InputTag('patJetsCMSTopTagCHSPacked'),
+    vjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
     distMax = cms.double(0.8)
 )
+
 
 process.electronUserData = cms.EDProducer(
     'ElectronUserData',
@@ -247,8 +299,28 @@ process.TriggerUserData = cms.EDProducer(
 
 
 ### Including ntuplizer 
-#process.load("Analysis.B2GAnaFW.b2gedmntuples_cff")
 process.load("RUNA.RUNtuples.RUNtuples_cff")
+from RUNA.RUNtuples.RUNtuples_cff import basic, jetAK8Vars, jetToolboxAK8Vars, jetToolboxAK8PuppiVars
+if (options.is74XSample):
+	process.jetsAK8.variables += jetAK8Vars
+else:
+	process.subjetKeysAK8.jetLabel = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
+	process.subjetsAK8.src = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
+	process.subjetsCmsTopTag.src = cms.InputTag("patJetsCMSTopTagCHSPacked", "SubJets")
+	process.subjetsCmsTopTagKeys.jetLabel = cms.InputTag("patJetsCMSTopTagCHSPacked", "SubJets")
+	process.jetsAK8.src = 'boostedJetUserDataAK8'
+	process.jetsAK8.variables += jetToolboxAK8Vars
+
+### Puppi
+process.jetsAK8Puppi = copy.deepcopy(basic)
+process.jetsAK8Puppi.variables += jetToolboxAK8PuppiVars 
+process.jetsAK8Puppi.prefix = 'jetAK8Puppi'
+process.jetsAK8Puppi.src = cms.InputTag( 'boostedJetUserDataAK8Puppi' )
+process.subjetsAK8Puppi = process.subjetsAK8.clone( prefix = 'subjetAK8Puppi', src = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked', "SubJets") )
+process.jetKeysAK8Puppi = process.jetKeysAK8.clone( jetLabel = 'jetUserDataAK8Puppi' )
+process.edmNtuplesOut.outputCommands+=('keep *_jetsAK8Puppi_*_*',)
+process.edmNtuplesOut.outputCommands+=('keep *_jetKeysAK8Puppi_*_*',)
+process.edmNtuplesOut.outputCommands+=('keep *_subjetsAK8Puppi_*_*',)
 
 
 process.options.allowUnscheduled = cms.untracked.bool(True)

@@ -7,24 +7,32 @@ from CRABClient.UserUtilities import config
 config = config()
 
 
-version = 'v03'
+version = 'v04'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
 
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'RUNtuples_cfg.py'
-config.JobType.allowNonProductionCMSSW = True
+config.JobType.allowUndistributedCMSSW = True
 
 config.Data.inputDataset = ''
 config.Data.splitting = 'LumiBased'
 config.Data.unitsPerJob = 20
-config.Data.outLFN = '/store/user/algomez/'
+config.Data.outLFNDirBase = '/store/user/algomez/'
 config.Data.publication = True
 config.Data.ignoreLocality = True
 config.Data.publishDataName = 'RUNA_PHYS14_PU20bx25_'+version
 
 config.Site.storageSite = 'T3_US_FNALLPC'
+
+def submit(config):
+
+	try:
+		crabCommand('submit', config = config)
+	except HTTPException, hte:
+		print 'Cannot execute commend'
+		print hte.headers
 
 if __name__ == '__main__':
 
@@ -57,7 +65,11 @@ if __name__ == '__main__':
 	
 			]
 	
+	from multiprocessing import Process
 	for dataset in QCD:
 		config.Data.inputDataset = dataset
 		config.General.requestName = dataset.split('/')[1]+'RUNA_PHYS14_PU20bx25_'+version
-		crabCommand('submit', config = config)
+		#crabCommand('submit', config = config)
+		p = Process(target=submit, args=(config,))
+		p.start()
+		p.join()
