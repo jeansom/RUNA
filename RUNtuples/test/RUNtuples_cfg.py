@@ -18,8 +18,8 @@ options.register('maxEvts',
                  'Number of events to process')
 
 options.register('sample',
-                 #'/store/relval/CMSSW_7_4_1/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/MCRUN2_74_V9_gensim_740pre7-v1/00000/2E7A3E3E-F3EC-E411-9FDD-002618943833.root',
-		 '/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/RPVSt100tojj_13TeV_pythia8_MiniAOD_v706_PU40bx50/b71e879835d2f0083a0e044b05216236/RPVSt100tojj_13TeV_pythia8_MiniAOD_PU40bx50_1000_1_Z6C.root',
+                 '/store/relval/CMSSW_7_4_1/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/MCRUN2_74_V9_gensim_740pre7-v1/00000/2E7A3E3E-F3EC-E411-9FDD-002618943833.root',
+		 #'/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/RPVSt100tojj_13TeV_pythia8_MiniAOD_v706_PU40bx50/b71e879835d2f0083a0e044b05216236/RPVSt100tojj_13TeV_pythia8_MiniAOD_PU40bx50_1000_1_Z6C.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
@@ -37,7 +37,8 @@ options.register('outputLabel',
                  'Output label')
 
 options.register('globalTag',
-                 'MCRUN2_74_V7',
+                 #'MCRUN2_74_V9A',    ### For 50ns
+                 'MCRUN2_74_V9',    ### For 25ns
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Global Tag')
@@ -300,7 +301,7 @@ process.TriggerUserData = cms.EDProducer(
 
 ### Including ntuplizer 
 process.load("RUNA.RUNtuples.RUNtuples_cff")
-from RUNA.RUNtuples.RUNtuples_cff import basic, jetAK8Vars, jetToolboxAK8Vars, jetToolboxAK8PuppiVars
+from RUNA.RUNtuples.RUNtuples_cff import basic, jetVars, jetAK8Vars, jetToolboxAK8Vars, jetToolboxAK8PuppiVars
 if (options.is74XSample):
 	process.jetsAK8.variables += jetAK8Vars
 else:
@@ -313,6 +314,7 @@ else:
 
 ### Puppi
 process.jetsAK8Puppi = copy.deepcopy(basic)
+process.jetsAK8Puppi.variables += jetVars
 process.jetsAK8Puppi.variables += jetToolboxAK8PuppiVars 
 process.jetsAK8Puppi.prefix = 'jetAK8Puppi'
 process.jetsAK8Puppi.src = cms.InputTag( 'boostedJetUserDataAK8Puppi' )

@@ -8,7 +8,8 @@ First, if you didn't download the B2GEDMNtuples:
 
 ```
 cd $CMSSW_BASE/src/
-git clone https://github.com/cmsb2g/B2GAnaFW.git Analysis
+git clone https://github.com/cms-jet/JetToolbox JMEAnalysis/JetToolbox -b jetToolbox_74X
+git clone https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW/
 scram b -j 18
 
 ```
@@ -19,11 +20,10 @@ To run this go to RUNtuples/test. There you have a file called `RUNtuples_cfg.py
 cmsRun RUNtuples_cfi.py
 ```
 
+Remember to change the *GlobalTag* in RUNtuples_cfi according to your sample.
+
 Then you have a `crab3.py` file to send your jobs to CRAB3. There you should only change the requestName, inputDataset, outLFN and publishDataName. Remember to set your CRAB3 environment before you send your crab job:
 
 ```
 source /cvmfs/cms.cern.ch/crab3/crab.sh
 ```
-
-
-

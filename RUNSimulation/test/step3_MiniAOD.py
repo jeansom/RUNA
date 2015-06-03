@@ -24,7 +24,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:step2_RAW2DIGI_L1Reco_RECO_EI_DQM.root'),
+    fileNames = cms.untracked.vstring('file:inputFile.root'),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -51,7 +51,7 @@ process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
     dropMetaData = cms.untracked.string('ALL'),
     eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
     fastCloning = cms.untracked.bool(False),
-    fileName = cms.untracked.string('step3_PAT.root'),
+    fileName = cms.untracked.string('inputFile.root'),
     outputCommands = process.MINIAODSIMEventContent.outputCommands,
     overrideInputFileSplitLevels = cms.untracked.bool(True)
 )

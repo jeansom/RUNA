@@ -59,7 +59,7 @@ step0PythonFile="step0_${Name}_LHE_GEN_SIM.py"
 cp ${Main_Dir}/step0_LHE_GEN_SIM.py  ${step0PythonFile}
 
 sed -i 's,/store/user/algomez/lhe/RPVSt100tojj_ISR2j_13TeV.lhe,'"${LHEFile}"',' ${step0PythonFile}
-sed -i 's/output/'"${Name}"'_GEN/' ${step0PythonFile}
+sed -i 's/OUTPUT/'"${Name}"'_GEN/' ${step0PythonFile}
 
 echo " Creating python file for RAWSIM (different PU scenarios).. "
 step1PythonFile="step1_${Name}_DIGI_LI_DIGI2RAW_HLT_"
