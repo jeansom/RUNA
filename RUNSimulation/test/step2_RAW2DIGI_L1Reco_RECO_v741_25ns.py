@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: step2 --mc --filein file:inputFile.root --conditions MCRUN2_74_V9A -s RAW2DIGI,L1Reco,RECO,EI,DQM:DQMOfflinePOGMC --datatier AODSIM,DQMIO --customise SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1_50ns --eventcontent AODSIM,DQM --magField 38T_PostLS1 --no_exec --python_filename step2_RAW2DIGI_L1Reco_RECO_v741_50ns.py
+# with command line options: step2 --mc --filein file:step1_DIGI_LI_DIGI2RAW_HLT_PU25.root --conditions MCRUN2_74_V9 -s RAW2DIGI,L1Reco,RECO,EI,DQM:DQMOfflinePOGMC --datatier AODSIM,DQMIO --customise SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1 --eventcontent AODSIM,DQM --magField 38T_PostLS1 --no_exec --python_filename step2_RAW2DIGI_L1Reco_RECO_v741_25ns.py
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process('RECO')
@@ -28,7 +28,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:inputFile.root'),
+    fileNames = cms.untracked.vstring('file:step1_DIGI_LI_DIGI2RAW_HLT_PU25.root'),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -53,7 +53,7 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('')
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
-    fileName = cms.untracked.string('inputfile.root'),
+    fileName = cms.untracked.string('step2_RAW2DIGI_L1Reco_RECO_EI_DQM.root'),
     outputCommands = process.AODSIMEventContent.outputCommands
 )
 
@@ -62,7 +62,7 @@ process.DQMoutput = cms.OutputModule("DQMRootOutputModule",
         dataTier = cms.untracked.string('DQMIO'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('inputfile_inDQM.root'),
+    fileName = cms.untracked.string('step2_RAW2DIGI_L1Reco_RECO_EI_DQM_inDQM.root'),
     outputCommands = process.DQMEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
@@ -71,7 +71,7 @@ process.DQMoutput = cms.OutputModule("DQMRootOutputModule",
 
 # Other statements
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'MCRUN2_74_V9A', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'MCRUN2_74_V9', '')
 
 # Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)
@@ -88,10 +88,10 @@ process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,proces
 # customisation of the process.
 
 # Automatic addition of the customisation function from SLHCUpgradeSimulations.Configuration.postLS1Customs
-from SLHCUpgradeSimulations.Configuration.postLS1Customs import customisePostLS1_50ns 
+from SLHCUpgradeSimulations.Configuration.postLS1Customs import customisePostLS1 
 
-#call to customisation function customisePostLS1_50ns imported from SLHCUpgradeSimulations.Configuration.postLS1Customs
-process = customisePostLS1_50ns(process)
+#call to customisation function customisePostLS1 imported from SLHCUpgradeSimulations.Configuration.postLS1Customs
+process = customisePostLS1(process)
 
 # End of customisation functions
 

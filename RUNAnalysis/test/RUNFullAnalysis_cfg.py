@@ -142,7 +142,8 @@ else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
 		#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/B2g_PU40bx50_v0/150219_165100/0000/B2GEDMNtuple_1.root',
-		'file:RUNtuple_1.root'
+		'/store/user/algomez/QCD_Pt-600to800_Tune4C_13TeV_pythia8/RUNA_PHYS14_PU20bx25_v04/150523_165904/0000/RUNtuples_1.root'
+		#'file:RUNtuple_1.root'
 	    )
 	)
 
@@ -251,19 +252,44 @@ process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 process.BoostedAnalysisPlotsTrimmed = process.BoostedAnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8trimmedMass') )
 process.BoostedAnalysisPlotsFiltered = process.BoostedAnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8filteredMass') )
 process.BoostedAnalysisPlotsPruned = process.BoostedAnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8prunedMass') )
+process.BoostedAnalysisPlotsSoftDrop = process.BoostedAnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8softDropMass') )
+process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone( 
+		jetPt 			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiPt'),
+		jetEta			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiEta'),
+		jetPhi 			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiPhi'),
+		jetE 			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiE'),
+		jetMass 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppiMass'),
+		jetTau1 		= cms.InputTag('jetsAK8Puppi:jetAK8Puppitau1'),
+		jetTau2 		= cms.InputTag('jetsAK8Puppi:jetAK8Puppitau2'),
+		jetTau3 		= cms.InputTag('jetsAK8Puppi:jetAK8Puppitau3'),
+		jetNSubjets 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppinSubJets'),
+		jetSubjetIndex0 	= cms.InputTag('jetsAK8Puppi:jetAK8PuppivSubjetIndex0'),
+		jetSubjetIndex1 	= cms.InputTag('jetsAK8Puppi:jetAK8PuppivSubjetIndex1'),
+		jetSubjetIndex2 	= cms.InputTag('jetsAK8Puppi:jetAK8PuppivSubjetIndex0'),
+		jetSubjetIndex3 	= cms.InputTag('jetsAK8Puppi:jetAK8PuppivSubjetIndex1'),
+		jetKeys 		= cms.InputTag('jetKeysAK8Puppi'),
+		#### Subjets
+		subjetPt 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiPt'),
+		subjetEta 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiEta'),
+		subjetPhi 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiPhi'),
+		subjetE 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiE'),
+		subjetMass 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiMass'),
+		)
 
 process.BoostedAnalysisPlotsNOSCALE = process.BoostedAnalysisPlots.clone( scale = cms.double(1) )
 process.BoostedAnalysisPlotsTrimmedNOSCALE = process.BoostedAnalysisPlotsTrimmed.clone( scale = cms.double(1) )
 process.BoostedAnalysisPlotsPrunedNOSCALE = process.BoostedAnalysisPlotsPruned.clone( scale = cms.double(1) )
+process.BoostedAnalysisPlotsSoftDropNOSCALE = process.BoostedAnalysisPlotsSoftDrop.clone( scale = cms.double(1) )
 process.BoostedAnalysisPlotsFilteredNOSCALE = process.BoostedAnalysisPlotsFiltered.clone( scale = cms.double(1) )
 
-process.BoostedAnalysisPlotsPrunedPFHT900 = process.BoostedAnalysisPlotsPruned.clone( 
+process.BoostedAnalysisPlotsSoftDropPFHT900 = process.BoostedAnalysisPlotsSoftDrop.clone( 
 		cutHTvalue 		= cms.double( 0. ), 
 		cutTrimmedMassvalue 	= cms.double( 0. ), 
 		cutjetAK4Ptvalue 	= cms.double( options.jetAK4Pt ),
 		cutAK4HTvalue 		= cms.double( options.AK4HT ),
 		)
-process.RUNATreePruned = process.BoostedAnalysisPlotsPruned.clone( mkTree = cms.bool( True ) )
+
+process.RUNATreeSoftDrop = process.BoostedAnalysisPlotsSoftDrop.clone( mkTree = cms.bool( True ) )
 
 if options.debug:
 	process.p = cms.Path( process.AnalysisPlots
@@ -272,15 +298,17 @@ else:
 
 	process.p = cms.Path( process.AnalysisPlots
 		* process.AnalysisPlotsNOSCALE
-		#* process.BoostedAnalysisPlots
-		#* process.BoostedAnalysisPlotsTrimmed
+		* process.BoostedAnalysisPlots
+		* process.BoostedAnalysisPlotsTrimmed
 		* process.BoostedAnalysisPlotsPruned
-		#* process.BoostedAnalysisPlotsFiltered
+		* process.BoostedAnalysisPlotsSoftDrop
+		* process.BoostedAnalysisPlotsPuppi
+		* process.BoostedAnalysisPlotsFiltered
 		#* process.BoostedAnalysisPlotsNOSCALE
 		#* process.BoostedAnalysisPlotsTrimmedNOSCALE
-		* process.BoostedAnalysisPlotsPrunedNOSCALE
+		* process.BoostedAnalysisPlotsSoftDropNOSCALE
 		#* process.BoostedAnalysisPlotsFilteredNOSCALE
-		* process.BoostedAnalysisPlotsPrunedPFHT900
-		* process.RUNATreePruned
+		* process.BoostedAnalysisPlotsSoftDropPFHT900
+		* process.RUNATreeSoftDrop
 		)
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: step3 --mc --filein file:step2_RAW2DIGI_L1Reco_RECO_EI_DQM_inDQM.root --conditions MCRUN2_74_V9A --eventcontent MINIAODSIM --runUnscheduled -s PAT --datatier MINIAODSIM --customise SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1_50ns --no_exec --python_filename step3_MiniAOD_v741_50ns.py
+# with command line options: step3 --mc --filein file:step2_RAW2DIGI_L1Reco_RECO_EI_DQM.root --conditions MCRUN2_74_V9 --eventcontent MINIAODSIM --runUnscheduled -s PAT --datatier MINIAODSIM --customise SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1 --no_exec --python_filename step3_MiniAOD_v741_25ns.py
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process('PAT')
@@ -60,7 +60,7 @@ process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
 
 # Other statements
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'MCRUN2_74_V9A', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'MCRUN2_74_V9', '')
 
 # Path and EndPath definitions
 process.endjob_step = cms.EndPath(process.endOfProcess)
@@ -69,10 +69,10 @@ process.MINIAODSIMoutput_step = cms.EndPath(process.MINIAODSIMoutput)
 # customisation of the process.
 
 # Automatic addition of the customisation function from SLHCUpgradeSimulations.Configuration.postLS1Customs
-from SLHCUpgradeSimulations.Configuration.postLS1Customs import customisePostLS1_50ns 
+from SLHCUpgradeSimulations.Configuration.postLS1Customs import customisePostLS1 
 
-#call to customisation function customisePostLS1_50ns imported from SLHCUpgradeSimulations.Configuration.postLS1Customs
-process = customisePostLS1_50ns(process)
+#call to customisation function customisePostLS1 imported from SLHCUpgradeSimulations.Configuration.postLS1Customs
+process = customisePostLS1(process)
 
 # End of customisation functions
 #do not add changes to your config after this point (unless you know what you are doing)

@@ -53,7 +53,7 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('')
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
-    fileName = cms.untracked.string('inputfile.root'),
+    fileName = cms.untracked.string('step2_RAW2DIGI_L1Reco_RECO_EI_DQM.root'),
     outputCommands = process.AODSIMEventContent.outputCommands
 )
 
@@ -62,7 +62,7 @@ process.DQMoutput = cms.OutputModule("DQMRootOutputModule",
         dataTier = cms.untracked.string('DQMIO'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('inputfile_inDQM.root'),
+    fileName = cms.untracked.string('step2_RAW2DIGI_L1Reco_RECO_EI_DQM_inDQM.root'),
     outputCommands = process.DQMEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )

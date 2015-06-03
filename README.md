@@ -11,13 +11,12 @@ This package contains scripts:
 
 ### Instructions
 ```
-cmsrel CMSSW_7_3_1_patch2
-cd CMSSW_7_3_1_patch2/src/
+cmsrel CMSSW_7_4_1
+cd CMSSW_7_4_1/src/
 cmsenv
-git cms-merge-topic rappoccio:RecoJetsFromMiniAOD
-git clone https://github.com/cms-jet/JetToolbox JMEAnalysis/JetToolbox
+git clone https://github.com/cms-jet/JetToolbox JMEAnalysis/JetToolbox -b jetToolbox_74X
 git clone https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW/
-git clone https://github.com/alefisico/RUNA.git -b v731patch2
+git clone https://github.com/alefisico/RUNA.git -b v741
 scram b -j 18
 cmsenv
 ```
