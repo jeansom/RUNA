@@ -1,14 +1,9 @@
 from CRABClient.UserUtilities import config
 config = config()
 
-<<<<<<< HEAD
 version = 'v04'
 
 config.General.requestName = ''
-=======
-config.section_("General")
-config.General.requestName = 'RPVSt100tojj_13TeV_pythia8_EDMNtuple_PU40bx50_v30'
->>>>>>> upstream/master
 config.General.workArea = 'crab_projects'
 
 config.JobType.pluginName = 'Analysis'
@@ -21,22 +16,12 @@ config.Data.inputDBS = 'https://cmsweb.cern.ch/dbs/prod/phys03/DBSReader'
 config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = 1
 #NJOBS = 1
-<<<<<<< HEAD
 #config.Data.totalUnits = 1
 config.Data.outLFNDirBase = '/store/user/algomez/'
 config.Data.publication = True
 config.Data.ignoreLocality = True
 config.Data.publishDataName = 'RUNA_PHYS14_PU20bx25_'+version
 #config.Data.publishDataName = 'RUNA_PHYS14_PU40bx50_'+version
-=======
-config.Data.totalUnits = 1
-config.Data.outLFN = '/store/user/algomez'
-#config.Data.ignoreLocality = True
-config.Data.publication = True
-config.Data.ignoreLocality = True
-config.Data.publishDataName = 'RPVSt100tojj_13TeV_pythia8_EDMNtuple_PU40bx50_v30'
-#config.Data.publishDBS = 'https://cmsweb.cern.ch/dbs/prod/phys03/DBSWriter'
->>>>>>> upstream/master
 
 config.Site.storageSite = 'T3_US_FNALLPC'
 

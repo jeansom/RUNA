@@ -245,7 +245,6 @@ void RUNAna::analyze(const Event& iEvent, const EventSetup& iSetup) {
 	bool bTagCSV = 0;
 	for (size_t i = 0; i < jetPt->size(); i++) {
 
-<<<<<<< HEAD
 		if( TMath::Abs( (*jetEta)[i] ) > 2.4 ) continue;
 
 		rawHT += (*jetPt)[i];
@@ -254,31 +253,12 @@ void RUNAna::analyze(const Event& iEvent, const EventSetup& iSetup) {
 		if( (*jetPt)[i] > 150 ) { 
 			//LogWarning("jetInfo") << i << " " << (*jetPt)[i] << " " << (*jetEta)[i] << " " << (*jetPhi)[i] << " " << (*jetMass)[i];
 
-=======
-		if( TMath::Abs( (*jetEta)[i] ) > 2.5 ) continue;
-
-		double chf = (*chargedHadronEnergyFraction)[i];
-		double nhf = (*neutralHadronEnergyFraction)[i] + (*HFHadronEnergyFraction)[i] ;
-		double jec = 1. / ( (*jecFactor)[i] * (*jetE)[i] );
-		double nEMf = (*photonEnergy)[i] * jec;
-		double cEMf = (*electronEnergy)[i] * jec;
-		double muf = (*muonEnergy)[i] * jec;
-		int chm = (*chargedHadronMultiplicity)[i];
-		int npr = (*chargedHadronMultiplicity)[i] + (*neutralHadronMultiplicity)[i] ;
-
-		bool idL = ( (npr>1) && (nEMf<0.99) && (nhf<0.99) && (muf<0.8) && (cEMf<0.9) && (chf>0) && (chm>0) );
-
-		if( (*jetPt)[i] > 150  && idL ) { 
-
-			//LogWarning("jetInfo") << i << " " << (*jetPt)[i] << " " << (*jetEta)[i] << " " << (*jetPhi)[i];
->>>>>>> upstream/master
 			HT += (*jetPt)[i];
 			++numJets;
 
 			TLorentzVector tmpJet;
 			tmpJet.SetPtEtaPhiE( (*jetPt)[i], (*jetEta)[i], (*jetPhi)[i], (*jetE)[i] );
 
-<<<<<<< HEAD
 			/// Vector of zeros
 			TLorentzVector tmpSubjet0, tmpSubjet1, tmpZeros;
 			tmpZeros.SetPtEtaPhiE( 0, 0, 0, 0 );
@@ -305,50 +285,21 @@ void RUNAna::analyze(const Event& iEvent, const EventSetup& iSetup) {
 			tmpJET.p4 = tmpJet;
 			tmpJET.subjet0 = tmpSubjet0;
 			tmpJET.subjet1 = tmpSubjet1;
-=======
-			JETtype tmpJET;
-			tmpJET.p4 = tmpJet;
->>>>>>> upstream/master
 			tmpJET.mass = (*jetMass)[i];
 			tmpJET.tau1 = (*jetTau1)[i];
 			tmpJET.tau2 = (*jetTau2)[i];
 			tmpJET.tau3 = (*jetTau3)[i];
-<<<<<<< HEAD
 			tmpJET.btagCSV = bTagCSV;
 			JETS.push_back( tmpJET );
 	   
 			histos1D_[ "jetPt" ]->Fill( (*jetPt)[i], scale  );
 			histos1D_[ "jetEta" ]->Fill( (*jetEta)[i], scale  );
-=======
-				   
-			/// Vector of zeros
-			std::vector< math::PtEtaPhiELorentzVector > tmpSubjets;
-			math::PtEtaPhiELorentzVector tmpZeros( 0, 0, 0, 0 );
-			if( i==0 ) {
-				tmpSubjets.push_back( (*jet1Subjets)[0] ); 
-				tmpSubjets.push_back( (*jet1Subjets)[1] ); 
-				//LogWarning("test") << i << " " << (*jet1Subjets)[0].pt() << " " <<  (*jet1Subjets)[1].pt();
-			} else if( i==1 ) {
-				tmpSubjets.push_back( (*jet2Subjets)[0] ); 
-				tmpSubjets.push_back( (*jet2Subjets)[1] ); 
-			} else tmpSubjets.push_back( tmpZeros );
-
-			tmpJET.subjets = tmpSubjets;
-			//LogWarning("Subjet1") << i << " " << tmpSubjets.size() << " " <<  tmpSubjets[0].pt() << " " << tmpSubjets[1].pt();
-			JETS.push_back( tmpJET );
-			tmpSubjets.clear();
-			   
-			histos1D_[ "jetPt" ]->Fill( (*jetPt)[i], scale  );
-			histos1D_[ "jetEta" ]->Fill( (*jetEta)[i], scale  );
-			histos1D_[ "HT" ]->Fill( HT, scale  );
->>>>>>> upstream/master
 			histos1D_[ "jetMass" ]->Fill( (*jetMass)[i], scale  );
 		}
 	}
 
 	//sort(JETS.begin(), JETS.end(), [](const JETtype &p1, const JETtype &p2) { TLorentzVector tmpP1, tmpP2; tmpP1 = p1.p4; tmpP2 = p2.p4;  return tmpP1.M() > tmpP2.M(); }); 
 	histos1D_[ "jetNum" ]->Fill( numJets );
-<<<<<<< HEAD
 	if ( HT > 0 ) histos1D_[ "HT" ]->Fill( HT, scale  );
 	if ( HT > 700 ) cutHT = 1;
 	if ( ( JETS.size()> 0 ) && ( JETS[0].mass > 50) ) cutMass = 1;
@@ -366,102 +317,6 @@ void RUNAna::analyze(const Event& iEvent, const EventSetup& iSetup) {
 	}
 	JETS.clear();
 	//RUNAtree->Fill();
-=======
-	if (HT > 700) cutHT = 1;
-
-	//bool cutAsym = 0;
-	if( ( numJets > 1 ) && cutHT ){
-		cutmap["HT"] += 1;
-		histos1D_[ "jetMass_cutHT_Ptsort" ]->Fill( (*jetMass)[0], scale );
-		histos1D_[ "jetMass_cutHT" ]->Fill( JETS[0].mass, scale );
-
-		double massAve = ( JETS[0].mass + JETS[1].mass ) / 2.0;
-		double massAsym = abs( JETS[0].mass - JETS[1].mass ) / ( JETS[0].mass + JETS[1].mass );
-
-		histos1D_[ "massAsymmetry_cutHT" ]->Fill( massAsym, scale  );
-		histos1D_[ "massAve_cutHT" ]->Fill( massAve, scale  );
-
-		TLorentzVector tmpJet1, tmpJet2, tmpCM;
-		tmpJet1 = JETS[0].p4;
-		tmpJet2 = JETS[1].p4;
-
-		tmpCM = tmpJet1 + tmpJet2;
-		//LogWarning("Jets") << tmpJet1.Eta() << " " << tmpJet2.Eta() << " " << tmpCM.Eta();
-		tmpJet1.Boost( -tmpCM.BoostVector() );
-		tmpJet2.Boost( -tmpCM.BoostVector() );
-		//LogWarning("JetsBoost") << tmpJet1.Eta() << " " << tmpJet2.Eta();
-		double cosThetaStar = ( tmpJet1.Px() * tmpCM.Px() +  tmpJet1.Py() * tmpCM.Py() + tmpJet1.Pz() * tmpCM.Pz() ) / (tmpJet1.E() * tmpCM.E() ) ;
-		//LogWarning("cos theta") << cosThetaStar ;
-
-		double jet1Tau21 = JETS[0].tau2 / JETS[0].tau1;
-		double jet1Tau31 = JETS[0].tau3 / JETS[0].tau1;
-		double jet1Tau32 = JETS[0].tau3 / JETS[0].tau2;
-		histos1D_[ "jet1Tau1_cutHT" ]->Fill( JETS[0].tau1, scale );
-		histos1D_[ "jet1Tau2_cutHT" ]->Fill( JETS[0].tau2, scale );
-		histos1D_[ "jet1Tau3_cutHT" ]->Fill( JETS[0].tau3, scale );
-		histos1D_[ "jet1Tau21_cutHT" ]->Fill( jet1Tau21, scale );
-		histos1D_[ "jet1Tau31_cutHT" ]->Fill( jet1Tau31, scale );
-		histos1D_[ "jet1Tau32_cutHT" ]->Fill( jet1Tau32, scale );
-
-
-		double jet1SubjetPtRatio = -999;
-		double jet2SubjetPtRatio = -999;
-		if( JETS[0].subjets.size() > 1 ) {
-			jet1SubjetPtRatio = std::min( JETS[0].subjets[0].pt(), JETS[0].subjets[1].pt() ) / std::max( JETS[0].subjets[0].pt(), JETS[0].subjets[1].pt() );
-			histos1D_[ "jet1Subjet1Pt_cutHT" ]->Fill( JETS[0].subjets[0].pt(), scale );
-			histos1D_[ "jet1Subjet2Pt_cutHT" ]->Fill( JETS[0].subjets[1].pt(), scale );
-			histos1D_[ "jet1SubjetPtRatio_cutHT" ]->Fill( jet1SubjetPtRatio, scale );
-			histos1D_[ "subjetPtRatio_cutHT" ]->Fill( jet1SubjetPtRatio, scale );
-	  	}
-		if( JETS[1].subjets.size() > 1 ) {
-			jet2SubjetPtRatio = std::min( JETS[1].subjets[0].pt(), JETS[1].subjets[1].pt() ) / std::max( JETS[1].subjets[0].pt(), JETS[1].subjets[1].pt() );
-			histos1D_[ "jet2Subjet1Pt_cutHT" ]->Fill( JETS[1].subjets[0].pt(), scale );
-			histos1D_[ "jet2Subjet2Pt_cutHT" ]->Fill( JETS[1].subjets[1].pt(), scale );
-			histos1D_[ "jet2SubjetPtRatio_cutHT" ]->Fill( jet2SubjetPtRatio, scale );
-			histos1D_[ "subjetPtRatio_cutHT" ]->Fill( jet2SubjetPtRatio, scale );
-		}
-
-
-		if( massAsym < 0.1 ){
-			cutmap["Asymmetry"] += 1;
-			histos1D_[ "massAve_cutAsym" ]->Fill( massAve, scale  );
-			histos1D_[ "cosThetaStar_cutAsym" ]->Fill( cosThetaStar, scale  );
-			histos1D_[ "jet1Tau21_cutAsym" ]->Fill( jet1Tau21, scale  );
-			histos1D_[ "jet1Tau31_cutAsym" ]->Fill( jet1Tau31, scale  );
-			histos1D_[ "jet1Tau32_cutAsym" ]->Fill( jet1Tau32, scale  );
-			histos1D_[ "subjetPtRatio_cutAsym" ]->Fill( jet1SubjetPtRatio, scale );
-			histos1D_[ "subjetPtRatio_cutAsym" ]->Fill( jet2SubjetPtRatio, scale );
-
-			if( TMath::Abs( cosThetaStar ) < 0.3 ){
-				cutmap["CosTheta"] += 1;
-				histos1D_[ "massAve_cutCosTheta" ]->Fill( massAve, scale  );
-				histos1D_[ "jet1Tau21_cutCosTheta" ]->Fill( jet1Tau21, scale  );
-				histos1D_[ "jet1Tau31_cutCosTheta" ]->Fill( jet1Tau31, scale  );
-				histos1D_[ "jet1Tau32_cutCosTheta" ]->Fill( jet1Tau32, scale  );
-				histos1D_[ "subjetPtRatio_cutCosTheta" ]->Fill( jet1SubjetPtRatio, scale );
-				histos1D_[ "subjetPtRatio_cutCosTheta" ]->Fill( jet2SubjetPtRatio, scale );
-
-				if( ( jet1SubjetPtRatio > 0.3 ) && ( jet2SubjetPtRatio > 0.3 ) ){
-					cutmap["SubjetPtRatio"] += 1;
-					histos1D_[ "massAve_cutSubjetPtRatio" ]->Fill( massAve, scale  );
-					histos1D_[ "jet1Tau21_cutSubjetPtRatio" ]->Fill( jet1Tau21, scale  );
-					histos1D_[ "jet1Tau31_cutSubjetPtRatio" ]->Fill( jet1Tau31, scale  );
-					histos1D_[ "jet1Tau32_cutSubjetPtRatio" ]->Fill( jet1Tau32, scale  );
-				}
-
-				if(  jet1Tau31 < 0.5 ){
-					cutmap["Tau31"] += 1;
-					histos1D_[ "massAve_cutTau31" ]->Fill( massAve, scale  );
-				}
-				if(  jet1Tau21 < 0.6 ){
-					cutmap["Tau21"] += 1;
-					histos1D_[ "massAve_cutTau21" ]->Fill( massAve, scale  );
-				}
-			}
-		}
-	} 
-	JETS.clear();
->>>>>>> upstream/master
 
 }
 
@@ -499,17 +354,7 @@ void RUNAna::beginJob() {
 	histos1D_[ "massAve_cutTau21" ]->Sumw2();
 
 	cutLabels.push_back("Processed");
-<<<<<<< HEAD
 	cutLabels.push_back("Trigger");
-=======
-	cutLabels.push_back("Kinematics");
-	cutLabels.push_back("HT");
-	cutLabels.push_back("Asymmetry");
-	cutLabels.push_back("CosTheta");
-	cutLabels.push_back("SubjetPtRatio");
-	cutLabels.push_back("Tau31");
-	cutLabels.push_back("Tau21");
->>>>>>> upstream/master
 	histos1D_[ "hcutflow" ] = fs_->make< TH1D >("cutflow","cut flow", cutLabels.size(), 0.5, cutLabels.size() +0.5 );
 	histos1D_[ "hcutflow" ]->Sumw2();
 	histos1D_[ "hcutflowSimple" ] = fs_->make< TH1D >("cutflowSimple","simple cut flow", cutLabels.size(), 0.5, cutLabels.size() +0.5 );
