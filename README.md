@@ -16,7 +16,7 @@ cd CMSSW_7_4_1_patch1/src/
 cmsenv
 git cms-addpkg CommonTools/PileupAlgos
 git cms-merge-topic nhanvtran:puppi-etadep-741-v1
-git clone https://github.com/cms-jet/JetToolbox JMEAnalysis/JetToolbox -b jetToolbox_74X
+git clone https://github.com/cms-jet/JetToolbox JMEAnalysis/JetToolbox 
 git clone https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW/
 git clone https://github.com/alefisico/RUNA.git 
 scram b -j 18
