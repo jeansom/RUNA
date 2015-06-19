@@ -643,22 +643,6 @@ jetToolboxAK8PuppiVars = (
         quantity = cms.untracked.string("? hasUserInt('VSubjet1') ? userInt('VSubjet1') : -1 ")
         ),
      cms.PSet(
-        tag = cms.untracked.string("topSubjetIndex0"),
-        quantity = cms.untracked.string("? hasUserInt('TopSubjet0') ? userInt('TopSubjet0') : -1 ")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("topSubjetIndex1"),
-        quantity = cms.untracked.string("? hasUserInt('TopSubjet1') ? userInt('TopSubjet1') : -1 ")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("topSubjetIndex2"),
-        quantity = cms.untracked.string("? hasUserInt('TopSubjet2') ? userInt('TopSubjet2') : -1 ")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("topSubjetIndex3"),
-        quantity = cms.untracked.string("? hasUserInt('TopSubjet3') ? userInt('TopSubjet3') : -1 ")
-        ),
-     cms.PSet(
         tag = cms.untracked.string("tau1"),
         quantity = cms.untracked.string("userFloat('NjettinessAK8Puppi:tau1')")
         ),
@@ -686,21 +670,45 @@ jetToolboxAK8PuppiVars = (
         tag = cms.untracked.string("filteredMass"),
         quantity = cms.untracked.string("userFloat('ak8PFJetsPuppiFilteredMass')")
         ),
+)
+
+jetToolboxAK8SKVars = (
+#### SUBSTRUCTURE
      cms.PSet(
-        tag = cms.untracked.string("topMass"),
-        quantity = cms.untracked.string("? hasTagInfo('caTop') ? tagInfo('caTop').properties().topMass : 0")
+        tag = cms.untracked.string("vSubjetIndex0"),
+        quantity = cms.untracked.string("? hasUserInt('VSubjet0') ? userInt('VSubjet0') : -1 ")
         ),
      cms.PSet(
-        tag = cms.untracked.string("wMass"),
-        quantity = cms.untracked.string("? hasTagInfo('caTop') ? tagInfo('caTop').properties().wMass : 0")
+        tag = cms.untracked.string("vSubjetIndex1"),
+        quantity = cms.untracked.string("? hasUserInt('VSubjet1') ? userInt('VSubjet1') : -1 ")
         ),
      cms.PSet(
-        tag = cms.untracked.string("nSubJets"),
-        quantity = cms.untracked.string("? hasTagInfo('caTop') ? tagInfo('caTop').properties().nSubJets : 0")
+        tag = cms.untracked.string("tau1"),
+        quantity = cms.untracked.string("userFloat('NjettinessAK8SK:tau1')")
         ),
      cms.PSet(
-        tag = cms.untracked.string("minmass"),
-        quantity = cms.untracked.string("? hasTagInfo('caTop') ? tagInfo('caTop').properties().minMass : 0")
+        tag = cms.untracked.string("tau2"),
+        quantity = cms.untracked.string("userFloat('NjettinessAK8SK:tau2')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("tau3"),
+        quantity = cms.untracked.string("userFloat('NjettinessAK8SK:tau3')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("softDropMass"),
+        quantity = cms.untracked.string("userFloat('ak8PFJetsSKSoftDropMass')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("trimmedMass"),
+        quantity = cms.untracked.string("userFloat('ak8PFJetsSKTrimmedMass')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("prunedMass"),
+        quantity = cms.untracked.string("userFloat('ak8PFJetsSKPrunedMass')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("filteredMass"),
+        quantity = cms.untracked.string("userFloat('ak8PFJetsSKFilteredMass')")
         ),
 )
 

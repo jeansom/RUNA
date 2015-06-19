@@ -12,14 +12,14 @@ import FWCore.ParameterSet.VarParsing as opts
 options = opts.VarParsing ('analysis')
 
 options.register('maxEvts',
-                 10,# default value: process all events
+                 100,# default value: process all events
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.int,
                  'Number of events to process')
 
 options.register('sample',
-                 '/store/relval/CMSSW_7_4_1/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/MCRUN2_74_V9_gensim_740pre7-v1/00000/2E7A3E3E-F3EC-E411-9FDD-002618943833.root',
-		 #'/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/RPVSt100tojj_13TeV_pythia8_MiniAOD_v706_PU40bx50/b71e879835d2f0083a0e044b05216236/RPVSt100tojj_13TeV_pythia8_MiniAOD_PU40bx50_1000_1_Z6C.root',
+                 #'/store/relval/CMSSW_7_4_1/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/MCRUN2_74_V9_gensim_740pre7-v1/00000/2E7A3E3E-F3EC-E411-9FDD-002618943833.root',
+		 '/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_MiniAOD_v2/150613_105255/0000/RPVSt100tojj_13TeV_pythia8_MiniAOD_Asympt25ns_100.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
@@ -115,6 +115,7 @@ from RecoJets.JetProducers.SubJetParameters_cfi import SubJetParameters
 from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
 
 jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True )
+jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', PUMethod='SK', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True )
 if not (options.is74XSample) :
 	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True )
 	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', addCMSTopTagger=True )
@@ -186,6 +187,12 @@ process.skimmedPatJetsAK8Puppi = cms.EDFilter(
     cut = cms.string("pt > 100 && abs(eta) < 5.")    
     )
 
+process.skimmedPatJetsAK8SK = cms.EDFilter(
+    "CandViewSelector",
+    src = cms.InputTag('selectedPatJetsAK8PFSK'),
+    cut = cms.string("pt > 100 && abs(eta) < 5.")    
+    )
+
 
 process.eventUserData = cms.EDProducer(
     'EventUserData',
@@ -239,7 +246,6 @@ process.boostedJetUserDataAK8 = cms.EDProducer(
 
 process.jetUserDataAK8Puppi = cms.EDProducer(
     'JetUserData',
-    #jetLabel  = cms.InputTag(jLabelAK8.replace('CHS','Puppi') ),
     jetLabel  = cms.InputTag( 'selectedPatJetsAK8PFPuppi' ),
     pv        = cms.InputTag(pvLabel),
     ### TTRIGGER ###
@@ -253,8 +259,28 @@ process.jetUserDataAK8Puppi = cms.EDProducer(
 process.boostedJetUserDataAK8Puppi = cms.EDProducer(
     'BoostedJetToolboxUserData',
     jetLabel  = cms.InputTag('jetUserDataAK8Puppi'),
-    topjetLabel = cms.InputTag('patJetsCMSTopTagCHSPacked'),
+    topjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
     vjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
+    distMax = cms.double(0.8)
+)
+
+process.jetUserDataAK8SK = cms.EDProducer(
+    'JetUserData',
+    jetLabel  = cms.InputTag( 'selectedPatJetsAK8PFSK' ),
+    pv        = cms.InputTag(pvLabel),
+    ### TTRIGGER ###
+    triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
+    triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
+    hltJetFilter       = cms.InputTag("hltSixCenJet20L1FastJet"),
+    hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
+    hlt2reco_deltaRmax = cms.double(0.2)
+)
+
+process.boostedJetUserDataAK8SK = cms.EDProducer(
+    'BoostedJetToolboxUserData',
+    jetLabel  = cms.InputTag('jetUserDataAK8SK'),
+    topjetLabel = cms.InputTag('selectedPatJetsAK8PFSKSoftDropPacked'),
+    vjetLabel = cms.InputTag('selectedPatJetsAK8PFSKSoftDropPacked'),
     distMax = cms.double(0.8)
 )
 
@@ -295,13 +321,15 @@ process.TriggerUserData = cms.EDProducer(
     'TriggerUserData',
     bits = cms.InputTag("TriggerResults","","HLT"),
     prescales = cms.InputTag("patTrigger"),
+    storePrescales = cms.untracked.bool(True), 
+    hltProcName = cms.untracked.string("HLT"), 
     objects = cms.InputTag("selectedPatTrigger")
     )                                 
 
 
 ### Including ntuplizer 
 process.load("RUNA.RUNtuples.RUNtuples_cff")
-from RUNA.RUNtuples.RUNtuples_cff import basic, jetVars, jetAK8Vars, jetToolboxAK8Vars, jetToolboxAK8PuppiVars
+from RUNA.RUNtuples.RUNtuples_cff import basic, jetVars, jetAK8Vars, jetToolboxAK8Vars, jetToolboxAK8PuppiVars, jetToolboxAK8SKVars
 if (options.is74XSample):
 	process.jetsAK8.variables += jetAK8Vars
 else:
@@ -323,6 +351,19 @@ process.jetKeysAK8Puppi = process.jetKeysAK8.clone( jetLabel = 'jetUserDataAK8Pu
 process.edmNtuplesOut.outputCommands+=('keep *_jetsAK8Puppi_*_*',)
 process.edmNtuplesOut.outputCommands+=('keep *_jetKeysAK8Puppi_*_*',)
 process.edmNtuplesOut.outputCommands+=('keep *_subjetsAK8Puppi_*_*',)
+
+### SK
+process.jetsAK8SK = copy.deepcopy(basic)
+process.jetsAK8SK.variables += jetVars
+process.jetsAK8SK.variables += jetToolboxAK8SKVars 
+process.jetsAK8SK.prefix = 'jetAK8SK'
+process.jetsAK8SK.src = cms.InputTag( 'boostedJetUserDataAK8SK' )
+process.subjetsAK8SK = process.subjetsAK8.clone( prefix = 'subjetAK8SK', src = cms.InputTag('selectedPatJetsAK8PFSKSoftDropPacked', "SubJets") )
+process.jetKeysAK8SK = process.jetKeysAK8.clone( jetLabel = 'jetUserDataAK8SK' )
+process.edmNtuplesOut.outputCommands+=('keep *_jetsAK8SK_*_*',)
+process.edmNtuplesOut.outputCommands+=('keep *_jetKeysAK8SK_*_*',)
+process.edmNtuplesOut.outputCommands+=('keep *_subjetsAK8SK_*_*',)
+
 
 
 process.options.allowUnscheduled = cms.untracked.bool(True)

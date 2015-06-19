@@ -24,10 +24,10 @@
 stop1=100	## You can use this parameters later to make everything simpler. 
 stop2=250	## You can use this parameters later to make everything simpler. Now I am not using them at all
 
-totalNumberEvents=100000
+totalNumberEvents=500000
 
 Name=RPVSt${stop1}tojj_13TeV_pythia8
-LHEFile=/store/user/algomez/lhe/RPVSt100tojj_13TeV.lhe					#### DONT USE the entire eos path!!!!!
+LHEFile=/store/user/algomez/lhe/RPVSt100tojj_13TeV_1MEvents.lhe					#### DONT USE the entire eos path!!!!!
 
 PU=( 'Asympt25ns' 'Asympt50ns' )									#### You can remove the PU scenario that you are not going to use.
 

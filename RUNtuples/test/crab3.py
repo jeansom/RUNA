@@ -1,7 +1,7 @@
 from CRABClient.UserUtilities import config
 config = config()
 
-version = 'v04'
+version = 'v06'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
@@ -20,6 +20,7 @@ config.Data.unitsPerJob = 1
 config.Data.outLFNDirBase = '/store/user/algomez/'
 config.Data.publication = True
 config.Data.ignoreLocality = True
+#config.Data.publishDataName = 'RUNA_RunIISpring15DR74_Asympt25ns_'+version
 config.Data.publishDataName = 'RUNA_PHYS14_PU20bx25_'+version
 #config.Data.publishDataName = 'RUNA_PHYS14_PU40bx50_'+version
 
@@ -46,6 +47,8 @@ if __name__ == '__main__':
 			'/RPVSt100tojj_13TeV_pythia8/algomez-MiniAOD_PHYS14_v720-b1b44dbfc276814daa37c582f825184d/USER',
 			'/RPVSt100tobj_pythia8_13TeV/algomez-MiniAOD_PHYS14_v720_PU20bx25-b1b44dbfc276814daa37c582f825184d/USER',
 			'/RPVSt350tojj_13TeV_pythia8/algomez-MiniAOD_PHYS14_v720_PU20bx25-b1b44dbfc276814daa37c582f825184d/USER'
+			##### RunIISpring15DR74
+			#'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15DR74_MiniAOD_v2-fb89f44b0d6970d718ed21d513cd1c9d/USER',
 			]
 	
 	for dataset in QCDHT:
