@@ -17,7 +17,6 @@ config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = 1
 #NJOBS = 1
 #config.Data.totalUnits = 1
-config.Data.outLFNDirBase = '/store/user/algomez/'
 config.Data.publication = True
 config.Data.ignoreLocality = True
 #config.Data.publishDataName = 'RUNA_RunIISpring15DR74_Asympt25ns_'+version

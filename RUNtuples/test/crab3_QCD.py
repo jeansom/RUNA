@@ -19,7 +19,6 @@ config.JobType.allowUndistributedCMSSW = True
 config.Data.inputDataset = ''
 config.Data.splitting = 'LumiBased'
 config.Data.unitsPerJob = 20
-config.Data.outLFNDirBase = '/store/user/algomez/'
 config.Data.publication = True
 config.Data.ignoreLocality = True
 config.Data.publishDataName = 'RUNA_PHYS14_PU20bx25_'+version
