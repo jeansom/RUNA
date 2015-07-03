@@ -903,7 +903,7 @@ edmNtuplesOut = cms.OutputModule(
     "keep *_subjetsCmsTopTag*_*_*",
     "keep *_jetKeysAK4_*_*",
     "keep *_jetKeysAK8_*_*",
-    "keep *_subjetKeysAK8_*_*",
+    "keep *_subjetKeysAK8*_*_*",
     "keep *_subjetsCmsTopTagKeys_*_*",
     "keep *_genJetsAK8_*_*",
     "keep *_genJetsAK8SoftDrop_*_*",

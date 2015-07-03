@@ -82,22 +82,34 @@ int main(int argc, char* argv[])
 
 	// Handle to the jets pt
 	edm::Handle<std::vector<float> > jetsPt;
-	event.getByLabel(std::string("AK4jetKinematics:AK4jetPt"), jetsPt);
+	event.getByLabel(std::string("jetsAK4:jetAK4Pt"), jetsPt);
 	// loop jets collection and fill histograms
 	for(const float &j1 : *jetsPt )  jetsPt_ ->Fill( j1 );
 
 	edm::Handle<std::vector<float> > jetsEta;
-	event.getByLabel(std::string("AK4jetKinematics:AK4jetEta"), jetsEta);
+	event.getByLabel(std::string("jetsAK4:jetAK4Eta"), jetsEta);
 	for(const float &j1 : *jetsEta ) jetsEta_ ->Fill( j1 );
 
 	// Handle to the jets phi
 	edm::Handle<std::vector<float> > jetsPhi;
-	event.getByLabel(std::string("AK4jetKinematics:AK4jetPhi"), jetsPhi);
+	event.getByLabel(std::string("jetsAK4:jetAK4Phi"), jetsPhi);
 	for(const float &j1 : *jetsPhi ) jetsPhi_ ->Fill( j1 );
 
+	/*
 	edm::Handle<std::vector<int> > genStatus;
 	event.getByLabel(std::string("genInfo:genstatus"), genStatus);
 	for(const int &p : *genStatus ) std::cout << p << std::endl; //LogDebug("GEN") << p;
+	*/
+
+	edm::Handle<std::vector<std::string> > triggerNames;
+	event.getByLabel(std::string("TriggerUserData:triggerNameTree"), triggerNames);
+	// loop jets collection and fill histograms
+	for(const std::string &j1 : *triggerNames )  std::cout << j1 << std::endl;
+
+	edm::Handle<std::vector<float> > triggerBit;
+	event.getByLabel(std::string("TriggerUserData:triggerBitTree"), triggerBit);
+	// loop jets collection and fill histograms
+	for(const float &j1 : *triggerBit )  std::cout << j1 << std::endl;
       }  
       // close input file
       inFile->Close();
