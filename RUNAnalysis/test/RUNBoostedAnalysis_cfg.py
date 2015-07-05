@@ -107,7 +107,7 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
-		'/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/B2g_PU40bx50_v0/150219_165100/0000/B2GEDMNtuple_1.root',
+		'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns__v01/150703_162457/0000/RUNtuples_10.root'
 	#	#'file:../../RUNtuples/test/RUNAEDMNtuple.root'
 	    )
 	)
@@ -168,6 +168,10 @@ process.AnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		jetKeys 		= cms.InputTag('jetKeysAK8'),
 		jetCSV 			= cms.InputTag('jetsAK8:jetAK8CSV'),
 		jetCSVV1 		= cms.InputTag('jetsAK8:jetAK8CSVV1'),
+		#### Trigger
+		triggerBit		= cms.InputTag('TriggerUserData:triggerBitTree'),
+		triggerName		= cms.InputTag('TriggerUserData:triggerNameTree'),
+		HLTtrigger		= cms.string('HLT_AK8PFHT700_TrimR0p1PT0p03Mass50_v1'),
 		#### JetID
 		jecFactor 		= cms.InputTag('jetsAK8:jetAK8jecFactor0'),
 		neutralHadronEnergy 	= cms.InputTag('jetsAK8:jetAK8neutralHadronEnergy'),

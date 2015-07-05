@@ -86,11 +86,12 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 
       bool bjSample;
       bool mkTree;
+      string HLTtrigger;
       double scale;
-      double cutAK4HTvalue;
+      /*double cutAK4HTvalue;
       double cutjetAK4Ptvalue;
       double cutTrimmedMassvalue;
-      double cutHTvalue;
+      double cutHTvalue;*/
       double cutjetPtvalue;
       double cutAsymvalue;
       double cutCosThetavalue;
@@ -141,6 +142,10 @@ class RUNBoostedAnalysis : public EDAnalyzer {
       EDGetTokenT<unsigned int> lumi_;
       EDGetTokenT<unsigned int> run_;
       EDGetTokenT<ULong64_t> event_;
+
+      // Trigger
+      EDGetTokenT<vector<float>> triggerBit_;
+      EDGetTokenT<vector<string>> triggerName_;
 
       //Jet ID
       EDGetTokenT<vector<float>> jecFactor_;
@@ -193,6 +198,9 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 	lumi_(consumes<unsigned int>(iConfig.getParameter<InputTag>("Lumi"))),
 	run_(consumes<unsigned int>(iConfig.getParameter<InputTag>("Run"))),
 	event_(consumes<ULong64_t>(iConfig.getParameter<InputTag>("Event"))),
+	// Trigger
+	triggerBit_(consumes<vector<float>>(iConfig.getParameter<InputTag>("triggerBit"))),
+	triggerName_(consumes<vector<string>>(iConfig.getParameter<InputTag>("triggerName"))),
 	//Jet ID,
 	jecFactor_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jecFactor"))),
 	neutralHadronEnergy_(consumes<vector<float>>(iConfig.getParameter<InputTag>("neutralHadronEnergy"))),
@@ -208,11 +216,14 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 {
 	scale = iConfig.getParameter<double>("scale");
 	bjSample = iConfig.getParameter<bool>("bjSample");
+	HLTtrigger = iConfig.getParameter<string>("HLTtrigger");
 	mkTree = iConfig.getParameter<bool>("mkTree");
+	/*
 	cutAK4HTvalue = iConfig.getParameter<double>("cutAK4HTvalue");
 	cutjetAK4Ptvalue = iConfig.getParameter<double>("cutjetAK4Ptvalue");
 	cutTrimmedMassvalue = iConfig.getParameter<double>("cutTrimmedMassvalue");
 	cutHTvalue = iConfig.getParameter<double>("cutHTvalue");
+	*/
 	cutjetPtvalue = iConfig.getParameter<double>("cutjetPtvalue");
 	cutAsymvalue = iConfig.getParameter<double>("cutAsymvalue");
 	cutCosThetavalue = iConfig.getParameter<double>("cutCosThetavalue");
@@ -318,6 +329,13 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	Handle<ULong64_t> ievent;
 	iEvent.getByToken(event_, ievent);
 
+	/// Trigger
+	Handle<vector<float> > triggerBit;
+	iEvent.getByToken(triggerBit_, triggerBit);
+
+	Handle<vector<string> > triggerName;
+	iEvent.getByToken(triggerName_, triggerName);
+
 	/// Jet ID
 	Handle<vector<float> > jecFactor;
 	iEvent.getByToken(jecFactor_, jecFactor);
@@ -350,9 +368,17 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	Handle<vector<float> > subjetMass;
 	iEvent.getByToken(subjetMass_, subjetMass);
 
+	string dummyHLT = "NOTRIGGER";
+	bool triggerFired = 0;
+	if ( HLTtrigger.compare(dummyHLT) == 0 ) triggerFired = 1; 
+	else {
+		for (size_t t = 0; t < triggerName->size(); t++) {
+			if ( ( (*triggerName)[t].compare(HLTtrigger) == 0 ) && ( (*triggerBit)[t] == 0 ) ) triggerFired = 1;
+		}
+	}
 
 	///////// AK4 jets to model PFHT trigger
-	bool cutAK4HT = 0;
+	/*/bool cutAK4HT = 0;
 	AK4HT = 0;
 	for (size_t q = 0; q < jetAK4Pt->size(); q++) {
 
@@ -360,8 +386,8 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 		if ( (*jetAK4Pt)[q] < cutjetAK4Ptvalue ) continue;
 		AK4HT += (*jetAK4Pt)[q];
 	}
-	if ( AK4HT > cutAK4HTvalue ) cutAK4HT = 1;
-	////////////////////////////////////////////////////
+	//if ( AK4HT > cutAK4HTvalue ) cutAK4HT = 1;
+	///////////////////////////////////////////////////*/
 
 	Scale = scale;
 
@@ -370,8 +396,8 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	vector< JETtype > JETS;
 	vector< float > tmpTriggerMass;
 	double rawHT = 0;
-	bool cutHT = 0;
-	bool cutMass = 0;
+	//bool cutHT = 0;
+	//bool cutMass = 0;
 	bool bTagCSV = 0;
 	numJets = 0;
 	HT = 0;
@@ -446,30 +472,34 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	histos1D_[ "NPV" ]->Fill( numPV, scale );
 	if ( HT > 0 ) histos1D_[ "HT" ]->Fill( HT, scale  );
 	if ( rawHT > 0 ) histos1D_[ "rawHT" ]->Fill( rawHT, scale  );
-	if ( HT > cutHTvalue ) cutHT = 1;
+	//if ( HT > cutHTvalue ) cutHT = 1;
 
 	sort(tmpTriggerMass.begin(), tmpTriggerMass.end(), [](const float p1, const float p2) { return p1 > p2; }); 
-	if ( ( tmpTriggerMass.size()> 0 ) && ( tmpTriggerMass[0] > cutTrimmedMassvalue) ){
-		cutMass = 1;
+	if ( ( tmpTriggerMass.size()> 0 ) ) { //&& ( tmpTriggerMass[0] > cutTrimmedMassvalue) ){
+		//cutMass = 1;
 		trimmedMass = tmpTriggerMass[0];
 		histos1D_[ "jetTrimmedMass" ]->Fill( tmpTriggerMass[0], scale  );
 	}
 	tmpTriggerMass.clear();
 
-	if ( cutMass && cutHT && cutAK4HT ) {
-
+	//if ( cutMass && cutHT && cutAK4HT ) {
+	if ( triggerFired ) {
 		cutmap["Trigger"] += 1; 
 		histos1D_[ "HT_cutTrigger" ]->Fill( HT, scale  );
 		histos1D_[ "NPV_cutTrigger" ]->Fill( numPV, scale );
 		histos1D_[ "jetNum_cutTrigger" ]->Fill( numJets, scale );
-		histos1D_[ "jet1Pt_cutTrigger" ]->Fill( JETS[0].p4.Pt(), scale  );
-		histos1D_[ "jet1Mass_cutTrigger" ]->Fill( JETS[0].mass, scale );
-		histos1D_[ "jet1Eta_cutTrigger" ]->Fill( JETS[0].p4.Eta(), scale  );
 
+		int kdum = 0;
 		for (size_t k = 0; k < JETS.size(); k++) {
 			histos1D_[ "jetPt_cutTrigger" ]->Fill( JETS[k].p4.Pt(), scale  );
 			histos1D_[ "jetEta_cutTrigger" ]->Fill( JETS[k].p4.Eta(), scale  );
 			histos1D_[ "jetMass_cutTrigger" ]->Fill( JETS[k].mass, scale );
+
+			if ( (++kdum) == 1 ) {
+				histos1D_[ "jet1Pt_cutTrigger" ]->Fill( JETS[0].p4.Pt(), scale  );
+				histos1D_[ "jet1Mass_cutTrigger" ]->Fill( JETS[0].mass, scale );
+				histos1D_[ "jet1Eta_cutTrigger" ]->Fill( JETS[0].p4.Eta(), scale  );
+			}
 		 }
 		//////////////////////////////////////////////////////////////////////////////
 						

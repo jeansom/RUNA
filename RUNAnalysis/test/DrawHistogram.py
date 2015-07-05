@@ -24,11 +24,14 @@ gROOT.SetStyle('tdrStyle')
 gStyle.SetOptStat(0)
 
 def labels( name, sample, PU, camp, X=0.6, Y=0.70 ):
-	if 'cutHT' in name: setSelection( sample, camp+' - '+PU, 'jet p_{T} > '+cutjPt+' GeV', 'jet |#eta| < 2.4', 'HT > '+cutHT+' TeV', 'jet Mass^{Trim} > '+cutjM+' GeV', '', X, Y)
-	elif 'cutAsym' in name: setSelection( sample, camp+' - '+PU, 'HT > '+cutHT+' TeV', 'A < 0.1', '', '', '', X, Y )
-	elif 'cutCosTheta' in name: setSelection( sample, camp+' - '+PU, 'HT > '+cutHT+' TeV', 'A < 0.1', '|cos(#theta*)| < 0.3', '', '', X, Y )
-	elif 'cutSubjetPtRatio' in name: setSelection( sample, camp+' - '+PU, 'HT > '+cutHT+' TeV', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3', '', X, Y )
-	elif 'cutTau31' in name: setSelection( sample, camp+' - '+PU, 'HT > '+cutHT+' TeV', 'A < 0.1', '|cos(#theta*)| < 0.3', '#tau_{31} < 0.5', '', X, Y )
+	if 'cutDijet' in name: setSelection( sample, camp+' - '+PU, 'jet p_{T} > '+cutjPt+' GeV', 'jet |#eta| < 2.4', 'AK8PFHT700_TrimMass50', 'jet Mass^{Trim} > '+cutjM+' GeV', '', X, Y)
+	elif 'cutAsym' in name: setSelection( sample, camp+' - '+PU, 'AK8PFHT700_TrimMass50', 'A < 0.1', '', '', '', X, Y )
+	elif 'cutCosTheta' in name: setSelection( sample, camp+' - '+PU, 'AK8PFHT700_TrimMass50', 'A < 0.1', '|cos(#theta*)| < 0.3', '', '', X, Y )
+	elif 'cutSubjetPtRatio' in name: setSelection( sample, camp+' - '+PU, 'AK8PFHT700_TrimMass50', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3', '', X, Y )
+	elif 'Standard' in name: setSelection( sample, camp+' - '+PU, 'AK8PFHT700_TrimMass50', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3', '', X, Y )
+	elif 'PFHT800' in name: setSelection( sample, camp+' - '+PU, 'PFHT800', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3', '', X, Y )
+	elif 'Brock' in name: setSelection( sample, camp+' - '+PU, 'HT > 1600 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3', '', X, Y )
+	elif 'cutTau31' in name: setSelection( sample, camp+' - '+PU, 'AK8PFHT700_TrimMass50', 'A < 0.1', '|cos(#theta*)| < 0.3', '#tau_{31} < 0.5', '', X, Y )
 	elif '' in name: setSelection( sample, camp+' - '+PU, '', '', '', '', '', X, Y) 
 	else: setSelection( ' ' )
 
@@ -61,15 +64,16 @@ def labelAxis(name, histo, Grom ):
 	else: histo.GetXaxis().SetTitle( 'NO LABEL' )
 
 
-def plot( inFileSignal, inFileQCD, Grom, name, xmin, xmax, labX, labY, log, PU, Norm=False ):
+def plot( inFileSignal, inFileQCD, kfactor, Grom, nameInRoot, name, xmin, xmax, labX, labY, log, PU, Norm=False ):
 	"""docstring for plot"""
 
 	outputFileName = name+'_'+Grom+'_RPVSt'+mass+'to'+jj+'_'+PU+'_QCD'+qcd+'_AnalysisPlots.pdf' 
 	print 'Processing.......', outputFileName
 
 	histos = {}
-	histos[ 'Signal' ] = inFileSignal.Get( boosted+'AnalysisPlots'+Grom+'/'+name )
-	histos[ 'QCD' ] = inFileQCD.Get( boosted+'AnalysisPlots'+Grom+'/'+name )
+	histos[ 'Signal' ] = inFileSignal.Get( nameInRoot )
+	histos[ 'QCD' ] = inFileQCD.Get( nameInRoot )
+	histos[ 'QCD' ].Scale( kfactor )
 
 	hSignal = histos[ 'Signal' ].Clone()
 	hSignalQCD = histos[ 'Signal' ].Clone()
@@ -158,7 +162,7 @@ def plot( inFileSignal, inFileQCD, Grom, name, xmin, xmax, labX, labY, log, PU, 
 		'''
 		hSignal.SetFillColor(48)
 		hSignal.SetFillStyle(1001)
-		hSignal.GetYaxis().SetTitle("S / #sqrt{S+B}")
+		hSignal.GetYaxis().SetTitle("S / B")
 		hSignal.GetYaxis().SetLabelSize(0.12)
 		hSignal.GetXaxis().SetLabelSize(0.12)
 		hSignal.GetYaxis().SetTitleSize(0.12)
@@ -553,6 +557,60 @@ def plotDiffPU( inFileSample, Grom, name, xmax, labX, labY, log, Diff , Norm=Fal
 		del can
 	'''
 
+def plotOptimization( inFileSignal, inFileBkg, Grom, name, Range, xmax, labX, labY, log, Norm=False):
+	"""docstring for plot"""
+
+	outputFileName = name+'_'+Grom+'_Optimization.pdf' 
+	print 'Processing.......', outputFileName
+
+	histosSignal = {}
+	histosBkg = {}
+	for x in Range:
+		histosSignal[ x ] = inFileSignal.Get( name+x )
+		histosBkg[ x ] = inFileBkg.Get( name+x )
+		print histosSignal[x].Integral()
+
+	'''
+	binWidth = histos['Sample1'].GetBinWidth(1)
+
+	legend=TLegend(0.60,0.75,0.90,0.90)
+	legend.SetFillStyle(0)
+	legend.SetTextSize(0.03)
+
+	histos[ 'Sample1' ].SetLineWidth(2)
+	histos[ 'Sample1' ].SetLineColor(48)
+	histos[ 'Sample2' ].SetLineColor(38)
+	histos[ 'Sample2' ].SetLineWidth(2)
+	histos[ 'Sample3' ].SetLineColor(30)
+	histos[ 'Sample3' ].SetLineWidth(2)
+	histos[ 'Sample1' ].SetMaximum( 1.2* max( histos[ 'Sample1' ].GetMaximum(), histos[ 'Sample2' ].GetMaximum() ) ) 
+	#histos.values()[0].GetXaxis().SetRangeUser( 0, xmax )
+
+	can = TCanvas('c1', 'c1',  10, 10, 750, 500 )
+	if log: 
+		outName = outputFileName.replace('_Diff','_Log_Diff')
+	else:
+		outName = outputFileName 
+
+	legend.AddEntry( histos[ 'Sample1' ], 'Low PU', 'l' )
+	legend.AddEntry( histos[ 'Sample2' ], 'Med PU', 'l' )
+	legend.AddEntry( histos[ 'Sample3' ], 'High PU', 'l' )
+	#histos['Sample1'].SetMinimum(10)
+	histos['Sample1'].Draw('hist')
+	histos['Sample1'].GetYaxis().SetTitleOffset(1.2)
+	histos['Sample2'].Draw('hist same')
+	histos['Sample3'].Draw('hist same')
+	histos['Sample1'].GetYaxis().SetTitle( 'Events / '+str(binWidth) )
+
+	labelAxis( name, histos['Sample1'], Grom )
+	legend.Draw()
+	if not (labX and labY): labels( name, '13 TeV - Scaled to '+lumi+' fb^{-1}', '', '' )
+	else: labels( name, '13 TeV - Scaled to '+lumi+' fb^{-1}', '', labX, labY )
+
+	can.SaveAs( 'Plots/'+outName )
+	del can
+	'''
+
 if __name__ == '__main__':
 
 	parser = argparse.ArgumentParser()
@@ -561,11 +619,11 @@ if __name__ == '__main__':
 	parser.add_argument('-b', '--boosted', action='store', default='Boosted', help='Boosted or non boosted, example: Boosted' )
 	parser.add_argument('-g', '--grom', action='store', default='Pruned', help='Grooming Algorithm, example: Pruned, Filtered.' )
 	parser.add_argument('-m', '--mass', action='store', default='100', help='Mass of Stop, example: 100' )
-	parser.add_argument('-cHT', '--cutHT', action='store', default='700', help='HT cut, example: 700' )
+	parser.add_argument('-cHT', '--cutDijet', action='store', default='700', help='HT cut, example: 700' )
 	parser.add_argument('-cjPt', '--cutjetPt', action='store', default='150', help='jet Pt cut, example: 150' )
 	parser.add_argument('-cjM', '--cutjetMass', action='store', default='50', help='jet trimmed mass cut, example: 50' )
 	parser.add_argument('-pu', '--PU', action='store', default='PU20bx25', help='PU, example: PU40bx25.' )
-	parser.add_argument('-s', '--single', action='store', default='all', help='single histogram, example: massAve_cutHT.' )
+	parser.add_argument('-s', '--single', action='store', default='all', help='single histogram, example: massAve_cutDijet.' )
 	parser.add_argument('-q', '--QCD', action='store', default='Pt', help='Type of QCD binning, example: HT.' )
 	parser.add_argument('-c', '--campaign', action='store', default='PHYS14', help='Campaign, example: PHYS14.' )
 	parser.add_argument('-l', '--lumi', action='store', default='1', help='Luminosity, example: 1.' )
@@ -583,7 +641,7 @@ if __name__ == '__main__':
 	lumi = args.lumi
 	histo = args.single
 	mass = args.mass
-	cutHT = args.cutHT
+	cutDijet = args.cutDijet
 	cutjPt = args.cutjetPt
 	cutjM = args.cutjetMass
 	grom = args.grom
@@ -592,8 +650,10 @@ if __name__ == '__main__':
 	
 	#inputFileSample = TFile.Open('RUNAnalysis_RPVSt100tojj_pythia8_13TeV_PU40bx50_PHYS14.root')
 	#inputFileMCSignal = TFile.Open('RUNMCAnalysis_RPVSt100tojj_pythia8_13TeV_PU20bx25.root')
-	inputFileSignal = TFile.Open('Rootfiles/RUNAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v03_v08.root')
-	inputFileQCD = TFile.Open('Rootfiles/RUNAnalysis_QCD'+qcd+'All_'+camp+'_'+PU+'_v03_v08.root')
+	inputFileSignal = TFile.Open('Rootfiles/v09/RUNAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v03_v09.root')
+	inputFileQCD = TFile.Open('Rootfiles/v09/RUNAnalysis_QCD'+qcd+'All_'+camp+'_'+PU+'_v03_v09.root')
+	inputMiniFileSignal = TFile.Open('Rootfiles/RUNMiniAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v03_v09.root')
+	inputMiniFileQCD = TFile.Open('Rootfiles/RUNMiniAnalysis_QCD'+qcd+'All_'+camp+'_'+PU+'_v03_v09.root')
 
 	dijetlabX = 0.15
 	dijetlabY = 0.88
@@ -614,21 +674,20 @@ if __name__ == '__main__':
 
 
 	plotList = [ 
-		[ '2D', 'jet1Subjet112vs212MassRatio_cutHT', 'm_{1}/m_{12}', 'm_{2}/m_{12}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
-		[ '2D', 'jet1Subjet1JetvsSubjet2JetMassRatio_cutHT', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
-		[ '2D', 'jet2Subjet112vs212MassRatio_cutHT', 'm_{3}/m_{34}', 'm_{4}/m_{34}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
-		[ '2D', 'jet2Subjet1JetvsSubjet2JetMassRatio_cutHT', 'm_{3}/M_{34}', 'm_{4}/M_{34}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
-		[ '2D', 'subjet12Mass_cutHT', 'm_{1}', 'm_{2}', '', '', '', '', dijetlabX, dijetlabY  ],
-		[ '2D', 'dijetCorr_cutHT', '#eta_{sjet1}', '#eta_{sjet2}', '', '', '', '', dijetlabX, dijetlabY  ],
-		[ '2D', 'dijetCorrPhi_cutHT', '#phi_{sjet1}', '#phi_{sjet2}', '', '', '', '', dijetlabX, dijetlabY  ],
-		[ '2D', 'subjet112vs212MassRatio_cutHT', 'm_{1}/m_{12}', 'm_{2}/m_{12}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
-		[ '2D', 'subjet1JetvsSubjet2JetMassRatio_cutHT', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
-		[ '2D', 'subjetPolAngle13412vs31234_cutHT', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', polAngXmin, polAngXmax, polAngXmin, polAngXmax, cosPhilabX, cosPhilabY  ],
-		[ '2D', 'tmpSubjetPolAngle13412vs31234_cutHT', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', polAngXmin, polAngXmax, polAngXmin, polAngXmax, cosPhilabX, cosPhilabY  ],
-		[ '2D', 'mu1234_cutHT', '', '', '', '', '', '', dijetlabX, dijetlabY  ],
-		[ '2D', 'mu3412_cutHT', '', '', '', '', '', '', dijetlabX, dijetlabY  ],
-		[ '2D', 'dalitz1234_cutHT', 'X', 'Y', '', '', '', '', dijetlabX, dijetlabY  ],
-		[ '2D', 'dalitz3412_cutHT', 'X', 'Y', '', '', '', '', dijetlabX, dijetlabY  ],
+		[ '2D', 'jet1Subjet112vs212MassRatio_cutDijet', 'm_{1}/m_{12}', 'm_{2}/m_{12}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
+		[ '2D', 'jet1Subjet1JetvsSubjet2JetMassRatio_cutDijet', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
+		[ '2D', 'jet2Subjet112vs212MassRatio_cutDijet', 'm_{3}/m_{34}', 'm_{4}/m_{34}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
+		[ '2D', 'jet2Subjet1JetvsSubjet2JetMassRatio_cutDijet', 'm_{3}/M_{34}', 'm_{4}/M_{34}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
+		[ '2D', 'subjet12Mass_cutDijet', 'm_{1}', 'm_{2}', '', '', '', '', dijetlabX, dijetlabY  ],
+		[ '2D', 'dijetCorr_cutDijet', '#eta_{sjet1}', '#eta_{sjet2}', '', '', '', '', dijetlabX, dijetlabY  ],
+		[ '2D', 'dijetCorrPhi_cutDijet', '#phi_{sjet1}', '#phi_{sjet2}', '', '', '', '', dijetlabX, dijetlabY  ],
+		[ '2D', 'subjet112vs212MassRatio_cutDijet', 'm_{1}/m_{12}', 'm_{2}/m_{12}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
+		[ '2D', 'subjet1JetvsSubjet2JetMassRatio_cutDijet', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
+		[ '2D', 'subjetPolAngle13412vs31234_cutDijet', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', polAngXmin, polAngXmax, polAngXmin, polAngXmax, cosPhilabX, cosPhilabY  ],
+		[ '2D', 'mu1234_cutDijet', '', '', '', '', '', '', dijetlabX, dijetlabY  ],
+		[ '2D', 'mu3412_cutDijet', '', '', '', '', '', '', dijetlabX, dijetlabY  ],
+		[ '2D', 'dalitz1234_cutDijet', 'X', 'Y', '', '', '', '', dijetlabX, dijetlabY  ],
+		[ '2D', 'dalitz3412_cutDijet', 'X', 'Y', '', '', '', '', dijetlabX, dijetlabY  ],
 
 		#[ '2D', 'subjet12Mass_cutAsym', 'm_{1}', 'm_{2}', '', '', '', '', dijetlabX, dijetlabY  ],
 		[ '2D', 'dijetCorr_cutAsym', '#eta_{sjet1}', '#eta_{sjet2}', '', '', '', '', dijetlabX, dijetlabY  ],
@@ -636,7 +695,6 @@ if __name__ == '__main__':
 		#[ '2D', 'subjet112vs212MassRatio_cutAsym', 'm_{1}/m_{12}', 'm_{2}/m_{12}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
 		#[ '2D', 'subjet1JetvsSubjet2JetMassRatio_cutAsym', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
 		#[ '2D', 'subjetPolAngle13412vs31234_cutAsym', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', '', '', '', '', '', ''  ],
-		#[ '2D', 'tmpSubjetPolAngle13412vs31234_cutAsym', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', '', '', '', '', '', ''  ],
 		#[ '2D', 'mu1234_cutAsym', '', '', '', '', '', '', dijetlabX, dijetlabY  ],
 		#[ '2D', 'mu3412_cutAsym', '', '', '', '', '', '', dijetlabX, dijetlabY  ],
 		#[ '2D', 'dalitz1234_cutAsym', 'X', 'Y', '', '', '', '', dijetlabX, dijetlabY  ],
@@ -648,7 +706,6 @@ if __name__ == '__main__':
 		#[ '2D', 'subjet112vs212MassRatio_cutCosTheta', 'm_{1}/m_{12}', 'm_{2}/m_{12}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
 		#[ '2D', 'subjet1JetvsSubjet2JetMassRatio_cutCosTheta', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
 		#[ '2D', 'subjetPolAngle13412vs31234_cutCosTheta', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', '', '', '', '', '', ''  ],
-		#[ '2D', 'tmpSubjetPolAngle13412vs31234_cutCosTheta', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', '', '', '', '', '', ''  ],
 		#[ '2D', 'mu1234_cutCosTheta', '', '', '', '', '', '', dijetlabX, dijetlabY  ],
 		#[ '2D', 'mu3412_cutCosTheta', '', '', '', '', '', '', dijetlabX, dijetlabY  ],
 		#[ '2D', 'dalitz1234_cutCosTheta', 'X', 'Y', '', '', '', '', dijetlabX, dijetlabY  ],
@@ -661,7 +718,6 @@ if __name__ == '__main__':
 		[ '2D', 'subjet1JetvsSubjet2JetMassRatio_cutSubjetPtRatio', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
 		[ '2D', 'subjetPolAngle13412vs31234_cutSubjetPtRatio', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', polAngXmin, polAngXmax, polAngXmin, polAngXmax, cosPhilabX, cosPhilabY  ],
 		[ '2D', 'subjetPolAngle13412vsSubjetPtRatio_cutSubjePtRatio', 'cos #psi_{1(34)}^{[12]}', 'Subjet Pt Ratio', polAngXmin, polAngXmax, polAngXmin, polAngXmax, cosPhilabX, cosPhilabY  ],
-		[ '2D', 'tmpSubjetPolAngle13412vs31234_cutSubjetPtRatio', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', polAngXmin, polAngXmax, polAngXmin, polAngXmax, cosPhilabX, cosPhilabY  ],
 		[ '2D', 'mu1234_cutSubjetPtRatio', '', '', '', '', '', '', dijetlabX, dijetlabY  ],
 		[ '2D', 'mu3412_cutSubjetPtRatio', '', '', '', '', '', '', dijetlabX, dijetlabY  ],
 		[ '2D', 'dalitz1234_cutSubjetPtRatio', 'X', 'Y', '', '', '', '', dijetlabX, dijetlabY  ],
@@ -673,60 +729,58 @@ if __name__ == '__main__':
 		#[ '2D', 'subjet112vs212MassRatio_cutTau31', 'm_{1}/m_{12}', 'm_{2}/m_{12}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
 		#[ '2D', 'subjet1JetvsSubjet2JetMassRatio_cutTau31', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', '', '', subjet112vs212labX, subjet112vs212labY  ],
 		#[ '2D', 'subjetPolAngle13412vs31234_cutTau31', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', '', '', '', '', '', ''  ],
-		#[ '2D', 'tmpSubjetPolAngle13412vs31234_cutTau31', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', '', '', '', '', '', ''  ],
 		#[ '2D', 'mu1234_cutTau31', '', '', '', '', '', '', dijetlabX, dijetlabY  ],
 		#[ '2D', 'mu3412_cutTau31', '', '', '', '', '', '', dijetlabX, dijetlabY  ],
 		#[ '2D', 'dalitz1234_cutTau31', 'y', 'x', '', '', '', '', dijetlabX, dijetlabY  ],
 		#[ '2D', 'dalitz3412_cutTau31', 'y', 'x', '', '', '', '', dijetlabX, dijetlabY  ],
 
-		[ '1D', 'jetPt', 10, 90, '', '', True],
+		[ '1D', 'jetPt', 10, 1000, '', '', True],
 		[ '1D', 'jetEta', '', '', '', '', True],
 		[ '1D', 'jetMass', 0, massMaxX, '', '', True],
-		[ '1D', 'HT', 0, 120, '', '', True],
-		[ '1D', 'massAve_cutHT', 0, massMaxX, '', '', True],
-		#[ '1D', 'jet1Subjet1Pt_cutHT', '', '', '', '', True],
-		#[ '1D', 'jet1Subjet2Pt_cutHT', '', '', '', True],
-		#[ '1D', 'jet2Subjet1Pt_cutHT', '', '', '', True],
-		#[ '1D', 'jet2Subjet2Pt_cutHT', '', '', '', True],
-		#[ '1D', 'jet1Subjet1Mass_cutHT', '', '', '', True],
-		#[ '1D', 'jet1Subjet2Mass_cutHT', '', '', '', True],
-		#[ '1D', 'jet2Subjet1Mass_cutHT', '', '', '', True],
-		#[ '1D', 'jet2Subjet2Mass_cutHT', '', '', '', True],
+		[ '1D', 'HT', 0, 1000, '', '', True],
+		[ '1D', 'massAve_cutDijet', 0, massMaxX, '', '', True],
+		#[ '1D', 'jet1Subjet1Pt_cutDijet', '', '', '', '', True],
+		#[ '1D', 'jet1Subjet2Pt_cutDijet', '', '', '', True],
+		#[ '1D', 'jet2Subjet1Pt_cutDijet', '', '', '', True],
+		#[ '1D', 'jet2Subjet2Pt_cutDijet', '', '', '', True],
+		#[ '1D', 'jet1Subjet1Mass_cutDijet', '', '', '', True],
+		#[ '1D', 'jet1Subjet2Mass_cutDijet', '', '', '', True],
+		#[ '1D', 'jet2Subjet1Mass_cutDijet', '', '', '', True],
+		#[ '1D', 'jet2Subjet2Mass_cutDijet', '', '', '', True],
 		[ '1D', 'massAve_cutAsym', 0, massMaxX, '', '', False],
 		[ '1D', 'massAve_cutCosTheta', 0, massMaxX, '', '', False],
 		[ '1D', 'massAve_cutSubjetPtRatio', 0, massMaxX, '', '', False],
+		[ '1D', 'massAve_cutSubjetPtRatio', 0, massMaxX, '', '', True ],
 		#[ '1D', 'massAve_cutTau31', 0, massMaxX, '', '', False],
 
 		[ 'Norm', 'NPV', '', '', '', '', False],
-		[ 'Norm', 'jet1Tau1_cutHT', '', '', taulabX, taulabY, True],
-		[ 'Norm', 'jet1Tau2_cutHT', '', '', taulabX, taulabY, True],
-		[ 'Norm', 'jet1Tau3_cutHT', '', '', taulabX, taulabY, True],
-		[ 'Norm', 'jet1Tau21_cutHT', '', '', taulabX, taulabY, True],
-		[ 'Norm', 'jet1Tau31_cutHT', '', '', taulabX, taulabY, True],
-		[ 'Norm', 'jet1Tau32_cutHT', '', '', taulabX, taulabY, True],
-		[ 'Norm', 'jet1SubjetPtRatio_cutHT', '', '', '', '', True],
-		[ 'Norm', 'jet2SubjetPtRatio_cutHT', '', '', '', '', True],
-		[ 'Norm', 'subjetPtRatio_cutHT', '', '', '', '', True],
-		[ 'Norm', 'massAsymmetry_cutHT', '', '', asymlabX, asymlabY, False],
-		[ 'Norm', 'cosThetaStar_cutHT', '', '', '', '', False],
-		#[ 'Norm', 'jet1Subjet21MassRatio_cutHT', '', '', '', '', False],
-		[ 'Norm', 'jet1Subjet112MassRatio_cutHT', '', '', '', '', False],
-		[ 'Norm', 'jet1Subjet1JetMassRatio_cutHT', '', '', '', '', False],
-		[ 'Norm', 'jet1Subjet212MassRatio_cutHT', '', '', '', '', False],
-		[ 'Norm', 'jet1Subjet2JetMassRatio_cutHT', '', '', '', '', False],
-		[ 'Norm', 'jet2Subjet112MassRatio_cutHT', '', '', '', '', False],
-		[ 'Norm', 'jet2Subjet1JetMassRatio_cutHT', '', '', '', '', False],
-		[ 'Norm', 'jet2Subjet212MassRatio_cutHT', '', '', '', '', False],
-		[ 'Norm', 'jet2Subjet2JetMassRatio_cutHT', '', '', '', '', False],
-		[ 'Norm', 'subjetPtRatio_cutHT', '', '', '', '', False],
-		[ 'Norm', 'subjetMass21Ratio_cutHT', '', '', '', '', False],
-		[ 'Norm', 'subjet112MassRatio_cutHT', '', '', '', '', False],
-		[ 'Norm', 'subjet212MassRatio_cutHT', '', '', '', '', False],
-		[ 'Norm', 'subjetPolAngle13412_cutHT', polAngXmin, polAngXmax, '', '', False],
-		[ 'Norm', 'subjetPolAngle31234_cutHT', polAngXmin, polAngXmax, '', '', False],
-		[ 'Norm', 'tmpSubjetPolAngle13412_cutHT', polAngXmin, polAngXmax, '', '', False],
-		[ 'Norm', 'tmpSubjetPolAngle31234_cutHT', polAngXmin, polAngXmax, '', '', False],
-		#[ 'Norm', 'cosThetaStar_cutAsym', '', '', '', '', False],
+		[ 'Norm', 'jet1Tau1_cutDijet', '', '', taulabX, taulabY, True],
+		[ 'Norm', 'jet1Tau2_cutDijet', '', '', taulabX, taulabY, True],
+		[ 'Norm', 'jet1Tau3_cutDijet', '', '', taulabX, taulabY, True],
+		[ 'Norm', 'jet1Tau21_cutDijet', '', '', taulabX, taulabY, True],
+		[ 'Norm', 'jet1Tau31_cutDijet', '', '', taulabX, taulabY, True],
+		[ 'Norm', 'jet1Tau32_cutDijet', '', '', taulabX, taulabY, True],
+		[ 'Norm', 'jet1SubjetPtRatio_cutDijet', '', '', '', '', True],
+		[ 'Norm', 'jet2SubjetPtRatio_cutDijet', '', '', '', '', True],
+		[ 'Norm', 'subjetPtRatio_cutDijet', '', '', '', '', True],
+		[ 'Norm', 'massAsymmetry_cutDijet', '', '', asymlabX, asymlabY, False],
+		[ 'Norm', 'cosThetaStar_cutDijet', '', '', '', '', False],
+		#[ 'Norm', 'jet1Subjet21MassRatio_cutDijet', '', '', '', '', False],
+		[ 'Norm', 'jet1Subjet112MassRatio_cutDijet', '', '', '', '', False],
+		[ 'Norm', 'jet1Subjet1JetMassRatio_cutDijet', '', '', '', '', False],
+		[ 'Norm', 'jet1Subjet212MassRatio_cutDijet', '', '', '', '', False],
+		[ 'Norm', 'jet1Subjet2JetMassRatio_cutDijet', '', '', '', '', False],
+		[ 'Norm', 'jet2Subjet112MassRatio_cutDijet', '', '', '', '', False],
+		[ 'Norm', 'jet2Subjet1JetMassRatio_cutDijet', '', '', '', '', False],
+		[ 'Norm', 'jet2Subjet212MassRatio_cutDijet', '', '', '', '', False],
+		[ 'Norm', 'jet2Subjet2JetMassRatio_cutDijet', '', '', '', '', False],
+		[ 'Norm', 'subjetPtRatio_cutDijet', '', '', '', '', False],
+		[ 'Norm', 'subjetMass21Ratio_cutDijet', '', '', '', '', False],
+		[ 'Norm', 'subjet112MassRatio_cutDijet', '', '', '', '', False],
+		[ 'Norm', 'subjet212MassRatio_cutDijet', '', '', '', '', False],
+		[ 'Norm', 'subjetPolAngle13412_cutDijet', polAngXmin, polAngXmax, '', '', False],
+		[ 'Norm', 'subjetPolAngle31234_cutDijet', polAngXmin, polAngXmax, '', '', False],
+		[ 'Norm', 'cosThetaStar_cutAsym', '', '', '', '', False],
 		#[ 'Norm', 'jet1Tau21_cutAsym', '', '', taulabX, taulabY, False],
 		#[ 'Norm', 'jet1Tau31_cutAsym', '', '', taulabX, taulabY, False],
 		#[ 'Norm', 'jet1Tau32_cutAsym', '', '', taulabX, taulabY, False],
@@ -736,12 +790,10 @@ if __name__ == '__main__':
 		#[ 'Norm', 'subjet212MassRatio_cutAsym', '', '', '', '', True],
 		#[ 'Norm', 'subjetPolAngle13412_cutAsym', '', '', '', '', True],
 		#[ 'Norm', 'subjetPolAngle31234_cutAsym', '', '', '', '', False],
-		#[ 'Norm', 'tmpSubjetPolAngle13412_cutAsym', '', '', '', '', True],
-		#[ 'Norm', 'tmpSubjetPolAngle31234_cutAsym', '', '', '', '', True],
 		#[ 'Norm', 'jet1Tau21_cutCosTheta', '', '', taulabX, taulabY, True],
 		#[ 'Norm', 'jet1Tau31_cutCosTheta', '', '', taulabX, taulabY, True],
 		#[ 'Norm', 'jet1Tau32_cutCosTheta', '', '', taulabX, taulabY, True],
-		#[ 'Norm', 'subjetPtRatio_cutCosTheta', '', '', '', '', True],
+		[ 'Norm', 'subjetPtRatio_cutCosTheta', '', '', '', '', False],
 		#[ 'Norm', 'subjetMass21Ratio_cutCosTheta', '', '', '', '', True],
 		#[ 'Norm', 'subjet112MassRatio_cutCosTheta', '', '', '', '', True],
 		#[ 'Norm', 'subjet212MassRatio_cutCosTheta', '', '', '', '', True],
@@ -755,18 +807,20 @@ if __name__ == '__main__':
 		[ 'Norm', 'subjet212MassRatio_cutSubjetPtRatio', '', '', '', '', True],
 		[ 'Norm', 'subjetPolAngle13412_cutSubjetPtRatio', polAngXmin, polAngXmax, polAnglabX, polAnglabY, True],
 		[ 'Norm', 'subjetPolAngle31234_cutSubjetPtRatio', polAngXmin, polAngXmax, polAnglabX, polAnglabY, True],
-		[ 'Norm', 'tmpSubjetPolAngle13412_cutSubjetPtRatio', polAngXmin, polAngXmax, polAnglabX, polAnglabY, True],
-		[ 'Norm', 'tmpSubjetPolAngle31234_cutSubjetPtRatio', polAngXmin, polAngXmax, polAnglabX, polAnglabY, True],
 		[ 'Norm', 'subjetMass21Ratio_cutTau31', '', '', '', '', True],
 		[ 'Norm', 'subjet112MassRatio_cutTau31', '', '', '', '', True],
 		[ 'Norm', 'subjet212MassRatio_cutTau31', '', '', '', '', True],
 		[ 'Norm', 'subjetPolAngle13412_cutTau31', polAngXmin, polAngXmax, polAnglabX, polAnglabY, True],
 		[ 'Norm', 'subjetPolAngle31234_cutTau31', polAngXmin, polAngXmax, polAnglabX, polAnglabY, True],
-		[ 'Norm', 'tmpSubjetPolAngle13412_cutTau31', polAngXmin, polAngXmax, polAnglabX, polAnglabY, True],
-		[ 'Norm', 'tmpSubjetPolAngle31234_cutTau31', polAngXmin, polAngXmax, polAnglabX, polAnglabY, True],
 
 		[ 'CF', 'cutflow', 6, True],
 		[ 'CF', 'cutflowSimple', 6, True],
+
+		[ 'mini', 'massAve_Standard', 0, massMaxX, '', '', False],
+		[ 'mini', 'massAve_EffPFHT800', 0, massMaxX, '', '', False],
+		[ 'mini', 'massAve_Brock', 0, massMaxX, '', '', False],
+
+		[ 'opt', 'massAve_massAsym', ["%02d" % x for x in range(10)], 0, massMaxX, '', '', False],
 		]
 
 	if 'all' in single: Plots = [ x[1:] for x in plotList if process in x[0] ]
@@ -782,13 +836,19 @@ if __name__ == '__main__':
 				plot2D( inputFileQCD, 'QCD'+qcd, optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], PU )
 
 			elif '1D' in process:
-				plot( inputFileSignal, inputFileQCD, optGrom, i[0], i[1], i[2], i[3], i[4], i[5], PU )
+				plot( inputFileSignal, inputFileQCD, 1.5, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU )
+			
+			elif 'mini' in process:
+				plot( inputMiniFileSignal, inputMiniFileQCD, 1.5, optGrom, i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU )
 			
 			elif 'Norm' in process:
-				plot( inputFileSignal, inputFileQCD, optGrom, i[0], i[1], i[2], i[3], i[4], i[5], PU, True )
+				plot( inputFileSignal, inputFileQCD, optGrom, 1.5, boosted+'AnalysisPlots'+optGrom+'/'+i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU, True )
 
 			elif 'CF' in process:
 				plotCutFlow( inputFileSignal, inputFileQCD, optGrom, i[0], i[1], i[2], PU, True )
+
+			elif 'opt' in process:
+				plotOptimization( inputMiniFileSignal, inputMiniFileQCD, optGrom, i[0], i[1], i[2], i[3], i[4], True )
 
 	sys.exit(0)
 	'''
@@ -842,8 +902,8 @@ if __name__ == '__main__':
 			[ 'jetMass', '', '', '', False],
 			[ 'HT', '', '', '', True],
 			[ 'HT', '', '', '', False],
-			[ 'massAve_cutHT', '', '', '', True],
-			[ 'massAve_cutHT', '', '', '', False],
+			[ 'massAve_cutDijet', '', '', '', True],
+			[ 'massAve_cutDijet', '', '', '', False],
 			[ 'massAve_cutAsym', '', '', '', True],
 			[ 'massAve_cutAsym', '', '', '', False],
 			[ 'massAve_cutCosTheta', '', '', '', True],
@@ -852,12 +912,12 @@ if __name__ == '__main__':
 			[ 'massAve_cutSubjetPtRatio', '', '', '', False],
 			[ 'massAve_cutTau31', '', '', '', True],
 			[ 'massAve_cutTau31', '', '', '', False],
-			[ 'subjetPtRatio_cutHT', '', '', '', True],
-			[ 'subjetPtRatio_cutHT', '', '', '', False],
-			[ 'massAsymmetry_cutHT', '', '', '', True],
-			[ 'massAsymmetry_cutHT', '', '', '', False],
-			[ 'cosThetaStar_cutHT', '', '', '', True],
-			[ 'cosThetaStar_cutHT', '', '', '', False],
+			[ 'subjetPtRatio_cutDijet', '', '', '', True],
+			[ 'subjetPtRatio_cutDijet', '', '', '', False],
+			[ 'massAsymmetry_cutDijet', '', '', '', True],
+			[ 'massAsymmetry_cutDijet', '', '', '', False],
+			[ 'cosThetaStar_cutDijet', '', '', '', True],
+			[ 'cosThetaStar_cutDijet', '', '', '', False],
 			]
 
 		inputFileSample1 = TFile.Open('Rootfiles/RUNAnalysis_RPVSt100to'+jj+'_PU40bx50_CSA14.root')
@@ -886,7 +946,7 @@ if __name__ == '__main__':
 	elif 'diffPU' in process:
 
 		diffPUPlots = [
-			[ 'massAve_cutHT', '', '', '', False],
+			[ 'massAve_cutDijet', '', '', '', False],
 			[ 'massAve_cutAsym', '', '', '', False],
 			[ 'massAve_cutCosTheta', '', '', '', False],
 			[ 'massAve_cutSubjetPtRatio', '', '', '', False],
@@ -911,19 +971,19 @@ if __name__ == '__main__':
 	elif 'LMHPU' in process:
 
 		Plots = [
-			[ 'massAve_cutHT', '', '', '', False],
+			[ 'massAve_cutDijet', '', '', '', False],
 			[ 'massAve_cutAsym', '', '', '', False],
 			[ 'massAve_cutCosTheta', '', '', '', False],
 			[ 'massAve_cutSubjetPtRatio', '', '', '', False],
-			[ 'massAveLowPU_cutHT', '', '', '', False],
+			[ 'massAveLowPU_cutDijet', '', '', '', False],
 			[ 'massAveLowPU_cutAsym', '', '', '', False],
 			[ 'massAveLowPU_cutCosTheta', '', '', '', False],
 			[ 'massAveLowPU_cutSubjetPtRatio', '', '', '', False],
-			[ 'massAveMedPU_cutHT', '', '', '', False],
+			[ 'massAveMedPU_cutDijet', '', '', '', False],
 			[ 'massAveMedPU_cutAsym', '', '', '', False],
 			[ 'massAveMedPU_cutCosTheta', '', '', '', False],
 			[ 'massAveMedPU_cutSubjetPtRatio', '', '', '', False],
-			[ 'massAveHighPU_cutHT', '', '', '', False],
+			[ 'massAveHighPU_cutDijet', '', '', '', False],
 			[ 'massAveHighPU_cutAsym', '', '', '', False],
 			[ 'massAveHighPU_cutCosTheta', '', '', '', False],
 			[ 'massAveHighPU_cutSubjetPtRatio', '', '', '', False],
