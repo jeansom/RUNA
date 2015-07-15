@@ -86,7 +86,8 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 
       bool bjSample;
       bool mkTree;
-      string HLTtrigger;
+      string HLTtriggerOne;
+      string HLTtriggerTwo;
       double scale;
       /*double cutAK4HTvalue;
       double cutjetAK4Ptvalue;
@@ -216,7 +217,8 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 {
 	scale = iConfig.getParameter<double>("scale");
 	bjSample = iConfig.getParameter<bool>("bjSample");
-	HLTtrigger = iConfig.getParameter<string>("HLTtrigger");
+	HLTtriggerOne = iConfig.getParameter<string>("HLTtriggerOne");
+	HLTtriggerTwo = iConfig.getParameter<string>("HLTtriggerTwo");
 	mkTree = iConfig.getParameter<bool>("mkTree");
 	/*
 	cutAK4HTvalue = iConfig.getParameter<double>("cutAK4HTvalue");
@@ -369,11 +371,20 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	iEvent.getByToken(subjetMass_, subjetMass);
 
 	string dummyHLT = "NOTRIGGER";
-	bool triggerFired = 0;
-	if ( HLTtrigger.compare(dummyHLT) == 0 ) triggerFired = 1; 
+	bool triggerFiredOne = 0;
+	bool triggerFiredTwo = 0;
+	if ( HLTtriggerOne == dummyHLT ) triggerFiredOne = 1; 
 	else {
 		for (size_t t = 0; t < triggerName->size(); t++) {
-			if ( ( (*triggerName)[t].compare(HLTtrigger) == 0 ) && ( (*triggerBit)[t] == 0 ) ) triggerFired = 1;
+			//LogWarning("trigger") << (*triggerName)[t]<< " " << (*triggerBit)[t];
+			//if ( ( (*triggerName)[t] == HLTtriggerOne ) && ( (*triggerBit)[t] == 1 ) ) triggerFired = 1;
+			if ( ( (*triggerName)[t].find( HLTtriggerOne ) != string::npos ) && ( (*triggerBit)[t] == 1 ) ) triggerFiredOne = 1;
+		}
+	}
+	if ( HLTtriggerTwo == dummyHLT ) triggerFiredTwo = 1; 
+	else {
+		for (size_t t = 0; t < triggerName->size(); t++) {
+			if ( ( (*triggerName)[t].find( HLTtriggerTwo ) != string::npos ) && ( (*triggerBit)[t] == 1 ) ) triggerFiredTwo = 1;
 		}
 	}
 
@@ -482,8 +493,9 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	}
 	tmpTriggerMass.clear();
 
-	//if ( cutMass && cutHT && cutAK4HT ) {
-	if ( triggerFired ) {
+	//if ( HT > 0 ) 	LogWarning("NOT fired") << HT << " " << trimmedMass;
+	if ( triggerFiredOne && triggerFiredTwo ) {
+		//LogWarning("fired") << HT << " " << trimmedMass;
 		cutmap["Trigger"] += 1; 
 		histos1D_[ "HT_cutTrigger" ]->Fill( HT, scale  );
 		histos1D_[ "NPV_cutTrigger" ]->Fill( numPV, scale );
