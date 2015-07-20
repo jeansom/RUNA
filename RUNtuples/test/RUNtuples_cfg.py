@@ -19,7 +19,9 @@ options.register('maxEvts',
 
 options.register('sample',
                  #'/store/mc/RunIISpring15DR74/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/Asympt25nsRecodebug_MCRUN2_74_V9-v1/70000/12B18945-2E03-E511-800A-B083FED73FEC.root',
-		 '/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_MiniAOD_v2/150613_105255/0000/RPVSt100tojj_13TeV_pythia8_MiniAOD_Asympt25ns_100.root',
+		 #'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_MiniAOD_v2/150613_105255/0000/RPVSt100tojj_13TeV_pythia8_MiniAOD_Asympt25ns_100.root',
+		 #'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_MiniAOD_v2/150613_105255/0002/RPVSt100tojj_13TeV_pythia8_MiniAOD_Asympt25ns_2164.root',
+		 '/store/data/Run2015B/JetHT/MINIAOD/PromptReco-v1/000/251/162/00000/0A926801-4627-E511-99E6-02163E0144D6.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
@@ -109,10 +111,16 @@ from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
 from RecoJets.JetProducers.SubJetParameters_cfi import SubJetParameters
 from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
 
-jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', addSoftDropSubjets=True, addPrunedSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True )
-jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', PUMethod='SK', addSoftDropSubjets=True, addPrunedSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True )
-jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addSoftDropSubjets=True, addPrunedSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True )
-jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', addCMSTopTagger=True )
+if ( options.isData ):
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, PUMethod='Puppi', addSoftDropSubjets=True, addPrunedSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, PUMethod='SK', addSoftDropSubjets=True, addPrunedSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addSoftDropSubjets=True, addPrunedSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True )
+	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addCMSTopTagger=True )
+else:
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', addSoftDropSubjets=True, addPrunedSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', PUMethod='SK', addSoftDropSubjets=True, addPrunedSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addSoftDropSubjets=True, addPrunedSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True )
+	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', addCMSTopTagger=True )
 jLabelAK8 = 'selectedPatJetsAK8PFCHS'
 
 ### Selected leptons and jets
@@ -318,7 +326,6 @@ process.TriggerUserData = cms.EDProducer(
     hltProcName = cms.untracked.string("HLT"), 
     objects = cms.InputTag("selectedPatTrigger")
     )                                 
-
 #process.TriggerUserDataMYHLT = cms.EDProducer(
 #    'TriggerUserData',
 #    bits = cms.InputTag("TriggerResults","","MYHLT"),
@@ -386,6 +393,8 @@ if(options.LHE):
 
 process.edmNtuplesOut.outputCommands+=('keep *_generator_*_*',)
 process.edmNtuplesOut.fileName=options.outputLabel
+
+if ( options.isData ): process.edmNtuplesOut.outputCommands+=('drop *_*gen*_*_*',)
 
 #process.edmNtuplesOut.SelectEvents = cms.untracked.PSet(
 #    SelectEvents = cms.vstring('filterPath')

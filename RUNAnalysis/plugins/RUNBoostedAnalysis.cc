@@ -86,8 +86,8 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 
       bool bjSample;
       bool mkTree;
-      string HLTtriggerOne;
-      string HLTtriggerTwo;
+      TString HLTtriggerOne;
+      TString HLTtriggerTwo;
       double scale;
       /*double cutAK4HTvalue;
       double cutjetAK4Ptvalue;
@@ -370,24 +370,20 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	Handle<vector<float> > subjetMass;
 	iEvent.getByToken(subjetMass_, subjetMass);
 
-	string dummyHLT = "NOTRIGGER";
-	bool triggerFiredOne = 0;
-	bool triggerFiredTwo = 0;
-	if ( HLTtriggerOne == dummyHLT ) triggerFiredOne = 1; 
-	else {
-		for (size_t t = 0; t < triggerName->size(); t++) {
-			//LogWarning("trigger") << (*triggerName)[t]<< " " << (*triggerBit)[t];
-			//if ( ( (*triggerName)[t] == HLTtriggerOne ) && ( (*triggerBit)[t] == 1 ) ) triggerFired = 1;
-			if ( ( (*triggerName)[t].find( HLTtriggerOne ) != string::npos ) && ( (*triggerBit)[t] == 1 ) ) triggerFiredOne = 1;
-		}
-	}
-	if ( HLTtriggerTwo == dummyHLT ) triggerFiredTwo = 1; 
-	else {
-		for (size_t t = 0; t < triggerName->size(); t++) {
-			if ( ( (*triggerName)[t].find( HLTtriggerTwo ) != string::npos ) && ( (*triggerBit)[t] == 1 ) ) triggerFiredTwo = 1;
-		}
-	}
 
+	float triggerFiredOne = 0;
+	float triggerFiredTwo = 0;
+	for (size_t t = 0; t < triggerName->size(); t++) {
+		if ( TString( (*triggerName)[t] ).Contains( HLTtriggerOne ) ) {
+			triggerFiredOne = (*triggerBit)[t];
+			//LogWarning("triggerbit") << (*triggerName)[t] << " " <<  (*triggerBit)[t];
+		}
+		if ( TString( (*triggerName)[t] ).Contains( HLTtriggerTwo ) ) triggerFiredTwo = (*triggerBit)[t];
+	}
+	if ( HLTtriggerTwo.Contains( "NOTRIGGER" ) ) triggerFiredTwo = 1;
+	if ( HLTtriggerOne.Contains( "NOTRIGGER" ) ) triggerFiredOne = 1;
+	//LogWarning("BITS") << triggerFiredOne << " " << triggerFiredTwo;
+	
 	///////// AK4 jets to model PFHT trigger
 	/*/bool cutAK4HT = 0;
 	AK4HT = 0;
@@ -518,7 +514,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 		vector<double> dalitz1, dalitz2;
 		vector<TLorentzVector> jet1SubjetsTLV, jet2SubjetsTLV;
 
-		if ( numJets > 1 ) {
+		if ( JETS.size() > 1 ) {
 
 			cutmap["Dijet"] += 1;
 

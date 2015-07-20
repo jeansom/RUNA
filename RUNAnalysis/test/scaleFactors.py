@@ -1,4 +1,6 @@
 dictXS = { 
+		##### DATA
+		'JetHT' : 1.,
 		#### QCD in Pt
 		# QCD_Pt-*_Tune4C_13TeV_pythia8
 		#'170to300' : 120300. ,
@@ -28,6 +30,10 @@ dictXS = {
 		}
 
 dictEvents = {
+		#### DATA
+		'JetHT' :	[ 1., ],
+
+
 		#### QCD in Pt [ (TuneCUETP8M1)	Generated (Tune4C),	PU40bx50 (CSA14),	PU30BX50 (PHYS14), 	PU20BX25 (PHYS25) ]
 		'170to300' :   [ 3714174., 	2794554., 	1490834. ,		2794244. ,		2000704. ],
 		'300to470' :   [ 3232893.,	2705941., 	576268. ,		2676717. ,		1986177. ], 
@@ -43,6 +49,7 @@ dictEvents = {
 		#### RPV Stop
 		'RPVSt100tojj' :  [ 279000.],	
 		'RPVSt100tobj' :  [ 100000.],	
+		'RPVSt200tojj' :  [ 100000.],	
 		'RPVSt350tojj' :  [ 100000.],	
 		}
 

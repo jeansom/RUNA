@@ -116,7 +116,8 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
-		'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns__v01/150703_162457/0000/RUNtuples_10.root'
+		#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns__v01/150703_162457/0000/RUNtuples_10.root'
+		'/store/user/algomez/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns_v01/150705_075711/0000/RUNtuples_13.root'
 		#'file:RUNtuple_1.root'
 	    )
 	)
@@ -131,15 +132,14 @@ Lumi = 1000
 from scaleFactors import scaleFactor
 SF = scaleFactor(NAME)
 
-if 'PU40bx50' in NAME: PU = 'PU40bx50'
-elif 'PU30BX50' in NAME: PU = 'PU30BX50'
-elif 'PU20bx25' in NAME: PU = 'PU20bx25'
-else: PU = 'NOPU'
+#if 'Asympt25ns' in NAME: PU = 'Asympt25ns'
+#elif 'Asympt50ns' in NAME: PU = 'Asympt50ns'
+#else: PU = 'NOPU'
 
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNFullAnalysis_'+NAME+'.root' ) )
 
 process.AnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
-		scale 			= cms.double(SF*Lumi),
+		scale 			= cms.double( 1 if 'JetHT' in NAME else SF*Lumi ),
 		cutHT	 		= cms.double( options.HT ),
 		cutMassRes 		= cms.double( options.MassRes ),
 		cutDelta 		= cms.double( options.Delta ),
@@ -169,7 +169,7 @@ process.AnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 process.AnalysisPlotsNOSCALE = process.AnalysisPlots.clone( scale = cms.double(1) )
 
 process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
-		scale 			= cms.double(SF*Lumi),
+		scale 			= cms.double( 1 if 'JetHT' in NAME else SF*Lumi ),
 		cutjetPtvalue 		= cms.double( options.boostedJetPt ),
 		cutAsymvalue 		= cms.double( options.Asym ),
 		cutCosThetavalue 	= cms.double( options.CosTheta ),
@@ -205,7 +205,8 @@ process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		#### Trigger
 		triggerBit		= cms.InputTag('TriggerUserData:triggerBitTree'),
 		triggerName		= cms.InputTag('TriggerUserData:triggerNameTree'),
-		HLTtrigger		= cms.string('HLT_AK8PFHT700_TrimR0p1PT0p03Mass50_v1'),
+		HLTtriggerOne		= cms.string('HLT_AK8PFHT700_TrimR0p1PT0p03Mass50'),
+		HLTtriggerTwo		= cms.string('HLT_AK8PFHT700_TrimR0p1PT0p03Mass50'),
 		#### JetID
 		jecFactor 		= cms.InputTag('jetsAK8:jetAK8jecFactor0'),
 		neutralHadronEnergy 	= cms.InputTag('jetsAK8:jetAK8neutralHadronEnergy'),
@@ -263,13 +264,22 @@ process.BoostedAnalysisPlotsPrunedNOSCALE = process.BoostedAnalysisPlotsPruned.c
 process.BoostedAnalysisPlotsSoftDropNOSCALE = process.BoostedAnalysisPlotsSoftDrop.clone( scale = cms.double(1) )
 
 process.BoostedAnalysisPlotsPrunedNOTrigger = process.BoostedAnalysisPlotsPruned.clone( 
-		HLTtrigger		= cms.string('NOTRIGGER'),
+		HLTtriggerOne		= cms.string('NOTRIGGER'),
 		)
 process.BoostedAnalysisPlotsPrunedPFHT900 = process.BoostedAnalysisPlotsPruned.clone( 
-		HLTtrigger		= cms.string('HLT_PFHT900_v1'),
+		HLTtriggerOne		= cms.string('HLT_PFHT900'),
+		HLTtriggerTwo		= cms.string('HLT_PFHT900'),
+		)
+process.BoostedAnalysisPlotsPrunedPFHT7504JetPt50 = process.BoostedAnalysisPlotsPruned.clone( 
+		HLTtriggerOne		= cms.string('HLT_PFHT750_4JetPt50'),
+		HLTtriggerTwo		= cms.string('HLT_PFHT750_4JetPt50'),
+		)
+process.BoostedAnalysisPlotsPrunedAK8PFHT700ANDPFHT7504Jet = process.BoostedAnalysisPlotsPruned.clone( 
+		HLTtriggerOne		= cms.string('HLT_AK8PFHT700_TrimR0p1PT0p03Mass50'),
+		HLTtriggerTwo		= cms.string('HLT_PFHT750_4JetPt50'),
 		)
 process.BoostedAnalysisPlotsSoftDropPFHT900 = process.BoostedAnalysisPlotsSoftDrop.clone( 
-		HLTtrigger		= cms.string('HLT_PFHT900_v1'),
+		HLTtrigger		= cms.string('HLT_PFHT900'),
 		)
 
 process.RUNATreeSoftDrop = process.BoostedAnalysisPlotsSoftDrop.clone( mkTree = cms.bool( True ) )
@@ -283,17 +293,19 @@ else:
 	process.p = cms.Path( process.AnalysisPlots
 		* process.AnalysisPlotsNOSCALE
 		* process.BoostedAnalysisPlots
-		* process.BoostedAnalysisPlotsTrimmed
+		#* process.BoostedAnalysisPlotsTrimmed
 		* process.BoostedAnalysisPlotsPruned
 		* process.BoostedAnalysisPlotsSoftDrop
-		* process.BoostedAnalysisPlotsPuppi
-		* process.BoostedAnalysisPlotsFiltered
-		* process.BoostedAnalysisPlotsSoftDropNOSCALE
+		#* process.BoostedAnalysisPlotsPuppi
+		#* process.BoostedAnalysisPlotsFiltered
+		#* process.BoostedAnalysisPlotsSoftDropNOSCALE
 		* process.BoostedAnalysisPlotsPrunedNOSCALE
-		* process.BoostedAnalysisPlotsSoftDropPFHT900
+		#* process.BoostedAnalysisPlotsSoftDropPFHT900
 		* process.BoostedAnalysisPlotsPrunedPFHT900
+		* process.BoostedAnalysisPlotsPrunedPFHT7504JetPt50
+		* process.BoostedAnalysisPlotsPrunedAK8PFHT700ANDPFHT7504Jet	
 		* process.BoostedAnalysisPlotsPrunedNOTrigger
-		* process.RUNATreeSoftDrop
+		#* process.RUNATreeSoftDrop
 		* process.RUNATreePruned
 		)
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

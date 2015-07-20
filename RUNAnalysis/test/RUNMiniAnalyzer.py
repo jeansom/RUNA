@@ -11,7 +11,7 @@ import sys,os,time
 #import optparse
 import argparse
 #from collections import defaultdict
-from ROOT import TFile, TTree, TDirectory, gDirectory, gROOT, TH1F, TMath
+from ROOT import TFile, TTree, TDirectory, gDirectory, gROOT, TH1F, TH2D, TMath
 from array import array
 from scaleFactors import scaleFactor as SF
 
@@ -40,6 +40,7 @@ def myAnalyzer( sample, couts, grooming):
 	nBinsHT		= 150
 	maxHT		= 1500
 
+	trimmedMassVsHT 	= TH2D('trimmedMassVsHT', 'trimmedMassVsHT', nBinsMass, 0, maxMass, nBinsHT, 0, maxHT )
 	massAve_Standard 	= TH1F('massAve_Standard', 'massAve_Standard', nBinsMass, 0, maxMass )
 	massAve_EffStandard 	= TH1F('massAve_EffStandard', 'massAve_EffStandard', nBinsMass, 0, maxMass )
 	
@@ -94,7 +95,7 @@ def myAnalyzer( sample, couts, grooming):
 		cosThetaStar	= events.cosThetaStar
 		jet1SubjetPtRatio	= events.jet1SubjetPtRatio
 		jet2SubjetPtRatio	= events.jet2SubjetPtRatio
-		scale		= events.scale
+		#scale		= events.scale
 		numPV           = events.numPV
 		AK4HT           = events.AK4HT
 		jet1Pt          = events.jet1Pt
@@ -129,8 +130,11 @@ def myAnalyzer( sample, couts, grooming):
 		cosPhi13412     = events.cosPhi13412
 		cosPhi31234     = events.cosPhi31234
 
+		#### TEST
+		trimmedMassVsHT.Fill( trimmedMass, HT )
+
 		#### Apply standard selection
-		triggerCut = ( ( HT > 700 ) and ( trimmedMass > 50 ) and ( numJets > 1 ) )  
+		triggerCut = ( ( HT > 600 ) and ( trimmedMass > 50 ) and ( numJets > 1 ) )  
 		subjetPtRatio = ( ( jet1SubjetPtRatio > 0.3 ) and ( jet2SubjetPtRatio > 0.3 )  )
 		massAsymCut = ( massAsym < 0.1 ) 
 		cosThetaStarCut = ( abs( cosThetaStar ) < 0.3 ) 
@@ -143,7 +147,7 @@ def myAnalyzer( sample, couts, grooming):
 			massAve_Standard.Fill( massAve, newSF )
 			#print AvgMass, newSF, scale
 
-		if ( ( HT > 800 ) and ( trimmedMass > 50 ) ) and massAsymCut and cosThetaStarCut and subjetPtRatioCut:
+		if ( ( HT > 700 ) and ( trimmedMass > 50 ) ) and massAsymCut and cosThetaStarCut and subjetPtRatioCut:
 			massAve_EffStandard.Fill( massAve, newSF )
 		
 		if ( AK4HT > 800 ) and massAsymCut and cosThetaStarCut and subjetPtRatioCut:
@@ -213,7 +217,7 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument( '-m', '--mass', action='store', type=int, dest='mass', default=100, help='Mass of the Stop' )
 	parser.add_argument( '-g', '--grooming', action='store',  dest='grooming', default='Pruned', help='Jet Algorithm' )
-	parser.add_argument( '-p', '--pileup', action='store',  dest='pileup', default='PU20bx25', help='Pileup' )
+	parser.add_argument( '-p', '--pileup', action='store',  dest='pileup', default='Asympt25ns', help='Pileup' )
 	parser.add_argument( '-d', '--debug', action='store_true', dest='couts', default=False, help='True print couts in screen, False print in a file' )
 	parser.add_argument( '-s', '--sample', action='store',   dest='samples', default='RPV', help='Type of sample' )
 
@@ -230,10 +234,10 @@ if __name__ == '__main__':
 	samples = args.samples
 
 	if 'RPV' in samples: 
-		inputFileName = 'Rootfiles/v03_v09/RUNAnalysis_RPVSt'+str(mass)+'tojj_PHYS14_'+PU+'_v03_v09.root'
+		inputFileName = 'Rootfiles/RUNAnalysis_RPVSt'+str(mass)+'tojj_RunIISpring15DR74_'+PU+'_v01_v01.root'
 		myAnalyzer( inputFileName, couts, grooming )
 	else: 
 		for qcdBin in [ '170to300', '300to470', '470to600', '600to800', '800to1000', '1000to1400', '1400to1800' ]: 
-			inputFileName = 'Rootfiles/v03_v09/RUNAnalysis_QCD_Pt-'+qcdBin+'_PHYS14_'+PU+'_v03_v09.root'
+			inputFileName = 'Rootfiles//RUNAnalysis_QCD_Pt-'+qcdBin+'_RunIISpring15DR74_'+PU+'_v01_v01.root'
 			myAnalyzer( inputFileName, couts, grooming )
 
