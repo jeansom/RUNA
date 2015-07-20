@@ -50,24 +50,24 @@ if __name__ == '__main__':
 #			'/QCD_Pt-1400to1800_Tune4C_13TeV_pythia8/algomez-RUNA_PHYS14_PU20bx25_v04-4ec6b714e09c1d3232adb8ad471fe07b/USER',
 
 			#### RunIISpring15DR74
-			'/QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns__v01-5fc672f84cef33a66015627a5c47070b/USER',
-			'/QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v01-1886d118546a0d39f46d888ed262e31b/USER',
-			'/QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns__v01-5fc672f84cef33a66015627a5c47070b/USER',
-			'/QCD_Pt_470to600_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns__v01-5fc672f84cef33a66015627a5c47070b/USER',
-			'/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v01-1886d118546a0d39f46d888ed262e31b/USER',
-			'/QCD_Pt_800to1000_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns__v01-5fc672f84cef33a66015627a5c47070b/USER',
-			'/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns__v01-5fc672f84cef33a66015627a5c47070b/USER',
-			'/QCD_Pt_1400to1800_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns__v01-5fc672f84cef33a66015627a5c47070b/USER',
-			'/JetHT/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v01-89fb02accba11db128d1ea781dbd9ffe/USER',
+#			'/QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns__v01-5fc672f84cef33a66015627a5c47070b/USER',
+#			'/QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v01-1886d118546a0d39f46d888ed262e31b/USER',
+#			'/QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns__v01-5fc672f84cef33a66015627a5c47070b/USER',
+#			'/QCD_Pt_470to600_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns__v01-5fc672f84cef33a66015627a5c47070b/USER',
+#			'/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v01-1886d118546a0d39f46d888ed262e31b/USER',
+#			'/QCD_Pt_800to1000_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns__v01-5fc672f84cef33a66015627a5c47070b/USER',
+#			'/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns__v01-5fc672f84cef33a66015627a5c47070b/USER',
+#			'/QCD_Pt_1400to1800_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns__v01-5fc672f84cef33a66015627a5c47070b/USER',
+#			'/JetHT/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v01-89fb02accba11db128d1ea781dbd9ffe/USER',
 
-#			'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns__v01-5fc672f84cef33a66015627a5c47070b/USER',
+			'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns__v02-1886d118546a0d39f46d888ed262e31b/USER',
 
 			]
 
 	
 	for dataset in Samples:
-		#procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-RunIISpring15DR74_RUNA', '').split('-')[0]+'_'+version
-		procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-RunIISpring15DR74_RUNA_Asympt25ns', '_Asympt50ns').split('-')[0]+'_'+version
+		procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-RunIISpring15DR74_RUNA', '').split('-')[0]+'_'+version
+		#procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-RunIISpring15DR74_RUNA_Asympt25ns', '_Asympt50ns').split('-')[0]+'_'+version
 		#procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-RUNA', '').split('-')[0]+'_'+version
 		config.Data.inputDataset = dataset
 		config.General.requestName = procName
@@ -78,7 +78,7 @@ if __name__ == '__main__':
 		else: 
 			config.Data.splitting = 'LumiBased'
 			config.Data.unitsPerJob = 10
-		crabCommand('submit', config = config)
-		#p = Process(target=submit, args=(config,))
-		#p.start()
-		#p.join()
+		#crabCommand('submit', config = config)
+		p = Process(target=submit, args=(config,))
+		p.start()
+		p.join()

@@ -618,9 +618,9 @@ def plotTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name
 	outputFileName = name+'_'+cut+'_'+triggerDenom+"_"+triggerPass+'_'+sample+'_TriggerEfficiency.pdf' 
 	print 'Processing.......', outputFileName
 
-	DenomOnly = inFileSample.Get( 'TriggerEfficiency'+triggerDenom+'/'+name+'Denom_'+cut )
+	DenomOnly = inFileSample.Get( ('TriggerEfficiency'+triggerDenom+triggerPass+'/'+name+'Denom_'+cut).replace('AK8PFHT700TrimMass50','') )
 	Denom = DenomOnly.Clone()
-	PassingOnly = inFileSample.Get( 'TriggerEfficiency'+triggerDenom+'/'+name+'Passing_'+cut )
+	PassingOnly = inFileSample.Get( ('TriggerEfficiency'+triggerDenom+triggerPass+'/'+name+'Passing_'+cut).replace('AK8PFHT700TrimMass50','') )
 	Passing = PassingOnly.Clone()
 	Efficiency = TGraphAsymmErrors( Passing, Denom, 'B'  )
 
@@ -655,6 +655,7 @@ def plotTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name
 	DenomOnly.Draw()
 	DenomOnly.GetYaxis().SetTitleSize(0.06)
 	DenomOnly.GetYaxis().SetTitleOffset(0.8)
+	DenomOnly.GetYaxis().SetLabelSize(0.06)
 	DenomOnly.GetXaxis().SetTitleOffset(0.9)
 	DenomOnly.GetXaxis().SetTitleSize(0.06)
 	DenomOnly.GetXaxis().SetLabelSize(0.06)
@@ -680,7 +681,7 @@ def plotTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name
 	Efficiency.GetYaxis().SetTitleSize(0.06)
 	Efficiency.GetYaxis().SetTitleOffset(0.8)
 	Efficiency.SetMinimum(-0.1)
-	Efficiency.GetXaxis().SetRangeUser( xmin, xmax )
+	Efficiency.GetXaxis().SetLimits( xmin, xmax )
 	Efficiency.Draw()
 
 	can.SaveAs( 'Plots/'+outName )
@@ -733,7 +734,7 @@ if __name__ == '__main__':
 	inputFileQCD = TFile.Open('Rootfiles/v09/RUNAnalysis_QCD'+qcd+'All_'+camp+'_'+PU+'_v03_v09.root')
 	inputMiniFileSignal = TFile.Open('Rootfiles/RUNMiniAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v03_v09.root')
 	inputMiniFileQCD = TFile.Open('Rootfiles/RUNMiniAnalysis_QCD'+qcd+'All_'+camp+'_'+PU+'_v03_v09.root')
-	inputTriggerDATA = TFile.Open('Rootfiles/RUNTriggerEfficiency_JetHT_Asympt50ns_v01_ts_v02.root')
+	inputTriggerDATA = TFile.Open('Rootfiles/RUNTriggerEfficiency_JetHT_Asympt50ns_v01_ts_v03.root')
 
 	dijetlabX = 0.15
 	dijetlabY = 0.88
@@ -953,6 +954,10 @@ if __name__ == '__main__':
 			elif 'trigger' in process:
 				plotTriggerEfficiency( inputTriggerDATA, 'JetHT', 'PFHT475', 'AK8PFHT700TrimMass50', i[0], i[1], i[2], i[3], i[4], i[5], i[6] )
 				plotTriggerEfficiency( inputTriggerDATA, 'JetHT', 'PFMET170', 'AK8PFHT700TrimMass50', i[0], i[1], i[2], i[3], i[4], i[5], i[6] )
+				plotTriggerEfficiency( inputTriggerDATA, 'JetHT', 'IsoMu17', 'AK8PFHT700TrimMass50', i[0], i[1], i[2], i[3], i[4], i[5], i[6] )
+				plotTriggerEfficiency( inputTriggerDATA, 'JetHT', 'PFHT475', 'PFHT800', i[0], i[1], i[2], i[3], i[4], i[5], i[6] )
+				plotTriggerEfficiency( inputTriggerDATA, 'JetHT', 'PFMET170', 'PFHT800', i[0], i[1], i[2], i[3], i[4], i[5], i[6] )
+				plotTriggerEfficiency( inputTriggerDATA, 'JetHT', 'IsoMu17', 'PFHT800', i[0], i[1], i[2], i[3], i[4], i[5], i[6] )
 
 
 	sys.exit(0)

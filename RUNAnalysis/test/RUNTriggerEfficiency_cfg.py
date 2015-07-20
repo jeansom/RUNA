@@ -83,8 +83,8 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
-		#'/store/user/algomez/JetHT/RunIISpring15DR74_RUNA_Asympt25ns_v01/150714_152253/0000/RUNtuples_101.root'
-		'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_RUNA_TS_Asympt25ns__v02/150719_165322/0000/RUNtuples_15.root',
+		'/store/user/algomez/JetHT/RunIISpring15DR74_RUNA_Asympt25ns_v01/150714_152253/0000/RUNtuples_101.root'
+		#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_RUNA_TS_Asympt25ns__v02/150719_165322/0000/RUNtuples_15.root',
 	#	#'file:../../RUNtuples/test/RUNAEDMNtuple.root'
 	    )
 	)
@@ -102,7 +102,7 @@ SF = scaleFactor(NAME)
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNTriggerEfficiency_'+NAME+'.root' ) )
 
 process.TriggerEfficiencyPFHT475 = cms.EDAnalyzer('RUNTriggerEfficiency',
-		scale 			= cms.double( 1 ), #SF*Lumi ),
+		scale 			= cms.double( 1 if SF == 1 else SF*Lumi ),
 		cutjetPtvalue 		= cms.double( options.jetPt ),
 		cutAsymvalue 		= cms.double( options.Asym ),
 		cutCosThetavalue 	= cms.double( options.CosTheta ),
@@ -110,11 +110,11 @@ process.TriggerEfficiencyPFHT475 = cms.EDAnalyzer('RUNTriggerEfficiency',
 		cutTau31value 		= cms.double( options.Tau31 ),
 		cutTau21value 		= cms.double( options.Tau21 ),
 		bjSample		= cms.bool( bjsample ),
-		mkTree			= cms.bool( False  ),
 		Run			= cms.InputTag('eventInfo:evtInfoRunNumber'),
 		Lumi			= cms.InputTag('eventInfo:evtInfoLumiBlock'),
 		Event			= cms.InputTag('eventInfo:evtInfoEventNumber'),
 		NPV	 		= cms.InputTag('eventUserData:npv'),
+		ak4jetPt 		= cms.InputTag('jetsAK4:jetAK4Pt'),
 		jetPt 			= cms.InputTag('jetsAK8:jetAK8Pt'),
 		jetEta			= cms.InputTag('jetsAK8:jetAK8Eta'),
 		jetPhi 			= cms.InputTag('jetsAK8:jetAK8Phi'),
@@ -154,6 +154,10 @@ process.TriggerEfficiencyPFHT475 = cms.EDAnalyzer('RUNTriggerEfficiency',
 )
 
 process.TriggerEfficiencyPFMET170 = process.TriggerEfficiencyPFHT475.clone( HLTtriggerOne = cms.string('HLT_PFMET170_NoiseCleaned') )
+process.TriggerEfficiencyIsoMu17 = process.TriggerEfficiencyPFHT475.clone( HLTtriggerOne = cms.string('HLT_IsoMu17_eta2p1_v') )
+process.TriggerEfficiencyPFHT475PFHT800 = process.TriggerEfficiencyPFHT475.clone( HLTtriggerTwo = cms.string('HLT_PFHT800') )
+process.TriggerEfficiencyPFMET170PFHT800 = process.TriggerEfficiencyPFHT475PFHT800.clone( HLTtriggerOne = cms.string('HLT_PFMET170_NoiseCleaned') )
+process.TriggerEfficiencyIsoMu17PFHT800 = process.TriggerEfficiencyPFHT475PFHT800.clone( HLTtriggerOne = cms.string('HLT_IsoMu17_eta2p1_v') )
 
 if options.debug:
 	process.p = cms.Path( process.TriggerEfficiencyPruned )
@@ -161,5 +165,9 @@ else:
 
 	process.p = cms.Path( process.TriggerEfficiencyPFHT475
 		* process.TriggerEfficiencyPFMET170
+		* process.TriggerEfficiencyIsoMu17
+		* process.TriggerEfficiencyPFHT475PFHT800
+		* process.TriggerEfficiencyPFMET170PFHT800
+		* process.TriggerEfficiencyIsoMu17PFHT800
 		)
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

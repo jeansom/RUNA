@@ -8,7 +8,7 @@ from CRABAPI.RawCommand import crabCommand
 from multiprocessing import Process
 config = config()
 
-version = '_ts_v02'
+version = 'ts_v04'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
@@ -36,24 +36,26 @@ if __name__ == '__main__':
 
 
 	Samples = [ 
-			'/JetHT/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v01-89fb02accba11db128d1ea781dbd9ffe/USER',
+			#'/JetHT/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v01p1-6311d8cedd93f6b81ce006f6aab1089d/USER',
+			'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_TS__v02-1886d118546a0d39f46d888ed262e31b/USER',
 
 			]
 
 	
 	for dataset in Samples:
-		#procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-RunIISpring15DR74_RUNA', '').split('-')[0]+'_'+version
-		procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-RunIISpring15DR74_RUNA_Asympt25ns', '_Asympt50ns').split('-')[0]+'_'+version
 		#procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-RUNA', '').split('-')[0]+'_'+version
+		if 'RPV' in dataset:
+			procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-RunIISpring15DR74_RUNA', '').split('-')[0]+'_'+version
+			config.Data.splitting = 'FileBased'
+			config.Data.unitsPerJob = 1
+		else:
+			procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-RunIISpring15DR74_RUNA_Asympt25ns', '_Asympt50ns').split('-')[0]+'_'+version
+			config.Data.splitting = 'LumiBased'
+			config.Data.unitsPerJob = 5
+			config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-251252_13TeV_PromptReco_Collisions15_JSON.txt'
 		config.Data.inputDataset = dataset
 		config.General.requestName = procName
 		config.JobType.pyCfgParams = [ 'PROC='+procName, 'local=0' ]
-		if 'RPV' in dataset: 
-			config.Data.splitting = 'FileBased'
-			config.Data.unitsPerJob = 1
-		else: 
-			config.Data.splitting = 'LumiBased'
-			config.Data.unitsPerJob = 5
 		#crabCommand('submit', config = config)
 		p = Process(target=submit, args=(config,))
 		p.start()
