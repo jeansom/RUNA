@@ -732,59 +732,59 @@ void RUNTriggerEfficiency::beginJob() {
 	histos1D_[ "jet1MassEfficiency_cutSubjetPtRatio" ] = fs_->make< TH1D >( "jet1MassEfficiency_cutSubjetPtRatio", "jet1MassEfficiency_cutSubjetPtRatio", 60, 0., 600. );
 	histos1D_[ "jet1MassEfficiency_cutSubjetPtRatio" ]->SetYTitle( "Efficiency_cutSubjetPtRatio" );
 
-	histos2D_[ "jetMassHTDenom_cutDijet" ] = fs_->make< TH2D >( "jetMassHTDenom_cutDijet", "HT vs Leading Jet Mass", 16, 0., 400. , 20, 0., 2000);
+	histos2D_[ "jetMassHTDenom_cutDijet" ] = fs_->make< TH2D >( "jetMassHTDenom_cutDijet", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
 	histos2D_[ "jetMassHTDenom_cutDijet" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jetMassHTDenom_cutDijet" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
 	histos2D_[ "jetMassHTDenom_cutDijet" ]->Sumw2();
 
-	histos2D_[ "jetMassHTPassing_cutDijet" ] = fs_->make< TH2D >( "jetMassHTPassing_cutDijet", "HT vs Leading Jet Mass", 16, 0., 400. , 20, 0., 2000);
+	histos2D_[ "jetMassHTPassing_cutDijet" ] = fs_->make< TH2D >( "jetMassHTPassing_cutDijet", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
 	histos2D_[ "jetMassHTPassing_cutDijet" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jetMassHTPassing_cutDijet" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
 	histos2D_[ "jetMassHTPassing_cutDijet" ]->Sumw2();
 
-	histos2D_[ "jetMassHTEfficiency_cutDijet" ] = fs_->make< TH2D >( "jetMassHTEfficiency_cutDijet", "HT vs Leading Jet Mass", 16, 0., 400. , 20, 0., 2000);
+	histos2D_[ "jetMassHTEfficiency_cutDijet" ] = fs_->make< TH2D >( "jetMassHTEfficiency_cutDijet", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
 	histos2D_[ "jetMassHTEfficiency_cutDijet" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jetMassHTEfficiency_cutDijet" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
 
-	histos2D_[ "jetMassHTDenom_cutMassAsym" ] = fs_->make< TH2D >( "jetMassHTDenom_cutMassAsym", "HT vs Leading Jet Mass", 16, 0., 400. , 20, 0., 2000);
+	histos2D_[ "jetMassHTDenom_cutMassAsym" ] = fs_->make< TH2D >( "jetMassHTDenom_cutMassAsym", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
 	histos2D_[ "jetMassHTDenom_cutMassAsym" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jetMassHTDenom_cutMassAsym" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
 	histos2D_[ "jetMassHTDenom_cutMassAsym" ]->Sumw2();
 
-	histos2D_[ "jetMassHTPassing_cutMassAsym" ] = fs_->make< TH2D >( "jetMassHTPassing_cutMassAsym", "HT vs Leading Jet Mass", 16, 0., 400. , 20, 0., 2000);
+	histos2D_[ "jetMassHTPassing_cutMassAsym" ] = fs_->make< TH2D >( "jetMassHTPassing_cutMassAsym", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
 	histos2D_[ "jetMassHTPassing_cutMassAsym" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jetMassHTPassing_cutMassAsym" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
 	histos2D_[ "jetMassHTPassing_cutMassAsym" ]->Sumw2();
 
-	histos2D_[ "jetMassHTEfficiency_cutMassAsym" ] = fs_->make< TH2D >( "jetMassHTEfficiency_cutMassAsym", "HT vs Leading Jet Mass", 16, 0., 400. , 20, 0., 2000);
+	histos2D_[ "jetMassHTEfficiency_cutMassAsym" ] = fs_->make< TH2D >( "jetMassHTEfficiency_cutMassAsym", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
 	histos2D_[ "jetMassHTEfficiency_cutMassAsym" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jetMassHTEfficiency_cutMassAsym" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
 
-	histos2D_[ "jetMassHTDenom_cutCosTheta" ] = fs_->make< TH2D >( "jetMassHTDenom_cutCosTheta", "HT vs Leading Jet Mass", 16, 0., 400. , 20, 0., 2000);
+	histos2D_[ "jetMassHTDenom_cutCosTheta" ] = fs_->make< TH2D >( "jetMassHTDenom_cutCosTheta", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
 	histos2D_[ "jetMassHTDenom_cutCosTheta" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jetMassHTDenom_cutCosTheta" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
 	histos2D_[ "jetMassHTDenom_cutCosTheta" ]->Sumw2();
 
-	histos2D_[ "jetMassHTPassing_cutCosTheta" ] = fs_->make< TH2D >( "jetMassHTPassing_cutCosTheta", "HT vs Leading Jet Mass", 16, 0., 400. , 20, 0., 2000);
+	histos2D_[ "jetMassHTPassing_cutCosTheta" ] = fs_->make< TH2D >( "jetMassHTPassing_cutCosTheta", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
 	histos2D_[ "jetMassHTPassing_cutCosTheta" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jetMassHTPassing_cutCosTheta" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
 	histos2D_[ "jetMassHTPassing_cutCosTheta" ]->Sumw2();
 
-	histos2D_[ "jetMassHTEfficiency_cutCosTheta" ] = fs_->make< TH2D >( "jetMassHTEfficiency_cutCosTheta", "HT vs Leading Jet Mass", 16, 0., 400. , 20, 0., 2000);
+	histos2D_[ "jetMassHTEfficiency_cutCosTheta" ] = fs_->make< TH2D >( "jetMassHTEfficiency_cutCosTheta", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
 	histos2D_[ "jetMassHTEfficiency_cutCosTheta" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jetMassHTEfficiency_cutCosTheta" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
 
-	histos2D_[ "jetMassHTDenom_cutSubjetPtRatio" ] = fs_->make< TH2D >( "jetMassHTDenom_cutSubjetPtRatio", "HT vs Leading Jet Mass", 16, 0., 400. , 20, 0., 2000);
+	histos2D_[ "jetMassHTDenom_cutSubjetPtRatio" ] = fs_->make< TH2D >( "jetMassHTDenom_cutSubjetPtRatio", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
 	histos2D_[ "jetMassHTDenom_cutSubjetPtRatio" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jetMassHTDenom_cutSubjetPtRatio" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
 	histos2D_[ "jetMassHTDenom_cutSubjetPtRatio" ]->Sumw2();
 
-	histos2D_[ "jetMassHTPassing_cutSubjetPtRatio" ] = fs_->make< TH2D >( "jetMassHTPassing_cutSubjetPtRatio", "HT vs Leading Jet Mass", 16, 0., 400. , 20, 0., 2000);
+	histos2D_[ "jetMassHTPassing_cutSubjetPtRatio" ] = fs_->make< TH2D >( "jetMassHTPassing_cutSubjetPtRatio", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
 	histos2D_[ "jetMassHTPassing_cutSubjetPtRatio" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jetMassHTPassing_cutSubjetPtRatio" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
 	histos2D_[ "jetMassHTPassing_cutSubjetPtRatio" ]->Sumw2();
 
-	histos2D_[ "jetMassHTEfficiency_cutSubjetPtRatio" ] = fs_->make< TH2D >( "jetMassHTEfficiency_cutSubjetPtRatio", "HT vs Leading Jet Mass", 16, 0., 400. , 20, 0., 2000);
+	histos2D_[ "jetMassHTEfficiency_cutSubjetPtRatio" ] = fs_->make< TH2D >( "jetMassHTEfficiency_cutSubjetPtRatio", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
 	histos2D_[ "jetMassHTEfficiency_cutSubjetPtRatio" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jetMassHTEfficiency_cutSubjetPtRatio" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
 

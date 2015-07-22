@@ -47,10 +47,10 @@ dictEvents = {
 		#'1000ToInf' :  [ 1500000., 	1. , 			1. , 			1130720. ],
 
 		#### RPV Stop
-		'RPVSt100tojj' :  [ 279000.],	
-		'RPVSt100tobj' :  [ 100000.],	
-		'RPVSt200tojj' :  [ 100000.],	
-		'RPVSt350tojj' :  [ 100000.],	
+		'RPVSt100tojj' :  [ 200000.],	
+		'RPVSt100tobj' :  [ 200000.],	
+		'RPVSt200tojj' :  [ 200000.],	
+		'RPVSt350tojj' :  [ 200000.],	
 		}
 
 def search(DICT, searchFor):

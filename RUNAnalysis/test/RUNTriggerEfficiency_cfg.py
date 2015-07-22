@@ -83,8 +83,7 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
-		'/store/user/algomez/JetHT/RunIISpring15DR74_RUNA_Asympt25ns_v01/150714_152253/0000/RUNtuples_101.root'
-		#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_RUNA_TS_Asympt25ns__v02/150719_165322/0000/RUNtuples_15.root',
+		#'/store/user/algomez/JetHT/RunIISpring15DR74_RUNA_Asympt25ns_v01/150714_152253/0000/RUNtuples_101.root'
 	#	#'file:../../RUNtuples/test/RUNAEDMNtuple.root'
 	    )
 	)
@@ -158,6 +157,10 @@ process.TriggerEfficiencyIsoMu17 = process.TriggerEfficiencyPFHT475.clone( HLTtr
 process.TriggerEfficiencyPFHT475PFHT800 = process.TriggerEfficiencyPFHT475.clone( HLTtriggerTwo = cms.string('HLT_PFHT800') )
 process.TriggerEfficiencyPFMET170PFHT800 = process.TriggerEfficiencyPFHT475PFHT800.clone( HLTtriggerOne = cms.string('HLT_PFMET170_NoiseCleaned') )
 process.TriggerEfficiencyIsoMu17PFHT800 = process.TriggerEfficiencyPFHT475PFHT800.clone( HLTtriggerOne = cms.string('HLT_IsoMu17_eta2p1_v') )
+process.TriggerEfficiencyPFHT475AKPFHT650 = process.TriggerEfficiencyPFHT475.clone( HLTtriggerTwo = cms.string('HLT_AK8PFHT650_TrimR0p1PT0p03Mass50') )
+process.TriggerEfficiencyPFHT475AKPFHT600 = process.TriggerEfficiencyPFHT475.clone( HLTtriggerTwo = cms.string('HLT_AK8PFHT600_TrimR0p1PT0p03Mass50') )
+process.TriggerEfficiencyPFHT475AKPFHT550 = process.TriggerEfficiencyPFHT475.clone( HLTtriggerTwo = cms.string('HLT_AK8PFHT550_TrimR0p1PT0p03Mass50') )
+process.TriggerEfficiencyPFHT475AKPFHT500 = process.TriggerEfficiencyPFHT475.clone( HLTtriggerTwo = cms.string('HLT_AK8PFHT500_TrimR0p1PT0p03Mass50') )
 
 if options.debug:
 	process.p = cms.Path( process.TriggerEfficiencyPruned )
@@ -170,4 +173,10 @@ else:
 		* process.TriggerEfficiencyPFMET170PFHT800
 		* process.TriggerEfficiencyIsoMu17PFHT800
 		)
+	if 'RPV' in NAME:
+		process.p += process.TriggerEfficiencyPFHT475AKPFHT650
+		process.p += process.TriggerEfficiencyPFHT475AKPFHT600
+		process.p += process.TriggerEfficiencyPFHT475AKPFHT500
+		process.p += process.TriggerEfficiencyPFHT475AKPFHT550
+
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

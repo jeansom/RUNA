@@ -23,17 +23,18 @@ gROOT.SetStyle('tdrStyle')
 
 gStyle.SetOptStat(0)
 
-def labels( name, sample, PU, camp, X=0.6, Y=0.70 ):
-	if 'cutDijet' in name: setSelection( sample, camp+' - '+PU, triggerUsed, 'jet p_{T} > '+cutjPt+' GeV', 'jet |#eta| < 2.4', 'numJets > 1', '', X, Y)
-	elif ( 'cutAsym' in name ) or ('cutMassAsym' in name): setSelection( sample, camp+' - '+PU, triggerUsed, 'A < 0.1', '', '', '', X, Y )
-	elif 'cutCosTheta' in name: setSelection( sample, camp+' - '+PU, triggerUsed, 'A < 0.1', '|cos(#theta*)| < 0.3', '', '', X, Y )
-	elif 'cutSubjetPtRatio' in name: setSelection( sample, camp+' - '+PU, triggerUsed, 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3', '', X, Y )
-	elif 'Standard' in name: setSelection( sample, camp+' - '+PU, triggerUsed, 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3', '', X, Y )
-	elif 'PFHT800' in name: setSelection( sample, camp+' - '+PU, 'PFHT800', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3', '', X, Y )
-	elif 'Brock' in name: setSelection( sample, camp+' - '+PU, 'HT > 1600 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3', '', X, Y )
-	elif 'cutTau31' in name: setSelection( sample, camp+' - '+PU, triggerUsed, 'A < 0.1', '|cos(#theta*)| < 0.3', '#tau_{31} < 0.5', '', X, Y )
+def labels( name, sample, PU, camp, X=0.6, Y=0.70, sel1='', sel2='', sel3='', sel4='', sel5='', sel6='' ):
+	if 'cutDijet' in name: setSelection( sample, camp+' - '+PU, triggerUsed, 'jet p_{T} > '+cutjPt+' GeV', 'jet |#eta| < 2.4', 'numJets > 1', sel1, X, Y)
+	elif ( 'cutAsym' in name ) or ('cutMassAsym' in name): setSelection( sample, camp+' - '+PU, triggerUsed, 'A < 0.1', sel1, sel2, sel3, X, Y )
+	elif 'cutCosTheta' in name: setSelection( sample, camp+' - '+PU, triggerUsed, 'A < 0.1', '|cos(#theta*)| < 0.3', sel1, sel2, X, Y )
+	elif 'cutSubjetPtRatio' in name: setSelection( sample, camp+' - '+PU, triggerUsed, 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3', sel1, X, Y )
+	elif 'Standard' in name: setSelection( sample, camp+' - '+PU, triggerUsed, 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3', sel1, X, Y )
+	elif 'PFHT800' in name: setSelection( sample, camp+' - '+PU, 'PFHT800', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3', sel1, X, Y )
+	elif 'Brock' in name: setSelection( sample, camp+' - '+PU, 'HT > 1600 TeV', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3', sel1, X, Y )
+	elif 'cutTau31' in name: setSelection( sample, camp+' - '+PU, triggerUsed, 'A < 0.1', '|cos(#theta*)| < 0.3', '#tau_{31} < 0.5', sel1, X, Y )
+	elif 'trigger' in name: setSelection(  sample, sel1, camp+' - '+PU, triggerUsed, 'Loose selection', sel2, sel3, X, Y )
 	elif '' in name: setSelection( sample, camp+' - '+PU, '', '', '', '', '', X, Y) 
-	else: setSelection( ' ' )
+	else: setSelection( sel1, sel2, sel3, sel4, sel5, sel6 )
 
 def labelAxis(name, histo, Grom ):
 
@@ -42,6 +43,7 @@ def labelAxis(name, histo, Grom ):
 		elif 'Pruned' in Grom: histo.GetXaxis().SetTitle( 'Average Pruned Mass [GeV]' )
 		elif 'Filtered' in Grom: histo.GetXaxis().SetTitle( 'Average Filtered Mass [GeV]' )
 		else: histo.GetXaxis().SetTitle( 'Average Mass [GeV]' )
+	elif 'trimmedMass' in name: histo.GetXaxis().SetTitle( 'Leading Trimmed Jet Mass [GeV]' )
 	elif 'massAsymmetry' in name: histo.GetXaxis().SetTitle( 'Mass Asymmetry (A)' )
 	elif 'cosThetaStar' in name: histo.GetXaxis().SetTitle( 'cos(#theta *)' )
 	elif 'jetEta' in name: histo.GetXaxis().SetTitle( 'Jet #eta' )
@@ -168,7 +170,7 @@ def plot( inFileSignal, inFileQCD, kfactor, Grom, nameInRoot, name, xmin, xmax, 
 		hSignal.GetXaxis().SetLabelSize(0.12)
 		hSignal.GetYaxis().SetTitleSize(0.12)
 		hSignal.GetYaxis().SetTitleOffset(0.45)
-		hSignal.SetMaximum(0.6)
+		hSignal.SetMaximum(0.3)
 		hSignal.Sumw2()
 		if xmax: hSignal.GetXaxis().SetRangeUser( xmin, xmax )
 		hSignal.Draw("hist")
@@ -513,51 +515,6 @@ def plotDiffPU( inFileSample, Grom, name, xmax, labX, labY, log, Diff , Norm=Fal
 	can.SaveAs( 'Plots/'+outName )
 	del can
 
-	'''
-		pad2.cd()
-		hSample1.SetLineColor(48)
-		#hSample1.SetFillStyle(1001)
-		hSample1.GetYaxis().SetTitle("Ratio")
-		hSample1.GetYaxis().SetLabelSize(0.12)
-		hSample1.GetXaxis().SetLabelSize(0.12)
-		hSample1.GetYaxis().SetTitleSize(0.12)
-		hSample1.GetYaxis().SetTitleOffset(0.45)
-		#hSample1.SetMaximum(1.0)
-		hSample1.Sumw2()
-		hSample1.Draw("histe")
-
-		can.SaveAs( 'Plots/'+outName )
-		del can
-	else:
-		histos[ 'Sample1' ].SetLineWidth(2)
-		histos[ 'Sample1' ].SetLineColor(48)
-		histos[ 'Sample2' ].SetLineColor(38)
-		histos[ 'Sample2' ].SetLineWidth(2)
-
-		can = TCanvas('c1', 'c1',  10, 10, 750, 500 )
-		if log: 
-			can.SetLogy()
-			outName = outputFileName.replace('_Diff','_Log_Norm_Diff')
-			histos[ 'Sample1' ].GetYaxis().SetTitleOffset(1.2)
-		else:
-			outName = outputFileName.replace('_Diff','_Norm_Diff')
-
-		legend.AddEntry( histos[ 'Sample1' ], sample1 , 'l' )
-		legend.AddEntry( histos[ 'Sample2' ], sample2 , 'l' )
-		histos['Sample1'].GetYaxis().SetTitle( 'Normalized / '+str(binWidth) )
-
-		histos['Sample1'].DrawNormalized()
-		histos['Sample2'].DrawNormalized('same')
-
-		legend.Draw()
-		labelAxis( name, histos['Sample1'], Grom )
-		if not (labX and labY): labels( name, '13 TeV - Scaled to '+lumi+' fb^{-1}', '' )
-		else: labels( name, '13 TeV - Scaled to '+lumi+' fb^{-1}', '', labX, labY )
-
-		can.SaveAs( 'Plots/'+outName )
-		del can
-	'''
-
 def plotOptimization( inFileSignal, inFileBkg, Grom, name, Range, xmax, labX, labY, log, Norm=False):
 	"""docstring for plot"""
 
@@ -618,9 +575,9 @@ def plotTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name
 	outputFileName = name+'_'+cut+'_'+triggerDenom+"_"+triggerPass+'_'+sample+'_TriggerEfficiency.pdf' 
 	print 'Processing.......', outputFileName
 
-	DenomOnly = inFileSample.Get( ('TriggerEfficiency'+triggerDenom+triggerPass+'/'+name+'Denom_'+cut).replace('AK8PFHT700TrimMass50','') )
+	DenomOnly = inFileSample.Get( 'TriggerEfficiency'+triggerDenom+triggerPass.replace('AK8PFHT700TrimMass50','')+'/'+name+'Denom_'+cut )
 	Denom = DenomOnly.Clone()
-	PassingOnly = inFileSample.Get( ('TriggerEfficiency'+triggerDenom+triggerPass+'/'+name+'Passing_'+cut).replace('AK8PFHT700TrimMass50','') )
+	PassingOnly = inFileSample.Get( 'TriggerEfficiency'+triggerDenom+triggerPass.replace('AK8PFHT700TrimMass50','')+'/'+name+'Passing_'+cut )
 	Passing = PassingOnly.Clone()
 	Efficiency = TGraphAsymmErrors( Passing, Denom, 'B'  )
 
@@ -648,28 +605,28 @@ def plotTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name
 	else:
 		outName = outputFileName 
 
-	legend.AddEntry( DenomOnly, triggerDenom, 'l' )
+	legend.AddEntry( DenomOnly, triggerDenom+' (based trigger)', 'l' )
 	legend.AddEntry( PassingOnly, triggerPass, 'l' )
 	#DenomOnly.SetMinimum(10)
 	DenomOnly.GetXaxis().SetRangeUser( xmin, xmax )
-	DenomOnly.Draw()
+	DenomOnly.Draw('histe')
 	DenomOnly.GetYaxis().SetTitleSize(0.06)
 	DenomOnly.GetYaxis().SetTitleOffset(0.8)
 	DenomOnly.GetYaxis().SetLabelSize(0.06)
 	DenomOnly.GetXaxis().SetTitleOffset(0.9)
 	DenomOnly.GetXaxis().SetTitleSize(0.06)
 	DenomOnly.GetXaxis().SetLabelSize(0.06)
-	PassingOnly.Draw('same')
+	PassingOnly.Draw('histe same')
 	DenomOnly.GetYaxis().SetTitle( 'Events / '+str(binWidth) )
 
 	labelAxis( name, DenomOnly, 'Pruned')
 	legend.Draw()
 	if 'JetHT' in sample:
-		if not (labX and labY): labels( cut, 'Data - '+lumi+' pb^{-1}', PU, camp )
-		else: labels( cut, 'Data - '+lumi+' pb^{-1}',  PU, camp, labX, labY )
+		if not (labX and labY): labels( 'trigger','', PU, camp, '', '', sel1='Data - '+lumi+' pb^{-1}' )
+		else: labels( 'trigger', '',  PU, camp, labX, labY, sel1='Data - '+lumi+' pb^{-1}' ) #, sel1='AK8PFHT700TrimMass50' )
 	else:
-		if not (labX and labY): labels( cut, '13 TeV - Scaled to '+lumi+' fb^{-1}', PU, camp )
-		else: labels( cut, '13 TeV - Scaled to '+lumi+' fb^{-1}', PU, camp, labX, labY )
+		if not (labX and labY): labels( 'trigger', 'RPV Stop 100 GeV', PU, camp, '', '', sel1='13 TeV - Scaled to '+lumi+' fb^{-1}'  )
+		else: labels( 'trigger', 'RPV Stop 100 GeV', PU, camp, labX, labY,sel1='13 TeV - Scaled to '+lumi+' fb^{-1}' )
 
 	pad2.cd()
 	Efficiency.SetLineWidth(2)
@@ -687,6 +644,195 @@ def plotTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name
 	can.SaveAs( 'Plots/'+outName )
 	del can
 
+def plot2DTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name, cut, Xmin, Xmax, rebinx, Ymin, Ymax, rebiny, labX, labY ):
+	"""docstring for plot"""
+
+	outputFileName = name+'_'+cut+'_'+triggerDenom+"_"+triggerPass+'_'+sample+'_TriggerEfficiency.pdf' 
+	print 'Processing.......', outputFileName
+
+	Denom = inFileSample.Get( 'TriggerEfficiency'+triggerDenom+triggerPass.replace('AK8PFHT700TrimMass50','')+'/'+name+'Denom_'+cut )
+	Passing = inFileSample.Get( 'TriggerEfficiency'+triggerDenom+triggerPass.replace('AK8PFHT700TrimMass50','')+'/'+name+'Passing_'+cut )
+	tmpDenom = Denom.Clone()
+	tmpPassing = Passing.Clone()
+	
+	### Rebinning
+	nbinsx = Denom.GetXaxis().GetNbins()
+	nbinsy = Denom.GetYaxis().GetNbins()
+	xmin  = Denom.GetXaxis().GetXmin()
+	xmax  = Denom.GetXaxis().GetXmax()
+	ymin  = Denom.GetYaxis().GetXmin()
+	ymax  = Denom.GetYaxis().GetXmax()
+	nx = nbinsx/rebinx
+	ny = nbinsy/rebiny
+	Denom.SetBins( nx, xmin, xmax, ny, ymin, ymax )
+	Passing.SetBins( nx, xmin, xmax, ny, ymin, ymax )
+
+	for biny in range( 1, nbinsy):
+		for binx in range(1, nbinsx):
+			ibin1 = Denom.GetBin(binx,biny)
+			Denom.SetBinContent( ibin1, 0 )
+			ibin2 = Denom.GetBin(binx,biny)
+			Passing.SetBinContent( ibin2, 0 )
+		
+	for biny in range( 1, nbinsy):
+		by = tmpDenom.GetYaxis().GetBinCenter( biny )
+		iy = Denom.GetYaxis().FindBin(by)
+		by2 = tmpPassing.GetYaxis().GetBinCenter( biny )
+		iy2 = Passing.GetYaxis().FindBin(by2)
+		for binx in range(1, nbinsx):
+			bx = tmpDenom.GetXaxis().GetBinCenter(binx)
+			ix  = Denom.GetXaxis().FindBin(bx)
+			bin = tmpDenom.GetBin(binx,biny)
+			ibin= Denom.GetBin(ix,iy)
+			cu  = tmpDenom.GetBinContent(bin)
+			Denom.AddBinContent(ibin,cu)
+
+			bx2 = tmpPassing.GetXaxis().GetBinCenter(binx)
+			ix2  = Passing.GetXaxis().FindBin(bx2)
+			bin2 = tmpPassing.GetBin(binx,biny)
+			ibin2 = Passing.GetBin(ix2,iy2)
+			cu2  = tmpPassing.GetBinContent(bin2)
+			Passing.AddBinContent(ibin2,cu2)
+
+	Efficiency = Denom.Clone() #TH2D( '', '', nx, xmin, xmax, ny, ymin, ymax )
+	Efficiency.Reset()
+	Efficiency.Divide( Passing, Denom, 1, 1, 'B' )
+
+	legend=TLegend(0.55,0.75,0.90,0.90)
+	legend.SetFillStyle(0)
+	legend.SetTextSize(0.04)
+
+	can = TCanvas('c1', 'c1',  10, 10, 750, 500 )
+	gStyle.SetPaintTextFormat("4.2f")
+	Efficiency.Draw('colz')
+	Efficiency.Draw('same text')
+	Efficiency.GetXaxis().SetRange( int(Xmin/(10.*rebinx)), int(Xmax/(10.*rebinx)) )
+	Efficiency.GetXaxis().SetTitle( 'Leading trimmed Jet Mass [GeV]' )
+	Efficiency.GetYaxis().SetRange( int(Ymin/(10.*rebiny)), int(Ymax/(10.*rebiny)) )
+
+	legend.Draw()
+	if 'JetHT' in sample:
+		if not (labX and labY): labels( 'trigger','', PU, camp, '', '', sel1='Data - '+lumi+' pb^{-1}' )
+		else: labels( 'trigger', '',  PU, camp, labX, labY, sel1='Data - '+lumi+' pb^{-1}' ) #, sel1='AK8PFHT700TrimMass50' )
+	else:
+		if not (labX and labY): labels( 'trigger', 'RPV Stop 100 GeV', PU, camp, '', '', sel1='13 TeV - Scaled to '+lumi+' fb^{-1}'  )
+		else: labels( 'trigger', 'RPV Stop 100 GeV', PU, camp, labX, labY,sel1='13 TeV - Scaled to '+lumi+' fb^{-1}' )
+
+	can.SaveAs( 'Plots/'+outputFileName )
+	del can
+
+def tmpplotTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name, cut, xmin, xmax, labX, labY, log ):
+	"""docstring for plot"""
+
+	outputFileName = name+'_'+cut+'_'+triggerDenom+'_DiffTriggers_'+sample+'_TriggerEfficiency.pdf' 
+	print 'Processing.......', outputFileName
+
+	DenomOnly = inFileSample.Get( 'TriggerEfficiency'+triggerDenom+'/'+name+'Denom_'+cut )
+	Denom = DenomOnly.Clone()
+	PassingOnly1 = inFileSample.Get( 'TriggerEfficiency'+triggerDenom+'/'+name+'Passing_'+cut )
+	Passing1 = PassingOnly1.Clone()
+	PassingOnly2 = inFileSample.Get( 'TriggerEfficiency'+triggerDenom+'AKPFHT650/'+name+'Passing_'+cut )
+	Passing2 = PassingOnly2.Clone()
+	PassingOnly3 = inFileSample.Get( 'TriggerEfficiency'+triggerDenom+'AKPFHT600/'+name+'Passing_'+cut )
+	Passing3 = PassingOnly3.Clone()
+	PassingOnly4 = inFileSample.Get( 'TriggerEfficiency'+triggerDenom+'AKPFHT550/'+name+'Passing_'+cut )
+	Passing4 = PassingOnly4.Clone()
+	PassingOnly5 = inFileSample.Get( 'TriggerEfficiency'+triggerDenom+'AKPFHT500/'+name+'Passing_'+cut )
+	Passing5 = PassingOnly5.Clone()
+	
+	Efficiency1 = TGraphAsymmErrors( Passing1, Denom, 'B'  )
+	Efficiency2 = TGraphAsymmErrors( Passing2, Denom, 'B'  )
+	Efficiency3 = TGraphAsymmErrors( Passing3, Denom, 'B'  )
+	Efficiency4 = TGraphAsymmErrors( Passing4, Denom, 'B'  )
+	Efficiency5 = TGraphAsymmErrors( Passing5, Denom, 'B'  )
+
+	binWidth = DenomOnly.GetBinWidth(1)
+
+	legend=TLegend(0.55,0.55,0.90,0.90)
+	legend.SetFillStyle(0)
+	legend.SetTextSize(0.04)
+
+	DenomOnly.SetLineWidth(2)
+	DenomOnly.SetLineColor(kCyan-4)
+	PassingOnly1.SetLineWidth(2)
+	PassingOnly1.SetLineColor(kBlue-4)
+	Efficiency1.SetLineWidth(2)
+	Efficiency1.SetLineColor(kBlue-4)
+	PassingOnly2.SetLineWidth(2)
+	PassingOnly2.SetLineColor(kGreen-4)
+	Efficiency2.SetLineWidth(2)
+	Efficiency2.SetLineColor(kGreen-4)
+	PassingOnly3.SetLineWidth(2)
+	PassingOnly3.SetLineColor(kRed-4)
+	Efficiency3.SetLineWidth(2)
+	Efficiency3.SetLineColor(kRed-4)
+	PassingOnly4.SetLineWidth(2)
+	PassingOnly4.SetLineColor(kViolet-4)
+	Efficiency4.SetLineWidth(2)
+	Efficiency4.SetLineColor(kViolet-4)
+	PassingOnly5.SetLineWidth(2)
+	PassingOnly5.SetLineColor(kAzure-4)
+	Efficiency5.SetLineWidth(2)
+	Efficiency5.SetLineColor(kAzure-4)
+
+	can = TCanvas('c1', 'c1',  10, 10, 750, 750 )
+	pad1 = TPad("pad1", "Histo",0,0.50,1.00,1.00,-1)
+	pad2 = TPad("pad2", "Efficiency",0,0.00,1.00,0.50,-1);
+	pad1.Draw()
+	pad2.Draw()
+
+	pad1.cd()
+	if log: pad1.SetLogy()
+	legend.AddEntry( DenomOnly, triggerDenom+' (based trigger)', 'l' )
+	legend.AddEntry( PassingOnly1, 'AK8PFHT700TrimMass50', 'l' )
+	legend.AddEntry( PassingOnly2, 'AK8PFHT650TrimMass50', 'l' )
+	legend.AddEntry( PassingOnly3, 'AK8PFHT600TrimMass50', 'l' )
+	legend.AddEntry( PassingOnly4, 'AK8PFHT550TrimMass50', 'l' )
+	legend.AddEntry( PassingOnly5, 'AK8PFHT500TrimMass50', 'l' )
+	#DenomOnly.SetMinimum(10)
+	DenomOnly.GetXaxis().SetRangeUser( xmin, xmax )
+	DenomOnly.Draw('histe')
+	DenomOnly.GetYaxis().SetTitleSize(0.06)
+	DenomOnly.GetYaxis().SetTitleOffset(0.8)
+	DenomOnly.GetYaxis().SetLabelSize(0.06)
+	DenomOnly.GetXaxis().SetTitleOffset(0.9)
+	DenomOnly.GetXaxis().SetTitleSize(0.06)
+	DenomOnly.GetXaxis().SetLabelSize(0.06)
+	PassingOnly1.Draw('histe same')
+	PassingOnly2.Draw('histe same')
+	PassingOnly3.Draw('histe same')
+	PassingOnly4.Draw('histe same')
+	PassingOnly5.Draw('histe same')
+	DenomOnly.GetYaxis().SetTitle( 'Events / '+str(binWidth) )
+
+	labelAxis( name, DenomOnly, 'Pruned')
+	legend.Draw()
+	if 'JetHT' in sample:
+		if not (labX and labY): labels( 'trigger', 'Data - '+lumi+' pb^{-1}', PU, camp )
+		else: labels( 'trigger', 'Data - '+lumi+' pb^{-1}',  PU, camp, labX, labY )
+	else:
+		if not (labX and labY): labels( 'trigger', 'RPV Stop 100 GeV', PU, camp, sel1='13 TeV - Scaled to '+lumi+' fb^{-1}' )
+		else: labels( 'trigger', 'RPV Stop 100 GeV', PU, camp, labX, labY, sel1='13 TeV - Scaled to '+lumi+' fb^{-1}' )
+
+	pad2.cd()
+	#Efficiency1.SetFillStyle(1001)
+	Efficiency1.GetYaxis().SetTitle("Efficiency")
+	Efficiency1.GetYaxis().SetLabelSize(0.06)
+	Efficiency1.GetXaxis().SetLabelSize(0.06)
+	Efficiency1.GetYaxis().SetTitleSize(0.06)
+	Efficiency1.GetYaxis().SetTitleOffset(0.8)
+	Efficiency1.SetMinimum(-0.1)
+	Efficiency1.GetXaxis().SetLimits( xmin, xmax )
+	Efficiency1.Draw()
+	Efficiency2.Draw('same')
+	Efficiency3.Draw('same')
+	Efficiency4.Draw('same')
+	Efficiency5.Draw('same')
+
+	can.SaveAs( 'Plots/'+outputFileName )
+	del can
+
+
 
 if __name__ == '__main__':
 
@@ -699,12 +845,12 @@ if __name__ == '__main__':
 	parser.add_argument('-cHT', '--cutDijet', action='store', default='700', help='HT cut, example: 700' )
 	parser.add_argument('-cjPt', '--cutjetPt', action='store', default='150', help='jet Pt cut, example: 150' )
 	parser.add_argument('-cjM', '--cutjetMass', action='store', default='50', help='jet trimmed mass cut, example: 50' )
-	parser.add_argument('-pu', '--PU', action='store', default='PU20bx25', help='PU, example: PU40bx25.' )
+	parser.add_argument('-pu', '--PU', action='store', default='Asympt25ns', help='PU, example: PU40bx25.' )
 	parser.add_argument('-s', '--single', action='store', default='all', help='single histogram, example: massAve_cutDijet.' )
 	parser.add_argument('-q', '--QCD', action='store', default='Pt', help='Type of QCD binning, example: HT.' )
-	parser.add_argument('-c', '--campaign', action='store', default='PHYS14', help='Campaign, example: PHYS14.' )
+	parser.add_argument('-c', '--campaign', action='store', default='RunIISpring15DR74', help='Campaign, example: PHYS14.' )
 	parser.add_argument('-l', '--lumi', action='store', default='1', help='Luminosity, example: 1.' )
-	parser.add_argument('-t', '--trigger', action='store', default='AK8PFHT700_TrimMass50', help='Trigger used, example PFHT800.' )
+	parser.add_argument('-t', '--trigger', action='store', default='AK8PFHT700TrimMass50', help='Trigger used, example PFHT800.' )
 
 	try:
 		args = parser.parse_args()
@@ -730,16 +876,28 @@ if __name__ == '__main__':
 	
 	#inputFileSample = TFile.Open('RUNAnalysis_RPVSt100tojj_pythia8_13TeV_PU40bx50_PHYS14.root')
 	#inputFileMCSignal = TFile.Open('RUNMCAnalysis_RPVSt100tojj_pythia8_13TeV_PU20bx25.root')
-	inputFileSignal = TFile.Open('Rootfiles/v09/RUNAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v03_v09.root')
-	inputFileQCD = TFile.Open('Rootfiles/v09/RUNAnalysis_QCD'+qcd+'All_'+camp+'_'+PU+'_v03_v09.root')
-	inputMiniFileSignal = TFile.Open('Rootfiles/RUNMiniAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v03_v09.root')
-	inputMiniFileQCD = TFile.Open('Rootfiles/RUNMiniAnalysis_QCD'+qcd+'All_'+camp+'_'+PU+'_v03_v09.root')
-	inputTriggerDATA = TFile.Open('Rootfiles/RUNTriggerEfficiency_JetHT_Asympt50ns_v01_ts_v03.root')
+	if 'trig' in process:
+		if 'DATA' in process: 
+			inputTrigger = TFile.Open('Rootfiles/RUNTriggerEfficiency_JetHT_Asympt50ns_v01p1_ts_v04.root')
+			SAMPLE = 'JetHT'
+		else: 
+			inputTrigger = TFile.Open('Rootfiles/RUNTriggerEfficiency_RPVSt100tojj_RunIISpring15DR74_Asympt25ns_TS_v02_v04.root')
+			SAMPLE = 'RPVStop100tojj'
+	elif 'mini' in process:
+		inputMiniFileSignal = TFile.Open('Rootfiles/RUNMiniAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v03_v09.root')
+		inputMiniFileQCD = TFile.Open('Rootfiles/RUNMiniAnalysis_QCD'+qcd+'All_'+camp+'_'+PU+'_v03_v09.root')
+	else:
+		inputFileSignal = TFile.Open('Rootfiles/RUNAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v02_v03.root')
+		inputFileQCD = TFile.Open('Rootfiles/RUNAnalysis_QCD'+qcd+'All_'+camp+'_'+PU+'_v01_v03.root')
 
 	dijetlabX = 0.15
 	dijetlabY = 0.88
+	triggerlabX = 0.60
+	triggerlabY = 0.75  #0.50
 	subjet112vs212labX = 0.7
 	subjet112vs212labY = 0.88
+	jetMassHTlabX = 0.60
+	jetMassHTlabY = 0.40
 	polAnglabX = 0.2
 	polAnglabY = 0.88
 	taulabX = '' #0.6
@@ -749,6 +907,7 @@ if __name__ == '__main__':
 	cosPhilabX = 0.15
 	cosPhilabY = 0.45
 
+	massMinX = 0
 	massMaxX = 3*(int(mass))
 	polAngXmin = 0.7
 	polAngXmax = 1.0
@@ -907,29 +1066,46 @@ if __name__ == '__main__':
 
 		[ 'opt', 'massAve_massAsym', ["%02d" % x for x in range(10)], 0, massMaxX, '', '', False],
 
-		[ 'trigger', 'massAve', 'cutDijet', 0, massMaxX, '', '', True],
-		[ 'trigger', 'massAve', 'cutMassAsym', 0, massMaxX, '', '', False],
-		[ 'trigger', 'massAve', 'cutCosTheta', 0, massMaxX, '', '', False],
-		[ 'trigger', 'massAve', 'cutSubjetPtRatio', 0, massMaxX, '', '', False],
-		[ 'trigger', 'HT', 'cutDijet', HTMinX, HTMaxX, '', '', True],
-		[ 'trigger', 'HT', 'cutMassAsym', HTMinX, HTMaxX, '', '', True],
-		[ 'trigger', 'HT', 'cutCosTheta', HTMinX, HTMaxX, '', '', True],
-		[ 'trigger', 'HT', 'cutSubjetPtRatio', HTMinX, HTMaxX, '', '', True],
-		[ 'trigger', 'jet1Mass', 'cutDijet', 0, massMaxX, '', '', True],
-		[ 'trigger', 'jet1Mass', 'cutMassAsym', 0, massMaxX, '', '', True],
-		[ 'trigger', 'jet1Mass', 'cutCosTheta', 0, massMaxX, '', '', True],
-		[ 'trigger', 'jet1Mass', 'cutSubjetPtRatio', 0, massMaxX, '', '', True],
-		[ 'trigger', 'jet1Pt', 'cutDijet', ptMinX, ptMaxX, '', '', True],
-		[ 'trigger', 'jet1Pt', 'cutMassAsym', ptMinX, ptMaxX, '', '', True],
-		[ 'trigger', 'jet1Pt', 'cutCosTheta', ptMinX, ptMaxX, '', '', True],
-		[ 'trigger', 'jet1Pt', 'cutSubjetPtRatio', ptMinX, ptMaxX, '', '', True],
+		[ 'trigger', 'massAve', 'cutDijet', 0, massMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'massAve', 'cutMassAsym', 0, massMaxX, triggerlabX, triggerlabY, False],
+		[ 'trigger', 'massAve', 'cutCosTheta', 0, massMaxX, triggerlabX, triggerlabY, False],
+		[ 'trigger', 'massAve', 'cutSubjetPtRatio', 0, massMaxX, triggerlabX, triggerlabY, False],
+		[ 'trigger', 'HT', 'cutDijet', HTMinX, HTMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'HT', 'cutMassAsym', HTMinX, HTMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'HT', 'cutCosTheta', HTMinX, HTMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'HT', 'cutSubjetPtRatio', HTMinX, HTMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'jet1Mass', 'cutDijet', 0, massMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'jet1Mass', 'cutMassAsym', 0, massMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'jet1Mass', 'cutCosTheta', 0, massMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'jet1Mass', 'cutSubjetPtRatio', 0, massMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'jet1Pt', 'cutDijet', ptMinX, ptMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'jet1Pt', 'cutMassAsym', ptMinX, ptMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'jet1Pt', 'cutCosTheta', ptMinX, ptMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'jet1Pt', 'cutSubjetPtRatio', ptMinX, ptMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'trimmedMass', 'cutDijet', massMinX, massMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'trimmedMass', 'cutMassAsym', massMinX, massMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'trimmedMass', 'cutCosTheta', massMinX, massMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'trimmedMass', 'cutSubjetPtRatio', massMinX, massMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'ak4HT', 'cutDijet', HTMinX, HTMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'ak4HT', 'cutMassAsym', HTMinX, HTMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'ak4HT', 'cutCosTheta', HTMinX, HTMaxX, triggerlabX, triggerlabY, True],
+		[ 'trigger', 'ak4HT', 'cutSubjetPtRatio', HTMinX, HTMaxX, triggerlabX, triggerlabY, True],
+
+		[ '2dtrig', 'jetMassHT', 'cutDijet', 20, massMaxX, 2, HTMinX, HTMaxX, 5, jetMassHTlabX, jetMassHTlabY],
+		[ '2dtrig', 'jetMassHT', 'cutMassAsym', 20, massMaxX, 2, HTMinX, HTMaxX, 5, jetMassHTlabX, jetMassHTlabY],
+		[ '2dtrig', 'jetMassHT', 'cutCosTheta', 20, massMaxX, 2, HTMinX, HTMaxX, 5, jetMassHTlabX, jetMassHTlabY],
+		[ '2dtrig', 'jetMassHT', 'cutSubjetPtRatio', 20, massMaxX, 2, HTMinX, HTMaxX, 5, jetMassHTlabX, jetMassHTlabY],
 		]
 
-	if 'all' in single: Plots = [ x[1:] for x in plotList if process in x[0] ]
-	else: Plots = [ y[1:] for y in plotList if ( ( process in y[0] ) and ( single in y[1] ) )  ]
+	if 'all' in single: Plots = [ x[1:] for x in plotList if x[0] in process ]
+	else: Plots = [ y[1:] for y in plotList if ( ( y[0] in process ) and ( y[1] in single ) )  ]
 
 	if 'all' in grom: Groomers = [ '', 'Trimmed', 'Pruned', 'Filtered' ]
 	else: Grommers = [ grom ]
+
+	if 'all' in triggerUsed: Triggers = [ 'PFHT800', 'AK8PFHT700TrimMass50' ]
+	#else: Triggers = [ triggerUsed.replace('TrimMass50','').replace('AK8','AK') ]
+	else: Triggers = [ triggerUsed ]
 
 	for i in Plots:
 		for optGrom in Grommers:
@@ -952,12 +1128,17 @@ if __name__ == '__main__':
 			elif 'opt' in process:
 				plotOptimization( inputMiniFileSignal, inputMiniFileQCD, optGrom, i[0], i[1], i[2], i[3], i[4], True )
 			elif 'trigger' in process:
-				plotTriggerEfficiency( inputTriggerDATA, 'JetHT', 'PFHT475', 'AK8PFHT700TrimMass50', i[0], i[1], i[2], i[3], i[4], i[5], i[6] )
-				plotTriggerEfficiency( inputTriggerDATA, 'JetHT', 'PFMET170', 'AK8PFHT700TrimMass50', i[0], i[1], i[2], i[3], i[4], i[5], i[6] )
-				plotTriggerEfficiency( inputTriggerDATA, 'JetHT', 'IsoMu17', 'AK8PFHT700TrimMass50', i[0], i[1], i[2], i[3], i[4], i[5], i[6] )
-				plotTriggerEfficiency( inputTriggerDATA, 'JetHT', 'PFHT475', 'PFHT800', i[0], i[1], i[2], i[3], i[4], i[5], i[6] )
-				plotTriggerEfficiency( inputTriggerDATA, 'JetHT', 'PFMET170', 'PFHT800', i[0], i[1], i[2], i[3], i[4], i[5], i[6] )
-				plotTriggerEfficiency( inputTriggerDATA, 'JetHT', 'IsoMu17', 'PFHT800', i[0], i[1], i[2], i[3], i[4], i[5], i[6] )
+				for trig in Triggers:
+					#tmpplotTriggerEfficiency( inputTrigger, SAMPLE, 'PFHT475', trig, i[0], i[1], i[2], i[3], i[4], i[5], i[6] )
+					plotTriggerEfficiency( inputTrigger, SAMPLE, 'PFHT475', trig, i[0], i[1], i[2], i[3], i[4], i[5], i[6] )
+					#plotTriggerEfficiency( inputTrigger, SAMPLE, 'PFMET170', trig, i[0], i[1], i[2], i[3], i[4], i[5], i[6] )
+					#plotTriggerEfficiency( inputTrigger, SAMPLE, 'IsoMu17', trig, i[0], i[1], i[2], i[3], i[4], i[5], i[6] )
+			elif '2dtrig' in process:
+				for trig in Triggers:
+					plot2DTriggerEfficiency( inputTrigger, SAMPLE, 'PFHT475', trig, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9] )
+					#plot2DTriggerEfficiency( inputTrigger, SAMPLE, 'PFMET170', trig, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9] )
+					#plot2DTriggerEfficiency( inputTrigger, SAMPLE, 'IsoMu17', trig, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9] )
+
 
 
 	sys.exit(0)
