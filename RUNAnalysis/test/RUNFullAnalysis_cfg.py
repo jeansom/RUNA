@@ -89,13 +89,13 @@ options.register('SubPt',
 		"Subjet Pt Ratio cut"
 		)
 options.register('Tau31', 
-		0.5,
+		0.4,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
 		"Tau31 cut"
 		)
 options.register('Tau21', 
-		0.3,
+		0.5,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
 		"Tau21 cut"
@@ -116,7 +116,7 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
-		#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns__v01/150703_162457/0000/RUNtuples_10.root'
+		#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns__v02/150719_102556/0000/RUNtuples_11.root'
 		'/store/user/algomez/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns_v01/150705_075711/0000/RUNtuples_13.root'
 		#'file:RUNtuple_1.root'
 	    )
@@ -132,14 +132,13 @@ Lumi = 1000
 from scaleFactors import scaleFactor
 SF = scaleFactor(NAME)
 
-#if 'Asympt25ns' in NAME: PU = 'Asympt25ns'
-#elif 'Asympt50ns' in NAME: PU = 'Asympt50ns'
-#else: PU = 'NOPU'
+if ( 'RPV' in NAME ) or ( 'QCD' in NAME ): sf = SF*Lumi
+else: sf = 1
 
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNFullAnalysis_'+NAME+'.root' ) )
 
 process.AnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
-		scale 			= cms.double( 1 if 'JetHT' in NAME else SF*Lumi ),
+		scale 			= cms.double( sf ),
 		cutHT	 		= cms.double( options.HT ),
 		cutMassRes 		= cms.double( options.MassRes ),
 		cutDelta 		= cms.double( options.Delta ),
@@ -293,11 +292,11 @@ else:
 	process.p = cms.Path( process.AnalysisPlots
 		* process.AnalysisPlotsNOSCALE
 		* process.BoostedAnalysisPlots
-		#* process.BoostedAnalysisPlotsTrimmed
+		* process.BoostedAnalysisPlotsTrimmed
 		* process.BoostedAnalysisPlotsPruned
 		* process.BoostedAnalysisPlotsSoftDrop
-		#* process.BoostedAnalysisPlotsPuppi
-		#* process.BoostedAnalysisPlotsFiltered
+		* process.BoostedAnalysisPlotsPuppi
+		* process.BoostedAnalysisPlotsFiltered
 		#* process.BoostedAnalysisPlotsSoftDropNOSCALE
 		* process.BoostedAnalysisPlotsPrunedNOSCALE
 		#* process.BoostedAnalysisPlotsSoftDropPFHT900

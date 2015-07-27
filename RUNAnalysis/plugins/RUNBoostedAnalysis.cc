@@ -112,6 +112,7 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 	    subjet22Pt = -999, subjet22Eta = -999, subjet22Phi = -999, subjet22E = -999,
 	    massAve = -9999, massAsym = -9999, cosThetaStar = -9999,
 	    jet1Tau21 = -9999, jet1Tau31 = -9999, jet1Tau32 = -9999,
+	    jet2Tau21 = -9999, jet2Tau31 = -9999, jet2Tau32 = -9999,
 	    jet1SubjetPtRatio = -999, jet2SubjetPtRatio = -999, jet1SubjetMass21Ratio = -999, jet1Subjet112MassRatio = -999, jet1Subjet1JetMassRatio = - 999, jet1Subjet212MassRatio = - 999, jet1Subjet2JetMassRatio = - 999,
 	    jet2SubjetMass21Ratio = -999, jet2Subjet112MassRatio = -999, jet2Subjet1JetMassRatio = - 999, jet2Subjet212MassRatio = - 999, jet2Subjet2JetMassRatio = - 999, 
 	    cosPhi13412 = -9999, cosPhi31234 = -9999,
@@ -401,7 +402,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	/// Applying kinematic, trigger and jet ID
 	cutmap["Processed"] += 1;
 	vector< JETtype > JETS;
-	vector< float > tmpTriggerMass;
+	vector< float > tmpTriggerMass, tmpMass;
 	double rawHT = 0;
 	//bool cutHT = 0;
 	//bool cutMass = 0;
@@ -435,6 +436,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 
 			TLorentzVector tmpJet;
 			tmpJet.SetPtEtaPhiE( (*jetPt)[i], (*jetEta)[i], (*jetPhi)[i], (*jetE)[i] );
+			tmpMass.push_back( (*jetMass)[i] );
 
 			/// Vector of zeros
 			TLorentzVector tmpSubjet0, tmpSubjet1, tmpZeros;
@@ -486,8 +488,18 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 		//cutMass = 1;
 		trimmedMass = tmpTriggerMass[0];
 		histos1D_[ "jetTrimmedMass" ]->Fill( tmpTriggerMass[0], scale  );
+		if (HT > 0) histos2D_[ "jetTrimmedMassHT" ]->Fill( tmpTriggerMass[0], HT, scale  );
 	}
 	tmpTriggerMass.clear();
+	
+	sort(tmpMass.begin(), tmpMass.end(), [](const float p1, const float p2) { return p1 > p2; }); 
+	float leadMass = 0;
+	if ( ( tmpMass.size()> 0 ) ) { //&& ( tmpMass[0] > cutTrimmedMassvalue) ){
+		leadMass = tmpMass[0];
+		histos1D_[ "leadMass" ]->Fill( tmpMass[0], scale  );
+		if (HT > 0) histos2D_[ "leadMassHT" ]->Fill( tmpMass[0], HT, scale  );
+	}
+	tmpMass.clear();
 
 	//if ( HT > 0 ) 	LogWarning("NOT fired") << HT << " " << trimmedMass;
 	if ( triggerFiredOne && triggerFiredTwo ) {
@@ -496,6 +508,8 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 		histos1D_[ "HT_cutTrigger" ]->Fill( HT, scale  );
 		histos1D_[ "NPV_cutTrigger" ]->Fill( numPV, scale );
 		histos1D_[ "jetNum_cutTrigger" ]->Fill( numJets, scale );
+		histos2D_[ "jetTrimmedMassHT_cutTrigger" ]->Fill( trimmedMass, HT, scale  );
+		histos2D_[ "leadMassHT_cutTrigger" ]->Fill( leadMass, HT, scale  );
 
 		int kdum = 0;
 		for (size_t k = 0; k < JETS.size(); k++) {
@@ -544,6 +558,9 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			jet1Tau21 = JETS[0].tau2 / JETS[0].tau1;
 			jet1Tau31 = JETS[0].tau3 / JETS[0].tau1;
 			jet1Tau32 = JETS[0].tau3 / JETS[0].tau2;
+			jet2Tau21 = JETS[1].tau2 / JETS[1].tau1;
+			jet2Tau31 = JETS[1].tau3 / JETS[1].tau1;
+			jet2Tau32 = JETS[1].tau3 / JETS[1].tau2;
 			////////////////////////////////////////////////////////////////////////////////
 
 
@@ -657,34 +674,35 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			}
 
 			///// Variables for tree
+			event		= *ievent;
+			run		= *Run;
+			lumi		= *Lumi;
+			jet1Pt 		= JETS[0].p4.Pt();
+			jet1Eta 	= JETS[0].p4.Eta();
+			jet1Phi 	= JETS[0].p4.Phi();
+			jet1E 		= JETS[0].p4.E();
+			jet2Pt 		= JETS[1].p4.Pt();
+			jet2Eta 	= JETS[1].p4.Eta();
+			jet2Phi 	= JETS[1].p4.Phi();
+			jet2E 		= JETS[1].p4.E();
+			subjet11Pt	= jet1SubjetsTLV[0].Pt();
+			subjet11Eta	= jet1SubjetsTLV[0].Eta();
+			subjet11Phi	= jet1SubjetsTLV[0].Phi();
+			subjet11E	= jet1SubjetsTLV[0].E();
+			subjet12Pt	= jet1SubjetsTLV[1].Pt();
+			subjet12Eta	= jet1SubjetsTLV[1].Eta();
+			subjet12Phi	= jet1SubjetsTLV[1].Phi();
+			subjet12E	= jet1SubjetsTLV[1].E();
+			subjet21Pt	= jet2SubjetsTLV[0].Pt();
+			subjet21Eta	= jet2SubjetsTLV[0].Eta();
+			subjet21Phi	= jet2SubjetsTLV[0].Phi();
+			subjet21E	= jet2SubjetsTLV[0].E();
+			subjet22Pt	= jet2SubjetsTLV[1].Pt();
+			subjet22Eta	= jet2SubjetsTLV[1].Eta();
+			subjet22Phi	= jet2SubjetsTLV[1].Phi();
+			subjet22E	= jet2SubjetsTLV[1].E();
+
 			if ( mkTree ) {
-				event		= *ievent;
-				run		= *Run;
-				lumi		= *Lumi;
-				jet1Pt 		= JETS[0].p4.Pt();
-				jet1Eta 	= JETS[0].p4.Eta();
-				jet1Phi 	= JETS[0].p4.Phi();
-				jet1E 		= JETS[0].p4.E();
-				jet2Pt 		= JETS[1].p4.Pt();
-				jet2Eta 	= JETS[1].p4.Eta();
-				jet2Phi 	= JETS[1].p4.Phi();
-				jet2E 		= JETS[1].p4.E();
-				subjet11Pt	= jet1SubjetsTLV[0].Pt();
-				subjet11Eta	= jet1SubjetsTLV[0].Eta();
-				subjet11Phi	= jet1SubjetsTLV[0].Phi();
-				subjet11E	= jet1SubjetsTLV[0].E();
-				subjet12Pt	= jet1SubjetsTLV[1].Pt();
-				subjet12Eta	= jet1SubjetsTLV[1].Eta();
-				subjet12Phi	= jet1SubjetsTLV[1].Phi();
-				subjet12E	= jet1SubjetsTLV[1].E();
-				subjet21Pt	= jet2SubjetsTLV[0].Pt();
-				subjet21Eta	= jet2SubjetsTLV[0].Eta();
-				subjet21Phi	= jet2SubjetsTLV[0].Phi();
-				subjet21E	= jet2SubjetsTLV[0].E();
-				subjet22Pt	= jet2SubjetsTLV[1].Pt();
-				subjet22Eta	= jet2SubjetsTLV[1].Eta();
-				subjet22Phi	= jet2SubjetsTLV[1].Phi();
-				subjet22E	= jet2SubjetsTLV[1].E();
 				RUNAtree->Fill();
 
 			} else {
@@ -695,6 +713,9 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 				histos1D_[ "jet1Pt_cutDijet" ]->Fill( JETS[0].p4.Pt(), scale  );
 				histos1D_[ "jet1Eta_cutDijet" ]->Fill( JETS[0].p4.Eta(), scale  );
 				histos1D_[ "jet1Mass_cutDijet" ]->Fill( JETS[0].mass, scale );
+				histos2D_[ "jetTrimmedMassHT_cutDijet" ]->Fill( trimmedMass, HT, scale  );
+				histos2D_[ "leadMassHT_cutDijet" ]->Fill( leadMass, HT, scale  );
+				histos2D_[ "jetMassAveHT_cutDijet" ]->Fill( massAve, HT, scale  );
 				for (size_t k = 0; k < JETS.size(); k++) {
 					histos1D_[ "jetPt_cutDijet" ]->Fill( JETS[k].p4.Pt(), scale  );
 					histos1D_[ "jetEta_cutDijet" ]->Fill( JETS[k].p4.Eta(), scale  );
@@ -794,6 +815,9 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 				if( massAsym < cutAsymvalue ){
 					cutmap["Asymmetry"] += 1;
 					histos1D_[ "massAve_cutAsym" ]->Fill( massAve, scale  );
+					histos2D_[ "jetTrimmedMassHT_cutAsym" ]->Fill( trimmedMass, HT, scale  );
+					histos2D_[ "leadMassHT_cutAsym" ]->Fill( leadMass, HT, scale  );
+					histos2D_[ "jetMassAveHT_cutAsym" ]->Fill( massAve, HT, scale  );
 					histos1D_[ "cosThetaStar_cutAsym" ]->Fill( cosThetaStar, scale  );
 					histos1D_[ "jet1Tau21_cutAsym" ]->Fill( jet1Tau21, scale  );
 					histos1D_[ "jet1Tau31_cutAsym" ]->Fill( jet1Tau31, scale  );
@@ -838,10 +862,12 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 					histos2D_[ "dalitz3412_cutAsym" ]->Fill( dalitzY5, dalitz2[0], scale );
 					histos2D_[ "dalitz3412_cutAsym" ]->Fill( dalitzY6, dalitz2[1], scale );
 
-					//if( TMath::Abs( cosThetaStar ) < 0.3 ){
 					if( TMath::Abs( cosThetaStar ) < cutCosThetavalue ){
 						cutmap["CosTheta"] += 1;
 						histos1D_[ "massAve_cutCosTheta" ]->Fill( massAve, scale  );
+						histos2D_[ "jetTrimmedMassHT_cutCosTheta" ]->Fill( trimmedMass, HT, scale  );
+						histos2D_[ "leadMassHT_cutCosTheta" ]->Fill( leadMass, HT, scale  );
+						histos2D_[ "jetMassAveHT_cutCosTheta" ]->Fill( massAve, HT, scale  );
 						histos1D_[ "jet1Tau21_cutCosTheta" ]->Fill( jet1Tau21, scale  );
 						histos1D_[ "jet1Tau31_cutCosTheta" ]->Fill( jet1Tau31, scale  );
 						histos1D_[ "jet1Tau32_cutCosTheta" ]->Fill( jet1Tau32, scale  );
@@ -888,10 +914,11 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 						histos2D_[ "dalitz3412_cutCosTheta" ]->Fill( dalitzY6, dalitz2[1], scale );
 
 						if( ( jet1SubjetPtRatio > cutSubjetPtRatiovalue ) && ( jet2SubjetPtRatio > cutSubjetPtRatiovalue ) ){
-						//if( ( jet1SubjetPtRatio > 0.3 ) && ( jet2SubjetPtRatio > 0.3 ) ){
 							cutmap["SubjetPtRatio"] += 1;
-							//massAveForFit = massAve;
 							histos1D_[ "massAve_cutSubjetPtRatio" ]->Fill( massAve, scale  );
+							histos2D_[ "jetTrimmedMassHT_cutSubjetPtRatio" ]->Fill( trimmedMass, HT, scale  );
+							histos2D_[ "leadMassHT_cutSubjetPtRatio" ]->Fill( leadMass, HT, scale  );
+							histos2D_[ "jetMassAveHT_cutSubjetPtRatio" ]->Fill( massAve, HT, scale  );
 							histos1D_[ "jet1Tau21_cutSubjetPtRatio" ]->Fill( jet1Tau21, scale  );
 							histos1D_[ "jet1Tau31_cutSubjetPtRatio" ]->Fill( jet1Tau31, scale  );
 							histos1D_[ "jet1Tau32_cutSubjetPtRatio" ]->Fill( jet1Tau32, scale  );
@@ -941,9 +968,14 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 						}
 
 						if( jet1Tau31 < cutTau31value ){
-						//if(  jet1Tau31 < 0.5 ){
 							cutmap["Tau31"] += 1;
 							histos1D_[ "massAve_cutTau31" ]->Fill( massAve, scale  );
+							histos2D_[ "jetTrimmedMassHT_cutTau31" ]->Fill( trimmedMass, HT, scale  );
+							histos2D_[ "leadMassHT_cutTau31" ]->Fill( leadMass, HT, scale  );
+							histos2D_[ "jetMassAveHT_cutTau31" ]->Fill( massAve, HT, scale  );
+							histos1D_[ "jet1Tau21_cutTau31" ]->Fill( jet1Tau21, scale  );
+							histos1D_[ "jet1Tau31_cutTau31" ]->Fill( jet1Tau31, scale  );
+							histos1D_[ "jet1Tau32_cutTau31" ]->Fill( jet1Tau32, scale  );
 							histos1D_[ "subjetMass21Ratio_cutTau31" ]->Fill( jet1SubjetMass21Ratio, scale );
 							histos1D_[ "subjetMass21Ratio_cutTau31" ]->Fill( jet2SubjetMass21Ratio, scale );
 							histos1D_[ "subjet112MassRatio_cutTau31" ]->Fill( jet1Subjet112MassRatio, scale );
@@ -961,23 +993,79 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 							histos2D_[ "subjet1JetvsSubjet2JetMassRatio_cutTau31" ]->Fill( jet1Subjet1JetMassRatio, jet1Subjet2JetMassRatio, scale );
 							histos2D_[ "subjet1JetvsSubjet2JetMassRatio_cutTau31" ]->Fill( jet2Subjet1JetMassRatio, jet2Subjet2JetMassRatio, scale );
 							histos2D_[ "subjetPolAngle13412vs31234_cutTau31" ]->Fill( cosPhi13412, cosPhi31234, scale );
+							histos2D_[ "subjetPolAngle13412vsTau31_cutSubjetPtRatio" ]->Fill( cosPhi13412, jet1SubjetPtRatio, scale );
+							histos2D_[ "subjetPolAngle31234vsTau31_cutSubjetPtRatio" ]->Fill( cosPhi31234, jet2SubjetPtRatio, scale );
+							histos2D_[ "mu1234_cutTau31" ]->Fill( dalitz1[0], dalitz1[2], scale );
+							histos2D_[ "mu1234_cutTau31" ]->Fill( dalitz1[1], dalitz1[2], scale );
+							histos2D_[ "mu1234_cutTau31" ]->Fill( dalitz1[0], dalitz1[1], scale );
+							histos2D_[ "dalitz1234_cutTau31" ]->Fill( dalitzX1, dalitz1[1], scale );
+							histos2D_[ "dalitz1234_cutTau31" ]->Fill( dalitzX2, dalitz1[2], scale );
+							histos2D_[ "dalitz1234_cutTau31" ]->Fill( dalitzX3, dalitz1[0], scale );
+							histos2D_[ "dalitz1234_cutTau31" ]->Fill( dalitzX4, dalitz1[2], scale );
+							histos2D_[ "dalitz1234_cutTau31" ]->Fill( dalitzX5, dalitz1[0], scale );
+							histos2D_[ "dalitz1234_cutTau31" ]->Fill( dalitzX6, dalitz1[1], scale );
+							histos2D_[ "mu3412_cutTau31" ]->Fill( dalitz2[0], dalitz2[2], scale );
+							histos2D_[ "mu3412_cutTau31" ]->Fill( dalitz2[1], dalitz2[2], scale );
+							histos2D_[ "mu3412_cutTau31" ]->Fill( dalitz2[0], dalitz2[1], scale );
+							histos2D_[ "dalitz3412_cutTau31" ]->Fill( dalitzY1, dalitz2[1], scale );
+							histos2D_[ "dalitz3412_cutTau31" ]->Fill( dalitzY2, dalitz2[2], scale );
+							histos2D_[ "dalitz3412_cutTau31" ]->Fill( dalitzY3, dalitz2[0], scale );
+							histos2D_[ "dalitz3412_cutTau31" ]->Fill( dalitzY4, dalitz2[2], scale );
+							histos2D_[ "dalitz3412_cutTau31" ]->Fill( dalitzY5, dalitz2[0], scale );
+							histos2D_[ "dalitz3412_cutTau31" ]->Fill( dalitzY6, dalitz2[1], scale );
 
 							if ( JETS[0].btagCSV || JETS[1].btagCSV ){
-								//LogWarning("btag") <<JETS[0].btagCSV << " " << JETS[1].btagCSV;
-								//cutmap["btagAfterTau31"] += 1;
 								histos1D_[ "massAve_cutBtagAfterTau31" ]->Fill( massAve, scale  );
 							}
 						}
 
-						//if(  jet1Tau21 < 0.6 ){
 						if(  jet1Tau21 < cutTau21value ){
 							cutmap["Tau21"] += 1;
 							histos1D_[ "massAve_cutTau21" ]->Fill( massAve, scale  );
+							histos2D_[ "jetTrimmedMassHT_cutTau21" ]->Fill( trimmedMass, HT, scale  );
+							histos2D_[ "leadMassHT_cutTau21" ]->Fill( leadMass, HT, scale  );
+							histos2D_[ "jetMassAveHT_cutTau21" ]->Fill( massAve, HT, scale  );
+							histos1D_[ "jet1Tau21_cutTau21" ]->Fill( jet1Tau21, scale  );
+							histos1D_[ "jet1Tau21_cutTau21" ]->Fill( jet1Tau21, scale  );
+							histos1D_[ "jet1Tau32_cutTau21" ]->Fill( jet1Tau32, scale  );
+							histos1D_[ "subjetMass21Ratio_cutTau21" ]->Fill( jet1SubjetMass21Ratio, scale );
+							histos1D_[ "subjetMass21Ratio_cutTau21" ]->Fill( jet2SubjetMass21Ratio, scale );
+							histos1D_[ "subjet112MassRatio_cutTau21" ]->Fill( jet1Subjet112MassRatio, scale );
+							histos1D_[ "subjet112MassRatio_cutTau21" ]->Fill( jet2Subjet112MassRatio, scale );
+							histos1D_[ "subjet212MassRatio_cutTau21" ]->Fill( jet1Subjet212MassRatio, scale );
+							histos1D_[ "subjet212MassRatio_cutTau21" ]->Fill( jet2Subjet212MassRatio, scale );
+							histos1D_[ "subjetPolAngle13412_cutTau21" ]->Fill( cosPhi13412, scale );
+							histos1D_[ "subjetPolAngle31234_cutTau21" ]->Fill( cosPhi31234, scale );
+							histos2D_[ "dijetCorr_cutTau21" ]->Fill( JETS[0].p4.Eta(), JETS[1].p4.Eta(), scale );
+							histos2D_[ "dijetCorrPhi_cutTau21" ]->Fill( JETS[0].p4.Phi(), JETS[1].p4.Phi(), scale );
 							histos2D_[ "subjet12Mass_cutTau21" ]->Fill( jet1SubjetsTLV[0].M(), jet1SubjetsTLV[1].M(), scale );
 							histos2D_[ "subjet12Mass_cutTau21" ]->Fill( jet2SubjetsTLV[0].M(), jet2SubjetsTLV[1].M(), scale );
+							histos2D_[ "subjet112vs212MassRatio_cutTau21" ]->Fill( jet1Subjet112MassRatio, jet1Subjet212MassRatio, scale );
+							histos2D_[ "subjet112vs212MassRatio_cutTau21" ]->Fill( jet2Subjet112MassRatio, jet2Subjet212MassRatio, scale );
+							histos2D_[ "subjet1JetvsSubjet2JetMassRatio_cutTau21" ]->Fill( jet1Subjet1JetMassRatio, jet1Subjet2JetMassRatio, scale );
+							histos2D_[ "subjet1JetvsSubjet2JetMassRatio_cutTau21" ]->Fill( jet2Subjet1JetMassRatio, jet2Subjet2JetMassRatio, scale );
+							histos2D_[ "subjetPolAngle13412vs31234_cutTau21" ]->Fill( cosPhi13412, cosPhi31234, scale );
+							histos2D_[ "subjetPolAngle13412vsTau21_cutSubjetPtRatio" ]->Fill( cosPhi13412, jet1SubjetPtRatio, scale );
+							histos2D_[ "subjetPolAngle31234vsTau21_cutSubjetPtRatio" ]->Fill( cosPhi31234, jet2SubjetPtRatio, scale );
+							histos2D_[ "mu1234_cutTau21" ]->Fill( dalitz1[0], dalitz1[2], scale );
+							histos2D_[ "mu1234_cutTau21" ]->Fill( dalitz1[1], dalitz1[2], scale );
+							histos2D_[ "mu1234_cutTau21" ]->Fill( dalitz1[0], dalitz1[1], scale );
+							histos2D_[ "dalitz1234_cutTau21" ]->Fill( dalitzX1, dalitz1[1], scale );
+							histos2D_[ "dalitz1234_cutTau21" ]->Fill( dalitzX2, dalitz1[2], scale );
+							histos2D_[ "dalitz1234_cutTau21" ]->Fill( dalitzX3, dalitz1[0], scale );
+							histos2D_[ "dalitz1234_cutTau21" ]->Fill( dalitzX4, dalitz1[2], scale );
+							histos2D_[ "dalitz1234_cutTau21" ]->Fill( dalitzX5, dalitz1[0], scale );
+							histos2D_[ "dalitz1234_cutTau21" ]->Fill( dalitzX6, dalitz1[1], scale );
+							histos2D_[ "mu3412_cutTau21" ]->Fill( dalitz2[0], dalitz2[2], scale );
+							histos2D_[ "mu3412_cutTau21" ]->Fill( dalitz2[1], dalitz2[2], scale );
+							histos2D_[ "mu3412_cutTau21" ]->Fill( dalitz2[0], dalitz2[1], scale );
+							histos2D_[ "dalitz3412_cutTau21" ]->Fill( dalitzY1, dalitz2[1], scale );
+							histos2D_[ "dalitz3412_cutTau21" ]->Fill( dalitzY2, dalitz2[2], scale );
+							histos2D_[ "dalitz3412_cutTau21" ]->Fill( dalitzY3, dalitz2[0], scale );
+							histos2D_[ "dalitz3412_cutTau21" ]->Fill( dalitzY4, dalitz2[2], scale );
+							histos2D_[ "dalitz3412_cutTau21" ]->Fill( dalitzY5, dalitz2[0], scale );
+							histos2D_[ "dalitz3412_cutTau21" ]->Fill( dalitzY6, dalitz2[1], scale );
 							if ( JETS[0].btagCSV || JETS[1].btagCSV ){
-								//LogWarning("btag") <<JETS[0].btagCSV << " " << JETS[1].btagCSV;
-								//cutmap["btagAfterTau21"] += 1;
 								histos1D_[ "massAve_cutBtagAfterTau21" ]->Fill( massAve, scale  );
 							}
 						} 
@@ -1009,10 +1097,16 @@ void RUNBoostedAnalysis::beginJob() {
 	histos1D_[ "jetMass" ]->Sumw2();
 	histos1D_[ "jetTrimmedMass" ] = fs_->make< TH1D >( "jetTrimmedMass", "jetTrimmedMass", 60, 0., 600. );
 	histos1D_[ "jetTrimmedMass" ]->Sumw2();
+	histos1D_[ "leadMass" ] = fs_->make< TH1D >( "leadMass", "leadMass", 60, 0., 600. );
+	histos1D_[ "leadMass" ]->Sumw2();
 	histos1D_[ "HT" ] = fs_->make< TH1D >( "HT", "HT", 150, 0., 1500. );
 	histos1D_[ "HT" ]->Sumw2();
 	histos1D_[ "NPV" ] = fs_->make< TH1D >( "NPV", "NPV", 80, 0., 80. );
 	histos1D_[ "NPV" ]->Sumw2();
+	histos2D_[ "jetTrimmedMassHT" ] = fs_->make< TH2D >( "jetTrimmedMassHT", "jetTrimmedMassHT", 30, 0., 300., 150, 0., 1500. );
+	histos2D_[ "jetTrimmedMassHT" ]->Sumw2();
+	histos2D_[ "leadMassHT" ] = fs_->make< TH2D >( "leadMassHT", "leadMassHT", 30, 0., 300., 150, 0., 1500. );
+	histos2D_[ "leadMassHT" ]->Sumw2();
 
 	histos1D_[ "HT_cutTrigger" ] = fs_->make< TH1D >( "HT_cutTrigger", "HT_cutTrigger", 150, 0., 1500. );
 	histos1D_[ "HT_cutTrigger" ]->Sumw2();
@@ -1032,6 +1126,10 @@ void RUNBoostedAnalysis::beginJob() {
 	histos1D_[ "jet1Eta_cutTrigger" ]->Sumw2();
 	histos1D_[ "jet1Mass_cutTrigger" ] = fs_->make< TH1D >( "jet1Mass_cutTrigger", "jet1Mass_cutTrigger", 60, 0., 600. );
 	histos1D_[ "jet1Mass_cutTrigger" ]->Sumw2();
+	histos2D_[ "jetTrimmedMassHT_cutTrigger" ] = fs_->make< TH2D >( "jetTrimmedMassHT_cutTrigger", "jetTrimmedMassHT_cutTrigger", 30, 0., 300., 150, 0., 1500. );
+	histos2D_[ "jetTrimmedMassHT_cutTrigger" ]->Sumw2();
+	histos2D_[ "leadMassHT_cutTrigger" ] = fs_->make< TH2D >( "leadMassHT_cutTrigger", "leadMassHT_cutTrigger", 30, 0., 300., 150, 0., 1500. );
+	histos2D_[ "leadMassHT_cutTrigger" ]->Sumw2();
 
 	if (mkTree) {
 		RUNAtree = fs_->make< TTree >("RUNATree", "RUNATree"); 
@@ -1076,7 +1174,10 @@ void RUNBoostedAnalysis::beginJob() {
 		RUNAtree->Branch( "cosThetaStar", &cosThetaStar, "cosThetaStar/F" );
 		RUNAtree->Branch( "jet1Tau21", &jet1Tau21, "jet1Tau21/F" );
 		RUNAtree->Branch( "jet1Tau31", &jet1Tau31, "jet1Tau31/F" );
-		RUNAtree->Branch( "jet1Tau32", &jet1Tau32, "jet1Tau32/F" );
+		RUNAtree->Branch( "jet1Tau32", &jet1Tau32, "jet1Tau32/F" );	
+		RUNAtree->Branch( "jet2Tau21", &jet2Tau21, "jet2Tau21/F" );
+		RUNAtree->Branch( "jet2Tau31", &jet2Tau31, "jet2Tau31/F" );
+		RUNAtree->Branch( "jet2Tau32", &jet2Tau32, "jet2Tau32/F" );	
 		RUNAtree->Branch( "jet1SubjetPtRatio", &jet1SubjetPtRatio, "jet1SubjetPtRatio/F" );
 		RUNAtree->Branch( "jet2SubjetPtRatio", &jet2SubjetPtRatio, "jet2SubjetPtRatio/F" );
 		RUNAtree->Branch( "cosPhi13412", &cosPhi13412, "cosPhi13412/F" );
@@ -1102,6 +1203,12 @@ void RUNBoostedAnalysis::beginJob() {
 		histos1D_[ "jet1Eta_cutDijet" ]->Sumw2();
 		histos1D_[ "jet1Mass_cutDijet" ] = fs_->make< TH1D >( "jet1Mass_cutDijet", "jet1Mass_cutDijet", 60, 0., 600. );
 		histos1D_[ "jet1Mass_cutDijet" ]->Sumw2();
+		histos2D_[ "jetTrimmedMassHT_cutDijet" ] = fs_->make< TH2D >( "jetTrimmedMassHT_cutDijet", "jetTrimmedMassHT_cutDijet", 30, 0., 300., 150, 0., 1500. );
+		histos2D_[ "jetTrimmedMassHT_cutDijet" ]->Sumw2();
+		histos2D_[ "leadMassHT_cutDijet" ] = fs_->make< TH2D >( "leadMassHT_cutDijet", "leadMassHT_cutDijet", 30, 0., 300., 150, 0., 1500. );
+		histos2D_[ "leadMassHT_cutDijet" ]->Sumw2();
+		histos2D_[ "massAveHT_cutDijet" ] = fs_->make< TH2D >( "massAveHT_cutDijet", "massAveHT_cutDijet", 30, 0., 300., 150, 0., 1500. );
+		histos2D_[ "massAveHT_cutDijet" ]->Sumw2();
 
 		histos1D_[ "massAsymmetry_cutDijet" ] = fs_->make< TH1D >( "massAsymmetry_cutDijet", "massAsymmetry_cutDijet", 20, 0., 1. );
 		histos1D_[ "massAsymmetry_cutDijet" ]->Sumw2();
@@ -1231,6 +1338,12 @@ void RUNBoostedAnalysis::beginJob() {
 
 		histos1D_[ "massAve_cutAsym" ] = fs_->make< TH1D >( "massAve_cutAsym", "massAve_cutAsym", 60, 0., 600. );
 		histos1D_[ "massAve_cutAsym" ]->Sumw2();
+		histos2D_[ "jetTrimmedMassHT_cutAsym" ] = fs_->make< TH2D >( "jetTrimmedMassHT_cutAsym", "jetTrimmedMassHT_cutAsym", 30, 0., 300., 150, 0., 1500. );
+		histos2D_[ "jetTrimmedMassHT_cutAsym" ]->Sumw2();
+		histos2D_[ "leadMassHT_cutAsym" ] = fs_->make< TH2D >( "leadMassHT_cutAsym", "leadMassHT_cutAsym", 30, 0., 300., 150, 0., 1500. );
+		histos2D_[ "leadMassHT_cutAsym" ]->Sumw2();
+		histos2D_[ "massAveHT_cutAsym" ] = fs_->make< TH2D >( "massAveHT_cutAsym", "massAveHT_cutAsym", 30, 0., 300., 150, 0., 1500. );
+		histos2D_[ "massAveHT_cutAsym" ]->Sumw2();
 		histos1D_[ "cosThetaStar_cutAsym" ] = fs_->make< TH1D >( "cosThetaStar_cutAsym", "cosThetaStar_cutAsym", 20, 0., 1. );
 		histos1D_[ "cosThetaStar_cutAsym" ]->Sumw2();
 		histos1D_[ "jet1Tau21_cutAsym" ] = fs_->make< TH1D >( "jet1Tau21_cutAsym", "jet1Tau21_cutAsym", 20, 0., 1. );
@@ -1278,6 +1391,12 @@ void RUNBoostedAnalysis::beginJob() {
 
 		histos1D_[ "massAve_cutCosTheta" ] = fs_->make< TH1D >( "massAve_cutCosTheta", "massAve_cutCosTheta", 60, 0., 600. );
 		histos1D_[ "massAve_cutCosTheta" ]->Sumw2();
+		histos2D_[ "jetTrimmedMassHT_cutCosTheta" ] = fs_->make< TH2D >( "jetTrimmedMassHT_cutCosTheta", "jetTrimmedMassHT_cutCosTheta", 30, 0., 300., 150, 0., 1500. );
+		histos2D_[ "jetTrimmedMassHT_cutCosTheta" ]->Sumw2();
+		histos2D_[ "leadMassHT_cutAsym" ] = fs_->make< TH2D >( "leadMassHT_cutAsym", "leadMassHT_cutAsym", 30, 0., 300., 150, 0., 1500. );
+		histos2D_[ "leadMassHT_cutAsym" ]->Sumw2();
+		histos2D_[ "massAveHT_cutAsym" ] = fs_->make< TH2D >( "massAveHT_cutAsym", "massAveHT_cutAsym", 30, 0., 300., 150, 0., 1500. );
+		histos2D_[ "massAveHT_cutAsym" ]->Sumw2();
 		histos1D_[ "jet1Tau21_cutCosTheta" ] = fs_->make< TH1D >( "jet1Tau21_cutCosTheta", "jet1Tau21_cutCosTheta", 20, 0., 1. );
 		histos1D_[ "jet1Tau21_cutCosTheta" ]->Sumw2();
 		histos1D_[ "jet1Tau31_cutCosTheta" ] = fs_->make< TH1D >( "jet1Tau31_cutCosTheta", "jet1Tau31_cutCosTheta", 20, 0., 1. );
@@ -1323,6 +1442,12 @@ void RUNBoostedAnalysis::beginJob() {
 
 		histos1D_[ "massAve_cutSubjetPtRatio" ] = fs_->make< TH1D >( "massAve_cutSubjetPtRatio", "massAve_cutSubjetPtRatio", 60, 0., 600. );
 		histos1D_[ "massAve_cutSubjetPtRatio" ]->Sumw2();
+		histos2D_[ "jetTrimmedMassHT_cutSubjetPtRatio" ] = fs_->make< TH2D >( "jetTrimmedMassHT_cutSubjetPtRatio", "jetTrimmedMassHT_cutSubjetPtRatio", 30, 0., 300., 150, 0., 1500. );
+		histos2D_[ "jetTrimmedMassHT_cutSubjetPtRatio" ]->Sumw2();
+		histos2D_[ "leadMassHT_cutSubjetPtRatio" ] = fs_->make< TH2D >( "leadMassHT_cutSubjetPtRatio", "leadMassHT_cutSubjetPtRatio", 30, 0., 300., 150, 0., 1500. );
+		histos2D_[ "leadMassHT_cutSubjetPtRatio" ]->Sumw2();
+		histos2D_[ "massAveHT_cutSubjetPtRatio" ] = fs_->make< TH2D >( "massAveHT_cutSubjetPtRatio", "massAveHT_cutSubjetPtRatio", 30, 0., 300., 150, 0., 1500. );
+		histos2D_[ "massAveHT_cutSubjetPtRatio" ]->Sumw2();
 		histos1D_[ "jet1Tau21_cutSubjetPtRatio" ] = fs_->make< TH1D >( "jet1Tau21_cutSubjetPtRatio", "jet1Tau21_cutSubjetPtRatio", 20, 0., 1. );
 		histos1D_[ "jet1Tau21_cutSubjetPtRatio" ]->Sumw2();
 		histos1D_[ "jet1Tau31_cutSubjetPtRatio" ] = fs_->make< TH1D >( "jet1Tau31_cutSubjetPtRatio", "jet1Tau31_cutSubjetPtRatio", 20, 0., 1. );
@@ -1366,6 +1491,18 @@ void RUNBoostedAnalysis::beginJob() {
 
 		histos1D_[ "massAve_cutTau31" ] = fs_->make< TH1D >( "massAve_cutTau31", "massAve_cutTau31", 60, 0., 600. );
 		histos1D_[ "massAve_cutTau31" ]->Sumw2();
+		histos2D_[ "jetTrimmedMassHT_cutTau31" ] = fs_->make< TH2D >( "jetTrimmedMassHT_cutTau31", "jetTrimmedMassHT_cutTau31", 30, 0., 300., 150, 0., 1500. );
+		histos2D_[ "jetTrimmedMassHT_cutTau31" ]->Sumw2();
+		histos2D_[ "leadMassHT_cutTau31" ] = fs_->make< TH2D >( "leadMassHT_cutTau31", "leadMassHT_cutTau31", 30, 0., 300., 150, 0., 1500. );
+		histos2D_[ "leadMassHT_cutTau31" ]->Sumw2();
+		histos2D_[ "massAveHT_cutTau31" ] = fs_->make< TH2D >( "massAveHT_cutTau31", "massAveHT_cutTau31", 30, 0., 300., 150, 0., 1500. );
+		histos2D_[ "massAveHT_cutTau31" ]->Sumw2();
+		histos1D_[ "jet1Tau21_cutTau31" ] = fs_->make< TH1D >( "jet1Tau21_cutTau31", "jet1Tau21_cutTau31", 20, 0., 1. );
+		histos1D_[ "jet1Tau21_cutTau31" ]->Sumw2();
+		histos1D_[ "jet1Tau31_cutTau31" ] = fs_->make< TH1D >( "jet1Tau31_cutTau31", "jet1Tau31_cutTau31", 20, 0., 1. );
+		histos1D_[ "jet1Tau31_cutTau31" ]->Sumw2();
+		histos1D_[ "jet1Tau32_cutTau31" ] = fs_->make< TH1D >( "jet1Tau32_cutTau31", "jet1Tau32_cutTau31", 20, 0., 1. );
+		histos1D_[ "jet1Tau32_cutTau31" ]->Sumw2();
 		histos1D_[ "subjetMass21Ratio_cutTau31" ] = fs_->make< TH1D >( "subjetMass21Ratio_cutTau31", "subjetMass21Ratio_cutTau31", 20, 0., 1. );
 		histos1D_[ "subjetMass21Ratio_cutTau31" ]->Sumw2();
 		histos1D_[ "subjet112MassRatio_cutTau31" ] = fs_->make< TH1D >( "subjet112MassRatio_cutTau31", "subjet112MassRatio_cutTau31", 20, 0., 1. );
@@ -1388,11 +1525,67 @@ void RUNBoostedAnalysis::beginJob() {
 		histos2D_[ "subjet1JetvsSubjet2JetMassRatio_cutTau31" ]->Sumw2();
 		histos2D_[ "subjetPolAngle13412vs31234_cutTau31" ] = fs_->make< TH2D >( "subjetPolAngle13412vs31234_cutTau31", "subjetPolAngle13412vs31234_cutTau31", 100, 0., 1., 100, 0., 1. );
 		histos2D_[ "subjetPolAngle13412vs31234_cutTau31" ]->Sumw2();
+		histos2D_[ "subjetPolAngle13412vsTau31_cutTau31" ] = fs_->make< TH2D >( "subjetPolAngle13412vsTau31_cutTau31", "subjetPolAngle13412vsTau31_cutTau31", 100, 0., 1., 20, 0., 1. );
+		histos2D_[ "subjetPolAngle13412vsTau31_cutTau31" ]->Sumw2();
+		histos2D_[ "subjetPolAngle31234vsTau31_cutTau31" ] = fs_->make< TH2D >( "subjetPolAngle31234vsTau31_cutTau31", "subjetPolAngle31234vsTau31_cutTau31", 100, 0., 1., 20, 0., 1. );
+		histos2D_[ "subjetPolAngle31234vsTau31_cutTau31" ]->Sumw2();
+		histos2D_[ "mu1234_cutTau31" ] = fs_->make< TH2D >( "mu1234_cutTau31", "mu1234_cutTau31", 150, 0., 1.5, 150, 0., 1.5 );
+		histos2D_[ "mu1234_cutTau31" ]->Sumw2();
+		histos2D_[ "mu3412_cutTau31" ] = fs_->make< TH2D >( "mu3412_cutTau31", "mu3412_cutTau31", 150, 0., 1.5, 150, 0., 1.5 );
+		histos2D_[ "mu3412_cutTau31" ]->Sumw2();
+		histos2D_[ "dalitz1234_cutTau31" ] = fs_->make< TH2D >( "dalitz1234_cutTau31", "dalitz1234_cutTau31", 150, 0., 1.5, 150, 0., 1.5 );
+		histos2D_[ "dalitz1234_cutTau31" ]->Sumw2();
+		histos2D_[ "dalitz3412_cutTau31" ] = fs_->make< TH2D >( "dalitz3412_cutTau31", "dalitz3412_cutTau31", 150, 0., 1.5, 150, 0., 1.5 );
+		histos2D_[ "dalitz3412_cutTau31" ]->Sumw2();
 
 		histos1D_[ "massAve_cutTau21" ] = fs_->make< TH1D >( "massAve_cutTau21", "massAve_cutTau21", 60, 0., 600. );
 		histos1D_[ "massAve_cutTau21" ]->Sumw2();
+		histos2D_[ "jetTrimmedMassHT_cutTau21" ] = fs_->make< TH2D >( "jetTrimmedMassHT_cutTau21", "jetTrimmedMassHT_cutTau21", 30, 0., 300., 150, 0., 1500. );
+		histos2D_[ "jetTrimmedMassHT_cutTau21" ]->Sumw2();
+		histos2D_[ "leadMassHT_cutTau21" ] = fs_->make< TH2D >( "leadMassHT_cutTau21", "leadMassHT_cutTau21", 30, 0., 300., 150, 0., 1500. );
+		histos2D_[ "leadMassHT_cutTau21" ]->Sumw2();
+		histos2D_[ "massAveHT_cutTau21" ] = fs_->make< TH2D >( "massAveHT_cutTau21", "massAveHT_cutTau21", 30, 0., 300., 150, 0., 1500. );
+		histos2D_[ "massAveHT_cutTau21" ]->Sumw2();
+		histos1D_[ "jet1Tau21_cutTau21" ] = fs_->make< TH1D >( "jet1Tau21_cutTau21", "jet1Tau21_cutTau21", 20, 0., 1. );
+		histos1D_[ "jet1Tau21_cutTau21" ]->Sumw2();
+		histos1D_[ "jet1Tau21_cutTau21" ] = fs_->make< TH1D >( "jet1Tau21_cutTau21", "jet1Tau21_cutTau21", 20, 0., 1. );
+		histos1D_[ "jet1Tau21_cutTau21" ]->Sumw2();
+		histos1D_[ "jet1Tau32_cutTau21" ] = fs_->make< TH1D >( "jet1Tau32_cutTau21", "jet1Tau32_cutTau21", 20, 0., 1. );
+		histos1D_[ "jet1Tau32_cutTau21" ]->Sumw2();
+		histos1D_[ "subjetMass21Ratio_cutTau21" ] = fs_->make< TH1D >( "subjetMass21Ratio_cutTau21", "subjetMass21Ratio_cutTau21", 20, 0., 1. );
+		histos1D_[ "subjetMass21Ratio_cutTau21" ]->Sumw2();
+		histos1D_[ "subjet112MassRatio_cutTau21" ] = fs_->make< TH1D >( "subjet112MassRatio_cutTau21", "subjet112MassRatio_cutTau21", 20, 0., 1. );
+		histos1D_[ "subjet112MassRatio_cutTau21" ]->Sumw2();
+		histos1D_[ "subjet212MassRatio_cutTau21" ] = fs_->make< TH1D >( "subjet212MassRatio_cutTau21", "subjet212MassRatio_cutTau21", 20, 0., 1. );
+		histos1D_[ "subjet212MassRatio_cutTau21" ]->Sumw2();
+		histos1D_[ "subjetPolAngle13412_cutTau21" ] = fs_->make< TH1D >( "subjetPolAngle13412_cutTau21", "subjetPolAngle13412_cutTau21", 100, 0., 1. );
+		histos1D_[ "subjetPolAngle13412_cutTau21" ]->Sumw2();
+		histos1D_[ "subjetPolAngle31234_cutTau21" ] = fs_->make< TH1D >( "subjetPolAngle31234_cutTau21", "subjetPolAngle31234_cutTau21", 100, 0., 1. );
+		histos1D_[ "subjetPolAngle31234_cutTau21" ]->Sumw2();
 		histos2D_[ "subjet12Mass_cutTau21" ] = fs_->make< TH2D >( "subjet12Mass_cutTau21", "subjet12Mass_cutTau21", 20, 0., 100., 20, 0., 100. );
 		histos2D_[ "subjet12Mass_cutTau21" ]->Sumw2();
+		histos2D_[ "dijetCorr_cutTau21" ] = fs_->make< TH2D >( "dijetCorr_cutTau21", "dijetCorr_cutTau21", 56, -3.5, 3.5, 56, -3.5, 3.5 );
+		histos2D_[ "dijetCorr_cutTau21" ]->Sumw2();
+		histos2D_[ "dijetCorrPhi_cutTau21" ] = fs_->make< TH2D >( "dijetCorrPhi_cutTau21", "dijetCorrPhi_cutTau21", 56, -3.5, 3.5, 56, -3.5, 3.5 );
+		histos2D_[ "dijetCorrPhi_cutTau21" ]->Sumw2();
+		histos2D_[ "subjet112vs212MassRatio_cutTau21" ] = fs_->make< TH2D >( "subjet112vs212MassRatio_cutTau21", "subjet112vs212MassRatio_cutTau21", 20, 0., 1., 20, 0., 1. );
+		histos2D_[ "subjet112vs212MassRatio_cutTau21" ]->Sumw2();
+		histos2D_[ "subjet1JetvsSubjet2JetMassRatio_cutTau21" ] = fs_->make< TH2D >( "subjet1JetvsSubjet2JetMassRatio_cutTau21", "subjet1JetvsSubjet2JetMassRatio_cutTau21", 20, 0., 1., 20, 0., 1. );
+		histos2D_[ "subjet1JetvsSubjet2JetMassRatio_cutTau21" ]->Sumw2();
+		histos2D_[ "subjetPolAngle13412vs31234_cutTau21" ] = fs_->make< TH2D >( "subjetPolAngle13412vs31234_cutTau21", "subjetPolAngle13412vs31234_cutTau21", 100, 0., 1., 100, 0., 1. );
+		histos2D_[ "subjetPolAngle13412vs31234_cutTau21" ]->Sumw2();
+		histos2D_[ "subjetPolAngle13412vsTau21_cutTau21" ] = fs_->make< TH2D >( "subjetPolAngle13412vsTau21_cutTau21", "subjetPolAngle13412vsTau21_cutTau21", 100, 0., 1., 20, 0., 1. );
+		histos2D_[ "subjetPolAngle13412vsTau21_cutTau21" ]->Sumw2();
+		histos2D_[ "subjetPolAngle31234vsTau21_cutTau21" ] = fs_->make< TH2D >( "subjetPolAngle31234vsTau21_cutTau21", "subjetPolAngle31234vsTau21_cutTau21", 100, 0., 1., 20, 0., 1. );
+		histos2D_[ "subjetPolAngle31234vsTau21_cutTau21" ]->Sumw2();
+		histos2D_[ "mu1234_cutTau21" ] = fs_->make< TH2D >( "mu1234_cutTau21", "mu1234_cutTau21", 150, 0., 1.5, 150, 0., 1.5 );
+		histos2D_[ "mu1234_cutTau21" ]->Sumw2();
+		histos2D_[ "mu3412_cutTau21" ] = fs_->make< TH2D >( "mu3412_cutTau21", "mu3412_cutTau21", 150, 0., 1.5, 150, 0., 1.5 );
+		histos2D_[ "mu3412_cutTau21" ]->Sumw2();
+		histos2D_[ "dalitz1234_cutTau21" ] = fs_->make< TH2D >( "dalitz1234_cutTau21", "dalitz1234_cutTau21", 150, 0., 1.5, 150, 0., 1.5 );
+		histos2D_[ "dalitz1234_cutTau21" ]->Sumw2();
+		histos2D_[ "dalitz3412_cutTau21" ] = fs_->make< TH2D >( "dalitz3412_cutTau21", "dalitz3412_cutTau21", 150, 0., 1.5, 150, 0., 1.5 );
+		histos2D_[ "dalitz3412_cutTau21" ]->Sumw2();
 
 		histos1D_[ "massAve_cutBtagAfterSubjetPtRatio" ] = fs_->make< TH1D >( "massAve_cutBtagAfterSubjetPtRatio", "massAve_cutBtagAfterSubjetPtRatio", 60, 0., 600. );
 		histos1D_[ "massAve_cutBtagAfterSubjetPtRatio" ]->Sumw2();
@@ -1408,10 +1601,10 @@ void RUNBoostedAnalysis::beginJob() {
 		cutLabels.push_back("CosTheta");
 		cutLabels.push_back("SubjetPtRatio");
 		cutLabels.push_back("btagAfterSubjetPtRatio");
-		//cutLabels.push_back("Tau31");
-		//cutLabels.push_back("btagAfterTau31");
-		//cutLabels.push_back("Tau21");
-		//cutLabels.push_back("btagAfterTau21");
+		cutLabels.push_back("Tau31");
+		cutLabels.push_back("btagAfterTau31");
+		cutLabels.push_back("Tau21");
+		cutLabels.push_back("btagAfterTau21");
 		histos1D_[ "hcutflow" ] = fs_->make< TH1D >("cutflow","cut flow", cutLabels.size(), 0.5, cutLabels.size() +0.5 );
 		histos1D_[ "hcutflow" ]->Sumw2();
 		histos1D_[ "hcutflowSimple" ] = fs_->make< TH1D >("cutflowSimple","simple cut flow", cutLabels.size(), 0.5, cutLabels.size() +0.5 );

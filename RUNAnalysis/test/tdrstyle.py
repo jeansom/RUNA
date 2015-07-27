@@ -1,13 +1,13 @@
 import ROOT as rt
 
-def setSelection( listSel, xMin=0.65, yMax=0.65 ):
+def setSelection( listSel, xMin=0.65, yMax=0.65, align='right' ):
 
 	for i in range( len( listSel ) ):
 		textBox=rt.TLatex()
 		textBox.SetNDC()
 		textBox.SetTextSize(0.04) 
-		textBox.SetTextAlign(31)
-		textBox.SetTextFont(61) 
+		if 'right' in align: textBox.SetTextAlign(31)
+		textBox.SetTextFont(42) 
 		textBox.DrawLatex(xMin, yMax, listSel[i])
 		yMax = yMax -0.05
 	
