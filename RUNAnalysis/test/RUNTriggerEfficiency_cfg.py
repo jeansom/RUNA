@@ -78,7 +78,7 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
-		'/store/user/algomez/JetHT/RunIISpring15DR74_RUNA_Asympt25ns_v01/150714_152253/0000/RUNtuples_101.root'
+		'/store/user/algomez/JetHT/RunIISpring15DR74_RUNA_Asympt25ns_v01p2/150722_101118/0000/RUNtuples_101.root'
 	#	#'file:../../RUNtuples/test/RUNAEDMNtuple.root'
 	    )
 	)
@@ -155,10 +155,11 @@ process.TriggerEfficiency = cms.EDAnalyzer('RUNTriggerEfficiency',
 )
 
 process.TriggerEfficiencyPFHT800 = process.TriggerEfficiency.clone( HLTtriggerTwo = cms.string('HLT_PFHT800') )
-process.TriggerEfficiencyAKPFHT650 = process.TriggerEfficiency.clone( HLTtriggerTwo = cms.string('HLT_AK8PFHT650_TrimR0p1PT0p03Mass50') )
-process.TriggerEfficiencyAKPFHT600 = process.TriggerEfficiency.clone( HLTtriggerTwo = cms.string('HLT_AK8PFHT600_TrimR0p1PT0p03Mass50') )
-process.TriggerEfficiencyAKPFHT550 = process.TriggerEfficiency.clone( HLTtriggerTwo = cms.string('HLT_AK8PFHT550_TrimR0p1PT0p03Mass50') )
-process.TriggerEfficiencyAKPFHT500 = process.TriggerEfficiency.clone( HLTtriggerTwo = cms.string('HLT_AK8PFHT500_TrimR0p1PT0p03Mass50') )
+process.TriggerEfficiencyAK8PFHT650 = process.TriggerEfficiency.clone( HLTtriggerTwo = cms.string('HLT_AK8PFHT650_TrimR0p1PT0p03Mass50') )
+process.TriggerEfficiencyAK8PFHT650AndPFHT800 = process.TriggerEfficiencyAK8PFHT650.clone( HLTtriggerOne = cms.string('HLT_PFHT800') )
+process.TriggerEfficiencyAK8PFHT600 = process.TriggerEfficiency.clone( HLTtriggerTwo = cms.string('HLT_AK8PFHT600_TrimR0p1PT0p03Mass50') )
+process.TriggerEfficiencyAK8PFHT550 = process.TriggerEfficiency.clone( HLTtriggerTwo = cms.string('HLT_AK8PFHT550_TrimR0p1PT0p03Mass50') )
+process.TriggerEfficiencyAK8PFHT500 = process.TriggerEfficiency.clone( HLTtriggerTwo = cms.string('HLT_AK8PFHT500_TrimR0p1PT0p03Mass50') )
 
 if options.debug:
 	process.p = cms.Path( process.TriggerEfficiencyPruned )
@@ -168,9 +169,10 @@ else:
 		* process.TriggerEfficiencyPFHT800
 		)
 	if 'RPV' in NAME:
-		process.p += process.TriggerEfficiencyAKPFHT650
-		process.p += process.TriggerEfficiencyAKPFHT600
-		process.p += process.TriggerEfficiencyAKPFHT500
-		process.p += process.TriggerEfficiencyAKPFHT550
+		process.p += process.TriggerEfficiencyAK8PFHT650
+		process.p += process.TriggerEfficiencyAK8PFHT650AndPFHT800
+		process.p += process.TriggerEfficiencyAK8PFHT600
+		process.p += process.TriggerEfficiencyAK8PFHT500
+		process.p += process.TriggerEfficiencyAK8PFHT550
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

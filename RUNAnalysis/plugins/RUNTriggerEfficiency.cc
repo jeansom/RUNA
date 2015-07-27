@@ -413,6 +413,17 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 	if ( ( tmpTriggerMass.size()> 0 ) ) trimmedMass = tmpTriggerMass[0];
 	tmpTriggerMass.clear();
 
+
+
+	if (HT > 0 ) histos2D_[ "jetMassHTDenom_noTrigger" ]->Fill( trimmedMass, HT, scale );
+	if ( triggerFiredOne || triggerFiredTwo ) {
+		if ( triggerFiredOne && triggerFiredTwo ) histos2D_[ "jetMassHTDenom_triggerOneAndTwo" ]->Fill( trimmedMass, HT, scale );
+		else if ( triggerFiredOne ) histos2D_[ "jetMassHTDenom_triggerOne" ]->Fill( trimmedMass, HT, scale );
+		else if ( triggerFiredTwo ) histos2D_[ "jetMassHTDenom_triggerTwo" ]->Fill( trimmedMass, HT, scale );
+	}
+
+
+
 	//// test ak4 
 	float ak4HT = 0;
 	for (size_t i = 0; i < ak4jetPt->size(); i++) ak4HT += (*ak4jetPt)[i];
@@ -731,6 +742,26 @@ void RUNTriggerEfficiency::beginJob() {
 	histos1D_[ "jet1MassPassing_cutSubjetPtRatio" ]->Sumw2();
 	histos1D_[ "jet1MassEfficiency_cutSubjetPtRatio" ] = fs_->make< TH1D >( "jet1MassEfficiency_cutSubjetPtRatio", "jet1MassEfficiency_cutSubjetPtRatio", 60, 0., 600. );
 	histos1D_[ "jet1MassEfficiency_cutSubjetPtRatio" ]->SetYTitle( "Efficiency_cutSubjetPtRatio" );
+
+	histos2D_[ "jetMassHTDenom_noTrigger" ] = fs_->make< TH2D >( "jetMassHTDenom_noTrigger", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetMassHTDenom_noTrigger" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetMassHTDenom_noTrigger" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
+	histos2D_[ "jetMassHTDenom_noTrigger" ]->Sumw2();
+
+	histos2D_[ "jetMassHTDenom_triggerOne" ] = fs_->make< TH2D >( "jetMassHTDenom_triggerOne", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetMassHTDenom_triggerOne" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetMassHTDenom_triggerOne" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
+	histos2D_[ "jetMassHTDenom_triggerOne" ]->Sumw2();
+
+	histos2D_[ "jetMassHTDenom_triggerTwo" ] = fs_->make< TH2D >( "jetMassHTDenom_triggerTwo", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetMassHTDenom_triggerTwo" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetMassHTDenom_triggerTwo" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
+	histos2D_[ "jetMassHTDenom_triggerTwo" ]->Sumw2();
+
+	histos2D_[ "jetMassHTDenom_triggerOneAndTwo" ] = fs_->make< TH2D >( "jetMassHTDenom_triggerOneAndTwo", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetMassHTDenom_triggerOneAndTwo" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetMassHTDenom_triggerOneAndTwo" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
+	histos2D_[ "jetMassHTDenom_triggerOneAndTwo" ]->Sumw2();
 
 	histos2D_[ "jetMassHTDenom_cutDijet" ] = fs_->make< TH2D >( "jetMassHTDenom_cutDijet", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
 	histos2D_[ "jetMassHTDenom_cutDijet" ]->SetYTitle( "HT [GeV]" );

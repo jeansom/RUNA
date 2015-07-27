@@ -7,7 +7,7 @@ from CRABClient.UserUtilities import config
 config = config()
 
 name = 'RunIISpring15DR74_RUNA_Asympt25ns'
-version = 'v01p1'
+version = 'v01p2'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
@@ -88,14 +88,16 @@ if __name__ == '__main__':
 			#'/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM',
 			#'/WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/MINIAODSIM',
 			#'/WJetsToLNu_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM',
-			'/JetHT/Run2015B-PromptReco-v1/MINIAOD',
+			#'/JetHT/Run2015B-PromptReco-v1/MINIAOD',
+			'/MET/Run2015B-PromptReco-v1/MINIAOD',
+			'/SingleMu/Run2015B-PromptReco-v1/MINIAOD',
 			]
 	
 	from multiprocessing import Process
 	for dataset in QCD:
 		config.Data.inputDataset = dataset
 		config.General.requestName = dataset.split('/')[1]+"_"+dataset.split('/')[2]+'_'+name+'_'+version
-		if 'JetHT' in dataset: config.JobType.pyCfgParams = [ 'isData=1', 'globalTag=MCRUN2_74_V9A' ]
+		if 'Run2015B' in dataset: config.JobType.pyCfgParams = [ 'isData=1', 'globalTag=74X_dataRun2_Prompt_v1' ]
 		#crabCommand('submit', config = config)
 		p = Process(target=submit, args=(config,))
 		p.start()

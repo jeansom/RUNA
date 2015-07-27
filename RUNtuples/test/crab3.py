@@ -1,8 +1,8 @@
 from CRABClient.UserUtilities import config
 config = config()
 
-name = 'RunIISpring15DR74_RUNA_Asympt25ns_TS_'
-version = 'v02'
+name = 'RunIISpring15DR74_RUNA_Asympt25ns'
+version = 'v02p2'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
@@ -46,8 +46,8 @@ if __name__ == '__main__':
 			#'/RPVSt100tobj_pythia8_13TeV/algomez-MiniAOD_PHYS14_v720_PU20bx25-b1b44dbfc276814daa37c582f825184d/USER',
 			#'/RPVSt350tojj_13TeV_pythia8/algomez-MiniAOD_PHYS14_v720_PU20bx25-b1b44dbfc276814daa37c582f825184d/USER'
 			##### RunIISpring15DR74
-			#'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15DR74_MiniAOD_Asympt25ns-aaa2c03e98f1a25cd2e28ba65d8e2a63/USER',
-			'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15DR74_MiniAOD_TS_25ns_v2-aaa2c03e98f1a25cd2e28ba65d8e2a63/USER'
+			'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15DR74_MiniAOD_Asympt25ns-aaa2c03e98f1a25cd2e28ba65d8e2a63/USER',
+			#'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15DR74_MiniAOD_TS_25ns_v2-aaa2c03e98f1a25cd2e28ba65d8e2a63/USER'
 
 			]
 	
