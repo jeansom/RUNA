@@ -8,7 +8,7 @@ from CRABAPI.RawCommand import crabCommand
 from multiprocessing import Process
 config = config()
 
-version = 'ts_v05'
+version = 'ts_v09'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
@@ -36,11 +36,11 @@ if __name__ == '__main__':
 
 
 	Samples = [ 
-			#'/JetHT/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v01p2-59a8f6968d1faf0a39f7c4c693699d7c/USER',
-			'/SingleMu/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v01p2-59a8f6968d1faf0a39f7c4c693699d7c/USER',
-			#'/MET/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v01p2-59a8f6968d1faf0a39f7c4c693699d7c/USER',
-			#'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_TS__v02-1886d118546a0d39f46d888ed262e31b/USER',
-
+			'/JetHT/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v01p2-59a8f6968d1faf0a39f7c4c693699d7c/USER',
+			#'/SingleMu/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v01p2-59a8f6968d1faf0a39f7c4c693699d7c/USER',
+			'/MET/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v01p2-59a8f6968d1faf0a39f7c4c693699d7c/USER',
+			#'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_TS__v02-1886d118546a0d39f46d888ed262e31b/USER',  ### tmp 
+			'/RPVSt100tojj_13TeV_pythia8/jsomalwa-RunIISpring15DR74_RUNA_Asympt25ns_v02p2-1886d118546a0d39f46d888ed262e31b/USER'
 			]
 
 	
