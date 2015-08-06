@@ -153,7 +153,11 @@ class RUNBoostedAnalysis : public EDAnalyzer {
       EDGetTokenT<vector<float>> jecFactor_;
       EDGetTokenT<vector<float>> neutralHadronEnergy_;
       EDGetTokenT<vector<float>> neutralEmEnergy_;
-      EDGetTokenT<vector<float>> chargeEmEnergy_;
+      EDGetTokenT<vector<float>> chargedHadronEnergy_;
+      EDGetTokenT<vector<float>> chargedEmEnergy_;
+      EDGetTokenT<vector<float>> chargedHadronMultiplicity_;
+      EDGetTokenT<vector<float>> neutralHadronMultiplicity_;
+      EDGetTokenT<vector<float>> chargedMultiplicity_;
       EDGetTokenT<vector<float>> muonEnergy_; 
 
       // Subjets
@@ -207,7 +211,11 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 	jecFactor_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jecFactor"))),
 	neutralHadronEnergy_(consumes<vector<float>>(iConfig.getParameter<InputTag>("neutralHadronEnergy"))),
 	neutralEmEnergy_(consumes<vector<float>>(iConfig.getParameter<InputTag>("neutralEmEnergy"))),
-	chargeEmEnergy_(consumes<vector<float>>(iConfig.getParameter<InputTag>("chargeEmEnergy"))),
+	chargedHadronEnergy_(consumes<vector<float>>(iConfig.getParameter<InputTag>("chargedHadronEnergy"))),
+	chargedEmEnergy_(consumes<vector<float>>(iConfig.getParameter<InputTag>("chargedEmEnergy"))),
+	chargedHadronMultiplicity_(consumes<vector<float>>(iConfig.getParameter<InputTag>("chargedHadronMultiplicity"))),
+	neutralHadronMultiplicity_(consumes<vector<float>>(iConfig.getParameter<InputTag>("neutralHadronMultiplicity"))),
+	chargedMultiplicity_(consumes<vector<float>>(iConfig.getParameter<InputTag>("chargedMultiplicity"))),
 	muonEnergy_(consumes<vector<float>>(iConfig.getParameter<InputTag>("muonEnergy"))),
 	// Subjets
 	subjetPt_(consumes<vector<float>>(iConfig.getParameter<InputTag>("subjetPt"))),
@@ -349,8 +357,20 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	Handle<vector<float> > neutralEmEnergy;
 	iEvent.getByToken(neutralEmEnergy_, neutralEmEnergy);
 
-	Handle<vector<float> > chargeEmEnergy;
-	iEvent.getByToken(chargeEmEnergy_, chargeEmEnergy);
+	Handle<vector<float> > chargedHadronEnergy;
+	iEvent.getByToken(chargedHadronEnergy_, chargedHadronEnergy);
+
+	Handle<vector<float> > chargedEmEnergy;
+	iEvent.getByToken(chargedEmEnergy_, chargedEmEnergy);
+
+	Handle<vector<float> > chargedHadronMultiplicity;
+	iEvent.getByToken(chargedHadronMultiplicity_, chargedHadronMultiplicity);
+
+	Handle<vector<float> > neutralHadronMultiplicity;
+	iEvent.getByToken(neutralHadronMultiplicity_, neutralHadronMultiplicity);
+
+	Handle<vector<float> > chargedMultiplicity;
+	iEvent.getByToken(chargedMultiplicity_, chargedMultiplicity);
 
 	Handle<vector<float> > muonEnergy;
 	iEvent.getByToken(muonEnergy_, muonEnergy);
@@ -422,11 +442,15 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 		double jec = 1. / ( (*jecFactor)[i] * (*jetE)[i] );
 		double nhf = (*neutralHadronEnergy)[i] * jec;
 		double nEMf = (*neutralEmEnergy)[i] * jec;
-		double cEMf = (*chargeEmEnergy)[i] * jec;
-		double muf = (*muonEnergy)[i] * jec;
-		//int npr = (*chargedHadronMultiplicity)[i] + (*neutralHadronMultiplicity)[i] ;  //// REMEMBER TO INCLUDE # of constituents
-		bool idL = ( (nhf<0.99) && (nEMf<0.99) && (muf<0.8) && (cEMf<0.9) );
+		double chf = (*chargedHadronEnergy)[i] * jec;
+		//double muf = (*muonEnergy)[i] * jec;
+		double cEMf = (*chargedEmEnergy)[i] * jec;
+		int numConst = (*chargedHadronMultiplicity)[i] + (*neutralHadronMultiplicity)[i] ;  //// REMEMBER TO INCLUDE # of constituents
+		double chm = (*chargedMultiplicity)[i] * jec;
+
+		//bool idL = ( (nhf<0.99) && (nEMf<0.99) && (muf<0.8) && (cEMf<0.9) );  /// 8TeV recommendation
 		//if( !idL ) LogWarning("jetID") << (*jetPt)[i] << " " << jec << " " << nhf << " " << nEMf << " " << muf << " " << cEMf;
+		bool idL = ( (nhf<0.99) && (nEMf<0.99) && (numConst>1) && (chf>0) && (chm>0) && (cEMf<0.99) );
 
 		if( (*jetPt)[i] > cutjetPtvalue  && idL ) { 
 			//LogWarning("jetInfo") << i << " " << (*jetPt)[i] << " " << (*jetEta)[i] << " " << (*jetPhi)[i] << " " << (*jetMass)[i];
