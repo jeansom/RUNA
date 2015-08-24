@@ -52,18 +52,44 @@ def myAnalyzer( sample, couts, grooming):
 	AK4HT_Brock 	= TH1F('AK4HT_Brock', 'AK4HT_Brock', 200, 0, 2000 )
 	massAve_Brock 	= TH1F('massAve_Brock', 'massAve_Brock', nBinsMass, 0, maxMass )
 
-	#### For optimization
-	massAve_massAsym00 	= TH1F('massAve_massAsym00', 'massAve_massAsym00', nBinsMass, 0, maxMass )
-	massAve_massAsym01 	= TH1F('massAve_massAsym01', 'massAve_massAsym01', nBinsMass, 0, maxMass )
-	massAve_massAsym02 	= TH1F('massAve_massAsym02', 'massAve_massAsym02', nBinsMass, 0, maxMass )
-	massAve_massAsym03 	= TH1F('massAve_massAsym03', 'massAve_massAsym03', nBinsMass, 0, maxMass )
-	massAve_massAsym04 	= TH1F('massAve_massAsym04', 'massAve_massAsym04', nBinsMass, 0, maxMass )
-	massAve_massAsym05 	= TH1F('massAve_massAsym05', 'massAve_massAsym05', nBinsMass, 0, maxMass )
-	massAve_massAsym06 	= TH1F('massAve_massAsym06', 'massAve_massAsym06', nBinsMass, 0, maxMass )
-	massAve_massAsym07 	= TH1F('massAve_massAsym07', 'massAve_massAsym07', nBinsMass, 0, maxMass )
-	massAve_massAsym08 	= TH1F('massAve_massAsym08', 'massAve_massAsym08', nBinsMass, 0, maxMass )
-	massAve_massAsym09 	= TH1F('massAve_massAsym09', 'massAve_massAsym09', nBinsMass, 0, maxMass )
-	massAve_massAsym10 	= TH1F('massAve_massAsym10', 'massAve_massAsym10', nBinsMass, 0, maxMass )
+	#### Optimization
+	h_deltaEtaDijet 	= TH1F('deltaEtaDijet', 'deltaEtaDijet', 100, 0, 5. )
+
+	h_massAveVsHT 	= TH2D('massAveVsHT', 'massAveVsHT', nBinsMass, 0, maxMass, nBinsHT, 0, maxHT )
+	h_massAveVsnumJets 	= TH2D('massAveVsnumJets', 'massAveVsnumJets', nBinsMass, 0, maxMass, 10, 0, 10 )
+	h_massAveVsmassAsym 	= TH2D('massAveVsmassAsym', 'massAveVsmassAsym', nBinsMass, 0, maxMass, 20, 0, 1. )
+	h_massAveVscosThetaStar 	= TH2D('massAveVscosThetaStar', 'massAveVscosThetaStar', nBinsMass, 0, maxMass, 20, 0, 1. )
+	h_massAveVsjet1SubjetPtRatio 	= TH2D('massAveVsjet1SubjetPtRatio', 'massAveVsjet1SubjetPtRatio', nBinsMass, 0, maxMass, 20, 0, 1. )
+	h_massAveVsjet2SubjetPtRatio 	= TH2D('massAveVsjet2SubjetPtRatio', 'massAveVsjet2SubjetPtRatio', nBinsMass, 0, maxMass, 20, 0, 1. )
+	h_massAveVsTau21 	= TH2D('massAveVsTau21', 'massAveVsTau21', nBinsMass, 0, maxMass, 20, 0, 1. )
+	h_massAveVsTau31 	= TH2D('massAveVsTau31', 'massAveVsTau31', nBinsMass, 0, maxMass, 20, 0, 1. )
+	h_massAveVsdeltaEtaDijet 	= TH2D('massAveVsdeltaEtaDijet', 'massAveVsdeltaEtaDijet', nBinsMass, 0, maxMass, 100, 0, 5. )
+
+	h_massAsymVscosThetaStar 	= TH2D('massAsymVscosThetaStar', 'massAsymVscosThetaStar', 20, 0, 1., 20, 0, 1. )
+	h_massAsymVsjet1SubjetPtRatio 	= TH2D('massAsymVsjet1SubjetPtRatio', 'massAsymVsjet1SubjetPtRatio', 20, 0, 1., 20, 0, 1. )
+	h_massAsymVsjet2SubjetPtRatio 	= TH2D('massAsymVsjet2SubjetPtRatio', 'massAsymVsjet2SubjetPtRatio', 20, 0, 1., 20, 0, 1. )
+	h_massAsymVsTau21 	= TH2D('massAsymVsTau21', 'massAsymVsTau21', 20, 0, 1., 20, 0, 1. )
+	h_massAsymVsTau31 	= TH2D('massAsymVsTau31', 'massAsymVsTau31', 20, 0, 1., 20, 0, 1. )
+	h_massAsymVsdeltaEtaDijet 	= TH2D('massAsymVsdeltaEtaDijet', 'massAsymVsdeltaEtaDijet', 20, 0, 1., 100, 0, 5. )
+
+	h_cosThetaStarVsjet1SubjetPtRatio 	= TH2D('cosThetaStarVsjet1SubjetPtRatio', 'cosThetaStarVsjet1SubjetPtRatio', 20, 0, 1., 20, 0, 1. )
+	h_cosThetaStarVsjet2SubjetPtRatio 	= TH2D('cosThetaStarVsjet2SubjetPtRatio', 'cosThetaStarVsjet2SubjetPtRatio', 20, 0, 1., 20, 0, 1. )
+	h_cosThetaStarVsTau21 	= TH2D('cosThetaStarVsTau21', 'cosThetaStarVsTau21', 20, 0, 1., 20, 0, 1. )
+	h_cosThetaStarVsTau31 	= TH2D('cosThetaStarVsTau31', 'cosThetaStarVsTau31', 20, 0, 1., 20, 0, 1. )
+	h_cosThetaStarVsdeltaEtaDijet 	= TH2D('cosThetaStarVsdeltaEtaDijet', 'cosThetaStarVsdeltaEtaDijet', 20, 0, 1., 100, 0, 5. )
+
+	h_jet1SubjetPtRatioVsjet2SubjetPtRatio 	= TH2D('jet1SubjetPtRatioVsjet2SubjetPtRatio', 'jet1SubjetPtRatioVsjet2SubjetPtRatio', 20, 0, 1., 20, 0, 1. )
+	h_jet1SubjetPtRatioVsTau21 	= TH2D('jet1SubjetPtRatioVsTau21', 'jet1SubjetPtRatioVsTau21', 20, 0, 1., 20, 0, 1. )
+	h_jet1SubjetPtRatioVsTau31 	= TH2D('jet1SubjetPtRatioVsTau31', 'jet1SubjetPtRatioVsTau31', 20, 0, 1., 20, 0, 1. )
+	h_jet1SubjetPtRatioVsdeltaEtaDijet 	= TH2D('jet1SubjetPtRatioVsdeltaEtaDijet', 'jet1SubjetPtRatioVsdeltaEtaDijet', 20, 0, 1., 100, 0, 5. )
+
+	h_jet2SubjetPtRatioVsTau21 	= TH2D('jet2SubjetPtRatioVsTau21', 'jet2SubjetPtRatioVsTau21', 20, 0, 1., 20, 0, 1. )
+	h_jet2SubjetPtRatioVsTau31 	= TH2D('jet2SubjetPtRatioVsTau31', 'jet2SubjetPtRatioVsTau31', 20, 0, 1., 20, 0, 1. )
+	h_jet2SubjetPtRatioVsdeltaEtaDijet 	= TH2D('jet2SubjetPtRatioVsdeltaEtaDijet', 'jet2SubjetPtRatioVsdeltaEtaDijet', 20, 0, 1., 100, 0, 5. )
+
+	h_jet1Tau21VsdeltaEtaDijet 	= TH2D('jet1Tau21VsdeltaEtaDijet', 'jet1Tau21VsdeltaEtaDijet', 20, 0, 1., 100, 0, 5. )
+	h_jet1Tau31VsdeltaEtaDijet 	= TH2D('jet1Tau31VsdeltaEtaDijet', 'jet1Tau31VsdeltaEtaDijet', 20, 0, 1., 100, 0, 5. )
+
 
 	###################################### Get GenTree 
 	events = inputFile.Get( 'RUNATree'+grooming+'/RUNATree' )
@@ -95,7 +121,7 @@ def myAnalyzer( sample, couts, grooming):
 		cosThetaStar	= events.cosThetaStar
 		jet1SubjetPtRatio	= events.jet1SubjetPtRatio
 		jet2SubjetPtRatio	= events.jet2SubjetPtRatio
-		#scale		= events.scale
+		scale		= events.Scale
 		numPV           = events.numPV
 		AK4HT           = events.AK4HT
 		jet1Pt          = events.jet1Pt
@@ -130,11 +156,50 @@ def myAnalyzer( sample, couts, grooming):
 		cosPhi13412     = events.cosPhi13412
 		cosPhi31234     = events.cosPhi31234
 
+		#### Optimization
+		deltaEtaDijet = abs( jet1Eta - jet2Eta )
+		h_deltaEtaDijet.Fill( deltaEtaDijet, scale )
+
+		h_massAveVsHT.Fill( massAve, HT, scale )
+		h_massAveVsnumJets.Fill( massAve, numJets, scale )
+		h_massAveVsmassAsym.Fill( massAve, massAsym, scale )
+		h_massAveVscosThetaStar.Fill( massAve, cosThetaStar, scale )
+		h_massAveVsjet1SubjetPtRatio.Fill( massAve, jet1SubjetPtRatio, scale )
+		h_massAveVsjet2SubjetPtRatio.Fill( massAve, jet2SubjetPtRatio, scale )
+		h_massAveVsTau21.Fill( massAve, jet1Tau21, scale )
+		h_massAveVsTau31.Fill( massAve, jet1Tau31, scale )
+		h_massAveVsdeltaEtaDijet.Fill( massAve, deltaEtaDijet, scale )
+
+		h_massAsymVscosThetaStar.Fill( massAsym, cosThetaStar, scale )
+		h_massAsymVsjet1SubjetPtRatio.Fill( massAsym, jet1SubjetPtRatio, scale )
+		h_massAsymVsjet2SubjetPtRatio.Fill( massAsym, jet2SubjetPtRatio, scale )
+		h_massAsymVsTau21.Fill( massAsym, jet1Tau21, scale )
+		h_massAsymVsTau31.Fill( massAsym, jet1Tau31, scale )
+		h_massAsymVsdeltaEtaDijet.Fill( massAsym, deltaEtaDijet, scale )
+
+		h_cosThetaStarVsjet1SubjetPtRatio.Fill( cosThetaStar, jet1SubjetPtRatio, scale )
+		h_cosThetaStarVsjet2SubjetPtRatio.Fill( cosThetaStar, jet2SubjetPtRatio, scale )
+		h_cosThetaStarVsTau21.Fill( cosThetaStar, jet1Tau21, scale )
+		h_cosThetaStarVsTau31.Fill( cosThetaStar, jet1Tau31, scale )
+		h_cosThetaStarVsdeltaEtaDijet.Fill( cosThetaStar, deltaEtaDijet, scale )
+
+		h_jet1SubjetPtRatioVsjet2SubjetPtRatio.Fill( jet1SubjetPtRatio, jet2SubjetPtRatio, scale )
+		h_jet1SubjetPtRatioVsTau21.Fill( jet1SubjetPtRatio, jet1Tau21, scale )
+		h_jet1SubjetPtRatioVsTau31.Fill( jet1SubjetPtRatio, jet1Tau31, scale )
+		h_jet1SubjetPtRatioVsdeltaEtaDijet.Fill( jet1SubjetPtRatio, deltaEtaDijet, scale )
+
+		h_jet2SubjetPtRatioVsTau21.Fill( jet2SubjetPtRatio, jet1Tau21, scale )
+		h_jet2SubjetPtRatioVsTau31.Fill( jet2SubjetPtRatio, jet1Tau31, scale )
+		h_jet2SubjetPtRatioVsdeltaEtaDijet.Fill( jet2SubjetPtRatio, deltaEtaDijet, scale )
+
+		h_jet1Tau21VsdeltaEtaDijet.Fill( jet1Tau21, deltaEtaDijet, scale )
+		h_jet1Tau31VsdeltaEtaDijet.Fill( jet1Tau31, deltaEtaDijet, scale )
+
 		#### TEST
 		trimmedMassVsHT.Fill( trimmedMass, HT )
 
 		#### Apply standard selection
-		triggerCut = ( ( HT > 600 ) and ( trimmedMass > 50 ) and ( numJets > 1 ) )  
+		triggerCut = ( ( HT > 700 ) and ( trimmedMass > 50 ) and ( numJets > 1 ) )  
 		subjetPtRatio = ( ( jet1SubjetPtRatio > 0.3 ) and ( jet2SubjetPtRatio > 0.3 )  )
 		massAsymCut = ( massAsym < 0.1 ) 
 		cosThetaStarCut = ( abs( cosThetaStar ) < 0.3 ) 
@@ -144,6 +209,7 @@ def myAnalyzer( sample, couts, grooming):
 			eventsPassed +=1
 			#AvgMass = massAve
 			#Scale = scale
+			#print Run, Lumi, NumEvent
 			massAve_Standard.Fill( massAve, newSF )
 			#print AvgMass, newSF, scale
 
@@ -162,20 +228,7 @@ def myAnalyzer( sample, couts, grooming):
 			AK4HT_Brock.Fill( AK4HT, newSF )
 			massAve_Brock.Fill( massAve, newSF )
 
-		##### For Optimization:
-		if triggerCut and ( massAsym < 0.0 ): massAve_massAsym00.Fill( massAve, newSF )
-		if triggerCut and ( massAsym < 0.1 ): massAve_massAsym01.Fill( massAve, newSF )
-		if triggerCut and ( massAsym < 0.2 ): massAve_massAsym02.Fill( massAve, newSF )
-		if triggerCut and ( massAsym < 0.3 ): massAve_massAsym03.Fill( massAve, newSF )
-		if triggerCut and ( massAsym < 0.4 ): massAve_massAsym04.Fill( massAve, newSF )
-		if triggerCut and ( massAsym < 0.5 ): massAve_massAsym05.Fill( massAve, newSF )
-		if triggerCut and ( massAsym < 0.6 ): massAve_massAsym06.Fill( massAve, newSF )
-		if triggerCut and ( massAsym < 0.7 ): massAve_massAsym07.Fill( massAve, newSF )
-		if triggerCut and ( massAsym < 0.8 ): massAve_massAsym08.Fill( massAve, newSF )
-		if triggerCut and ( massAsym < 0.9 ): massAve_massAsym09.Fill( massAve, newSF )
-		if triggerCut and ( massAsym < 1.0 ): massAve_massAsym10.Fill( massAve, newSF )
 
-		#tree.Fill()
 	print eventsPassed
 				#print triggerCut, analysisCut, massAsym, cosThetaStar, subjetPtRatio
 
@@ -234,10 +287,13 @@ if __name__ == '__main__':
 	samples = args.samples
 
 	if 'RPV' in samples: 
-		inputFileName = 'Rootfiles/RUNAnalysis_RPVSt'+str(mass)+'tojj_RunIISpring15DR74_'+PU+'_v01_v01.root'
+		inputFileName = 'Rootfiles/RUNAnalysis_RPVSt'+str(mass)+'tojj_RunIISpring15DR74_'+PU+'_v02p2_v06.root'
+		myAnalyzer( inputFileName, couts, grooming )
+	elif 'Data' in samples: 
+		inputFileName = 'Rootfiles/RUNAnalysis_JetHT_Asympt50ns_v01p2_v06.root'
 		myAnalyzer( inputFileName, couts, grooming )
 	else: 
 		for qcdBin in [ '170to300', '300to470', '470to600', '600to800', '800to1000', '1000to1400', '1400to1800' ]: 
-			inputFileName = 'Rootfiles//RUNAnalysis_QCD_Pt-'+qcdBin+'_RunIISpring15DR74_'+PU+'_v01_v01.root'
+			inputFileName = 'Rootfiles//RUNAnalysis_QCD_Pt_'+qcdBin+'_RunIISpring15DR74_'+PU+'_v01_v06.root'
 			myAnalyzer( inputFileName, couts, grooming )
 

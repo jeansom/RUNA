@@ -70,6 +70,13 @@ options.register('boostedJetPt',
 		"JetPt cut"
 		)
 
+options.register('boostedHT', 
+		800.0,
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.float,
+		"JetPt cut"
+		)
+
 options.register('Asym', 
 		0.1,
 		VarParsing.multiplicity.singleton,
@@ -117,7 +124,8 @@ else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
 		#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns__v02/150719_102556/0000/RUNtuples_11.root'
-		'/store/user/algomez/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns_v01/150705_075711/0000/RUNtuples_13.root'
+		#'/store/user/algomez/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns_v01/150705_075711/0000/RUNtuples_13.root'
+		'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns__v02/150719_170508/0000/RUNtuples_101.root',
 		#'file:RUNtuple_1.root'
 	    )
 	)
@@ -132,8 +140,12 @@ Lumi = 1000
 from scaleFactors import scaleFactor
 SF = scaleFactor(NAME)
 
-if ( 'RPV' in NAME ) or ( 'QCD' in NAME ): sf = SF*Lumi
-else: sf = 1
+if 'JetHT' in NAME:
+	sf = 1
+	HTtrigger = 'HLT_PFHT900'
+else: 
+	sf = SF*Lumi
+	HTtrigger = 'HLT_PFHT800'
 
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNFullAnalysis_'+NAME+'.root' ) )
 
@@ -168,8 +180,9 @@ process.AnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 process.AnalysisPlotsNOSCALE = process.AnalysisPlots.clone( scale = cms.double(1) )
 
 process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
-		scale 			= cms.double( 1 if 'JetHT' in NAME else SF*Lumi ),
+		scale 			= cms.double( sf ),
 		cutjetPtvalue 		= cms.double( options.boostedJetPt ),
+		cutHTvalue  		= cms.double( options.boostedHT ),
 		cutAsymvalue 		= cms.double( options.Asym ),
 		cutCosThetavalue 	= cms.double( options.CosTheta ),
 		cutSubjetPtRatiovalue 	= cms.double( options.SubPt ),
@@ -270,8 +283,8 @@ process.BoostedAnalysisPlotsPrunedNOTrigger = process.BoostedAnalysisPlotsPruned
 		HLTtriggerOne		= cms.string('NOTRIGGER'),
 		)
 process.BoostedAnalysisPlotsPrunedPFHT900 = process.BoostedAnalysisPlotsPruned.clone( 
-		HLTtriggerOne		= cms.string('HLT_PFHT900'),
-		HLTtriggerTwo		= cms.string('HLT_PFHT900'),
+		HLTtriggerOne		= cms.string(HTtrigger),
+		HLTtriggerTwo		= cms.string(HTtrigger),
 		)
 process.BoostedAnalysisPlotsPrunedPFHT7504JetPt50 = process.BoostedAnalysisPlotsPruned.clone( 
 		HLTtriggerOne		= cms.string('HLT_PFHT750_4JetPt50'),
@@ -282,7 +295,7 @@ process.BoostedAnalysisPlotsPrunedAK8PFHT700ANDPFHT7504Jet = process.BoostedAnal
 		HLTtriggerTwo		= cms.string('HLT_PFHT750_4JetPt50'),
 		)
 process.BoostedAnalysisPlotsSoftDropPFHT900 = process.BoostedAnalysisPlotsSoftDrop.clone( 
-		HLTtrigger		= cms.string('HLT_PFHT900'),
+		HLTtrigger		= cms.string(HTtrigger),
 		)
 
 process.RUNATreeSoftDrop = process.BoostedAnalysisPlotsSoftDrop.clone( mkTree = cms.bool( True ) )
@@ -308,7 +321,7 @@ else:
 		* process.BoostedAnalysisPlotsPrunedPFHT7504JetPt50
 		* process.BoostedAnalysisPlotsPrunedAK8PFHT700ANDPFHT7504Jet	
 		* process.BoostedAnalysisPlotsPrunedNOTrigger
-		#* process.RUNATreeSoftDrop
+		* process.RUNATreeSoftDrop
 		* process.RUNATreePruned
 		)
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

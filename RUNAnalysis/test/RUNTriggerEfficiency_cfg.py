@@ -79,6 +79,7 @@ else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
 		'/store/user/algomez/JetHT/RunIISpring15DR74_RUNA_Asympt25ns_v01p2/150722_101118/0000/RUNtuples_101.root'
+		#'/store/user/jsomalwa/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns_v02p2/150728_150144/0000/RUNtuples_101.root'
 	#	#'file:../../RUNtuples/test/RUNAEDMNtuple.root'
 	    )
 	)
@@ -120,7 +121,7 @@ process.TriggerEfficiency = cms.EDAnalyzer('RUNTriggerEfficiency',
 		jetEta			= cms.InputTag('jetsAK8:jetAK8Eta'),
 		jetPhi 			= cms.InputTag('jetsAK8:jetAK8Phi'),
 		jetE 			= cms.InputTag('jetsAK8:jetAK8E'),
-		jetMass 		= cms.InputTag('jetsAK8:jetAK8Mass'),
+		jetMass 		= cms.InputTag('jetsAK8:jetAK8prunedMass'),
 		jetTau1 		= cms.InputTag('jetsAK8:jetAK8tau1'),
 		jetTau2 		= cms.InputTag('jetsAK8:jetAK8tau2'),
 		jetTau3 		= cms.InputTag('jetsAK8:jetAK8tau3'),

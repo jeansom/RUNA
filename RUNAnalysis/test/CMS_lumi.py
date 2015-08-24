@@ -9,13 +9,13 @@ cmsText     = "CMS";
 cmsTextFont   = 61  
 
 writeExtraText = True
-#extraText   = "Preliminary"
+extraText   = "Preliminary"
 extraTextFont = 52 
 
 lumiTextSize     = 0.6
 lumiTextOffset   = 0.2
 
-cmsTextSize      = 0.80
+cmsTextSize      = 0.70
 cmsTextOffset    = 0.1
 
 relPosX    = 0.12
@@ -69,7 +69,8 @@ def CMS_lumi(pad,  iPeriod,  iPosX ):
         lumiText += " (7 TeV)"
     elif ( iPeriod==4 ):
         lumiText += lumi_13TeV
-        lumiText += " 13 TeV"
+        #lumiText += "2015, 13 TeV"
+        lumiText += "(13 TeV)"
     elif ( iPeriod==7 ):
         if( outOfFrame ):lumiText += "#scale[0.85]{"
         lumiText += lumi_13TeV 

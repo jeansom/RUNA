@@ -7,7 +7,7 @@ def setSelection( listSel, xMin=0.65, yMax=0.65, align='right' ):
 		textBox.SetNDC()
 		textBox.SetTextSize(0.04) 
 		if 'right' in align: textBox.SetTextAlign(31)
-		textBox.SetTextFont(42) 
+		textBox.SetTextFont(62) ### 62 is bold, 42 is normal
 		textBox.DrawLatex(xMin, yMax, listSel[i])
 		yMax = yMax -0.05
 	

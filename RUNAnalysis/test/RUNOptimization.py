@@ -165,28 +165,10 @@ def calcOpt( sample, grooming):
 	return TOTAL1
 
 
-	##### write output file 
-	#outputFile.cd()
-	#for key in inputFile.GetListOfKeys():
-	#	print key
-	#	saveDir = TDirectory()
-		#adir = saveDir.mkdir( key.GetName() )
-		#adir.cd()
-		#if key.GetClassName() == 'TDirectoryFile':
-		#	if not 'Tree' in key.GetName():
-		#		newDir = outputFile.mkdir( key.GetName() )
-		#		newDir.cd()
-		#for q in key.GetList():
-		#	print q
-				#	print key.GetName(), q
-
-
-	#outputFile.Write()
-
 def optimization( mass, PU, grooming, outputFileName ):
 	"""docstring for optimization"""
 
-	inputFileName = 'Rootfiles/RUNAnalysis_RPVSt'+str(mass)+'tojj_RunIISpring15DR74_'+PU+'_v01_v01.root'
+	inputFileName = 'Rootfiles/RUNAnalysis_RPVSt'+str(mass)+'tojj_RunIISpring15DR74_'+PU+'_v02p2_v06.root'
 	signalTotal = calcOpt( inputFileName, grooming )
 	signalMassAsym = signalTotal[0]
 	signalCosTheta = signalTotal[1]
@@ -194,7 +176,7 @@ def optimization( mass, PU, grooming, outputFileName ):
 
 	qcdDict = {}
 	for qcdBin in [ '170to300', '300to470', '470to600', '600to800', '800to1000', '1000to1400', '1400to1800' ]: 
-		inputFileName = 'Rootfiles//RUNAnalysis_QCD_Pt-'+qcdBin+'_RunIISpring15DR74_'+PU+'_v01_v01.root'
+		inputFileName = 'Rootfiles//RUNAnalysis_QCD_Pt_'+qcdBin+'_RunIISpring15DR74_'+PU+'_v01_v06.root'
 		qcdDict[ qcdBin ] = calcOpt( inputFileName, grooming )
 
 	tmpQCDMassAsym = []

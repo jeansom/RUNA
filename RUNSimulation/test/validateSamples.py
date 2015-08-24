@@ -20,7 +20,7 @@ parser.add_option('--verbose', action='store_true',
                   help='Print debugging info')
 
 parser.add_option('--maxevents', type='int', action='store',
-                  default=-1,
+                  default=1000,
                   dest='maxevents',
                   help='Number of events to run. -1 is all events')
 
@@ -71,8 +71,10 @@ h_mAK8 = ROOT.TH1F("h_mAK8", "AK8 Jet Mass;Mass (GeV)", 100, 0, 1000)
 
 #EVENT LOOP
 
-filesModule = __import__( options.files  )#'RPVSt100tojj_13TeV_RunIISpring15DR74_MiniAOD_cfi')
+#filesModule = __import__( options.files  )#'RPVSt100tojj_13TeV_RunIISpring15DR74_MiniAOD_cfi')
+filesModule = __import__( 'RPVSt200tojj_13TeV_RunIISpring15DR74_RAW_cfi')
 filesraw = filesModule.readFiles  #[ options.files ]
+#filesraw = [ options.files ]
 files = []
 nevents = 0
 for ifile in filesraw :

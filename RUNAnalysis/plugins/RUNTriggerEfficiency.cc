@@ -415,13 +415,22 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 
 
 
-	if (HT > 0 ) histos2D_[ "jetMassHTDenom_noTrigger" ]->Fill( trimmedMass, HT, scale );
-	if ( triggerFiredOne || triggerFiredTwo ) {
-		if ( triggerFiredOne && triggerFiredTwo ) histos2D_[ "jetMassHTDenom_triggerOneAndTwo" ]->Fill( trimmedMass, HT, scale );
-		else if ( triggerFiredOne ) histos2D_[ "jetMassHTDenom_triggerOne" ]->Fill( trimmedMass, HT, scale );
-		else if ( triggerFiredTwo ) histos2D_[ "jetMassHTDenom_triggerTwo" ]->Fill( trimmedMass, HT, scale );
+	if (HT > 0 ) { 
+		histos2D_[ "jetMassHT_noTrigger" ]->Fill( JETS[0].mass, HT, scale );
+		histos2D_[ "jetTrimmedMassHT_noTrigger" ]->Fill( trimmedMass, HT, scale );
 	}
-
+	if ( triggerFiredOne || triggerFiredTwo ) {
+		if ( triggerFiredOne && triggerFiredTwo ) {
+			if(JETS.size() > 0) histos2D_[ "jetMassHT_triggerOneAndTwo" ]->Fill( JETS[0].mass, HT, scale );
+			histos2D_[ "jetTrimmedMassHT_triggerOneAndTwo" ]->Fill( trimmedMass, HT, scale );
+		} else if ( triggerFiredOne ) {
+			if(JETS.size() > 0) histos2D_[ "jetMassHT_triggerOne" ]->Fill( JETS[0].mass, HT, scale );
+			histos2D_[ "jetTrimmedMassHT_triggerOne" ]->Fill( trimmedMass, HT, scale );
+		} else if ( triggerFiredTwo ) {
+			if(JETS.size() > 0) histos2D_[ "jetMassHT_triggerTwo" ]->Fill( JETS[0].mass, HT, scale );
+			histos2D_[ "jetTrimmedMassHT_triggerTwo" ]->Fill( trimmedMass, HT, scale );
+		}
+	}
 
 
 	//// test ak4 
@@ -433,64 +442,78 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 	bool cutCosTheta = 0;
 	bool cutSubjetPtRatio= 0;
 
-	if ( triggerFiredOne ) {
 
-		vector<TLorentzVector> jet1SubjetsTLV, jet2SubjetsTLV;
+	vector<TLorentzVector> jet1SubjetsTLV, jet2SubjetsTLV;
 
-		//if ( numJets > 1 ) {
-		if ( JETS.size() > 1 ) {
+	if ( JETS.size() > 1 ) {
 
-			// Mass average and asymmetry
-			float jet1Mass = JETS[0].mass;
-			float jet2Mass = JETS[1].mass;
-			float jetPrunedMass = 0;
-			if (jet1Mass > jet2Mass) jetPrunedMass = jet1Mass;
-			else jetPrunedMass = jet2Mass;
-			float massAve = ( jet1Mass + jet2Mass ) / 2.0;
-			float massAsym = abs( jet1Mass - jet2Mass ) / ( jet1Mass + jet2Mass );
-			//////////////////////////////////////////////////////////////////////////
+		// Mass average and asymmetry
+		float jet1Mass = JETS[0].mass;
+		float jet2Mass = JETS[1].mass;
+		float jetPrunedMass = 0;
+		if (jet1Mass > jet2Mass) jetPrunedMass = jet1Mass;
+		else jetPrunedMass = jet2Mass;
+		float massAve = ( jet1Mass + jet2Mass ) / 2.0;
+		float massAsym = abs( jet1Mass - jet2Mass ) / ( jet1Mass + jet2Mass );
+		//////////////////////////////////////////////////////////////////////////
 
-			// Cos theta star
-			TLorentzVector tmpJet1, tmpJet2, tmpCM;
-			tmpJet1 = JETS[0].p4;
-			tmpJet2 = JETS[1].p4;
-			tmpCM = tmpJet1 + tmpJet2;
-			//LogWarning("Jets") << tmpJet1.Eta() << " " << tmpJet2.Eta() << " " << tmpCM.Eta();
-			tmpJet1.Boost( -tmpCM.BoostVector() );
-			tmpJet2.Boost( -tmpCM.BoostVector() );
-			//LogWarning("JetsBoost") << tmpJet1.Eta() << " " << tmpJet2.Eta();
-			float cosThetaStar = TMath::Abs( ( tmpJet1.Px() * tmpCM.Px() +  tmpJet1.Py() * tmpCM.Py() + tmpJet1.Pz() * tmpCM.Pz() ) / (tmpJet1.E() * tmpCM.E() ) ) ;
-			//LogWarning("cos theta") << cosThetaStar ;
-			/////////////////////////////////////////////////////////////////////////////////
+		// Cos theta star
+		TLorentzVector tmpJet1, tmpJet2, tmpCM;
+		tmpJet1 = JETS[0].p4;
+		tmpJet2 = JETS[1].p4;
+		tmpCM = tmpJet1 + tmpJet2;
+		//LogWarning("Jets") << tmpJet1.Eta() << " " << tmpJet2.Eta() << " " << tmpCM.Eta();
+		tmpJet1.Boost( -tmpCM.BoostVector() );
+		tmpJet2.Boost( -tmpCM.BoostVector() );
+		//LogWarning("JetsBoost") << tmpJet1.Eta() << " " << tmpJet2.Eta();
+		float cosThetaStar = TMath::Abs( ( tmpJet1.Px() * tmpCM.Px() +  tmpJet1.Py() * tmpCM.Py() + tmpJet1.Pz() * tmpCM.Pz() ) / (tmpJet1.E() * tmpCM.E() ) ) ;
+		//LogWarning("cos theta") << cosThetaStar ;
+		/////////////////////////////////////////////////////////////////////////////////
 
-			/*/ Nsubjetiness
-			jet1Tau21 = JETS[0].tau2 / JETS[0].tau1;
-			jet1Tau31 = JETS[0].tau3 / JETS[0].tau1;
-			jet1Tau32 = JETS[0].tau3 / JETS[0].tau2;
-			///////////////////////////////////////////////////////////////////////////////*/
+		/*/ Nsubjetiness
+		jet1Tau21 = JETS[0].tau2 / JETS[0].tau1;
+		jet1Tau31 = JETS[0].tau3 / JETS[0].tau1;
+		jet1Tau32 = JETS[0].tau3 / JETS[0].tau2;
+		///////////////////////////////////////////////////////////////////////////////*/
 
-			// Subjet variables
-			jet1SubjetsTLV.push_back( JETS[0].subjet0 );
-			jet1SubjetsTLV.push_back( JETS[0].subjet1 );
-			//LogWarning("subjet0") <<  jet1SubjetsTLV[0].M() << " " <<  jet1SubjetsTLV[1].M();
-			sort(jet1SubjetsTLV.begin(), jet1SubjetsTLV.end(), [](const TLorentzVector &p1, const TLorentzVector &p2) { return p1.M() > p2.M(); }); 
-			//LogWarning("subjet0") <<  jet1SubjetsTLV[0].M() << " " <<  jet1SubjetsTLV[1].M();
-			jet2SubjetsTLV.push_back( JETS[1].subjet0 );
-			jet2SubjetsTLV.push_back( JETS[1].subjet1 );
-			sort(jet2SubjetsTLV.begin(), jet2SubjetsTLV.end(), [](const TLorentzVector &p1, const TLorentzVector &p2) { return p1.M() > p2.M(); }); 
-			
-			float jet1SubjetPtRatio = 0;
-			float jet2SubjetPtRatio = 0;
-			if( ( jet1SubjetsTLV.size() > 0 ) && ( jet2SubjetsTLV.size() > 0 ) ) {
-				jet1SubjetPtRatio = min( jet1SubjetsTLV[0].Pt(), jet1SubjetsTLV[1].Pt() ) / max( jet1SubjetsTLV[0].Pt(), jet1SubjetsTLV[1].Pt() );
-				jet2SubjetPtRatio = min( jet2SubjetsTLV[0].Pt(), jet2SubjetsTLV[1].Pt() ) / max( jet2SubjetsTLV[0].Pt(), jet2SubjetsTLV[1].Pt() );
+		// Subjet variables
+		jet1SubjetsTLV.push_back( JETS[0].subjet0 );
+		jet1SubjetsTLV.push_back( JETS[0].subjet1 );
+		//LogWarning("subjet0") <<  jet1SubjetsTLV[0].M() << " " <<  jet1SubjetsTLV[1].M();
+		sort(jet1SubjetsTLV.begin(), jet1SubjetsTLV.end(), [](const TLorentzVector &p1, const TLorentzVector &p2) { return p1.M() > p2.M(); }); 
+		//LogWarning("subjet0") <<  jet1SubjetsTLV[0].M() << " " <<  jet1SubjetsTLV[1].M();
+		jet2SubjetsTLV.push_back( JETS[1].subjet0 );
+		jet2SubjetsTLV.push_back( JETS[1].subjet1 );
+		sort(jet2SubjetsTLV.begin(), jet2SubjetsTLV.end(), [](const TLorentzVector &p1, const TLorentzVector &p2) { return p1.M() > p2.M(); }); 
+		
+		float jet1SubjetPtRatio = 0;
+		float jet2SubjetPtRatio = 0;
+		if( ( jet1SubjetsTLV.size() > 0 ) && ( jet2SubjetsTLV.size() > 0 ) ) {
+			jet1SubjetPtRatio = min( jet1SubjetsTLV[0].Pt(), jet1SubjetsTLV[1].Pt() ) / max( jet1SubjetsTLV[0].Pt(), jet1SubjetsTLV[1].Pt() );
+			jet2SubjetPtRatio = min( jet2SubjetsTLV[0].Pt(), jet2SubjetsTLV[1].Pt() ) / max( jet2SubjetsTLV[0].Pt(), jet2SubjetsTLV[1].Pt() );
+		}
+
+
+		if( massAsym < cutAsymvalue ) cutMassAsym = 1;
+		if( TMath::Abs( cosThetaStar ) < cutCosThetavalue ) cutCosTheta = 1;
+		if( ( jet1SubjetPtRatio > cutSubjetPtRatiovalue ) && ( jet2SubjetPtRatio > cutSubjetPtRatiovalue ) ) cutSubjetPtRatio = 1;
+		
+		histos2D_[ "jetMassHT_cutDijet_noTrigger" ]->Fill( jetPrunedMass, HT, scale );
+		histos2D_[ "jetTrimmedMassHT_cutDijet_noTrigger" ]->Fill( trimmedMass, HT, scale );
+		if ( triggerFiredOne || triggerFiredTwo ) {
+			if ( triggerFiredOne && triggerFiredTwo ) {
+				histos2D_[ "jetMassHT_cutDijet_triggerOneAndTwo" ]->Fill( jetPrunedMass, HT, scale );
+				histos2D_[ "jetTrimmedMassHT_cutDijet_triggerOneAndTwo" ]->Fill( trimmedMass, HT, scale );
+			} else if ( triggerFiredOne ) {
+				histos2D_[ "jetMassHT_cutDijet_triggerOne" ]->Fill( jetPrunedMass, HT, scale );
+				histos2D_[ "jetTrimmedMassHT_cutDijet_triggerOne" ]->Fill( trimmedMass, HT, scale );
+			} else if ( triggerFiredTwo ) {
+				histos2D_[ "jetMassHT_cutDijet_triggerTwo" ]->Fill( jetPrunedMass, HT, scale );
+				histos2D_[ "jetTrimmedMassHT_cutDijet_triggerTwo" ]->Fill( trimmedMass, HT, scale );
 			}
+		}
 
-
-			if( massAsym < cutAsymvalue ) cutMassAsym = 1;
-			if( TMath::Abs( cosThetaStar ) < cutCosThetavalue ) cutCosTheta = 1;
-			if( ( jet1SubjetPtRatio > cutSubjetPtRatiovalue ) && ( jet2SubjetPtRatio > cutSubjetPtRatiovalue ) ) cutSubjetPtRatio = 1;
-
+		if ( triggerFiredOne ) {
 			histos1D_[ "massAveDenom_cutDijet" ]->Fill( massAve, scale  );
 			histos1D_[ "trimmedMassDenom_cutDijet" ]->Fill( trimmedMass, scale  );
 			histos1D_[ "jet1MassDenom_cutDijet" ]->Fill( jetPrunedMass, scale  );
@@ -733,25 +756,85 @@ void RUNTriggerEfficiency::beginJob() {
 	histos1D_[ "jet1MassPassing_cutSubjetPtRatio" ] = fs_->make< TH1D >( "jet1MassPassing_cutSubjetPtRatio", "jet1MassPassing_cutSubjetPtRatio", 60, 0., 600. );
 	histos1D_[ "jet1MassPassing_cutSubjetPtRatio" ]->Sumw2();
 
-	histos2D_[ "jetMassHTDenom_noTrigger" ] = fs_->make< TH2D >( "jetMassHTDenom_noTrigger", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
-	histos2D_[ "jetMassHTDenom_noTrigger" ]->SetYTitle( "HT [GeV]" );
-	histos2D_[ "jetMassHTDenom_noTrigger" ]->SetXTitle( "Leading Jet Pruned Mass [GeV]" );
-	histos2D_[ "jetMassHTDenom_noTrigger" ]->Sumw2();
+	histos2D_[ "jetMassHT_noTrigger" ] = fs_->make< TH2D >( "jetMassHT_noTrigger", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetMassHT_noTrigger" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetMassHT_noTrigger" ]->SetXTitle( "Leading Jet Pruned Mass [GeV]" );
+	histos2D_[ "jetMassHT_noTrigger" ]->Sumw2();
 
-	histos2D_[ "jetMassHTDenom_triggerOne" ] = fs_->make< TH2D >( "jetMassHTDenom_triggerOne", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
-	histos2D_[ "jetMassHTDenom_triggerOne" ]->SetYTitle( "HT [GeV]" );
-	histos2D_[ "jetMassHTDenom_triggerOne" ]->SetXTitle( "Leading Jet Pruned Mass [GeV]" );
-	histos2D_[ "jetMassHTDenom_triggerOne" ]->Sumw2();
+	histos2D_[ "jetMassHT_triggerOne" ] = fs_->make< TH2D >( "jetMassHT_triggerOne", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetMassHT_triggerOne" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetMassHT_triggerOne" ]->SetXTitle( "Leading Jet Pruned Mass [GeV]" );
+	histos2D_[ "jetMassHT_triggerOne" ]->Sumw2();
 
-	histos2D_[ "jetMassHTDenom_triggerTwo" ] = fs_->make< TH2D >( "jetMassHTDenom_triggerTwo", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
-	histos2D_[ "jetMassHTDenom_triggerTwo" ]->SetYTitle( "HT [GeV]" );
-	histos2D_[ "jetMassHTDenom_triggerTwo" ]->SetXTitle( "Leading Jet Pruned Mass [GeV]" );
-	histos2D_[ "jetMassHTDenom_triggerTwo" ]->Sumw2();
+	histos2D_[ "jetMassHT_triggerTwo" ] = fs_->make< TH2D >( "jetMassHT_triggerTwo", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetMassHT_triggerTwo" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetMassHT_triggerTwo" ]->SetXTitle( "Leading Jet Pruned Mass [GeV]" );
+	histos2D_[ "jetMassHT_triggerTwo" ]->Sumw2();
 
-	histos2D_[ "jetMassHTDenom_triggerOneAndTwo" ] = fs_->make< TH2D >( "jetMassHTDenom_triggerOneAndTwo", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
-	histos2D_[ "jetMassHTDenom_triggerOneAndTwo" ]->SetYTitle( "HT [GeV]" );
-	histos2D_[ "jetMassHTDenom_triggerOneAndTwo" ]->SetXTitle( "Leading Jet Pruned Mass [GeV]" );
-	histos2D_[ "jetMassHTDenom_triggerOneAndTwo" ]->Sumw2();
+	histos2D_[ "jetMassHT_triggerOneAndTwo" ] = fs_->make< TH2D >( "jetMassHT_triggerOneAndTwo", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetMassHT_triggerOneAndTwo" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetMassHT_triggerOneAndTwo" ]->SetXTitle( "Leading Jet Pruned Mass [GeV]" );
+	histos2D_[ "jetMassHT_triggerOneAndTwo" ]->Sumw2();
+
+	histos2D_[ "jetTrimmedMassHT_noTrigger" ] = fs_->make< TH2D >( "jetTrimmedMassHT_noTrigger", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetTrimmedMassHT_noTrigger" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetTrimmedMassHT_noTrigger" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
+	histos2D_[ "jetTrimmedMassHT_noTrigger" ]->Sumw2();
+
+	histos2D_[ "jetTrimmedMassHT_triggerOne" ] = fs_->make< TH2D >( "jetTrimmedMassHT_triggerOne", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetTrimmedMassHT_triggerOne" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetTrimmedMassHT_triggerOne" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
+	histos2D_[ "jetTrimmedMassHT_triggerOne" ]->Sumw2();
+
+	histos2D_[ "jetTrimmedMassHT_triggerTwo" ] = fs_->make< TH2D >( "jetTrimmedMassHT_triggerTwo", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetTrimmedMassHT_triggerTwo" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetTrimmedMassHT_triggerTwo" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
+	histos2D_[ "jetTrimmedMassHT_triggerTwo" ]->Sumw2();
+
+	histos2D_[ "jetTrimmedMassHT_triggerOneAndTwo" ] = fs_->make< TH2D >( "jetTrimmedMassHT_triggerOneAndTwo", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetTrimmedMassHT_triggerOneAndTwo" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetTrimmedMassHT_triggerOneAndTwo" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
+	histos2D_[ "jetTrimmedMassHT_triggerOneAndTwo" ]->Sumw2();
+
+	histos2D_[ "jetMassHT_cutDijet_noTrigger" ] = fs_->make< TH2D >( "jetMassHT_cutDijet_noTrigger", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetMassHT_cutDijet_noTrigger" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetMassHT_cutDijet_noTrigger" ]->SetXTitle( "Leading Jet Pruned Mass [GeV]" );
+	histos2D_[ "jetMassHT_cutDijet_noTrigger" ]->Sumw2();
+
+	histos2D_[ "jetMassHT_cutDijet_triggerOne" ] = fs_->make< TH2D >( "jetMassHT_cutDijet_triggerOne", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetMassHT_cutDijet_triggerOne" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetMassHT_cutDijet_triggerOne" ]->SetXTitle( "Leading Jet Pruned Mass [GeV]" );
+	histos2D_[ "jetMassHT_cutDijet_triggerOne" ]->Sumw2();
+
+	histos2D_[ "jetMassHT_cutDijet_triggerTwo" ] = fs_->make< TH2D >( "jetMassHT_cutDijet_triggerTwo", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetMassHT_cutDijet_triggerTwo" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetMassHT_cutDijet_triggerTwo" ]->SetXTitle( "Leading Jet Pruned Mass [GeV]" );
+	histos2D_[ "jetMassHT_cutDijet_triggerTwo" ]->Sumw2();
+
+	histos2D_[ "jetMassHT_cutDijet_triggerOneAndTwo" ] = fs_->make< TH2D >( "jetMassHT_cutDijet_triggerOneAndTwo", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetMassHT_cutDijet_triggerOneAndTwo" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetMassHT_cutDijet_triggerOneAndTwo" ]->SetXTitle( "Leading Jet Pruned Mass [GeV]" );
+	histos2D_[ "jetMassHT_cutDijet_triggerOneAndTwo" ]->Sumw2();
+
+	histos2D_[ "jetTrimmedMassHT_cutDijet_noTrigger" ] = fs_->make< TH2D >( "jetTrimmedMassHT_cutDijet_noTrigger", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetTrimmedMassHT_cutDijet_noTrigger" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetTrimmedMassHT_cutDijet_noTrigger" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
+	histos2D_[ "jetTrimmedMassHT_cutDijet_noTrigger" ]->Sumw2();
+
+	histos2D_[ "jetTrimmedMassHT_cutDijet_triggerOne" ] = fs_->make< TH2D >( "jetTrimmedMassHT_cutDijet_triggerOne", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetTrimmedMassHT_cutDijet_triggerOne" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetTrimmedMassHT_cutDijet_triggerOne" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
+	histos2D_[ "jetTrimmedMassHT_cutDijet_triggerOne" ]->Sumw2();
+
+	histos2D_[ "jetTrimmedMassHT_cutDijet_triggerTwo" ] = fs_->make< TH2D >( "jetTrimmedMassHT_cutDijet_triggerTwo", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetTrimmedMassHT_cutDijet_triggerTwo" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetTrimmedMassHT_cutDijet_triggerTwo" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
+	histos2D_[ "jetTrimmedMassHT_cutDijet_triggerTwo" ]->Sumw2();
+
+	histos2D_[ "jetTrimmedMassHT_cutDijet_triggerOneAndTwo" ] = fs_->make< TH2D >( "jetTrimmedMassHT_cutDijet_triggerOneAndTwo", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jetTrimmedMassHT_cutDijet_triggerOneAndTwo" ]->SetYTitle( "HT [GeV]" );
+	histos2D_[ "jetTrimmedMassHT_cutDijet_triggerOneAndTwo" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
+	histos2D_[ "jetTrimmedMassHT_cutDijet_triggerOneAndTwo" ]->Sumw2();
 
 	histos2D_[ "jetMassHTDenom_cutDijet" ] = fs_->make< TH2D >( "jetMassHTDenom_cutDijet", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
 	histos2D_[ "jetMassHTDenom_cutDijet" ]->SetYTitle( "HT [GeV]" );
