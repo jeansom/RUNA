@@ -8,7 +8,7 @@ from CRABAPI.RawCommand import crabCommand
 from multiprocessing import Process
 config = config()
 
-version = 'ts_v09'
+version = 'ts_v10'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'

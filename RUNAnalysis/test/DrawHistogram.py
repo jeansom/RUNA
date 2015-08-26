@@ -80,8 +80,7 @@ def labelAxis(name, histo, Grom ):
 	else: histo.GetXaxis().SetTitle( 'NO LABEL' )
 
 
-#def plot( inFileSignal, inFileSignal2, inFileSignal3, inFileQCD, kfactor, inFileTTJets, inFileWJets, inFileZJets, Grom, nameInRoot, name, xmin, xmax, labX, labY, log, PU, Norm=False ):
-def plot( inFileSignal, inFileQCD, kfactor, inFileTTJets, inFileWJets, inFileZJets, Grom, nameInRoot, name, xmin, xmax, labX, labY, log, PU, Norm=False ):
+def plot( inFileSignal, inFileSignal2, inFileQCD, kfactor, inFileTTJets, inFileWJets, inFileZJets, Grom, nameInRoot, name, xmin, xmax, labX, labY, log, PU, Norm=False ):
 	"""docstring for plot"""
 
 	outputFileName = name+'_'+Grom+'_RPVSt'+mass+'to'+jj+'_'+PU+'_PlusBkg_AnalysisPlots.pdf' 
@@ -89,8 +88,7 @@ def plot( inFileSignal, inFileQCD, kfactor, inFileTTJets, inFileWJets, inFileZJe
 
 	histos = {}
 	histos[ 'Signal' ] = inFileSignal.Get( nameInRoot )
-	#histos[ 'Signal2' ] = inFileSignal2.Get( nameInRoot )
-	#histos[ 'Signal3' ] = inFileSignal3.Get( nameInRoot )
+	histos[ 'Signal2' ] = inFileSignal2.Get( nameInRoot )
 	histos[ 'QCD' ] = inFileQCD.Get( nameInRoot )
 	histos[ 'QCD' ].Scale( kfactor )
 	histos[ 'TTJets' ] = inFileTTJets.Get( nameInRoot )
@@ -98,18 +96,26 @@ def plot( inFileSignal, inFileQCD, kfactor, inFileTTJets, inFileWJets, inFileZJe
 	histos[ 'ZJets' ] = inFileZJets.Get( nameInRoot )
 
 	hSignal = histos[ 'Signal' ].Clone()
+	hBkg = histos[ 'QCD' ].Clone() 
+	hBkg.Add( histos[ 'TTJets' ].Clone() )
+	hBkg.Add( histos[ 'WJets' ].Clone() )
+	hBkg.Add( histos[ 'ZJets' ].Clone() )
 	hSignalBkg = histos[ 'Signal' ].Clone()
-	hSignalBkg.Add( histos[ 'QCD' ].Clone() )
-	hSignalBkg.Add( histos[ 'TTJets' ].Clone() )
-	hSignalBkg.Add( histos[ 'WJets' ].Clone() )
-	hSignalBkg.Add( histos[ 'ZJets' ].Clone() )
+	hSignalBkg.Add( hBkg )
 	hSignal.Divide( hSignalBkg )
-	hSoSB = histos[ 'Signal' ].Clone()
+	
+	hSignal2 = histos[ 'Signal2' ].Clone()
+	hSignal2Bkg = histos[ 'Signal2' ].Clone()
+	hSignal2Bkg.Add( hBkg )
+	hSignal2.Divide( hSignal2Bkg )
+	#hSoSB = histos[ 'Signal' ].Clone()
 
+	'''
 	for bin in range(0,  hSoSB.GetNbinsX()):
 		hSoSB.SetBinContent(bin, 0.)
 		hSoSB.SetBinError(bin, 0.)
 
+	hSoSB2 = hSoSB.Clone()
 	for ibin in range(0, hSoSB.GetNbinsX()):
 	
 		binContSignal = histos[ 'Signal' ].GetBinContent(ibin)
@@ -120,13 +126,15 @@ def plot( inFileSignal, inFileQCD, kfactor, inFileTTJets, inFileWJets, inFileZJe
 			value = binContSignal / TMath.Sqrt( binContSignal + binContBkg )
 		except ZeroDivisionError: continue
 		hSoSB.SetBinContent( ibin, value )
+	'''
 
 	binWidth = histos['Signal'].GetBinWidth(1)
 
-	legend=TLegend(0.60,0.67,0.90,0.87)
+	legend=TLegend(0.60,0.60,0.90,0.87)
 	legend.SetFillStyle(0)
 	legend.SetTextSize(0.04)
 	legend.AddEntry( histos[ 'Signal' ], 'RPV #tilde{t}#rightarrow '+jj+' '+mass+' GeV' , 'f' )
+	legend.AddEntry( histos[ 'Signal2' ], 'RPV #tilde{t}#rightarrow '+jj+' 200 GeV' , 'l' )
 	legend.AddEntry( histos[ 'QCD' ], 'QCD', 'f' )
 	legend.AddEntry( histos[ 'TTJets' ], 't #bar{t} + Jets' , 'f' )
 	legend.AddEntry( histos[ 'WJets' ], 'W + Jets' , 'f' )
@@ -138,14 +146,9 @@ def plot( inFileSignal, inFileQCD, kfactor, inFileTTJets, inFileWJets, inFileZJe
 		tmpHisto.SetFillColor(0)
 		tmpHisto.SetLineWidth(3)
 		tmpHisto.SetLineStyle(2)
-		#histos[ 'Signal2' ].SetLineColor(kRed-5)
-		#histos[ 'Signal2'].SetFillColor(0)
-		#histos[ 'Signal2'].SetLineWidth(3)
-		#histos[ 'Signal2'].SetLineStyle(2)
-		#histos[ 'Signal3' ].SetLineColor(kRed-6)
-		#histos[ 'Signal3'].SetFillColor(0)
-		#histos[ 'Signal3'].SetLineWidth(3)
-		#histos[ 'Signal3'].SetLineStyle(2)
+		histos[ 'Signal2' ].SetLineColor(kRed-5)
+		histos[ 'Signal2'].SetLineWidth(3)
+		histos[ 'Signal2'].SetLineStyle(2)
 		histos[ 'Signal' ].SetFillColor(kRed-4)
 		histos[ 'Signal' ].SetFillStyle(1001)
 		histos[ 'QCD' ].SetFillColor(kBlue-4)
@@ -184,8 +187,7 @@ def plot( inFileSignal, inFileQCD, kfactor, inFileTTJets, inFileWJets, inFileZJe
 		#stackHisto.GetYaxis().SetTitleOffset(1.2)
 		if xmax: stackHisto.GetXaxis().SetRangeUser( xmin, xmax )
 		tmpHisto.Draw("hist same")
-		#histos['Signal2'].Draw('hist same')
-		#histos['Signal3'].Draw('hist same')
+		histos['Signal2'].Draw('hist same')
 		stackHisto.GetYaxis().SetTitle( 'Events / '+str(binWidth) )
 
 		CMS_lumi.CMS_lumi(pad1, 4, 0)
@@ -214,6 +216,8 @@ def plot( inFileSignal, inFileQCD, kfactor, inFileTTJets, inFileWJets, inFileZJe
 		'''
 		hSignal.SetFillColor(kRed+1)
 		hSignal.SetFillStyle(1001)
+		hSignal2.SetFillColor(kRed-5)
+		hSignal2.SetFillStyle(1001)
 		labelAxis( name, hSignal, Grom )
 		hSignal.GetYaxis().SetTitleOffset(1.2)
 		hSignal.GetXaxis().SetLabelSize(0.12)
@@ -223,9 +227,9 @@ def plot( inFileSignal, inFileQCD, kfactor, inFileTTJets, inFileWJets, inFileZJe
 		hSignal.GetYaxis().SetTitleSize(0.12)
 		hSignal.GetYaxis().SetTitleOffset(0.45)
 		hSignal.SetMaximum(0.4)
-		hSignal.Sumw2()
 		if xmax: hSignal.GetXaxis().SetRangeUser( xmin, xmax )
 		hSignal.Draw("hist")
+		hSignal2.Draw("hist same")
 
 		can.SaveAs( 'Plots/'+outName )
 		del can
@@ -726,6 +730,41 @@ def plotOptimization( inFileSignal, inFileBkg, Grom, name, Range, xmax, labX, la
 	can.SaveAs( 'Plots/'+outName )
 	del can
 	'''
+def plot2DOptimization( inFileSig, inFileBkg, Grom, name, titleXAxis, titleXAxis2, Xmin, Xmax, rebinx, Ymin, Ymax, rebiny, legX, legY, PU ):
+	"""docstring for plot"""
+
+	outputFileName = name+'_'+Grom+'_'+camp+'_'+PU+'_OptimizationPlots.pdf' 
+	print 'Processing.......', outputFileName
+	hSig = inFileSig.Get( name )
+	hBkg = inFileBkg.Get( name )
+	
+	hD = hSig.Clone( "hD" )
+	hsum = hSig.Clone( "hsum" )
+	hsum.Add( hBkg )
+	hD.Divide( hsum )
+
+	hD.GetXaxis().SetTitle( titleXAxis )
+	hD.GetYaxis().SetTitleOffset( 1.0 )
+	hD.GetYaxis().SetTitle( titleXAxis2 )
+
+	hD.GetXaxis().SetRangeUser( Xmin, Xmax )
+	hD.GetYaxis().SetRangeUser( Ymin, Ymax )
+
+	tdrStyle.SetPadRightMargin(0.12)
+	can = TCanvas('c1', 'c1',  750, 500 )
+	#can.SetLogz()
+	#hD.SetMaximum(5000)
+	hD.Draw('cont1')
+
+	CMS_lumi.relPosX = 0.13
+	CMS_lumi.CMS_lumi(can, 4, 0)
+	if not (legX and legY): labels( name, PU, camp )
+	else: labels( name, PU, camp, legX, legY )
+
+	can.SaveAs( 'Plots/'+outputFileName )
+	#can.SaveAs( 'Plots/'+outputFileName.replace('pdf', 'gif') )
+	del can
+
 
 def plotTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name, cut, xmin, xmax, rebin, labX, labY, log ):
 	"""docstring for plot"""
@@ -1119,13 +1158,17 @@ if __name__ == '__main__':
 			inputTrigger = TFile.Open('Rootfiles/RUNTriggerEfficiency_RPVSt100tojj_RunIISpring15DR74_Asympt25ns_TS_v02_v10.root')
 			SAMPLE = 'RPVStop100tojj'
 			BASEDTrigger = 'PFHT475'
-	elif 'mini' in process:
-		inputMiniFileSignal = TFile.Open('Rootfiles/RUNMiniAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v03_v10.root')
-		inputMiniFileQCD = TFile.Open('Rootfiles/RUNMiniAnalysis_QCD'+qcd+'All_'+camp+'_'+PU+'_v03_v10.root')
+	elif ( 'mini' in process ) or ( '2dOpt' in process ):
+		inputMiniFileSignal = TFile.Open('Rootfiles/RUNMiniAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v02p2_v06.root')
+		inputMiniFileQCD = TFile.Open('Rootfiles/RUNMiniAnalysis_QCDPtAll_RunIISpring15DR74_Asympt25ns_v01_v06.root')
+		inputMiniFileSignal200 = TFile.Open('Rootfiles/RUNMiniAnalysis_RPVSt200to'+jj+'_'+camp+'_'+PU+'_v02p3_v06.root')
+		inputMiniFileTTJets = TFile.Open('Rootfiles/RUNMiniAnalysis_TTJets_'+camp+'_'+PU+'_v01_v06.root')
+		inputMiniFileWJetsToQQ = TFile.Open('Rootfiles/RUNMiniAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v01p2_v06.root')
+		inputMiniFileZJetsToQQ = TFile.Open('Rootfiles/RUNMiniAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v01p2_v06.root')
 	else:
 		inputFileSignal = TFile.Open('Rootfiles/RUNAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v02p2_v06.root')
-		#inputFileSignal200 = TFile.Open('Rootfiles/RUNAnalysis_RPVSt200to'+jj+'_'+camp+'_'+PU+'_v02p2_v06.root')
-		#inputFileSignal350 = TFile.Open('Rootfiles/RUNAnalysis_RPVSt350to'+jj+'_'+camp+'_'+PU+'_v02p2_v06.root')
+		inputFileSignal200 = TFile.Open('Rootfiles/RUNAnalysis_RPVSt200to'+jj+'_'+camp+'_'+PU+'_v02p3_v06.root')
+		inputFileSignal350 = TFile.Open('Rootfiles/RUNAnalysis_RPVSt350to'+jj+'_'+camp+'_'+PU+'_v02p3_v06.root')
 		#inputFileSignal = TFile.Open('Rootfiles/RUNTriggerEfficiency_RPVSt100tojj_RunIISpring16DR74_Asympt25ns_TS_v02_v09.root')
 		inputFileQCD = TFile.Open('Rootfiles/RUNAnalysis_QCD'+qcd+'All_'+camp+'_'+PU+'_v01_v06.root')
 		inputFileTTJets = TFile.Open('Rootfiles/RUNAnalysis_TTJets_'+camp+'_'+PU+'_v01_v06.root')
@@ -1235,7 +1278,7 @@ if __name__ == '__main__':
 		[ '1D', 'massAve_cutAsym', 0, massMaxX, '', '', False],
 		[ '1D', 'massAve_cutCosTheta', 0, massMaxX, '', '', False],
 		[ '1D', 'massAve_cutSubjetPtRatio', 0, massMaxX, '', '', False],
-		#[ '1D', 'massAve_cutSubjetPtRatio', 0, massMaxX, '', '', True ],
+		[ '1D', 'massAve_cutSubjetPtRatio', 0, massMaxX, '', '', True ],
 		[ '1D', 'massAve_cutTau31', 0, massMaxX, '', '', False],
 		[ '1D', 'massAve_cutTau21', 0, massMaxX, '', '', False],
 
@@ -1254,6 +1297,9 @@ if __name__ == '__main__':
 		[ 'Norm', 'jet1Tau21_cutDijet', '', '', taulabX, taulabY, False],
 		[ 'Norm', 'jet1Tau31_cutDijet', '', '', taulabX, taulabY, False],
 		[ 'Norm', 'jet1Tau32_cutDijet', '', '', taulabX, taulabY, False],
+		[ 'Norm', 'jet2Tau21_cutDijet', '', '', taulabX, taulabY, False],
+		[ 'Norm', 'jet2Tau31_cutDijet', '', '', taulabX, taulabY, False],
+		[ 'Norm', 'jet2Tau32_cutDijet', '', '', taulabX, taulabY, False],
 		[ 'Norm', 'jet1SubjetPtRatio_cutDijet', '', '', '', '', True],
 		[ 'Norm', 'jet2SubjetPtRatio_cutDijet', '', '', '', '', True],
 		[ 'Norm', 'subjetPtRatio_cutDijet', '', '', '', '', True],
@@ -1321,8 +1367,13 @@ if __name__ == '__main__':
 		[ 'simple', 'massAve_cutTau21',  massMaxX, '', '', False],
 
 		[ 'mini', 'massAve_Standard', 0, massMaxX, '', '', False],
+		[ 'mini', 'massAve_DeltaEtaSubjet', 0, massMaxX, '', '', False],
+		[ 'mini', 'massAve_DeltaEtaTau21', 0, massMaxX, '', '', False],
+		[ 'mini', 'massAve_DeltaEtaTau31', 0, massMaxX, '', '', False],
 		[ 'mini', 'massAve_EffPFHT800', 0, massMaxX, '', '', False],
 		[ 'mini', 'massAve_Brock', 0, massMaxX, '', '', False],
+		[ '2dOpt', 'massAveVsHT', 'Average Pruned Mass [GeV]', 'HT [GeV]', 0, massMaxX, 1, 700, HTMaxX, 1, jetMassHTlabX, jetMassHTlabY],
+		[ '2dOpt', 'massAsymVscosThetaStar', 'Mass asymmetry', 'cos #theta^{*}', 0, 1, 1, 0, 1, 1, jetMassHTlabX, jetMassHTlabY],
 
 		[ 'opt', 'massAve_massAsym', ["%02d" % x for x in range(10)], 0, massMaxX, '', '', False],
 
@@ -1392,14 +1443,14 @@ if __name__ == '__main__':
 				plot2D( inputFileZJetsToQQ, 'ZJets', optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU )
 
 			elif '1D' in process:
-				#plot( inputFileSignal, inputFileSignal200, inputFileSignal350, inputFileQCD, 1.0, inputFileTTJets, inputFileWJetsToQQ, inputFileZJetsToQQ, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU )
-				plot( inputFileSignal, inputFileQCD, 0.8, inputFileTTJets, inputFileWJetsToQQ, inputFileZJetsToQQ, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU )
+				plot( inputFileSignal, inputFileSignal200, inputFileQCD, 1.0, inputFileTTJets, inputFileWJetsToQQ, inputFileZJetsToQQ, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU )
+				#plot( inputFileSignal, inputFileQCD, 0.8, inputFileTTJets, inputFileWJetsToQQ, inputFileZJetsToQQ, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU )
 			
 			elif 'mini' in process:
-				plot( inputMiniFileSignal, inputMiniFileQCD, 1.5, optGrom, i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU )
+				plot( inputMiniFileSignal, inputMiniFileSignal200, inputMiniFileQCD, 1.0, inputMiniFileTTJets, inputMiniFileWJetsToQQ, inputMiniFileZJetsToQQ, optGrom, i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU )
 			
 			elif 'Norm' in process:
-				plot( inputFileSignal, inputFileSignal200, inputFileSignal350, inputFileQCD, 1.0, inputFileTTJets, inputFileWJetsToQQ, inputFileZJetsToQQ, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU, True )
+				plot( inputFileSignal, inputFileSignal200, inputFileSignal350, inputFileQCD, 0.8, inputFileTTJets, inputFileWJetsToQQ, inputFileZJetsToQQ, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU, True )
 
 			elif 'CF' in process:
 				plotCutFlow( inputFileSignal, inputFileQCD, inputFileTTJets, inputFileWJetsToQQ, inputFileZJetsToQQ, optGrom, i[0], i[1], i[2], PU, True )
@@ -1411,6 +1462,10 @@ if __name__ == '__main__':
 			
 			elif 'opt' in process:
 				plotOptimization( inputMiniFileSignal, inputMiniFileQCD, optGrom, i[0], i[1], i[2], i[3], i[4], True )
+
+			elif '2dOpt' in process: 
+				plot2DOptimization( inputMiniFileSignal, inputMiniFileQCD, optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU )
+
 			elif 'trigger' in process:
 				for trig in Triggers:
 					#tmpplotTriggerEfficiency( inputTrigger, SAMPLE, 'PFHT475', trig, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7] )

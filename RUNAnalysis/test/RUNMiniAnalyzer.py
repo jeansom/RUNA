@@ -42,6 +42,9 @@ def myAnalyzer( sample, couts, grooming):
 
 	trimmedMassVsHT 	= TH2D('trimmedMassVsHT', 'trimmedMassVsHT', nBinsMass, 0, maxMass, nBinsHT, 0, maxHT )
 	massAve_Standard 	= TH1F('massAve_Standard', 'massAve_Standard', nBinsMass, 0, maxMass )
+	massAve_DeltaEtaSubjet 	= TH1F('massAve_DeltaEtaSubjet', 'massAve_DeltaEtaSubjet', nBinsMass, 0, maxMass )
+	massAve_DeltaEtaTau21 	= TH1F('massAve_DeltaEtaTau21', 'massAve_DeltaEtaTau21', nBinsMass, 0, maxMass )
+	massAve_DeltaEtaTau31 	= TH1F('massAve_DeltaEtaTau31', 'massAve_DeltaEtaTau31', nBinsMass, 0, maxMass )
 	massAve_EffStandard 	= TH1F('massAve_EffStandard', 'massAve_EffStandard', nBinsMass, 0, maxMass )
 	
 	AK4HT_PFHT800 	= TH1F('AK4HT_PFHT800', 'AK4HT_PFHT800', nBinsHT, 0, maxHT )
@@ -54,6 +57,8 @@ def myAnalyzer( sample, couts, grooming):
 
 	#### Optimization
 	h_deltaEtaDijet 	= TH1F('deltaEtaDijet', 'deltaEtaDijet', 100, 0, 5. )
+	h_jet2Tau21 	= TH1F('jet2Tau21', 'jet2Tau21', 10, 0, 1. )
+	h_jet2Tau31 	= TH1F('jet2Tau31', 'jet2Tau31', 10, 0, 1. )
 
 	h_massAveVsHT 	= TH2D('massAveVsHT', 'massAveVsHT', nBinsMass, 0, maxMass, nBinsHT, 0, maxHT )
 	h_massAveVsnumJets 	= TH2D('massAveVsnumJets', 'massAveVsnumJets', nBinsMass, 0, maxMass, 10, 0, 10 )
@@ -97,10 +102,11 @@ def myAnalyzer( sample, couts, grooming):
 
 	print '------> Number of events: '+str(numEntries)
 	d = 0
-	eventsPassed = 0
-	newSF = SF(sample)*1000
+	eventsRaw = eventsHT = eventsPassed = eventsDijet = eventsMassAsym = eventsDEta = eventsDEtaSubjet = eventsDEtaTau21 = eventsDEtaTau31 = eventsCosTheta = 0
+	#scale = SF(sample)*1000
 	for i in xrange(numEntries):
 		events.GetEntry(i)
+		eventsRaw += 1
 
 		#---- progress of the reading --------
 		fraction = 10.*i/(1.*numEntries)
@@ -153,12 +159,18 @@ def myAnalyzer( sample, couts, grooming):
 		jet1Tau21       = events.jet1Tau21
 		jet1Tau31       = events.jet1Tau31
 		jet1Tau32       = events.jet1Tau32
+		jet2Tau21       = events.jet2Tau21
+		jet2Tau31       = events.jet2Tau31
+		jet2Tau32       = events.jet2Tau32
 		cosPhi13412     = events.cosPhi13412
 		cosPhi31234     = events.cosPhi31234
 
 		#### Optimization
 		deltaEtaDijet = abs( jet1Eta - jet2Eta )
 		h_deltaEtaDijet.Fill( deltaEtaDijet, scale )
+		
+		h_jet2Tau21.Fill( jet2Tau21, scale )
+		h_jet2Tau31.Fill( jet2Tau31, scale )
 
 		h_massAveVsHT.Fill( massAve, HT, scale )
 		h_massAveVsnumJets.Fill( massAve, numJets, scale )
@@ -199,38 +211,75 @@ def myAnalyzer( sample, couts, grooming):
 		trimmedMassVsHT.Fill( trimmedMass, HT )
 
 		#### Apply standard selection
-		triggerCut = ( ( HT > 700 ) and ( trimmedMass > 50 ) and ( numJets > 1 ) )  
+		triggerCut = ( ( HT > 700 ) and ( trimmedMass > 50 ) )  
+		HTCut = ( HT > 800 )
+		dijetCut =  ( numJets > 1 )
 		subjetPtRatio = ( ( jet1SubjetPtRatio > 0.3 ) and ( jet2SubjetPtRatio > 0.3 )  )
+		tau21Cut = ( ( jet1Tau21 < 0.5 ) and ( jet2Tau21 < 0.5 ) )
+		tau31Cut = ( ( jet1Tau31 < 0.5 ) and ( jet2Tau31 < 0.5 ) )
 		massAsymCut = ( massAsym < 0.1 ) 
+		deltaEtaDijetCut = ( deltaEtaDijet < 1. ) 
 		cosThetaStarCut = ( abs( cosThetaStar ) < 0.3 ) 
 		subjetPtRatioCut = ( subjetPtRatio ) 
 
-		if triggerCut and massAsymCut and cosThetaStarCut and subjetPtRatioCut:
-			eventsPassed +=1
-			#AvgMass = massAve
-			#Scale = scale
-			#print Run, Lumi, NumEvent
-			massAve_Standard.Fill( massAve, newSF )
-			#print AvgMass, newSF, scale
+		if HTCut:
+			eventsHT += 1
+			if dijetCut:
+				eventsDijet += 1
+				if massAsymCut:
+					eventsMassAsym += 1
+					if cosThetaStarCut:
+						eventsCosTheta += 1
+						if subjetPtRatioCut:
+							eventsPassed +=1
+							#AvgMass = massAve
+							#Scale = scale
+							#print Run, Lumi, NumEvent
+							massAve_Standard.Fill( massAve, scale )
+							#print AvgMass, scale, scale
+			
+					if deltaEtaDijetCut:
+						eventsDEta += 1
+						if subjetPtRatioCut: 
+							eventsDEtaSubjet += 1
+							massAve_DeltaEtaSubjet.Fill( massAve, scale )
+						if tau21Cut: 
+							eventsDEtaTau21 += 1
+							massAve_DeltaEtaTau21.Fill( massAve, scale )
+						if tau31Cut: 
+							eventsDEtaTau31 += 1
+							massAve_DeltaEtaTau31.Fill( massAve, scale )
 
 		if ( ( HT > 700 ) and ( trimmedMass > 50 ) ) and massAsymCut and cosThetaStarCut and subjetPtRatioCut:
-			massAve_EffStandard.Fill( massAve, newSF )
+			massAve_EffStandard.Fill( massAve, scale )
 		
 		if ( AK4HT > 800 ) and massAsymCut and cosThetaStarCut and subjetPtRatioCut:
-			AK4HT_PFHT800.Fill( AK4HT, newSF )
-			massAve_PFHT800.Fill( massAve, newSF )
+			AK4HT_PFHT800.Fill( AK4HT, scale )
+			massAve_PFHT800.Fill( massAve, scale )
 
 		if ( AK4HT > 900 ) and massAsymCut and cosThetaStarCut and subjetPtRatioCut:
-			AK4HT_EffPFHT800.Fill( AK4HT, newSF )
-			massAve_EffPFHT800.Fill( massAve, newSF )
+			AK4HT_EffPFHT800.Fill( AK4HT, scale )
+			massAve_EffPFHT800.Fill( massAve, scale )
 
 		if ( AK4HT > 1600 ) and massAsymCut and cosThetaStarCut and subjetPtRatioCut:
-			AK4HT_Brock.Fill( AK4HT, newSF )
-			massAve_Brock.Fill( massAve, newSF )
+			AK4HT_Brock.Fill( AK4HT, scale )
+			massAve_Brock.Fill( massAve, scale )
 
+	cutFlowStandard = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsCosTheta, eventsPassed ]
+	cutFlowDEtaSubjet = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsDEta, eventsDEtaSubjet ]
+	cutFlowDEtaTau21 = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsDEta, eventsDEtaTau21 ]
+	cutFlowDEtaTau31 = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsDEta, eventsDEtaTau31 ]
 
 	print eventsPassed
-				#print triggerCut, analysisCut, massAsym, cosThetaStar, subjetPtRatio
+	
+	hcutFlowmassStandard 	= TH1F('cutFlowStandard', 'cutFlowStandard', len(cutFlowStandard), 0, len(cutFlowStandard) )
+	for i in range( len(cutFlowStandard) ): hcutFlowmassStandard.SetBinContent(i, cutFlowStandard[i])
+	hcutFlowmassDEtaSubjet 	= TH1F('cutFlowDEtaSubjet', 'cutFlowDEtaSubjet', len(cutFlowDEtaSubjet), 0, len(cutFlowDEtaSubjet) )
+	for i in range( len(cutFlowDEtaSubjet) ): hcutFlowmassDEtaSubjet.SetBinContent(i, cutFlowDEtaSubjet[i])
+	hcutFlowmassDEtaTau21 	= TH1F('cutFlowDEtaTau21', 'cutFlowDEtaTau21', len(cutFlowDEtaTau21), 0, len(cutFlowDEtaTau21) )
+	for i in range( len(cutFlowDEtaTau21) ): hcutFlowmassDEtaTau21.SetBinContent(i, cutFlowDEtaTau21[i])
+	hcutFlowmassDEtaTau31 	= TH1F('cutFlowDEtaTau31', 'cutFlowDEtaTau31', len(cutFlowDEtaTau31), 0, len(cutFlowDEtaTau31) )
+	for i in range( len(cutFlowDEtaTau31) ): hcutFlowmassDEtaTau31.SetBinContent(i, cutFlowDEtaTau31[i])
 
 
 	##### write output file 
@@ -292,8 +341,17 @@ if __name__ == '__main__':
 	elif 'Data' in samples: 
 		inputFileName = 'Rootfiles/RUNAnalysis_JetHT_Asympt50ns_v01p2_v06.root'
 		myAnalyzer( inputFileName, couts, grooming )
+	elif 'Bkg' in samples: 
+		inputFileName = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v01p2_v06.root'
+		myAnalyzer( inputFileName, couts, grooming )
+		inputFileName = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v01p2_v06.root'
+		myAnalyzer( inputFileName, couts, grooming )
+		inputFileName = 'Rootfiles/RUNAnalysis_TTJets_RunIISpring15DR74_Asympt25ns_v01_v06.root'
+		myAnalyzer( inputFileName, couts, grooming )
 	else: 
-		for qcdBin in [ '170to300', '300to470', '470to600', '600to800', '800to1000', '1000to1400', '1400to1800' ]: 
-			inputFileName = 'Rootfiles//RUNAnalysis_QCD_Pt_'+qcdBin+'_RunIISpring15DR74_'+PU+'_v01_v06.root'
-			myAnalyzer( inputFileName, couts, grooming )
+		#for qcdBin in [ '170to300', '300to470', '470to600', '600to800', '800to1000', '1000to1400', '1400to1800' ]: 
+		#	inputFileName = 'Rootfiles//RUNAnalysis_QCD_Pt_'+qcdBin+'_RunIISpring15DR74_'+PU+'_v01_v06.root'
+		#	myAnalyzer( inputFileName, couts, grooming )
+		inputFileName = 'Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15DR74_Asympt25ns_v01_v06.root'
+		myAnalyzer( inputFileName, couts, grooming )
 

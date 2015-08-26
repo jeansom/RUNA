@@ -55,10 +55,9 @@ dictEvents = {
 		'ZJetsToQQ' : [ 982095., ],
 
 		#### RPV Stop
-		'RPVSt100tojj' :  [ 200000.],	
-		'RPVSt100tobj' :  [ 200000.],	
-		'RPVSt200tojj' :  [ 200000.],	
-		'RPVSt350tojj' :  [ 200000.],	
+		'RPVSt100' :  [ 200000.],	
+		'RPVSt200' :  [ 200000.],	
+		'RPVSt350' :  [ 200000.],	
 		}
 
 def search(DICT, searchFor):
