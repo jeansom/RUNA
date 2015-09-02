@@ -6,7 +6,7 @@
 from CRABClient.UserUtilities import config
 config = config()
 
-name = 'RunIISpring15DR74_RUNA_Asympt25ns'
+name = 'RunIISpring15DR74_RUNA_Asympt50ns'
 version = 'v01p2'
 
 config.General.requestName = ''
@@ -62,7 +62,12 @@ if __name__ == '__main__':
 			#'/QCD_HT_1000ToInf_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM',
 			#'/QCD_HT_1000ToInf_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1_ext1-v1/MINIAODSIM'
 
-			#### RunIISpring15DR74
+			#### RunIISpring15DR74 Asympt50ns
+			'/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/MINIAODSIM',
+			'/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/MINIAODSIM',
+			'/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/MINIAODSIM',
+
+			#### RunIISpring15DR74 Asympt25ns
 			#'/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/MINIAODSIM',
 			#'/QCD_Pt_120to170_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM',
 			#'/QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/MINIAODSIM',
@@ -88,8 +93,8 @@ if __name__ == '__main__':
 			#'/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM',
 			#'/WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/MINIAODSIM',
 			#'/WJetsToLNu_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM',
-			'/WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/MINIAODSIM',
-			'/ZJetsToQQ_HT600toInf_13TeV-madgraph/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM',
+			#'/WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/MINIAODSIM',
+			#'/ZJetsToQQ_HT600toInf_13TeV-madgraph/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM',
 			#'/JetHT/Run2015B-PromptReco-v1/MINIAOD',
 			#'/MET/Run2015B-PromptReco-v1/MINIAOD',
 			#'/SingleMu/Run2015B-PromptReco-v1/MINIAOD',
@@ -99,8 +104,10 @@ if __name__ == '__main__':
 	for dataset in QCD:
 		config.Data.inputDataset = dataset
 		config.General.requestName = dataset.split('/')[1]+"_"+dataset.split('/')[2]+'_'+name+'_'+version
-		if 'Run2015B' in dataset: config.JobType.pyCfgParams = [ 'isData=1', 'globalTag=74X_dataRun2_Prompt_v1' ]
+		if 'Run2015B' in dataset: 
+			config.JobType.pyCfgParams = [ 'isData=1', 'globalTag=74X_dataRun2_Prompt_v1' ]
 		#crabCommand('submit', config = config)
+		if 'Asympt50ns' in dataset: config.JobType.pyCfgParams = [ 'globalTag=74X_mcRun2_asymptotic_AllChannelsGood_v0' ]  
 		p = Process(target=submit, args=(config,))
 		p.start()
 		p.join()
