@@ -18,10 +18,10 @@ options.register('maxEvts',
                  'Number of events to process')
 
 options.register('sample',
-                 #'/store/mc/RunIISpring15DR74/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/Asympt25nsRecodebug_MCRUN2_74_V9-v1/70000/12B18945-2E03-E511-800A-B083FED73FEC.root',
+                 '/store/mc/RunIISpring15DR74/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/Asympt25nsRecodebug_MCRUN2_74_V9-v1/70000/12B18945-2E03-E511-800A-B083FED73FEC.root',
 		 #'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_MiniAOD_v2/150613_105255/0000/RPVSt100tojj_13TeV_pythia8_MiniAOD_Asympt25ns_100.root',
 		 #'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_MiniAOD_v2/150613_105255/0002/RPVSt100tojj_13TeV_pythia8_MiniAOD_Asympt25ns_2164.root',
-		 '/store/data/Run2015B/JetHT/MINIAOD/PromptReco-v1/000/251/162/00000/0A926801-4627-E511-99E6-02163E0144D6.root',
+		 #'/store/data/Run2015B/JetHT/MINIAOD/PromptReco-v1/000/251/162/00000/0A926801-4627-E511-99E6-02163E0144D6.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')

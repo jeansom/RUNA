@@ -107,6 +107,20 @@ options.register('Tau21',
 		VarParsing.varType.float,
 		"Tau21 cut"
 		)
+options.register('DEta', 
+		1.0,
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.float,
+		"DEta cut"
+		)
+options.register('btag', 
+		#0.244,  ## CSVL
+		0.679, ## CSVM
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.float,
+		"Btag cut"
+		)
+
 
 
 options.parseArguments()
@@ -124,8 +138,8 @@ else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
 		#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns__v02/150719_102556/0000/RUNtuples_11.root'
-		#'/store/user/algomez/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns_v01/150705_075711/0000/RUNtuples_13.root'
-		'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns__v02/150719_170508/0000/RUNtuples_101.root',
+		'/store/user/algomez/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns_v01/150705_075711/0000/RUNtuples_13.root'
+		#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns__v02/150719_170508/0000/RUNtuples_101.root',
 		#'file:RUNtuple_1.root'
 	    )
 	)
@@ -188,6 +202,8 @@ process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		cutSubjetPtRatiovalue 	= cms.double( options.SubPt ),
 		cutTau31value 		= cms.double( options.Tau31 ),
 		cutTau21value 		= cms.double( options.Tau21 ),
+		cutDEtavalue 		= cms.double( options.DEta ),
+		cutBtagvalue 		= cms.double( options.btag ),
 		bjSample		= cms.bool( bjsample ),
 		mkTree			= cms.bool( False  ),
 		Run			= cms.InputTag('eventInfo:evtInfoRunNumber'),
