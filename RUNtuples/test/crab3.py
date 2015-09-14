@@ -2,14 +2,14 @@ from CRABClient.UserUtilities import config
 config = config()
 
 name = 'RunIISpring15DR74_RUNA_Asympt25ns'
-version = 'v02p3'
+version = 'v03'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
 
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'RUNtuples_cfg.py'
-#config.JobType.pyCfgParams = [ 'is74XSample=0' ]
+config.JobType.pyCfgParams = [ 'globalTag=74X_mcRun2_asymptotic_v2' ]
 config.JobType.allowUndistributedCMSSW = True
 
 config.Data.inputDataset = ''
@@ -47,8 +47,8 @@ if __name__ == '__main__':
 			#'/RPVSt350tojj_13TeV_pythia8/algomez-MiniAOD_PHYS14_v720_PU20bx25-b1b44dbfc276814daa37c582f825184d/USER'
 			##### RunIISpring15DR74
 			#'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15DR74_MiniAOD_Asympt25ns-aaa2c03e98f1a25cd2e28ba65d8e2a63/USER',
-			#'/RPVSt100tobj_13TeV_pythia8/algomez-RunIISpring15DR74_MiniAOD_Asympt25ns-aaa2c03e98f1a25cd2e28ba65d8e2a63/USER'
-			'/RPVSt200tobj_13TeV_pythia8/algomez-RunIISpring15DR74_MiniAOD_Asympt25ns-aaa2c03e98f1a25cd2e28ba65d8e2a63/USER',
+			#'/RPVSt100tobj_13TeV_pythia8/algomez-RunIISpring15DR74_MiniAOD_Asympt25ns-aaa2c03e98f1a25cd2e28ba65d8e2a63/USER',
+			#'/RPVSt200tobj_13TeV_pythia8/algomez-RunIISpring15DR74_MiniAOD_Asympt25ns-aaa2c03e98f1a25cd2e28ba65d8e2a63/USER',
 			'/RPVSt350tobj_13TeV_pythia8/algomez-RunIISpring15DR74_MiniAOD_Asympt25ns-aaa2c03e98f1a25cd2e28ba65d8e2a63/USER',
 
 			]

@@ -40,7 +40,7 @@ options.register('outputLabel',
 
 options.register('globalTag',
                  #'MCRUN2_74_V9A',    ### For 50ns
-                 'MCRUN2_74_V9',    ### For 25ns
+                 '74X_mcRun2_asymptotic_v2', #'MCRUN2_74_V9',    ### For 25ns
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Global Tag')
