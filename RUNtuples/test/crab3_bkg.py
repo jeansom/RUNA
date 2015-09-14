@@ -76,6 +76,7 @@ if __name__ == '__main__':
 			#'/QCD_Pt_470to600_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/MINIAODSIM',
 			#'/QCD_Pt_470to600_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25nsRecodebug_MCRUN2_74_V9-v1/MINIAODSIM',
 			#'/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25nsRecodebug_MCRUN2_74_V9-v1/MINIAODSIM',
+			'/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/MINIAODSIM',
 			#'/QCD_Pt_800to1000_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/MINIAODSIM',
 			#'/QCD_Pt_800to1000_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25nsRecodebug_MCRUN2_74_V9-v1/MINIAODSIM',
 			#'/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM',
@@ -106,7 +107,7 @@ if __name__ == '__main__':
 		if 'Run2015B' in dataset: config.JobType.pyCfgParams = [ 'isData=1', 'globalTag=74X_dataRun2_v2' ]
 		elif 'Asympt50ns' in dataset: config.JobType.pyCfgParams = [ 'globalTag=74X_mcRun2_startup_v2' ]  
 		elif 'Asympt25ns' in dataset: config.JobType.pyCfgParams = [ 'globalTag=74X_mcRun2_asymptotic_v2' ]  
-		if 'TTJets' in dataset: config.Data.unitsPerJob = 50
+		if 'TTJets' in dataset: config.Data.unitsPerJob = 100
 		else: config.Data.unitsPerJob = 10
 		p = Process(target=submit, args=(config,))
 		p.start()
