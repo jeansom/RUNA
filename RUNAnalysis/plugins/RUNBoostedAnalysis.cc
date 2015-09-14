@@ -901,7 +901,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 						histos2D_[ "dijetCorr_cutMassAsym" ]->Fill( JETS[0].p4.Eta(), JETS[1].p4.Eta(), scale );
 						histos2D_[ "dijetCorrPhi_cutMassAsym" ]->Fill( JETS[0].p4.Phi(), JETS[1].p4.Phi(), scale );
 
-						if(  ( jet1Tau21 < cutTau21value ) && ( jet1Tau21 < cutTau21value ) ){
+						if(  ( jet1Tau21 < cutTau21value ) && ( jet2Tau21 < cutTau21value ) ){
 
 							cutmap["Tau21"] += 1;
 							histos1D_[ "HT_cutTau21" ]->Fill( HT, scale  );
@@ -1178,7 +1178,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 						histos2D_[ "dijetCorr_cutNOMassAsym" ]->Fill( JETS[0].p4.Eta(), JETS[1].p4.Eta(), scale );
 						histos2D_[ "dijetCorrPhi_cutNOMassAsym" ]->Fill( JETS[0].p4.Phi(), JETS[1].p4.Phi(), scale );
 
-						if(  ( jet1Tau21 < cutTau21value ) && ( jet1Tau21 < cutTau21value ) ){
+						if(  ( jet1Tau21 < cutTau21value ) && ( jet2Tau21 < cutTau21value ) ){
 
 							histos1D_[ "HT_cutTau21_NOMA" ]->Fill( HT, scale  );
 							histos1D_[ "NPV_cutTau21_NOMA" ]->Fill( numPV, scale );

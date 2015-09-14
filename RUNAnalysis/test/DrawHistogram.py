@@ -28,11 +28,12 @@ tdrstyle.setTDRStyle()
 gStyle.SetOptStat(0)
 
 def labels( name, PU, camp, X=0.92, Y=0.50, align='right', listSet=[] ):
-	if 'cutHT' in name: setSelection( [ camp, PU, triggerUsed, 'jet p_{T} > '+cutjPt+' GeV', 'jet |#eta| < 2.4', 'HT > 800 GeV' ] , X, Y, align)
-	elif 'cutDijet' in name: setSelection( [ camp, PU, triggerUsed, 'jet p_{T} > '+cutjPt+' GeV', 'jet |#eta| < 2.4', 'HT > 800 GeV', 'numJets > 1' ] , X, Y, align)
+	if 'cutHT' in name: setSelection( [ camp, PU, triggerUsed, 'jet p_{T} > 150 GeV', 'jet |#eta| < 2.4', 'HT > 800 GeV' ] , X, Y, align)
+	elif 'cutDijet' in name: setSelection( [ camp, PU, triggerUsed, 'jet p_{T} > 150 GeV', 'jet |#eta| < 2.4', 'HT > 800 GeV', 'numJets > 1' ] , X, Y, align)
 	elif ( 'cutAsym' in name ) or ('cutMassAsym' in name): setSelection( [ camp, PU, triggerUsed, 'HT > 800 GeV', 'numJets > 1', 'A < 0.1' ], X, Y, align )
 	elif 'cutCosTheta' in name: setSelection( [ camp, PU, triggerUsed,  'HT > 800 GeV', 'numJets > 1','A < 0.1', '|cos(#theta*)| < 0.3'], X, Y, align )
 	elif 'cutSubjetPtRatio' in name: setSelection( [ camp, PU, triggerUsed,  'HT > 800 GeV', 'numJets > 1','A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3'],  X, Y, align )
+	elif 'cutBtagAfterSubjetPtRatio' in name: setSelection( [ camp, PU, triggerUsed,  'HT > 800 GeV', 'numJets > 1','A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3', '1 btag CSVM'],  X, Y+0.05, align )
 	elif 'Standard' in name: setSelection( [ camp, PU, triggerUsed, 'HT > 800 GeV', 'numJets > 1', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3'],  X, Y, align )
 	elif 'PFHT800' in name: setSelection( [ camp, PU, 'PFHT800', 'HT > 800 GeV', 'numJets > 1', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3'],  X, Y, align )
 	elif 'Brock' in name: setSelection( [ camp, PU, 'HT > 1600 TeV', 'HT > 800 GeV', 'numJets > 1', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3'],  X, Y, align )
@@ -226,7 +227,7 @@ def plot( inFileSignal, inFileSignal2, inFileQCD, kfactor, inFileTTJets, inFileW
 		hSignal.GetYaxis().SetLabelSize(0.12)
 		hSignal.GetYaxis().SetTitleSize(0.12)
 		hSignal.GetYaxis().SetTitleOffset(0.45)
-		hSignal.SetMaximum(0.4)
+		hSignal.SetMaximum(0.7)
 		if xmax: hSignal.GetXaxis().SetRangeUser( xmin, xmax )
 		hSignal.Draw("hist")
 		hSignal2.Draw("hist same")
@@ -1103,9 +1104,7 @@ if __name__ == '__main__':
 	parser.add_argument('-b', '--boosted', action='store', default='Boosted', help='Boosted or non boosted, example: Boosted' )
 	parser.add_argument('-g', '--grom', action='store', default='Pruned', help='Grooming Algorithm, example: Pruned, Filtered.' )
 	parser.add_argument('-m', '--mass', action='store', default='100', help='Mass of Stop, example: 100' )
-	parser.add_argument('-cHT', '--cutDijet', action='store', default='700', help='HT cut, example: 700' )
-	parser.add_argument('-cjPt', '--cutjetPt', action='store', default='150', help='jet Pt cut, example: 150' )
-	parser.add_argument('-cjM', '--cutjetMass', action='store', default='50', help='jet trimmed mass cut, example: 50' )
+	parser.add_argument('-C', '--cut', action='store', default='_cutDEta', help='cut, example: cutDEta' )
 	parser.add_argument('-pu', '--PU', action='store', default='Asympt25ns', help='PU, example: PU40bx25.' )
 	parser.add_argument('-s', '--single', action='store', default='all', help='single histogram, example: massAve_cutDijet.' )
 	parser.add_argument('-q', '--QCD', action='store', default='Pt', help='Type of QCD binning, example: HT.' )
@@ -1127,9 +1126,7 @@ if __name__ == '__main__':
 	lumi = args.lumi
 	histo = args.single
 	mass = args.mass
-	cutDijet = args.cutDijet
-	cutjPt = args.cutjetPt
-	cutjM = args.cutjetMass
+	cut = args.cut
 	grom = args.grom
 	single = args.single
 	boosted = args.boosted
@@ -1161,21 +1158,19 @@ if __name__ == '__main__':
 	elif ( 'mini' in process ) or ( '2dOpt' in process ):
 		inputMiniFileSignal = TFile.Open('Rootfiles/RUNMiniAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v02p2_v06.root')
 		inputMiniFileQCD = TFile.Open('Rootfiles/RUNMiniAnalysis_QCDPtAll_RunIISpring15DR74_Asympt25ns_v01_v06.root')
-		inputMiniFileSignal200 = TFile.Open('Rootfiles/RUNMiniAnalysis_RPVSt200to'+jj+'_'+camp+'_'+PU+'_v02p3_v06.root')
+		inputMiniFileSignal200 = TFile.Open('Rootfiles/RUNMiniAnalysis_RPVSt200to'+jj+'_'+camp+'_'+PU+'_v02p2_v06.root')
 		inputMiniFileTTJets = TFile.Open('Rootfiles/RUNMiniAnalysis_TTJets_'+camp+'_'+PU+'_v01_v06.root')
 		inputMiniFileWJetsToQQ = TFile.Open('Rootfiles/RUNMiniAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v01p2_v06.root')
 		inputMiniFileZJetsToQQ = TFile.Open('Rootfiles/RUNMiniAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v01p2_v06.root')
 	else:
-		inputFileSignal = TFile.Open('Rootfiles/RUNAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v02p2_v06.root')
-		inputFileSignal200 = TFile.Open('Rootfiles/RUNAnalysis_RPVSt200to'+jj+'_'+camp+'_'+PU+'_v02p3_v06.root')
-		inputFileSignal350 = TFile.Open('Rootfiles/RUNAnalysis_RPVSt350to'+jj+'_'+camp+'_'+PU+'_v02p3_v06.root')
+		inputFileSignal = TFile.Open('Rootfiles/RUNAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v02p2_v07.root')
+		inputFileSignal200 = TFile.Open('Rootfiles/RUNAnalysis_RPVSt200tojj_'+camp+'_'+PU+'_v02p2_v07.root')
+		#inputFileSignal350 = TFile.Open('Rootfiles/RUNAnalysis_RPVSt350to'+jj+'_'+camp+'_'+PU+'_v02p3_v06.root')
 		#inputFileSignal = TFile.Open('Rootfiles/RUNTriggerEfficiency_RPVSt100tojj_RunIISpring16DR74_Asympt25ns_TS_v02_v09.root')
-		inputFileQCD = TFile.Open('Rootfiles/RUNAnalysis_QCD'+qcd+'All_'+camp+'_'+PU+'_v01_v06.root')
-		inputFileTTJets = TFile.Open('Rootfiles/RUNAnalysis_TTJets_'+camp+'_'+PU+'_v01_v06.root')
-		#inputFileWJetsToQQ = TFile.Open('Rootfiles/RUNAnalysis_WJetsToQQ_HT-600toInf_'+camp+'_'+PU+'_v01p2_v06.root')
-		inputFileWJetsToQQ = TFile.Open('Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v01p2_v06.root')
-		#inputFileZJetsToQQ = TFile.Open('Rootfiles/RUNAnalysis_ZJetsToQQ_HT600toInf_'+camp+'_'+PU+'_v01p2_v06.root')
-		inputFileZJetsToQQ = TFile.Open('Rootfiles/RUNAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v01p2_v06.root')
+		inputFileQCD = TFile.Open('Rootfiles/RUNAnalysis_QCD'+qcd+'All_'+camp+'_'+PU+'_v01_v07.root')
+		inputFileTTJets = TFile.Open('Rootfiles/RUNAnalysis_TTJets_'+camp+'_'+PU+'_v01_v07.root')
+		inputFileWJetsToQQ = TFile.Open('Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v01p2_v07.root')
+		inputFileZJetsToQQ = TFile.Open('Rootfiles/RUNAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v01p2_v07.root')
 
 	dijetlabX = 0.15
 	dijetlabY = 0.88
@@ -1273,14 +1268,7 @@ if __name__ == '__main__':
 		[ '1D', 'jetEta', '', '', '', '', True],
 		[ '1D', 'jetMass', 0, massMaxX, '', '', True],
 		[ '1D', 'HT', 0, 1000, '', '', False],
-		[ '1D', 'HT', 0, 1000, '', '', True],
-		[ '1D', 'massAve_cutDijet', 0, massMaxX, '', '', False],
-		[ '1D', 'massAve_cutAsym', 0, massMaxX, '', '', False],
-		[ '1D', 'massAve_cutCosTheta', 0, massMaxX, '', '', False],
-		[ '1D', 'massAve_cutSubjetPtRatio', 0, massMaxX, '', '', False],
-		[ '1D', 'massAve_cutSubjetPtRatio', 0, massMaxX, '', '', True ],
-		[ '1D', 'massAve_cutTau31', 0, massMaxX, '', '', False],
-		[ '1D', 'massAve_cutTau21', 0, massMaxX, '', '', False],
+		[ '1D', 'massAve', 0, massMaxX, '', '', False],
 
 		[ 'Norm', 'NPV', '', '', '', '', False],
 		#[ 'Norm', 'jet1Subjet1Pt_cutDijet', '', '', '', '', True],
@@ -1369,6 +1357,9 @@ if __name__ == '__main__':
 		[ 'mini', 'massAve_Standard', 0, massMaxX, '', '', False],
 		[ 'mini', 'massAve_DeltaEtaSubjet', 0, massMaxX, '', '', False],
 		[ 'mini', 'massAve_DeltaEtaTau21', 0, massMaxX, '', '', False],
+		[ 'mini', 'massAve_Tau21', 0, massMaxX, '', '', False],
+		[ 'mini', 'massAve_Tau21CosTheta', 0, massMaxX, '', '', False],
+		[ 'mini', 'massAve_Tau21CosThetaDEta', 0, massMaxX, '', '', False],
 		[ 'mini', 'massAve_DeltaEtaTau31', 0, massMaxX, '', '', False],
 		[ 'mini', 'massAve_EffPFHT800', 0, massMaxX, '', '', False],
 		[ 'mini', 'massAve_Brock', 0, massMaxX, '', '', False],
@@ -1433,6 +1424,10 @@ if __name__ == '__main__':
 	#else: Triggers = [ triggerUsed.replace('TrimMass50','').replace('AK8','AK') ]
 	else: Triggers = [ triggerUsed ]
 
+	if 'all' in cut: selection = [ '_cutDijet', '_cutMassAsym', '_cutTau21', '_cutCosTheta', '_cutDEta', '_cutBtag' ]
+	elif 'NO' in cut: selection = [ '_cutNOMassAsym', '_cutTau21_NOMA', '_cutCosTheta_NOMA', '_cutDEta_NOMA', '_cutBtag_NOMA' ]
+	else: selection = [ cut ]
+
 	for i in Plots:
 		for optGrom in Grommers:
 			if '2D' in process: 
@@ -1443,14 +1438,15 @@ if __name__ == '__main__':
 				plot2D( inputFileZJetsToQQ, 'ZJets', optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU )
 
 			elif '1D' in process:
-				plot( inputFileSignal, inputFileSignal200, inputFileQCD, 1.0, inputFileTTJets, inputFileWJetsToQQ, inputFileZJetsToQQ, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU )
-				#plot( inputFileSignal, inputFileQCD, 0.8, inputFileTTJets, inputFileWJetsToQQ, inputFileZJetsToQQ, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU )
+				for cut1 in selection:
+					print cut1
+					plot( inputFileSignal, inputFileSignal200, inputFileQCD, 0.8, inputFileTTJets, inputFileWJetsToQQ, inputFileZJetsToQQ, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], PU )
 			
 			elif 'mini' in process:
-				plot( inputMiniFileSignal, inputMiniFileSignal200, inputMiniFileQCD, 1.0, inputMiniFileTTJets, inputMiniFileWJetsToQQ, inputMiniFileZJetsToQQ, optGrom, i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU )
+				plot( inputMiniFileSignal, inputMiniFileSignal200, inputMiniFileQCD, 0.8, inputMiniFileTTJets, inputMiniFileWJetsToQQ, inputMiniFileZJetsToQQ, optGrom, i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU )
 			
 			elif 'Norm' in process:
-				plot( inputFileSignal, inputFileSignal200, inputFileSignal350, inputFileQCD, 0.8, inputFileTTJets, inputFileWJetsToQQ, inputFileZJetsToQQ, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU, True )
+				plot( inputFileSignal, inputFileSignal200, inputFileQCD, 0.8, inputFileTTJets, inputFileWJetsToQQ, inputFileZJetsToQQ, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU, True )
 
 			elif 'CF' in process:
 				plotCutFlow( inputFileSignal, inputFileQCD, inputFileTTJets, inputFileWJetsToQQ, inputFileZJetsToQQ, optGrom, i[0], i[1], i[2], PU, True )

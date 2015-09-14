@@ -84,7 +84,7 @@ options.register('Asym',
 		"Asymmetry cut"
 		)
 options.register('CosTheta', 
-		0.3,
+		0.4,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
 		"CosThetaStar cut"
@@ -96,7 +96,7 @@ options.register('SubPt',
 		"Subjet Pt Ratio cut"
 		)
 options.register('Tau31', 
-		0.4,
+		0.5,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
 		"Tau31 cut"
