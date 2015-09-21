@@ -137,8 +137,8 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
+		   '/store/user/algomez/QCD_Pt_800to1000_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns_v03/150911_073406/0000/RUNtuples_102.root',
 		#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns__v02/150719_102556/0000/RUNtuples_11.root'
-		'/store/user/algomez/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns_v01/150705_075711/0000/RUNtuples_13.root'
 		#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns__v02/150719_170508/0000/RUNtuples_101.root',
 		#'file:RUNtuple_1.root'
 	    )
@@ -149,7 +149,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32 (options.max
 
 if 'bj' in NAME: bjsample = True
 else: bjsample = False
-Lumi = 1000
+Lumi = 15.47
 
 from scaleFactors import scaleFactor
 SF = scaleFactor(NAME)

@@ -1026,6 +1026,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 
 									histos1D_[ "massAsymmetry_cutDEta" ]->Fill( massAsym, scale  );
 									histos1D_[ "massAve_cutDEta" ]->Fill( massAve, scale  );
+									histos1D_[ "massAve_cutDEta_1GeVBin" ]->Fill( massAve, scale  );
 									histos1D_[ "cosThetaStar_cutDEta" ]->Fill( cosThetaStar, scale  );
 									histos1D_[ "jet1Tau1_cutDEta" ]->Fill( JETS[0].tau1, scale );
 									histos1D_[ "jet1Tau2_cutDEta" ]->Fill( JETS[0].tau2, scale );
@@ -1988,6 +1989,8 @@ void RUNBoostedAnalysis::beginJob() {
 		histos1D_[ "massAsymmetry_cutDEta" ]->Sumw2();
 		histos1D_[ "massAve_cutDEta" ] = fs_->make< TH1D >( "massAve_cutDEta", "massAve_cutDEta", 60, 0., 600. );
 		histos1D_[ "massAve_cutDEta" ]->Sumw2();
+		histos1D_[ "massAve_cutDEta_1GeVBin" ] = fs_->make< TH1D >( "massAve_cutDEta_1GeVBin", "massAve_cutDEta_1GeVBin", 600, 0., 600. );
+		histos1D_[ "massAve_cutDEta_1GeVBin" ]->Sumw2();
 		histos1D_[ "cosThetaStar_cutDEta" ] = fs_->make< TH1D >( "cosThetaStar_cutDEta", "cosThetaStar_cutDEta", 20, 0., 1. );
 		histos1D_[ "cosThetaStar_cutDEta" ]->Sumw2();
 		histos1D_[ "jet1Tau1_cutDEta" ] = fs_->make< TH1D >( "jet1Tau1_cutDEta", "jet1Tau1_cutDEta", 20, 0., 1. );

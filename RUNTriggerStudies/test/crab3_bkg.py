@@ -108,7 +108,6 @@ if __name__ == '__main__':
 		config.General.requestName = dataset.split('/')[1]+"_"+dataset.split('/')[2]+'_'+name+'_'+version
 		if 'Run2015' in dataset: 
 			config.JobType.pyCfgParams = [ 'isData=1', 'globalTag=74X_dataRun2_v2' ]
-			config.Data.publishDataName = dataset.split('/')[2]+'_'+name+'_'+version
 			if 'Run2015B' in dataset: config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON.txt'
 			elif 'Run2015C' in dataset: config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_25ns_JSON_v2.txt'
 		elif 'Asympt50ns' in dataset: config.JobType.pyCfgParams = [ 'globalTag=74X_mcRun2_startup_v2' ]  
