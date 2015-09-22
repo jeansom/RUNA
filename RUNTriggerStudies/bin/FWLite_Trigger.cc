@@ -15,10 +15,17 @@
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-//#include "DataFormats/JetsReco/interface/Jets.h"
-//#include "DataFormats/PatCandidates/interface/Jets.h"
 #include "PhysicsTools/FWLite/interface/TFileService.h"
 #include "PhysicsTools/FWLite/interface/CommandLineParser.h"
+
+#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/HLTReco/interface/TriggerEvent.h"
+#include "DataFormats/HLTReco/interface/TriggerObject.h"
+#include "DataFormats/HLTReco/interface/TriggerTypeDefs.h" // gives access to the (release cycle dependent) trigger object codes
+#include "FWCore/Common/interface/TriggerNames.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
 
 int main(int argc, char* argv[]) 
 {
@@ -52,9 +59,7 @@ int main(int argc, char* argv[])
   // book a set of histograms
   fwlite::TFileService fs = fwlite::TFileService(outputFile_.c_str());
   TFileDirectory dir = fs.mkdir("analyzePatJets");
-  TH1F* jetsPt_  = dir.make<TH1F>("jetsPt"  , "pt"  ,   100,   0., 300.);
-  TH1F* jetsEta_ = dir.make<TH1F>("jetsEta" , "eta" ,   100,  -3.,   3.);
-  TH1F* jetsPhi_ = dir.make<TH1F>("jetsPhi" , "phi" ,   100,  -5.,   5.);  
+  HLTConfigProvider hltConfig;
 
   // loop the event/
   int ievt=0;  
@@ -80,37 +85,17 @@ int main(int argc, char* argv[])
 	if(outputEvery_!=0 ? (ievt>0 && ievt%outputEvery_==0) : false) 
 	  std::cout << "  processing event: " << ievt << std::endl;
 
-	// Handle to the jets pt
-	edm::Handle<std::vector<float> > jetsPt;
-	event.getByLabel(std::string("jetsAK4:jetAK4Pt"), jetsPt);
+	edm::Handle< edm::TriggerResults > triggerBits;
+	event.getByLabel(std::string("TriggerResults"), triggerBits);
+	const edm::TriggerNames &names = ev.triggerNames(*triggerBits);
 	// loop jets collection and fill histograms
-	for(const float &j1 : *jetsPt )  jetsPt_ ->Fill( j1 );
+  	for (unsigned int i = 0, n = triggerBits->size(); i < n; ++i) {
+		//std::cout << triggerBits->accept(i) << " " << (hltConfig.triggerNames()[i]) << std::endl;
+		std::cout << triggerBits->accept(i) << " " << names.triggerName(i) <<  std::endl;
+	}
 
-	edm::Handle<std::vector<float> > jetsEta;
-	event.getByLabel(std::string("jetsAK4:jetAK4Eta"), jetsEta);
-	for(const float &j1 : *jetsEta ) jetsEta_ ->Fill( j1 );
 
-	// Handle to the jets phi
-	edm::Handle<std::vector<float> > jetsPhi;
-	event.getByLabel(std::string("jetsAK4:jetAK4Phi"), jetsPhi);
-	for(const float &j1 : *jetsPhi ) jetsPhi_ ->Fill( j1 );
-
-	/*
-	edm::Handle<std::vector<int> > genStatus;
-	event.getByLabel(std::string("genInfo:genstatus"), genStatus);
-	for(const int &p : *genStatus ) std::cout << p << std::endl; //LogDebug("GEN") << p;
-	*/
-
-	edm::Handle<std::vector<std::string> > triggerNames;
-	event.getByLabel(std::string("TriggerUserData:triggerNameTree"), triggerNames);
-	// loop jets collection and fill histograms
-	for(const std::string &j1 : *triggerNames )  std::cout << j1 << std::endl;
-
-	edm::Handle<std::vector<float> > triggerBit;
-	event.getByLabel(std::string("TriggerUserData:triggerBitTree"), triggerBit);
-	// loop jets collection and fill histograms
-	for(const float &j1 : *triggerBit )  std::cout << j1 << std::endl;
-      }  
+      }
       // close input file
       inFile->Close();
     }

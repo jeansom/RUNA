@@ -272,6 +272,9 @@ Matching::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 	if( ( daughtersParticle1[0].size() > 1 ) && ( selectedJets.size() > 0 ) ){
 
+		double deltaRdaughtersParticle1 = reco::deltaR2(  daughtersParticle1[0][0].rapidity(),  daughtersParticle1[0][0].phi(),  daughtersParticle1[0][1].rapidity(),  daughtersParticle1[0][1].phi() );
+		histos1D_[ "p1DaughtersDeltaR" ]->Fill( deltaRdaughtersParticle1 );
+
 	       matched infoPar11;
 	       infoPar11 = checkDeltaR( daughtersParticle1[0], selectedJets, 0.6 );
 	       bool passPar11 = infoPar11.pass;
@@ -286,6 +289,9 @@ Matching::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	}
 
 	if( ( daughtersParticle1[1].size() > 1 ) && ( selectedJets.size() > 0 ) ){
+
+		double deltaRdaughtersParticle2 = reco::deltaR2(  daughtersParticle1[1][0].rapidity(),  daughtersParticle1[1][0].phi(),  daughtersParticle1[1][1].rapidity(),  daughtersParticle1[1][1].phi() );
+		histos1D_[ "p2DaughtersDeltaR" ]->Fill( deltaRdaughtersParticle2 );
 
 	       matched infoPar12;
 	       infoPar12 = checkDeltaR( daughtersParticle1[1], selectedJets, 0.6 );
@@ -371,6 +377,10 @@ Matching::beginJob()
 {
 	edm::Service< TFileService > fileService;
 
+	histos1D_[ "p1DaughtersDeltaR" ] = fileService->make< TH1D >( "p1DaughtersDeltaR", "p1DaughtersDeltaR", 150, 0., 1.5 );
+	histos1D_[ "p1DaughtersDeltaR" ]->SetXTitle( "#Delta R( parton, parton)" );
+	histos1D_[ "p2DaughtersDeltaR" ] = fileService->make< TH1D >( "p2DaughtersDeltaR", "p2DaughtersDeltaR", 150, 0., 1.5 );
+	histos1D_[ "p2DaughtersDeltaR" ]->SetXTitle( "#Delta R( parton, parton)" );
 	histos1D_[ "p1DeltaR" ] = fileService->make< TH1D >( "p1DeltaR", "p1DeltaR", 50, 0., 5. );
 	histos1D_[ "p1DeltaR" ]->SetXTitle( "min #Delta R( jet, parton)" );
 	histos1D_[ "p1JetMass" ] = fileService->make< TH1D >( "p1JetMass", "p1JetMass", 120, 0., 1200. );

@@ -4,16 +4,6 @@ EDMNtuples based on [B2GEDMNtuples](https://github.com/cmsb2g/B2GAnaFW/tree/mast
 
 This is a modify version of the B2GEDMNtuples. The main change is that here, to make jet, I am using the jetToolbox. Initially the results must be the same.
 
-First, if you didn't download the B2GEDMNtuples:
-
-```
-cd $CMSSW_BASE/src/
-git clone https://github.com/cms-jet/JetToolbox JMEAnalysis/JetToolbox -b jetToolbox_74X
-git clone https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW/
-scram b -j 18
-
-```
-
 To run this go to RUNtuples/test. There you have a file called `RUNtuples_cfg.py`. You should not change anything there unless you want to modify something specific for your analysis. To check if everything is working you can run a test job:
 
 ```

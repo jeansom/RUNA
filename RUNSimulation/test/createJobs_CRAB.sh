@@ -24,10 +24,10 @@
 stop1=100	## You can use this parameters later to make everything simpler. 
 stop2=250	## You can use this parameters later to make everything simpler. Now I am not using them at all
 
-totalNumberEvents=100000
+totalNumberEvents=200000
 
 Name=RPVSt${stop1}tojj_13TeV_pythia8
-LHEFile=/store/user/algomez/lhe/RPVSt100tojj_13TeV.lhe					#### DONT USE the entire eos path!!!!!
+LHEFile=/store/user/algomez/lhe/RPVStop${stop1}_UDD312_13TeV_200k.lhe					#### DONT USE the entire eos path!!!!!
 
 PU=( 'Asympt25ns' 'Asympt50ns' )									#### You can remove the PU scenario that you are not going to use.
 
@@ -67,6 +67,7 @@ echo " Creating python file for RAWSIM (different PU scenarios).. "
 step1PythonFile="step1_${Name}_DIGI_LI_DIGI2RAW_HLT_"
 cp ${Main_Dir}/step1_DIGI_LI_DIGI2RAW_HLT.py  ${step1PythonFile}'Asympt50ns.py'
 cp ${Main_Dir}/step1_DIGI_LI_DIGI2RAW_HLT.py  ${step1PythonFile}'Asympt25ns.py'
+cp ${Main_Dir}/MinBias_TuneCUETP8M1_13TeV-pythia8_cfi.py  . 
 
 sed -i 's/inputFile/'"${Name}"'_RAWSIM_Asympt50ns/' ${step1PythonFile}'Asympt50ns.py'
 sed -i 's/inputFile/'"${Name}"'_RAWSIM_Asympt25ns/' ${step1PythonFile}'Asympt25ns.py'
@@ -111,7 +112,7 @@ for i in ${PU[@]}; do
 	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep1}${i}'.py'
 	sed -i 's/test/'"${step1PythonFile}${i}"'/' ${crabFileStep1}${i}'.py'
 	sed -i 's/NAME/'"${Name}"'_RunIISpring15DR74_RAWSIM_'"${i}"'/' ${crabFileStep1}${i}'.py'
-	sed -i 's/PROC/RunIISpring15DR74_RAWSIM/' ${crabFileStep1}${i}'.py'
+	sed -i 's/PROC/RunIISpring15DR74_RAWSIM_'${i}'/' ${crabFileStep1}${i}'.py'
 	sed -i 's/None/ADD_YOUR_DATASET_HERE/' ${crabFileStep1}${i}'.py'
 
 	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep2}${i}'.py'
@@ -119,7 +120,7 @@ for i in ${PU[@]}; do
 	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep2}${i}'.py'
 	sed -i 's/test/'"${step2PythonFile}${i}"'/' ${crabFileStep2}${i}'.py'
 	sed -i 's/NAME/'"${Name}"'_RunIISpring15DR74_AODSIM_'"${i}"'/' ${crabFileStep2}${i}'.py'
-	sed -i 's/PROC/RunIISpring15DR74_AODSIM/' ${crabFileStep2}${i}'.py'
+	sed -i 's/PROC/RunIISpring15DR74_AODSIM_'${i}'/' ${crabFileStep2}${i}'.py'
 	sed -i 's/None/ADD_YOUR_DATASET_HERE/' ${crabFileStep2}${i}'.py'
 
 	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep3}${i}'.py'
@@ -127,7 +128,7 @@ for i in ${PU[@]}; do
 	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep3}${i}'.py'
 	sed -i 's/test/'"${step3PythonFile}${i}"'/' ${crabFileStep3}${i}'.py'
 	sed -i 's/NAME/'"${Name}"'_RunIISpring15DR74_MiniAOD_'"${i}"'/' ${crabFileStep3}${i}'.py'
-	sed -i 's/PROC/RunIISpring15DR74_MiniAOD/' ${crabFileStep3}${i}'.py'
+	sed -i 's/PROC/RunIISpring15DR74_MiniAOD_'${i}'/' ${crabFileStep3}${i}'.py'
 	sed -i 's/None/ADD_YOUR_DATASET_HERE/' ${crabFileStep3}${i}'.py'
 
 done
