@@ -71,8 +71,8 @@ if __name__ == '__main__':
 			config.Data.unitsPerJob = 1
 		#elif 'Run2015' in dataset: 
 		elif 'JetHT' in dataset: 
-			config.Data.splitting = 'LumiBased'
-			config.Data.unitsPerJob = 5
+			config.Data.splitting = 'FileBased'
+			config.Data.unitsPerJob = 1
 			#if 'Run2015B' in dataset:
 			#	config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON.txt'
 			#	procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-RunIISpring15DR74_RUNA_Asympt25ns', '_Asympt50ns').split('-')[0]+'_'+version
