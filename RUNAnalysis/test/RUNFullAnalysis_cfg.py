@@ -234,7 +234,7 @@ process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		triggerBit		= cms.InputTag('TriggerUserData:triggerBitTree'),
 		triggerName		= cms.InputTag('TriggerUserData:triggerNameTree'),
 		HLTtriggerOne		= cms.string('HLT_AK8PFHT700_TrimR0p1PT0p03Mass50'),
-		HLTtriggerTwo		= cms.string('HLT_AK8PFHT700_TrimR0p1PT0p03Mass50'),
+		HLTtriggerTwo		= cms.string('HLT_AK8PFHT650_TrimR0p1PT0p03Mass50'),
 		#### JetID
 		jecFactor 		= cms.InputTag('jetsAK8:jetAK8jecFactor0'),
 		neutralHadronEnergy 	= cms.InputTag('jetsAK8:jetAK8neutralHadronEnergy'),

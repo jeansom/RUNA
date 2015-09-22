@@ -54,7 +54,6 @@ def calcOpt( sample, grooming):
 	numJet2Tau2100 = numJet2Tau2101 = numJet2Tau2102 = numJet2Tau2103 = numJet2Tau2104 = numJet2Tau2105 = numJet2Tau2106 = numJet2Tau2107 = numJet2Tau2108 = numJet2Tau2109 = numJet2Tau2110 = 0
 	numJet2Tau3100 = numJet2Tau3101 = numJet2Tau3102 = numJet2Tau3103 = numJet2Tau3104 = numJet2Tau3105 = numJet2Tau3106 = numJet2Tau3107 = numJet2Tau3108 = numJet2Tau3109 = numJet2Tau3110 = 0
 
-	newSF = SF(sample)*1000
 	for i in xrange(numEntries):
 		events.GetEntry(i)
 
@@ -79,7 +78,7 @@ def calcOpt( sample, grooming):
 		cosThetaStar	= events.cosThetaStar
 		jet1SubjetPtRatio	= events.jet1SubjetPtRatio
 		jet2SubjetPtRatio	= events.jet2SubjetPtRatio
-#		#scale		= events.scale
+		scale		= events.Scale
 #		numPV           = events.numPV
 #		AK4HT           = events.AK4HT
 #		jet1Pt          = events.jet1Pt
@@ -123,9 +122,11 @@ def calcOpt( sample, grooming):
 		triggerCut = ( ( HT > 700 ) and ( trimmedMass > 50 ) )
 		dijetCut = ( numJets > 1 )   
 		subjetPtRatio = ( ( jet1SubjetPtRatio > 0.3 ) and ( jet2SubjetPtRatio > 0.3 )  )
+		tau21Cut = ( ( jet1Tau21 < 0.5 ) and ( jet2Tau21 < 0.5 )  )
 		massAsymCut = ( massAsym < 0.1 ) 
-		cosThetaStarCut = ( abs( cosThetaStar ) < 0.3 ) 
+		cosThetaStarCut = ( abs( cosThetaStar ) < 0.4 ) ### 0.3 
 		subjetPtRatioCut = ( subjetPtRatio ) 
+		deltaEtaCut = ( deltaEtaDijet > 1.0 )
 
 		if triggerCut and dijetCut and massAsymCut and cosThetaStarCut and subjetPtRatioCut: eventsPassed +=1
 
@@ -144,145 +145,145 @@ def calcOpt( sample, grooming):
 		if dijetCut and ( massAsym <= 0.9 ): numMassAsym09 += 1
 		if dijetCut and ( massAsym <= 1.0 ): numMassAsym10 += 1
 
-		if dijetCut and ( deltaEtaDijet <= 0.0 ): numDeltaEta00 += 1
-		if dijetCut and ( deltaEtaDijet <= 0.5 ): numDeltaEta01 += 1
-		if dijetCut and ( deltaEtaDijet <= 1.0 ): numDeltaEta02 += 1
-		if dijetCut and ( deltaEtaDijet <= 1.5 ): numDeltaEta03 += 1
-		if dijetCut and ( deltaEtaDijet <= 2.0 ): numDeltaEta04 += 1
-		if dijetCut and ( deltaEtaDijet <= 2.5 ): numDeltaEta05 += 1
-		if dijetCut and ( deltaEtaDijet <= 3.0 ): numDeltaEta06 += 1
-		if dijetCut and ( deltaEtaDijet <= 3.5 ): numDeltaEta07 += 1
-		if dijetCut and ( deltaEtaDijet <= 4.0 ): numDeltaEta08 += 1
-		if dijetCut and ( deltaEtaDijet <= 4.5 ): numDeltaEta09 += 1
-		if dijetCut and ( deltaEtaDijet <= 5.0 ): numDeltaEta10 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( deltaEtaDijet <= 0.0 ): numDeltaEta00 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( deltaEtaDijet <= 0.5 ): numDeltaEta01 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( deltaEtaDijet <= 1.0 ): numDeltaEta02 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( deltaEtaDijet <= 1.5 ): numDeltaEta03 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( deltaEtaDijet <= 2.0 ): numDeltaEta04 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( deltaEtaDijet <= 2.5 ): numDeltaEta05 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( deltaEtaDijet <= 3.0 ): numDeltaEta06 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( deltaEtaDijet <= 3.5 ): numDeltaEta07 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( deltaEtaDijet <= 4.0 ): numDeltaEta08 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( deltaEtaDijet <= 4.5 ): numDeltaEta09 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( deltaEtaDijet <= 5.0 ): numDeltaEta10 += 1
 
 
-		if dijetCut and ( cosThetaStar <= 0.0 ): numCosTheta00 += 1
-		if dijetCut and ( cosThetaStar <= 0.1 ): numCosTheta01 += 1
-		if dijetCut and ( cosThetaStar <= 0.2 ): numCosTheta02 += 1
-		if dijetCut and ( cosThetaStar <= 0.3 ): numCosTheta03 += 1
-		if dijetCut and ( cosThetaStar <= 0.4 ): numCosTheta04 += 1
-		if dijetCut and ( cosThetaStar <= 0.5 ): numCosTheta05 += 1
-		if dijetCut and ( cosThetaStar <= 0.6 ): numCosTheta06 += 1
-		if dijetCut and ( cosThetaStar <= 0.7 ): numCosTheta07 += 1
-		if dijetCut and ( cosThetaStar <= 0.8 ): numCosTheta08 += 1
-		if dijetCut and ( cosThetaStar <= 0.9 ): numCosTheta09 += 1
-		if dijetCut and ( cosThetaStar <= 1.0 ): numCosTheta10 += 1
+		if dijetCut and massAsymCut and tau21Cut and ( cosThetaStar <= 0.0 ): numCosTheta00 += 1
+		if dijetCut and massAsymCut and tau21Cut and ( cosThetaStar <= 0.1 ): numCosTheta01 += 1
+		if dijetCut and massAsymCut and tau21Cut and ( cosThetaStar <= 0.2 ): numCosTheta02 += 1
+		if dijetCut and massAsymCut and tau21Cut and ( cosThetaStar <= 0.3 ): numCosTheta03 += 1
+		if dijetCut and massAsymCut and tau21Cut and ( cosThetaStar <= 0.4 ): numCosTheta04 += 1
+		if dijetCut and massAsymCut and tau21Cut and ( cosThetaStar <= 0.5 ): numCosTheta05 += 1
+		if dijetCut and massAsymCut and tau21Cut and ( cosThetaStar <= 0.6 ): numCosTheta06 += 1
+		if dijetCut and massAsymCut and tau21Cut and ( cosThetaStar <= 0.7 ): numCosTheta07 += 1
+		if dijetCut and massAsymCut and tau21Cut and ( cosThetaStar <= 0.8 ): numCosTheta08 += 1
+		if dijetCut and massAsymCut and tau21Cut and ( cosThetaStar <= 0.9 ): numCosTheta09 += 1
+		if dijetCut and massAsymCut and tau21Cut and ( cosThetaStar <= 1.0 ): numCosTheta10 += 1
 
-		if dijetCut and ( jet1SubjetPtRatio >= 0.0 ): numJet1SubjetPtRatio00 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 0.1 ): numJet1SubjetPtRatio01 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 0.2 ): numJet1SubjetPtRatio02 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 0.3 ): numJet1SubjetPtRatio03 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 0.4 ): numJet1SubjetPtRatio04 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 0.5 ): numJet1SubjetPtRatio05 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 0.6 ): numJet1SubjetPtRatio06 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 0.7 ): numJet1SubjetPtRatio07 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 0.8 ): numJet1SubjetPtRatio08 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 0.9 ): numJet1SubjetPtRatio09 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 1.0 ): numJet1SubjetPtRatio10 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.0 ): numJet1SubjetPtRatio00 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.1 ): numJet1SubjetPtRatio01 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.2 ): numJet1SubjetPtRatio02 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.3 ): numJet1SubjetPtRatio03 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.4 ): numJet1SubjetPtRatio04 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.5 ): numJet1SubjetPtRatio05 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.6 ): numJet1SubjetPtRatio06 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.7 ): numJet1SubjetPtRatio07 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.8 ): numJet1SubjetPtRatio08 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.9 ): numJet1SubjetPtRatio09 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 1.0 ): numJet1SubjetPtRatio10 += 1
 
-		if dijetCut and ( jet2SubjetPtRatio >= 0.0 ): numJet2SubjetPtRatio00 += 1
-		if dijetCut and ( jet2SubjetPtRatio >= 0.1 ): numJet2SubjetPtRatio01 += 1
-		if dijetCut and ( jet2SubjetPtRatio >= 0.2 ): numJet2SubjetPtRatio02 += 1
-		if dijetCut and ( jet2SubjetPtRatio >= 0.3 ): numJet2SubjetPtRatio03 += 1
-		if dijetCut and ( jet2SubjetPtRatio >= 0.4 ): numJet2SubjetPtRatio04 += 1
-		if dijetCut and ( jet2SubjetPtRatio >= 0.5 ): numJet2SubjetPtRatio05 += 1
-		if dijetCut and ( jet2SubjetPtRatio >= 0.6 ): numJet2SubjetPtRatio06 += 1
-		if dijetCut and ( jet2SubjetPtRatio >= 0.7 ): numJet2SubjetPtRatio07 += 1
-		if dijetCut and ( jet2SubjetPtRatio >= 0.8 ): numJet2SubjetPtRatio08 += 1
-		if dijetCut and ( jet2SubjetPtRatio >= 0.9 ): numJet2SubjetPtRatio09 += 1
-		if dijetCut and ( jet2SubjetPtRatio >= 1.0 ): numJet2SubjetPtRatio10 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2SubjetPtRatio >= 0.0 ): numJet2SubjetPtRatio00 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2SubjetPtRatio >= 0.1 ): numJet2SubjetPtRatio01 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2SubjetPtRatio >= 0.2 ): numJet2SubjetPtRatio02 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2SubjetPtRatio >= 0.3 ): numJet2SubjetPtRatio03 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2SubjetPtRatio >= 0.4 ): numJet2SubjetPtRatio04 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2SubjetPtRatio >= 0.5 ): numJet2SubjetPtRatio05 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2SubjetPtRatio >= 0.6 ): numJet2SubjetPtRatio06 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2SubjetPtRatio >= 0.7 ): numJet2SubjetPtRatio07 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2SubjetPtRatio >= 0.8 ): numJet2SubjetPtRatio08 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2SubjetPtRatio >= 0.9 ): numJet2SubjetPtRatio09 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2SubjetPtRatio >= 1.0 ): numJet2SubjetPtRatio10 += 1
 
-		if dijetCut and ( jet1SubjetPtRatio >= 0.0 ) and ( jet2SubjetPtRatio >= 0.0 ): numSubjetPtRatio00 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 0.1 ) and ( jet2SubjetPtRatio >= 0.1 ): numSubjetPtRatio01 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 0.2 ) and ( jet2SubjetPtRatio >= 0.2 ): numSubjetPtRatio02 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 0.3 ) and ( jet2SubjetPtRatio >= 0.3 ): numSubjetPtRatio03 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 0.4 ) and ( jet2SubjetPtRatio >= 0.4 ): numSubjetPtRatio04 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 0.5 ) and ( jet2SubjetPtRatio >= 0.5 ): numSubjetPtRatio05 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 0.6 ) and ( jet2SubjetPtRatio >= 0.6 ): numSubjetPtRatio06 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 0.7 ) and ( jet2SubjetPtRatio >= 0.7 ): numSubjetPtRatio07 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 0.8 ) and ( jet2SubjetPtRatio >= 0.8 ): numSubjetPtRatio08 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 0.9 ) and ( jet2SubjetPtRatio >= 0.9 ): numSubjetPtRatio09 += 1
-		if dijetCut and ( jet1SubjetPtRatio >= 1.0 ) and ( jet2SubjetPtRatio >= 1.0 ): numSubjetPtRatio10 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.0 ) and ( jet2SubjetPtRatio >= 0.0 ): numSubjetPtRatio00 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.1 ) and ( jet2SubjetPtRatio >= 0.1 ): numSubjetPtRatio01 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.2 ) and ( jet2SubjetPtRatio >= 0.2 ): numSubjetPtRatio02 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.3 ) and ( jet2SubjetPtRatio >= 0.3 ): numSubjetPtRatio03 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.4 ) and ( jet2SubjetPtRatio >= 0.4 ): numSubjetPtRatio04 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.5 ) and ( jet2SubjetPtRatio >= 0.5 ): numSubjetPtRatio05 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.6 ) and ( jet2SubjetPtRatio >= 0.6 ): numSubjetPtRatio06 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.7 ) and ( jet2SubjetPtRatio >= 0.7 ): numSubjetPtRatio07 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.8 ) and ( jet2SubjetPtRatio >= 0.8 ): numSubjetPtRatio08 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 0.9 ) and ( jet2SubjetPtRatio >= 0.9 ): numSubjetPtRatio09 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1SubjetPtRatio >= 1.0 ) and ( jet2SubjetPtRatio >= 1.0 ): numSubjetPtRatio10 += 1
 
-		if dijetCut and ( jet1Tau21 <= 0.0 ): numJet1Tau2100 += 1
-		if dijetCut and ( jet1Tau21 <= 0.1 ): numJet1Tau2101 += 1
-		if dijetCut and ( jet1Tau21 <= 0.2 ): numJet1Tau2102 += 1
-		if dijetCut and ( jet1Tau21 <= 0.3 ): numJet1Tau2103 += 1
-		if dijetCut and ( jet1Tau21 <= 0.4 ): numJet1Tau2104 += 1
-		if dijetCut and ( jet1Tau21 <= 0.5 ): numJet1Tau2105 += 1
-		if dijetCut and ( jet1Tau21 <= 0.6 ): numJet1Tau2106 += 1
-		if dijetCut and ( jet1Tau21 <= 0.7 ): numJet1Tau2107 += 1
-		if dijetCut and ( jet1Tau21 <= 0.8 ): numJet1Tau2108 += 1
-		if dijetCut and ( jet1Tau21 <= 0.9 ): numJet1Tau2109 += 1
-		if dijetCut and ( jet1Tau21 <= 1.0 ): numJet1Tau2110 += 1
+		if dijetCut and massAsymCut and ( jet1Tau21 <= 0.0 ): numJet1Tau2100 += 1
+		if dijetCut and massAsymCut and ( jet1Tau21 <= 0.1 ): numJet1Tau2101 += 1
+		if dijetCut and massAsymCut and ( jet1Tau21 <= 0.2 ): numJet1Tau2102 += 1
+		if dijetCut and massAsymCut and ( jet1Tau21 <= 0.3 ): numJet1Tau2103 += 1
+		if dijetCut and massAsymCut and ( jet1Tau21 <= 0.4 ): numJet1Tau2104 += 1
+		if dijetCut and massAsymCut and ( jet1Tau21 <= 0.5 ): numJet1Tau2105 += 1
+		if dijetCut and massAsymCut and ( jet1Tau21 <= 0.6 ): numJet1Tau2106 += 1
+		if dijetCut and massAsymCut and ( jet1Tau21 <= 0.7 ): numJet1Tau2107 += 1
+		if dijetCut and massAsymCut and ( jet1Tau21 <= 0.8 ): numJet1Tau2108 += 1
+		if dijetCut and massAsymCut and ( jet1Tau21 <= 0.9 ): numJet1Tau2109 += 1
+		if dijetCut and massAsymCut and ( jet1Tau21 <= 1.0 ): numJet1Tau2110 += 1
 
-		if dijetCut and ( jet1Tau31 <= 0.0 ): numJet1Tau3100 += 1
-		if dijetCut and ( jet1Tau31 <= 0.1 ): numJet1Tau3101 += 1
-		if dijetCut and ( jet1Tau31 <= 0.2 ): numJet1Tau3102 += 1
-		if dijetCut and ( jet1Tau31 <= 0.3 ): numJet1Tau3103 += 1
-		if dijetCut and ( jet1Tau31 <= 0.4 ): numJet1Tau3104 += 1
-		if dijetCut and ( jet1Tau31 <= 0.5 ): numJet1Tau3105 += 1
-		if dijetCut and ( jet1Tau31 <= 0.6 ): numJet1Tau3106 += 1
-		if dijetCut and ( jet1Tau31 <= 0.7 ): numJet1Tau3107 += 1
-		if dijetCut and ( jet1Tau31 <= 0.8 ): numJet1Tau3108 += 1
-		if dijetCut and ( jet1Tau31 <= 0.9 ): numJet1Tau3109 += 1
-		if dijetCut and ( jet1Tau31 <= 1.0 ): numJet1Tau3110 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1Tau31 <= 0.0 ): numJet1Tau3100 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1Tau31 <= 0.1 ): numJet1Tau3101 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1Tau31 <= 0.2 ): numJet1Tau3102 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1Tau31 <= 0.3 ): numJet1Tau3103 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1Tau31 <= 0.4 ): numJet1Tau3104 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1Tau31 <= 0.5 ): numJet1Tau3105 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1Tau31 <= 0.6 ): numJet1Tau3106 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1Tau31 <= 0.7 ): numJet1Tau3107 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1Tau31 <= 0.8 ): numJet1Tau3108 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1Tau31 <= 0.9 ): numJet1Tau3109 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet1Tau31 <= 1.0 ): numJet1Tau3110 += 1
 
-		if dijetCut and ( jet2Tau21 <= 0.0 ): numJet2Tau2100 += 1
-		if dijetCut and ( jet2Tau21 <= 0.1 ): numJet2Tau2101 += 1
-		if dijetCut and ( jet2Tau21 <= 0.2 ): numJet2Tau2102 += 1
-		if dijetCut and ( jet2Tau21 <= 0.3 ): numJet2Tau2103 += 1
-		if dijetCut and ( jet2Tau21 <= 0.4 ): numJet2Tau2104 += 1
-		if dijetCut and ( jet2Tau21 <= 0.5 ): numJet2Tau2105 += 1
-		if dijetCut and ( jet2Tau21 <= 0.6 ): numJet2Tau2106 += 1
-		if dijetCut and ( jet2Tau21 <= 0.7 ): numJet2Tau2107 += 1
-		if dijetCut and ( jet2Tau21 <= 0.8 ): numJet2Tau2108 += 1
-		if dijetCut and ( jet2Tau21 <= 0.9 ): numJet2Tau2109 += 1
-		if dijetCut and ( jet2Tau21 <= 1.0 ): numJet2Tau2110 += 1
+		if dijetCut and massAsymCut and ( jet2Tau21 <= 0.0 ): numJet2Tau2100 += 1
+		if dijetCut and massAsymCut and ( jet2Tau21 <= 0.1 ): numJet2Tau2101 += 1
+		if dijetCut and massAsymCut and ( jet2Tau21 <= 0.2 ): numJet2Tau2102 += 1
+		if dijetCut and massAsymCut and ( jet2Tau21 <= 0.3 ): numJet2Tau2103 += 1
+		if dijetCut and massAsymCut and ( jet2Tau21 <= 0.4 ): numJet2Tau2104 += 1
+		if dijetCut and massAsymCut and ( jet2Tau21 <= 0.5 ): numJet2Tau2105 += 1
+		if dijetCut and massAsymCut and ( jet2Tau21 <= 0.6 ): numJet2Tau2106 += 1
+		if dijetCut and massAsymCut and ( jet2Tau21 <= 0.7 ): numJet2Tau2107 += 1
+		if dijetCut and massAsymCut and ( jet2Tau21 <= 0.8 ): numJet2Tau2108 += 1
+		if dijetCut and massAsymCut and ( jet2Tau21 <= 0.9 ): numJet2Tau2109 += 1
+		if dijetCut and massAsymCut and ( jet2Tau21 <= 1.0 ): numJet2Tau2110 += 1
 
-		if dijetCut and ( jet2Tau31 <= 0.0 ): numJet2Tau3100 += 1
-		if dijetCut and ( jet2Tau31 <= 0.1 ): numJet2Tau3101 += 1
-		if dijetCut and ( jet2Tau31 <= 0.2 ): numJet2Tau3102 += 1
-		if dijetCut and ( jet2Tau31 <= 0.3 ): numJet2Tau3103 += 1
-		if dijetCut and ( jet2Tau31 <= 0.4 ): numJet2Tau3104 += 1
-		if dijetCut and ( jet2Tau31 <= 0.5 ): numJet2Tau3105 += 1
-		if dijetCut and ( jet2Tau31 <= 0.6 ): numJet2Tau3106 += 1
-		if dijetCut and ( jet2Tau31 <= 0.7 ): numJet2Tau3107 += 1
-		if dijetCut and ( jet2Tau31 <= 0.8 ): numJet2Tau3108 += 1
-		if dijetCut and ( jet2Tau31 <= 0.9 ): numJet2Tau3109 += 1
-		if dijetCut and ( jet2Tau31 <= 1.0 ): numJet2Tau3110 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2Tau31 <= 0.0 ): numJet2Tau3100 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2Tau31 <= 0.1 ): numJet2Tau3101 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2Tau31 <= 0.2 ): numJet2Tau3102 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2Tau31 <= 0.3 ): numJet2Tau3103 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2Tau31 <= 0.4 ): numJet2Tau3104 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2Tau31 <= 0.5 ): numJet2Tau3105 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2Tau31 <= 0.6 ): numJet2Tau3106 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2Tau31 <= 0.7 ): numJet2Tau3107 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2Tau31 <= 0.8 ): numJet2Tau3108 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2Tau31 <= 0.9 ): numJet2Tau3109 += 1
+		if dijetCut and massAsymCut and tau21Cut and cosThetaStarCut and ( jet2Tau31 <= 1.0 ): numJet2Tau3110 += 1
 
 
 	tmpTotalMassAsym = [ numMassAsym00, numMassAsym01, numMassAsym02, numMassAsym03, numMassAsym04, numMassAsym05, numMassAsym06, numMassAsym07, numMassAsym08, numMassAsym09, numMassAsym10 ]
-	totalMassAsym = [ x * newSF for x in tmpTotalMassAsym  ] 
+	totalMassAsym = [ x * scale for x in tmpTotalMassAsym  ] 
 	
 	tmpTotalDeltaEta = [ numDeltaEta00, numDeltaEta01, numDeltaEta02, numDeltaEta03, numDeltaEta04, numDeltaEta05, numDeltaEta06, numDeltaEta07, numDeltaEta08, numDeltaEta09, numDeltaEta10 ]
-	totalDeltaEta = [ x * newSF for x in tmpTotalDeltaEta  ] 
+	totalDeltaEta = [ x * scale for x in tmpTotalDeltaEta  ] 
 	
 	tmpTotalCosTheta = [ numCosTheta00, numCosTheta01, numCosTheta02, numCosTheta03, numCosTheta04, numCosTheta05, numCosTheta06, numCosTheta07, numCosTheta08, numCosTheta09, numCosTheta10 ]
-	totalCosTheta = [ x * newSF for x in tmpTotalCosTheta  ] 
+	totalCosTheta = [ x * scale for x in tmpTotalCosTheta  ] 
 	
 	tmpTotalJet1SubjetPtRatio = [ numJet1SubjetPtRatio00, numJet1SubjetPtRatio01, numJet1SubjetPtRatio02, numJet1SubjetPtRatio03, numJet1SubjetPtRatio04, numJet1SubjetPtRatio05, numJet1SubjetPtRatio06, numJet1SubjetPtRatio07, numJet1SubjetPtRatio08, numJet1SubjetPtRatio09, numJet1SubjetPtRatio10 ]
-	totalJet1SubjetPtRatio = [ x * newSF for x in tmpTotalJet1SubjetPtRatio  ] 
+	totalJet1SubjetPtRatio = [ x * scale for x in tmpTotalJet1SubjetPtRatio  ] 
 
 	tmpTotalJet2SubjetPtRatio = [ numJet2SubjetPtRatio00, numJet2SubjetPtRatio01, numJet2SubjetPtRatio02, numJet2SubjetPtRatio03, numJet2SubjetPtRatio04, numJet2SubjetPtRatio05, numJet2SubjetPtRatio06, numJet2SubjetPtRatio07, numJet2SubjetPtRatio08, numJet2SubjetPtRatio09, numJet2SubjetPtRatio10 ]
-	totalJet2SubjetPtRatio = [ x * newSF for x in tmpTotalJet2SubjetPtRatio  ] 
+	totalJet2SubjetPtRatio = [ x * scale for x in tmpTotalJet2SubjetPtRatio  ] 
 
 	tmpTotalSubjetPtRatio = [ numSubjetPtRatio00, numSubjetPtRatio01, numSubjetPtRatio02, numSubjetPtRatio03, numSubjetPtRatio04, numSubjetPtRatio05, numSubjetPtRatio06, numSubjetPtRatio07, numSubjetPtRatio08, numSubjetPtRatio09, numSubjetPtRatio10 ]
-	totalSubjetPtRatio = [ x * newSF for x in tmpTotalSubjetPtRatio  ] 
+	totalSubjetPtRatio = [ x * scale for x in tmpTotalSubjetPtRatio  ] 
 
 	tmpTotalJet1Tau21 = [ numJet1Tau2100, numJet1Tau2101, numJet1Tau2102, numJet1Tau2103, numJet1Tau2104, numJet1Tau2105, numJet1Tau2106, numJet1Tau2107, numJet1Tau2108, numJet1Tau2109, numJet1Tau2110 ]
-	totalJet1Tau21 = [ x * newSF for x in tmpTotalJet1Tau21  ] 
+	totalJet1Tau21 = [ x * scale for x in tmpTotalJet1Tau21  ] 
 
 	tmpTotalJet1Tau31 = [ numJet1Tau3100, numJet1Tau3101, numJet1Tau3102, numJet1Tau3103, numJet1Tau3104, numJet1Tau3105, numJet1Tau3106, numJet1Tau3107, numJet1Tau3108, numJet1Tau3109, numJet1Tau3110 ]
-	totalJet1Tau31 = [ x * newSF for x in tmpTotalJet1Tau31  ] 
+	totalJet1Tau31 = [ x * scale for x in tmpTotalJet1Tau31  ] 
 
 	tmpTotalJet2Tau21 = [ numJet2Tau2100, numJet2Tau2101, numJet2Tau2102, numJet2Tau2103, numJet2Tau2104, numJet2Tau2105, numJet2Tau2106, numJet2Tau2107, numJet2Tau2108, numJet2Tau2109, numJet2Tau2110 ]
-	totalJet2Tau21 = [ x * newSF for x in tmpTotalJet2Tau21  ] 
+	totalJet2Tau21 = [ x * scale for x in tmpTotalJet2Tau21  ] 
 
 	tmpTotalJet2Tau31 = [ numJet2Tau3100, numJet2Tau3101, numJet2Tau3102, numJet2Tau3103, numJet2Tau3104, numJet2Tau3105, numJet2Tau3106, numJet2Tau3107, numJet2Tau3108, numJet2Tau3109, numJet2Tau3110 ]
-	totalJet2Tau31 = [ x * newSF for x in tmpTotalJet2Tau31  ] 
+	totalJet2Tau31 = [ x * scale for x in tmpTotalJet2Tau31  ] 
 
 	TOTAL1  = [ totalMassAsym, totalCosTheta, totalSubjetPtRatio, totalDeltaEta, totalJet1SubjetPtRatio, totalJet2SubjetPtRatio, totalJet1Tau21, totalJet1Tau31, totalJet2Tau21, totalJet2Tau31  ]
 	print 'massAsym', totalMassAsym
@@ -296,12 +297,11 @@ def calcOpt( sample, grooming):
 	return TOTAL1
 
 
-def optimization( mass, PU, grooming, outputFileName ):
+def optimization( mass, PU, grooming, outputFileName, cut ):
 	"""docstring for optimization"""
 
 	inputFileName = 'Rootfiles/RUNAnalysis_RPVSt'+str(mass)+'tojj_RunIISpring15DR74_'+PU+'_v02p2_v06.root'
 	signalTotal = calcOpt( inputFileName, grooming )
-	sys.exit(0)
 	signalMassAsym = signalTotal[0]
 	signalCosTheta = signalTotal[1]
 	signalSubjetPtRatio = signalTotal[2]
@@ -313,6 +313,7 @@ def optimization( mass, PU, grooming, outputFileName ):
 	signalJet2Tau21 = signalTotal[8]
 	signalJet2Tau31 = signalTotal[9]
 
+	'''
 	qcdDict = {}
 	for qcdBin in [ '170to300', '300to470', '470to600', '600to800', '800to1000', '1000to1400', '1400to1800' ]: 
 		inputFileName = 'Rootfiles//RUNAnalysis_QCD_Pt_'+qcdBin+'_RunIISpring15DR74_'+PU+'_v01_v06.root'
@@ -352,6 +353,19 @@ def optimization( mass, PU, grooming, outputFileName ):
 	qcdJet1Tau31 = [sum(i) for i in zip(*tmpQCDJet1Tau31)]
 	qcdJet2Tau21 = [sum(i) for i in zip(*tmpQCDJet2Tau21)]
 	qcdJet2Tau31 = [sum(i) for i in zip(*tmpQCDJet2Tau31)]
+	'''
+	inputQCDFileName = 'Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15DR74_Asympt25ns_v01_v06.root'
+	qcdTotal = calcOpt( inputQCDFileName, grooming )
+	qcdMassAsym = qcdTotal[0]
+	qcdCosTheta = qcdTotal[1]
+	qcdSubjetPtRatio = qcdTotal[2]
+	qcdDeltaEta = qcdTotal[3]
+	qcdJet1SubjetPtRatio = qcdTotal[4]
+	qcdJet2SubjetPtRatio = qcdTotal[5]
+	qcdJet1Tau21 = qcdTotal[6]
+	qcdJet1Tau31 = qcdTotal[7]
+	qcdJet2Tau21 = qcdTotal[8]
+	qcdJet2Tau31 = qcdTotal[9]
 
 	inputFileNameTTJets = 'Rootfiles/RUNAnalysis_TTJets_RunIISpring15DR74_Asympt25ns_v01_v06.root'
 	TTJetsTotal = calcOpt( inputFileNameTTJets, grooming )
@@ -394,16 +408,16 @@ def optimization( mass, PU, grooming, outputFileName ):
 	
 	outputFile = TFile( outputFileName, 'RECREATE' )
 
-	massAsymOnlyOpt 	= TH1F('massAsymOnlyOpt', 'massAsymOnlyOpt; Mass Asymmetry Only Optimization', len(qcdMassAsym)-1, 0., 1. )
-	cosThetaOnlyOpt 	= TH1F('cosThetaOnlyOpt', 'cosThetaOnlyOpt; Cos Theta StarOptimization', len(qcdCosTheta)-1, 0., 1. )
-	subjetPtRatioOnlyOpt 	= TH1F('subjetPtRatioOnlyOpt', 'subjetPtRatioOnlyOpt; Subjet Pt Ratio Optimization', len(qcdSubjetPtRatio)-1, 0., 1. )
-	deltaEtaOnlyOpt 	= TH1F('deltaEtaOnlyOpt', 'deltaEtaOnlyOpt; Delta Eta Dijet Only Optimization', len(qcdDeltaEta)-1, 0., 5. )
-	jet1SubjetPtRatioOnlyOpt 	= TH1F('jet1SubjetPtRatioOnlyOpt', 'jet1SubjetPtRatioOnlyOpt; Subjet Pt Ratio Optimization', len(qcdJet1SubjetPtRatio)-1, 0., 1. )
-	jet2SubjetPtRatioOnlyOpt 	= TH1F('jet2SubjetPtRatioOnlyOpt', 'jet2SubjetPtRatioOnlyOpt; Subjet Pt Ratio Optimization', len(qcdJet2SubjetPtRatio)-1, 0., 1. )
-	jet1Tau21OnlyOpt 	= TH1F('jet1Tau21OnlyOpt', 'jet1Tau21OnlyOpt; Tau21 Optimization', len(qcdJet1Tau21)-1, 0., 1. )
-	jet1Tau31OnlyOpt 	= TH1F('jet1Tau31OnlyOpt', 'jet1Tau31OnlyOpt; Tau31 Optimization', len(qcdJet1Tau31)-1, 0., 1. )
-	jet2Tau21OnlyOpt 	= TH1F('jet2Tau21OnlyOpt', 'jet2Tau21OnlyOpt; Tau21 Optimization', len(qcdJet2Tau21)-1, 0., 1. )
-	jet2Tau31OnlyOpt 	= TH1F('jet2Tau31OnlyOpt', 'jet2Tau31OnlyOpt; Tau31 Optimization', len(qcdJet2Tau31)-1, 0., 1. )
+	massAsymOnlyOpt 	= TH1F('massAsymOnlyOpt'+cut, 'massAsymOnlyOpt'+cut+'; Mass Asymmetry Only Optimization', len(qcdMassAsym)-1, 0., 1. )
+	cosThetaOnlyOpt 	= TH1F('cosThetaOnlyOpt'+cut, 'cosThetaOnlyOpt'+cut+'; Cos Theta StarOptimization', len(qcdCosTheta)-1, 0., 1. )
+	subjetPtRatioOnlyOpt 	= TH1F('subjetPtRatioOnlyOpt'+cut, 'subjetPtRatioOnlyOpt'+cut+'; Subjet Pt Ratio Optimization', len(qcdSubjetPtRatio)-1, 0., 1. )
+	deltaEtaOnlyOpt 	= TH1F('deltaEtaOnlyOpt'+cut, 'deltaEtaOnlyOpt'+cut+'; Delta Eta Dijet Only Optimization', len(qcdDeltaEta)-1, 0., 5. )
+	jet1SubjetPtRatioOnlyOpt 	= TH1F('jet1SubjetPtRatioOnlyOpt'+cut, 'jet1SubjetPtRatioOnlyOpt'+cut+'; Subjet Pt Ratio Optimization', len(qcdJet1SubjetPtRatio)-1, 0., 1. )
+	jet2SubjetPtRatioOnlyOpt 	= TH1F('jet2SubjetPtRatioOnlyOpt'+cut, 'jet2SubjetPtRatioOnlyOpt'+cut+'; Subjet Pt Ratio Optimization', len(qcdJet2SubjetPtRatio)-1, 0., 1. )
+	jet1Tau21OnlyOpt 	= TH1F('jet1Tau21OnlyOpt'+cut, 'jet1Tau21OnlyOpt'+cut+'; Tau21 Optimization', len(qcdJet1Tau21)-1, 0., 1. )
+	jet1Tau31OnlyOpt 	= TH1F('jet1Tau31OnlyOpt'+cut, 'jet1Tau31OnlyOpt'+cut+'; Tau31 Optimization', len(qcdJet1Tau31)-1, 0., 1. )
+	jet2Tau21OnlyOpt 	= TH1F('jet2Tau21OnlyOpt'+cut, 'jet2Tau21OnlyOpt'+cut+'; Tau21 Optimization', len(qcdJet2Tau21)-1, 0., 1. )
+	jet2Tau31OnlyOpt 	= TH1F('jet2Tau31OnlyOpt'+cut, 'jet2Tau31OnlyOpt'+cut+'; Tau31 Optimization', len(qcdJet2Tau31)-1, 0., 1. )
 
 	for i in range( len( signalMassAsym ) ): 
 		try: value = signalMassAsym[i]/ TMath.Sqrt( qcdMassAsym[i] + TTJetsMassAsym[i] + WJetsMassAsym[i] + ZJetsMassAsym[i] + signalMassAsym[i] )
@@ -472,6 +486,7 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument( '-m', '--mass', action='store', type=int, dest='mass', default=100, help='Mass of the Stop' )
 	parser.add_argument( '-g', '--grooming', action='store',  dest='grooming', default='Pruned', help='Jet Algorithm' )
+	parser.add_argument( '-c', '--cut', action='store',  dest='cut', default='HT', help='Name Cuts' )
 	parser.add_argument( '-p', '--pileup', action='store',  dest='pileup', default='Asympt25ns', help='Pileup' )
 
 	try:
@@ -483,8 +498,9 @@ if __name__ == '__main__':
 	mass = args.mass
 	PU = args.pileup
 	grooming = args.grooming
+	cut = args.cut
 
-	outputFileName = 'Rootfiles/RUNOptimizationStudies.root'
-	optimization( mass, PU, grooming, outputFileName )
+	outputFileName = 'Rootfiles/RUNOptimizationStudies_cut'+cut+'.root'
+	optimization( mass, PU, grooming, outputFileName, cut )
 
 

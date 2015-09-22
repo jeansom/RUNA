@@ -4,12 +4,14 @@
 ##################################################################
 
 from CRABClient.UserUtilities import config
+from CRABAPI.RawCommand import crabCommand
 from httplib import HTTPException
+from multiprocessing import Process
 
 config = config()
 
 name = 'RUNTriggerValidation'
-version = 'v03p1'
+version = 'v1'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
@@ -20,6 +22,7 @@ config.JobType.allowUndistributedCMSSW = True
 
 config.Data.inputDataset = ''
 config.Data.splitting = 'LumiBased'
+config.Data.unitsPerJob = 2
 config.Data.ignoreLocality = True
 
 config.Site.storageSite = 'T3_US_FNALLPC'
@@ -34,8 +37,6 @@ def submit(config):
 
 if __name__ == '__main__':
 
-	from CRABAPI.RawCommand import crabCommand
-
 	Samples = [ 
 			#'/JetHT/Run2015B-PromptReco-v1/MINIAOD',
 			'/JetHT/Run2015C-PromptReco-v1/MINIAOD',
@@ -43,7 +44,6 @@ if __name__ == '__main__':
 			##'/SingleMu/Run2015B-PromptReco-v1/MINIAOD',
 			]
 	
-	from multiprocessing import Process
 	for dataset in Samples:
 		config.Data.inputDataset = dataset
 		config.General.requestName = dataset.split('/')[1]+"_"+dataset.split('/')[2]+'_'+name+'_'+version

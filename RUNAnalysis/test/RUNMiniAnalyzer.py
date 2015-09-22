@@ -51,9 +51,11 @@ def myAnalyzer( sample, couts, grooming):
 	massAve_EffStandard 	= TH1F('massAve_EffStandard', 'massAve_EffStandard', nBinsMass, 0, maxMass )
 	massAve_NOMassAsym 	= TH1F('massAve_NOMassAsym', 'massAve_NOMassAsym', nBinsMass, 0, maxMass )
 	massAve_NOTau21 	= TH1F('massAve_NOTau21', 'massAve_NOTau21', nBinsMass, 0, maxMass )
+	massAve_MassAsymNOTau21 	= TH1F('massAve_MassAsymNOTau21', 'massAve_MassAsymNOTau21', nBinsMass, 0, maxMass )
 	massAve_NOCosTheta 	= TH1F('massAve_NOCosTheta', 'massAve_NOCosTheta', nBinsMass, 0, maxMass )
 	massAve_NODEta 	= TH1F('massAve_NODEta', 'massAve_NODEta', nBinsMass, 0, maxMass )
 	massAve_NOMassAsymYesCosThetaDEta 	= TH1F('massAve_NOMassAsymYesCosThetaDEta', 'massAve_NOMassAsymYesCosThetaDEta', nBinsMass, 0, maxMass )
+	massAve_DEtaNOTau21 	= TH1F('massAve_DEtaNOTau21', 'massAve_DEtaNOTau21', nBinsMass, 0, maxMass )
 	
 	AK4HT_PFHT800 	= TH1F('AK4HT_PFHT800', 'AK4HT_PFHT800', nBinsHT, 0, maxHT )
 	massAve_PFHT800 	= TH1F('massAve_PFHT800', 'massAve_PFHT800', nBinsMass, 0, maxMass )
@@ -67,7 +69,7 @@ def myAnalyzer( sample, couts, grooming):
 	h_deltaEtaDijet 	= TH1F('deltaEtaDijet', 'deltaEtaDijet', 100, 0, 5. )
 	h_jet2Tau21 	= TH1F('jet2Tau21', 'jet2Tau21', 10, 0, 1. )
 	h_jet2Tau31 	= TH1F('jet2Tau31', 'jet2Tau31', 10, 0, 1. )
-
+	'''
 	h_massAveVsHT 	= TH2D('massAveVsHT', 'massAveVsHT', nBinsMass, 0, maxMass, nBinsHT, 0, maxHT )
 	h_massAveVsnumJets 	= TH2D('massAveVsnumJets', 'massAveVsnumJets', nBinsMass, 0, maxMass, 10, 0, 10 )
 	h_massAveVsmassAsym 	= TH2D('massAveVsmassAsym', 'massAveVsmassAsym', nBinsMass, 0, maxMass, 20, 0, 1. )
@@ -102,6 +104,7 @@ def myAnalyzer( sample, couts, grooming):
 
 	h_jet1Tau21VsdeltaEtaDijet 	= TH2D('jet1Tau21VsdeltaEtaDijet', 'jet1Tau21VsdeltaEtaDijet', 20, 0, 1., 100, 0, 5. )
 	h_jet1Tau31VsdeltaEtaDijet 	= TH2D('jet1Tau31VsdeltaEtaDijet', 'jet1Tau31VsdeltaEtaDijet', 20, 0, 1., 100, 0, 5. )
+	'''
 
 
 	###################################### Get GenTree 
@@ -224,14 +227,14 @@ def myAnalyzer( sample, couts, grooming):
 		triggerCut = ( ( HT > 700 ) and ( trimmedMass > 50 ) )  
 		HTCut = ( HT > 800 )
 		dijetCut =  ( numJets > 1 )
-		subjetPtRatio = ( ( jet1SubjetPtRatio > 0.3 ) and ( jet2SubjetPtRatio > 0.3 )  )
+		subjetPtRatioCut = ( ( jet1SubjetPtRatio > 0.3 ) and ( jet2SubjetPtRatio > 0.3 )  )
 		tau21Cut = ( ( jet1Tau21 < 0.5 ) and ( jet2Tau21 < 0.5 ) )
 		tau31Cut = ( ( jet1Tau31 < 0.5 ) and ( jet2Tau31 < 0.5 ) )
 		massAsymCut = ( massAsym < 0.1 ) 
 		deltaEtaDijetCut = ( deltaEtaDijet < 1. ) 
 		#cosThetaStarCut = ( abs( cosThetaStar ) < 0.3 ) 
 		cosThetaStarCut = ( abs( cosThetaStar ) < 0.4 ) 
-		subjetPtRatioCut = ( subjetPtRatio ) 
+		jetPtCut =  ( jet1Pt > 200 ) and ( jet2Pt > 200 )
 
 		if HTCut:
 			eventsHT += 1
@@ -249,17 +252,6 @@ def myAnalyzer( sample, couts, grooming):
 							massAve_Standard.Fill( massAve, scale )
 							#print AvgMass, scale, scale
 			
-					if deltaEtaDijetCut:
-						eventsDEta += 1
-						if subjetPtRatioCut: 
-							eventsDEtaSubjet += 1
-							massAve_DeltaEtaSubjet.Fill( massAve, scale )
-						if tau21Cut: 
-							eventsDEtaTau21 += 1
-							massAve_DeltaEtaTau21.Fill( massAve, scale )
-						if tau31Cut: 
-							eventsDEtaTau31 += 1
-							massAve_DeltaEtaTau31.Fill( massAve, scale )
 					if tau21Cut: 
 						eventsTau21 += 1
 						massAve_Tau21.Fill( massAve, scale )
@@ -269,6 +261,10 @@ def myAnalyzer( sample, couts, grooming):
 							if deltaEtaDijetCut:
 								eventsTau21CosThetaDEta += 1
 								massAve_Tau21CosThetaDEta.Fill( massAve, scale )
+					else: 
+						massAve_MassAsymNOTau21.Fill( massAve, scale )
+						if cosThetaStarCut and deltaEtaDijetCut:
+							massAve_DEtaNOTau21.Fill( massAve, scale )
 				else:
 					massAve_NOMassAsym.Fill( massAve, scale )
 					if not tau21Cut: 
@@ -369,22 +365,22 @@ if __name__ == '__main__':
 	samples = args.samples
 
 	if 'RPV' in samples: 
-		inputFileName = 'Rootfiles/RUNAnalysis_RPVSt'+str(mass)+'tojj_RunIISpring15DR74_'+PU+'_v02p2_v06.root'
+		inputFileName = 'Rootfiles/RUNAnalysis_RPVSt'+str(mass)+'tojj_RunIISpring15DR74_'+PU+'_v03_v01.root'
 		myAnalyzer( inputFileName, couts, grooming )
 	elif 'Data' in samples: 
-		inputFileName = 'Rootfiles/RUNAnalysis_JetHT_Asympt50ns_v01p2_v06.root'
+		inputFileName = 'Rootfiles/RUNAnalysis_JetHT_Asympt50ns_v03_v01.root'
 		myAnalyzer( inputFileName, couts, grooming )
 	elif 'Bkg' in samples: 
-		inputFileName = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v01p2_v06.root'
+		inputFileName = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01.root'
 		myAnalyzer( inputFileName, couts, grooming )
-		inputFileName = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v01p2_v06.root'
+		inputFileName = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01.root'
 		myAnalyzer( inputFileName, couts, grooming )
-		inputFileName = 'Rootfiles/RUNAnalysis_TTJets_RunIISpring15DR74_Asympt25ns_v01_v06.root'
+		inputFileName = 'Rootfiles/RUNAnalysis_TTJets_RunIISpring15DR74_Asympt25ns_v03_v01.root'
 		myAnalyzer( inputFileName, couts, grooming )
 	else: 
 		#for qcdBin in [ '170to300', '300to470', '470to600', '600to800', '800to1000', '1000to1400', '1400to1800' ]: 
-		#	inputFileName = 'Rootfiles//RUNAnalysis_QCD_Pt_'+qcdBin+'_RunIISpring15DR74_'+PU+'_v01_v06.root'
+		#	inputFileName = 'Rootfiles//RUNAnalysis_QCD_Pt_'+qcdBin+'_RunIISpring15DR74_'+PU+'_v01_v07.root'
 		#	myAnalyzer( inputFileName, couts, grooming )
-		inputFileName = 'Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15DR74_Asympt25ns_v01_v06.root'
+		inputFileName = 'Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15DR74_Asympt25ns_v03_v01.root'
 		myAnalyzer( inputFileName, couts, grooming )
 

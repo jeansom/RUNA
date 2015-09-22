@@ -92,6 +92,13 @@ options.register('Tau21',
 		VarParsing.varType.float,
 		"Tau21 cut"
 		)
+options.register('DEta', 
+		1.,
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.float,
+		"DEta cut"
+		)
+
 
 options.parseArguments()
 
