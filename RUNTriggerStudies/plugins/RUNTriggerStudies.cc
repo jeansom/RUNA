@@ -93,20 +93,27 @@ void RUNTriggerStudies::analyze(const edm::Event& iEvent, const edm::EventSetup&
 		//std::cout << "\n === TRIGGER OBJECTS === " << std::endl;
 		double hltHT = 0;
 		double hlttrimmedMass = 0;
+		int numJets = 0;
 		for (pat::TriggerObjectStandAlone obj : *triggerObjects) { // note: not "const &" since we want to call unpackPathNames
 			obj.unpackPathNames(names);
 			if ( TString(obj.collection()).Contains("hltAK8PFJetsTrimR0p1PT0p03") ) {
 				//std::cout << "\tTrigger object Trimmed Mass:  pt " << obj.pt() << ", eta " << obj.eta() << ", phi " << obj.phi() << ", mass " << obj.mass() << std::endl;
 				hlttrimmedMass = obj.mass();
+				numJets++;
 				histos1D_[ "hltTrimmedMass" ]->Fill( obj.mass() );
 			}
 			if ( TString(obj.collection()).Contains("hltAK8PFHT") ) {
-				//std::cout << "\tTrigger object HT:  pt " << obj.pt() << ", eta " << obj.eta() << ", phi " << obj.phi() << ", mass " << obj.mass() << std::endl;
-				hltHT = obj.pt();
-				histos1D_[ "hltHT" ]->Fill( obj.pt() );
+				for (unsigned h = 0; h < obj.filterIds().size(); ++h) {
+					if (obj.filterIds()[h] == 89 ) {
+						hltHT = obj.pt();
+						histos1D_[ "hltHT" ]->Fill( obj.pt() );
+						//std::cout << "\tTrigger object HT:  pt " << obj.pt() << ", eta " << obj.eta() << ", phi " << obj.phi() << ", mass " << obj.mass() << std::endl;
+					}
+				}
 			}
 		}
 		if ( hltHT > 0 ) histos2D_[ "hltTrimmedMassvsHT" ]->Fill( hlttrimmedMass, hltHT );
+		if ( numJets > 0 ) histos1D_[ "hltNumJetsTrimmedMass" ]->Fill( numJets );
 
 		double HT = 0;
 		int k = 0;
@@ -120,13 +127,14 @@ void RUNTriggerStudies::analyze(const edm::Event& iEvent, const edm::EventSetup&
 		}
 		if ( HT > 0 ) histos1D_[ "HT" ]->Fill( HT );
 	}
-
 }
 
 void RUNTriggerStudies::beginJob() {
 
 	histos1D_[ "hltTrimmedMass" ] = fs_->make< TH1D >( "hltTrimmedMass", "hltTrimmedMass", 100, 0., 1000. );
 	histos1D_[ "hltTrimmedMass" ]->Sumw2();
+	histos1D_[ "hltNumJetsTrimmedMass" ] = fs_->make< TH1D >( "hltNumJetsTrimmedMass", "hltNumJetsTrimmedMass", 10, 0., 10. );
+	histos1D_[ "hltNumJetsTrimmedMass" ]->Sumw2();
 	histos1D_[ "hltHT" ] = fs_->make< TH1D >( "hltHT", "hltHT", 100, 0., 2000. );
 	histos1D_[ "hltHT" ]->Sumw2();
 	histos1D_[ "jet1Mass" ] = fs_->make< TH1D >( "jet1Mass", "jet1Mass", 100, 0., 1000. );
