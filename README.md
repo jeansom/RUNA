@@ -5,7 +5,8 @@ This package contains scripts:
 
 * RUNGeneration contains a simple script to set your madgraph environment. 
 * RUNSimulations generates MC samples from lhe files.
-* RUNtuples creates Ntuples out of MiniAOD files, generated in RUNSimulations
+* RUNTriggerStudies performs validation and efficiency studies for triggers.
+* RUNtuples creates Ntuples out of MiniAOD files, generated in RUNSimulations.
 * RUAnalysis includes an example of how to use your Ntuples in your Analysis.
 
 
