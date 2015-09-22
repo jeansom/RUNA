@@ -85,6 +85,7 @@ process = cms.Process("RUNtuples")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.categories.append('HLTrigReport')
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 ### Output Report
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ### Number of maximum events to process
@@ -103,8 +104,6 @@ process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 process.GlobalTag.globaltag = options.globalTag 
-    
-
 
 
 from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox

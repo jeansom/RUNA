@@ -530,11 +530,8 @@ def plotSimple( inFile, sample, Grom, name, xmax, labX, labY, log, PU, Norm=Fals
 
 	labelAxis( name, histo, '' )
 	legend.Draw()
-	CMS_lumi.CMS_lumi(can, 4, 0)
-	CMS_lumi.relPosX = 0.14
-	if not (labX and labY): labels( name, PU, camp )
-	else: labels( name, PU, camp, labX, labY )
-
+	if not (labX and labY): labels( '', sample, PU )
+	else: labels( '', 'MC Truth', PU, labX, labY )
 	can.SaveAs( 'Plots/'+outName )
 	del can
 

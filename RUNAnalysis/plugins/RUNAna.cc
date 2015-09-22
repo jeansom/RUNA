@@ -348,6 +348,11 @@ void RUNAna::beginJob() {
 	histos1D_[ "jetMass_cutHT" ] = fs_->make< TH1D >( "jetMass_cutHT", "jetMass_cutHT", 30, 0., 300. );
 	histos1D_[ "jetMass_cutHT" ]->Sumw2();
 
+	histos1D_[ "massAve_cutTau31" ] = fs_->make< TH1D >( "massAve_cutTau31", "massAve_cutTau31", 30, 0., 300. );
+	histos1D_[ "massAve_cutTau31" ]->Sumw2();
+	histos1D_[ "massAve_cutTau21" ] = fs_->make< TH1D >( "massAve_cutTau21", "massAve_cutTau21", 30, 0., 300. );
+	histos1D_[ "massAve_cutTau21" ]->Sumw2();
+
 	cutLabels.push_back("Processed");
 	cutLabels.push_back("Trigger");
 	histos1D_[ "hcutflow" ] = fs_->make< TH1D >("cutflow","cut flow", cutLabels.size(), 0.5, cutLabels.size() +0.5 );
