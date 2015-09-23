@@ -49,8 +49,7 @@ def labels( name, PU, camp, X=0.92, Y=0.50, align='right', listSet=[] ):
 	#elif 'trigger' in name: setSelection( [ 'pp #rightarrow #tilde{t}(jj) #tilde{t}(jj), M(#tilde{t}) = 100 GeV', 'AK4 H_{T} > 800 GeV' ], X, Y, align) 
 	#elif 'trigger' in name: setSelection( [ 'pp #rightarrow #tilde{t}(jj) #tilde{t}(jj), M(#tilde{t}) = 100 GeV', 'AK8 H_{T} > 650 GeV, trimmed AK8 jet mass > 50 GeV' ], X, Y, align) 
 	#elif 'rigger' in name: setSelection( [ 'pp #rightarrow #tilde{t}(jj) #tilde{t}(jj), M(#tilde{t}) = 100 GeV', 'NO Trigger' ], X, Y, align) 
-	elif '' in name: setSelection( [ camp, PU ], X, Y, align) 
-	else: setSelection( listSel, X, Y, align )
+	else: setSelection( '', X, Y, align) 
 
 def labelAxis(name, histo, Grom ):
 
@@ -632,56 +631,6 @@ def plotDiffSample( inFileSample1, inFileSample2, sample1, sample2, Grom, name, 
 		can.SaveAs( 'Plots/'+outName )
 		del can
 
-def plotDiffPU( inFileSample, Grom, name, xmax, labX, labY, log, Diff , Norm=False):
-	"""docstring for plot"""
-
-	#outputFileName = name+'_'+Grom+'_RPVSt100to'+jj+'_Diff'+Diff+'s.pdf' 
-	outputFileName = name+'_'+Grom+'_QCDPtALL_Diff'+Diff+'s.pdf' 
-	print 'Processing.......', outputFileName
-
-	histos = {}
-	histos[ 'Sample1' ] = inFileSample.Get( boosted+'AnalysisPlots'+Grom+'/'+name.replace('_','LowPU_' ) )
-	histos[ 'Sample2' ] = inFileSample.Get( boosted+'AnalysisPlots'+Grom+'/'+name.replace('_','MedPU_' ) )
-	histos[ 'Sample3' ] = inFileSample.Get( boosted+'AnalysisPlots'+Grom+'/'+name.replace('_','HighPU_' ) )
-
-	binWidth = histos['Sample1'].GetBinWidth(1)
-
-	legend=TLegend(0.60,0.75,0.90,0.90)
-	legend.SetFillStyle(0)
-	legend.SetTextSize(0.03)
-
-	histos[ 'Sample1' ].SetLineWidth(2)
-	histos[ 'Sample1' ].SetLineColor(48)
-	histos[ 'Sample2' ].SetLineColor(38)
-	histos[ 'Sample2' ].SetLineWidth(2)
-	histos[ 'Sample3' ].SetLineColor(30)
-	histos[ 'Sample3' ].SetLineWidth(2)
-	histos[ 'Sample1' ].SetMaximum( 1.2* max( histos[ 'Sample1' ].GetMaximum(), histos[ 'Sample2' ].GetMaximum() ) ) 
-	#histos.values()[0].GetXaxis().SetRangeUser( 0, xmax )
-
-	can = TCanvas('c1', 'c1',  10, 10, 750, 500 )
-	if log: 
-		outName = outputFileName.replace('_Diff','_Log_Diff')
-	else:
-		outName = outputFileName 
-
-	legend.AddEntry( histos[ 'Sample1' ], 'Low PU', 'l' )
-	legend.AddEntry( histos[ 'Sample2' ], 'Med PU', 'l' )
-	legend.AddEntry( histos[ 'Sample3' ], 'High PU', 'l' )
-	#histos['Sample1'].SetMinimum(10)
-	histos['Sample1'].Draw('hist')
-	histos['Sample1'].GetYaxis().SetTitleOffset(1.2)
-	histos['Sample2'].Draw('hist same')
-	histos['Sample3'].Draw('hist same')
-	histos['Sample1'].GetYaxis().SetTitle( 'Events / '+str(binWidth) )
-
-	labelAxis( name, histos['Sample1'], Grom )
-	legend.Draw()
-	if not (labX and labY): labels( name, '13 TeV - Scaled to '+lumi+' fb^{-1}', '', '' )
-	else: labels( name, '13 TeV - Scaled to '+lumi+' fb^{-1}', '', labX, labY )
-
-	can.SaveAs( 'Plots/'+outName )
-	del can
 
 def plotOptimization( inFileSignal, inFileBkg, Grom, name, Range, xmax, labX, labY, log, Norm=False):
 	"""docstring for plot"""
@@ -975,128 +924,114 @@ def plot2DTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, na
 	#can.SaveAs( 'Plots/'+outputFileName.replace('pdf', 'gif')  )
 	del can
 
-def tmpplotTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name, cut, xmin, xmax, rebin, labX, labY, log ):
+def plotQuality( inFileData, inFileQCD, kfactor, inFileTTJets, inFileWJets, inFileZJets, Grom, nameInRoot, name, xmin, xmax, labX, labY, log, PU ):
 	"""docstring for plot"""
 
-	outputFileName = name+'_'+cut+'_'+triggerDenom+'_DiffTriggers_'+sample+'_TriggerEfficiency.pdf' 
+	outputFileName = name+'_'+Grom+'_dataQualityPlots.pdf' 
 	print 'Processing.......', outputFileName
 
-	DenomOnly = inFileSample.Get( 'TriggerEfficiency'+triggerDenom+'/'+name+'Denom_'+cut )
-	DenomOnly.Rebin(rebin)
-	Denom = DenomOnly.Clone()
-	PassingOnly1 = inFileSample.Get( 'TriggerEfficiency'+triggerDenom+'/'+name+'Passing_'+cut )
-	PassingOnly1.Rebin(rebin)
-	Passing1 = PassingOnly1.Clone()
-	PassingOnly2 = inFileSample.Get( 'TriggerEfficiency'+triggerDenom+'AKPFHT650/'+name+'Passing_'+cut )
-	PassingOnly2.Rebin(rebin)
-	Passing2 = PassingOnly2.Clone()
-	PassingOnly3 = inFileSample.Get( 'TriggerEfficiency'+triggerDenom+'AKPFHT600/'+name+'Passing_'+cut )
-	PassingOnly3.Rebin(rebin)
-	Passing3 = PassingOnly3.Clone()
-	PassingOnly4 = inFileSample.Get( 'TriggerEfficiency'+triggerDenom+'AKPFHT550/'+name+'Passing_'+cut )
-	PassingOnly4.Rebin(rebin)
-	Passing4 = PassingOnly4.Clone()
-	PassingOnly5 = inFileSample.Get( 'TriggerEfficiency'+triggerDenom+'AKPFHT500/'+name+'Passing_'+cut )
-	PassingOnly5.Rebin(rebin)
-	Passing5 = PassingOnly5.Clone()
+	histos = {}
+	histos[ 'Data' ] = inFileData.Get( nameInRoot )
+	histos[ 'QCD' ] = inFileQCD.Get( nameInRoot )
+	histos[ 'QCD' ].Scale( kfactor*newLumi )
+	histos[ 'TTJets' ] = inFileTTJets.Get( nameInRoot )
+	histos[ 'TTJets' ].Scale( newLumi )
+	histos[ 'WJets' ] = inFileWJets.Get( nameInRoot )
+	histos[ 'WJets' ].Scale( newLumi )
+	histos[ 'ZJets' ] = inFileZJets.Get( nameInRoot )
+	histos[ 'ZJets' ].Scale( newLumi )
+
+	hData = histos[ 'Data' ].Clone()
+	hBkg = histos[ 'QCD' ].Clone() 
+	#hBkg.Add( histos[ 'TTJets' ].Clone() )
+	#hBkg.Add( histos[ 'WJets' ].Clone() )
+	#hBkg.Add( histos[ 'ZJets' ].Clone() )
+	hRatio = histos[ 'Data' ].Clone()
+	hRatio.Divide( hBkg )
 	
-	Efficiency1 = TGraphAsymmErrors( Passing1, Denom, 'cp'  )
-	Efficiency2 = TGraphAsymmErrors( Passing2, Denom, 'cp'  )
-	Efficiency3 = TGraphAsymmErrors( Passing3, Denom, 'cp'  )
-	Efficiency4 = TGraphAsymmErrors( Passing4, Denom, 'cp'  )
-	Efficiency5 = TGraphAsymmErrors( Passing5, Denom, 'cp'  )
+	'''
+	for bin in range(0,  hSoSB.GetNbinsX()):
+		hSoSB.SetBinContent(bin, 0.)
+		hSoSB.SetBinError(bin, 0.)
 
-	binWidth = DenomOnly.GetBinWidth(1)
+	hSoSB2 = hSoSB.Clone()
+	for ibin in range(0, hSoSB.GetNbinsX()):
+	
+		binContData = histos[ 'Data' ].GetBinContent(ibin)
+		binErrData = histos[ 'Data' ].GetBinError(ibin)
+		binContBkg = histos[ 'QCD' ].GetBinContent(ibin) + histos[ 'TTJets' ].GetBinContent(ibin) + histos[ 'WJets' ].GetBinContent(ibin) + histos[ 'ZJets' ].GetBinContent(ibin)    
+		binErrBkg = histos[ 'QCD' ].GetBinError(ibin)
+		try:
+			value = binContData / TMath.Sqrt( binContData + binContBkg )
+		except ZeroDivisionError: continue
+		hSoSB.SetBinContent( ibin, value )
+	'''
 
-	legend=TLegend(0.55,0.65,0.90,0.90)
+	binWidth = histos['Data'].GetBinWidth(1)
+
+	legend=TLegend(0.60,0.60,0.90,0.87)
 	legend.SetFillStyle(0)
 	legend.SetTextSize(0.04)
+	legend.AddEntry( hData, 'Data' , 'ep' )
+	legend.AddEntry( hBkg, 'Background', 'l' )
 
-	DenomOnly.SetLineWidth(2)
-	DenomOnly.SetLineColor(kCyan-4)
-	PassingOnly1.SetLineWidth(2)
-	PassingOnly1.SetLineColor(kBlue-4)
-	Efficiency1.SetLineWidth(2)
-	Efficiency1.SetLineColor(kBlue-4)
-	PassingOnly2.SetLineWidth(2)
-	PassingOnly2.SetLineColor(kGreen-4)
-	Efficiency2.SetLineWidth(2)
-	Efficiency2.SetLineColor(kGreen-4)
-	PassingOnly3.SetLineWidth(2)
-	PassingOnly3.SetLineColor(kRed-4)
-	Efficiency3.SetLineWidth(2)
-	Efficiency3.SetLineColor(kRed-4)
-	PassingOnly4.SetLineWidth(2)
-	PassingOnly4.SetLineColor(kViolet-4)
-	Efficiency4.SetLineWidth(2)
-	Efficiency4.SetLineColor(kViolet-4)
-	PassingOnly5.SetLineWidth(2)
-	PassingOnly5.SetLineColor(kAzure-4)
-	Efficiency5.SetLineWidth(2)
-	Efficiency5.SetLineColor(kAzure-4)
+	hBkg.SetLineColor(kRed-4)
+	hData.SetMarkerStyle(8)
 
+	tdrStyle.SetPadRightMargin(0.05)
+	tdrStyle.SetPadLeftMargin(0.15)
 	can = TCanvas('c1', 'c1',  10, 10, 750, 750 )
-	pad1 = TPad("pad1", "Histo",0,0.50,1.00,1.00,-1)
-	pad2 = TPad("pad2", "Efficiency",0,0.00,1.00,0.50,-1);
+	pad1 = TPad("pad1", "Fit",0,0.207,1.00,1.00,-1)
+	pad2 = TPad("pad2", "Pull",0,0.00,1.00,0.30,-1);
 	pad1.Draw()
 	pad2.Draw()
 
 	pad1.cd()
-	if log: pad1.SetLogy()
-	legend.AddEntry( DenomOnly, triggerDenom+' (basedline trigger)', 'l' )
-	legend.AddEntry( PassingOnly1, 'AK8PFHT700TrimMass50', 'l' )
-	legend.AddEntry( PassingOnly2, 'AK8PFHT650TrimMass50', 'l' )
-	'''
-	legend.AddEntry( PassingOnly3, 'AK8PFHT600TrimMass50', 'l' )
-	legend.AddEntry( PassingOnly4, 'AK8PFHT550TrimMass50', 'l' )
-	legend.AddEntry( PassingOnly5, 'AK8PFHT500TrimMass50', 'l' )
-	'''
-	#DenomOnly.SetMinimum(10)
-	DenomOnly.GetXaxis().SetRangeUser( xmin, xmax )
-	DenomOnly.Draw('histe')
-	DenomOnly.GetYaxis().SetTitleSize(0.06)
-	DenomOnly.GetYaxis().SetTitleOffset(0.8)
-	DenomOnly.GetYaxis().SetLabelSize(0.06)
-	DenomOnly.GetXaxis().SetTitleOffset(0.9)
-	DenomOnly.GetXaxis().SetTitleSize(0.06)
-	DenomOnly.GetXaxis().SetLabelSize(0.06)
-	PassingOnly1.Draw('histe same')
-	PassingOnly2.Draw('histe same')
-	'''
-	PassingOnly3.Draw('histe same')
-	PassingOnly4.Draw('histe same')
-	PassingOnly5.Draw('histe same')
-	'''
-	DenomOnly.GetYaxis().SetTitle( 'Events / '+str(binWidth) )
+	if log: pad1.SetLogy() 	
+	hData.Draw("E")
+	hBkg.Draw('hist same')
+	#hData.GetYaxis().SetTitleOffset(1.2)
+	if xmax: hData.GetXaxis().SetRangeUser( xmin, xmax )
+	hData.GetYaxis().SetTitle( 'Events / '+str(binWidth) )
 
 	CMS_lumi.CMS_lumi(pad1, 4, 0)
-	labelAxis( name, DenomOnly, 'Pruned')
+	CMS_lumi.relPosX = 0.20
+	#labelAxis( name, hData, Grom )
 	legend.Draw()
-	if 'JetHT' in sample:
-		if not (labX and labY): labels( 'trigger', 'Data - '+lumi+' pb^{-1}', PU, camp )
-		else: labels( 'trigger', 'Data - '+lumi+' pb^{-1}',  PU, camp, labX, labY )
-	else:
-		if not (labX and labY): labels( 'trigger', 'RPV Stop 100 GeV', PU, camp )
-		else: labels( 'trigger', 'RPV Stop 100 GeV', PU, camp, labX, labY  )
+	if not (labX and labY): labels( name, PU, camp )
+	else: labels( name, PU, camp, labX, labY )
 
 	pad2.cd()
-	#Efficiency1.SetFillStyle(1001)
-	Efficiency1.GetYaxis().SetTitle("Efficiency")
-	Efficiency1.GetYaxis().SetLabelSize(0.06)
-	Efficiency1.GetXaxis().SetLabelSize(0.06)
-	Efficiency1.GetYaxis().SetTitleSize(0.06)
-	Efficiency1.GetYaxis().SetTitleOffset(0.8)
-	Efficiency1.SetMinimum(-0.1)
-	Efficiency1.GetXaxis().SetLimits( xmin, xmax )
-	Efficiency1.Draw()
-	Efficiency2.Draw('same')
+	pad2.SetGrid()
+	pad2.SetTopMargin(0)
+	pad2.SetBottomMargin(0.3)
 	'''
-	Efficiency3.Draw('same')
-	Efficiency4.Draw('same')
-	Efficiency5.Draw('same')
+	hSoSB.SetFillColor(48)
+	hSoSB.SetFillStyle(1001)
+	hSoSB.GetYaxis().SetTitle("S / #sqrt{S+B}")
+	hSoSB.GetYaxis().SetLabelSize(0.12)
+	hSoSB.GetXaxis().SetLabelSize(0.12)
+	hSoSB.GetYaxis().SetTitleSize(0.12)
+	hSoSB.GetYaxis().SetTitleOffset(0.45)
+	#hSoSB.SetMaximum(0.7)
+	hSoSB.Sumw2()
+	if xmax: hSoSB.GetXaxis().SetRangeUser( xmin, xmax )
+	hSoSB.Draw("hist")
 	'''
+	labelAxis( name, hRatio, Grom )
+	hRatio.SetMarkerStyle(8)
+	hRatio.GetXaxis().SetTitleOffset(1.1)
+	hRatio.GetXaxis().SetLabelSize(0.12)
+	hRatio.GetXaxis().SetTitleSize(0.12)
+	hRatio.GetYaxis().SetTitle("Data/Bkg")
+	hRatio.GetYaxis().SetLabelSize(0.12)
+	hRatio.GetYaxis().SetTitleSize(0.12)
+	hRatio.GetYaxis().SetTitleOffset(0.55)
+	#hRatio.SetMaximum(2.7)
+	if xmax: hRatio.GetXaxis().SetRangeUser( xmin, xmax )
+	hRatio.Draw()
 
-	can.SaveAs( 'Plots/'+outputFileName )
+	can.SaveAs( 'Plots/'+ outputFileName )
 	del can
 
 
@@ -1137,12 +1072,12 @@ if __name__ == '__main__':
 	boosted = args.boosted
 	triggerUsed = args.trigger
 	
-	if 'DATA' in process: 
-		CMS_lumi.lumi_13TeV = "15.5 pb^{-1}"
-		#CMS_lumi.extraText = #"Preliminary"
-	else:
-		CMS_lumi.lumi_13TeV = lumi+" fb^{-1}"
-		CMS_lumi.extraText = "Preliminary Simulation"
+	#if 'DATA' in process: 
+	CMS_lumi.lumi_13TeV = "15.5 pb^{-1}"
+	CMS_lumi.extraText = "Preliminary"
+	#else:
+	#	CMS_lumi.lumi_13TeV = lumi+" fb^{-1}"
+	#	CMS_lumi.extraText = "Preliminary Simulation"
 
 	#inputFileSample = TFile.Open('RUNAnalysis_RPVSt100tojj_pythia8_13TeV_PU40bx50_PHYS14.root')
 	#inputFileMCSignal = TFile.Open('RUNMCAnalysis_RPVSt100tojj_pythia8_13TeV_PU20bx25.root')
@@ -1168,14 +1103,15 @@ if __name__ == '__main__':
 		inputMiniFileWJetsToQQ = TFile.Open('Rootfiles/RUNMiniAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v01p2_v06.root')
 		inputMiniFileZJetsToQQ = TFile.Open('Rootfiles/RUNMiniAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v01p2_v06.root')
 	else:
-		inputFileSignal = TFile.Open('Rootfiles/RUNAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v03_v01.root')
-		inputFileSignal200 = TFile.Open('Rootfiles/RUNAnalysis_RPVSt350tojj_'+camp+'_'+PU+'_v03_v01.root')
+		inputFileData = TFile.Open('Rootfiles/RUNAnalysis_JetHT_Run2015C_Asympt25ns_v03_v01p3.root')
+		inputFileSignal = TFile.Open('Rootfiles/RUNAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v03_v01p3.root')
+		inputFileSignal200 = TFile.Open('Rootfiles/RUNAnalysis_RPVSt350tojj_'+camp+'_'+PU+'_v03_v01p3.root')
 		#inputFileSignal350 = TFile.Open('Rootfiles/RUNAnalysis_RPVSt350to'+jj+'_'+camp+'_'+PU+'_v02p3_v06.root')
 		#inputFileSignal = TFile.Open('Rootfiles/RUNTriggerEfficiency_RPVSt100tojj_RunIISpring16DR74_Asympt25ns_TS_v02_v09.root')
-		inputFileQCD = TFile.Open('Rootfiles/RUNAnalysis_QCD'+qcd+'All_'+camp+'_'+PU+'_v03_v01.root')
-		#inputFileTTJets = TFile.Open('Rootfiles/RUNAnalysis_TTJets_'+camp+'_'+PU+'_v03_v01p2.root')
-		inputFileWJetsToQQ = TFile.Open('Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01.root')
-		inputFileZJetsToQQ = TFile.Open('Rootfiles/RUNAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01.root')
+		inputFileQCD = TFile.Open('Rootfiles/RUNAnalysis_QCD'+qcd+'All_'+camp+'_'+PU+'_v03_v01p3.root')
+		#inputFileTTJets = TFile.Open('Rootfiles/RUNAnalysis_TTJets_'+camp+'_'+PU+'_v03_v01p3p2.root')
+		inputFileWJetsToQQ = TFile.Open('Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01p3.root')
+		inputFileZJetsToQQ = TFile.Open('Rootfiles/RUNAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01p3.root')
 
 	dijetlabX = 0.15
 	dijetlabY = 0.88
@@ -1274,6 +1210,11 @@ if __name__ == '__main__':
 		[ '1D', 'jetMass', 0, massMaxX, '', '', True],
 		[ '1D', 'HT', 0, 1000, '', '', False],
 		[ '1D', 'massAve', 0, massMaxX, '', '', False],
+
+		[ 'qual', 'jetPt', 10, 1000, '', '', True],
+		[ 'qual', 'jetEta', '', '', '', '', True],
+		[ 'qual', 'jetMass', 0, massMaxX, '', '', True],
+		[ 'qual', 'HT', 0, 1000, '', '', False],
 
 		[ 'Norm', 'NPV', '', '', '', '', False],
 		#[ 'Norm', 'jet1Subjet1Pt_cutDijet', '', '', '', '', True],
@@ -1446,6 +1387,10 @@ if __name__ == '__main__':
 				for cut1 in selection:
 					print cut1
 					plot( inputFileSignal, inputFileSignal200, inputFileQCD, 0.8, inputFileWJetsToQQ, inputFileWJetsToQQ, inputFileZJetsToQQ, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], PU )
+			
+			elif 'qual' in process:
+				for cut1 in selection:
+					plotQuality( inputFileData, inputFileQCD, 0.8, inputFileWJetsToQQ, inputFileWJetsToQQ, inputFileZJetsToQQ, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], PU )
 			
 			elif 'mini' in process:
 				plot( inputMiniFileSignal, inputMiniFileSignal200, inputMiniFileQCD, 0.8, inputMiniFileTTJets, inputMiniFileWJetsToQQ, inputMiniFileZJetsToQQ, optGrom, i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU )
