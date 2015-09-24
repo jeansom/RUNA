@@ -13,7 +13,7 @@ import argparse
 #from collections import defaultdict
 from ROOT import TFile, TTree, TDirectory, gDirectory, gROOT, TH1F, TH2D, TMath
 from array import array
-from scaleFactors import scaleFactor as SF
+from RUNA.RUNAnalysis.scaleFactors import scaleFactor as SF
 
 gROOT.SetBatch()
 
