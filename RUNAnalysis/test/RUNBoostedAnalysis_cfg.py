@@ -126,7 +126,7 @@ if 'bj' in NAME: bjsample = True
 else: bjsample = False
 Lumi = 1000
 
-from scaleFactors import scaleFactor
+from RUNA.RUNAnalysis.scaleFactors import scaleFactor
 SF = scaleFactor(NAME)
 
 if 'PU40bx50' in NAME: PU = 'PU40bx50'

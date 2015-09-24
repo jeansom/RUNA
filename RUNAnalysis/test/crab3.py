@@ -47,11 +47,11 @@ if __name__ == '__main__':
 			#'/QCD_Pt_800to1000_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v03-b4868673ff475f0715ff7cbd0e4e7e14/USER',
 			#'/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v03-b4868673ff475f0715ff7cbd0e4e7e14/USER',
 			#'/QCD_Pt_1400to1800_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v03-b4868673ff475f0715ff7cbd0e4e7e14/USER',
-			#'/QCD_Pt_1800to2400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v03-b4868673ff475f0715ff7cbd0e4e7e14/USER',
+			'/QCD_Pt_1800to2400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v03-b4868673ff475f0715ff7cbd0e4e7e14/USER',
 			#'/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v03-b4868673ff475f0715ff7cbd0e4e7e14/USER',
 			#'/WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v03-b4868673ff475f0715ff7cbd0e4e7e14/USER',
 			#'/ZJetsToQQ_HT600toInf_13TeV-madgraph/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v03-b4868673ff475f0715ff7cbd0e4e7e14/USER',
-			'/JetHT/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v03p1-0cc1d310cda5930bd3b3a68493077b41/USER',
+			#'/JetHT/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v03p1-0cc1d310cda5930bd3b3a68493077b41/USER',
 
 			#'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v03-b4868673ff475f0715ff7cbd0e4e7e14/USER',
 			#'/RPVSt100tobj_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v03-b4868673ff475f0715ff7cbd0e4e7e14/USER',
@@ -71,8 +71,8 @@ if __name__ == '__main__':
 			config.Data.unitsPerJob = 1
 		#elif 'Run2015' in dataset: 
 		elif 'JetHT' in dataset: 
-			config.Data.splitting = 'FileBased'
-			config.Data.unitsPerJob = 1
+			config.Data.splitting = 'LumiBased'
+			config.Data.unitsPerJob = 2
 			#if 'Run2015B' in dataset:
 			#	config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON.txt'
 			#	procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-RunIISpring15DR74_RUNA_Asympt25ns', '_Asympt50ns').split('-')[0]+'_'+version

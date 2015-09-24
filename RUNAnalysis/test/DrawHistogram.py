@@ -24,7 +24,6 @@ tdrstyle.setTDRStyle()
 #CMS_lumi.writeExtraText = 1
 #CMS_lumi.extraText = ""
 
-newLumi = 0.01547
 
 gStyle.SetOptStat(0)
 
@@ -74,12 +73,12 @@ def labelAxis(name, histo, Grom ):
 	elif '212Mass' in name: histo.GetXaxis().SetTitle( 'Subjet m_{2}/m_{12}' )
 	elif 'PolAngle13412_' in name: histo.GetXaxis().SetTitle( 'cos #psi_{1(34)}^{[12]}' )
 	elif 'PolAngle31234_' in name: histo.GetXaxis().SetTitle( 'cos #psi_{3(12)}^{[34]}' )
-	elif 'HT' in name: histo.GetXaxis().SetTitle( 'HT [GeV]' )
-	elif 'jetPt' in name: histo.GetXaxis().SetTitle( 'Jet p_{T} [GeV]' )
 	elif 'jetMass' in name: histo.GetXaxis().SetTitle( 'Jet Mass [GeV]' )
+	elif 'jetPt' in name: histo.GetXaxis().SetTitle( 'Jet p_{T} [GeV]' )
 	elif 'jet1Pt' in name: histo.GetXaxis().SetTitle( 'Leading Jet p_{T} [GeV]' )
 	elif 'jet1Mass' in name: histo.GetXaxis().SetTitle( 'Leading Pruned Jet Mass [GeV]' )
 	elif 'NPV' in name: histo.GetXaxis().SetTitle( 'Number of Primary Vertex' )
+	elif 'HT' in name: histo.GetXaxis().SetTitle( 'HT [GeV]' )
 	else: histo.GetXaxis().SetTitle( 'NO LABEL' )
 
 
@@ -91,17 +90,12 @@ def plot( inFileSignal, inFileSignal2, inFileQCD, kfactor, inFileTTJets, inFileW
 
 	histos = {}
 	histos[ 'Signal' ] = inFileSignal.Get( nameInRoot )
-	histos[ 'Signal' ].Scale( newLumi )
 	histos[ 'Signal2' ] = inFileSignal2.Get( nameInRoot )
-	histos[ 'Signal2' ].Scale( newLumi )
 	histos[ 'QCD' ] = inFileQCD.Get( nameInRoot )
-	histos[ 'QCD' ].Scale( kfactor*newLumi )
+	histos[ 'QCD' ].Scale( kfactor )
 	histos[ 'TTJets' ] = inFileTTJets.Get( nameInRoot )
-	histos[ 'TTJets' ].Scale( newLumi )
 	histos[ 'WJets' ] = inFileWJets.Get( nameInRoot )
-	histos[ 'WJets' ].Scale( newLumi )
 	histos[ 'ZJets' ] = inFileZJets.Get( nameInRoot )
-	histos[ 'ZJets' ].Scale( newLumi )
 
 	hSignal = histos[ 'Signal' ].Clone()
 	hBkg = histos[ 'QCD' ].Clone() 
@@ -933,19 +927,16 @@ def plotQuality( inFileData, inFileQCD, kfactor, inFileTTJets, inFileWJets, inFi
 	histos = {}
 	histos[ 'Data' ] = inFileData.Get( nameInRoot )
 	histos[ 'QCD' ] = inFileQCD.Get( nameInRoot )
-	histos[ 'QCD' ].Scale( kfactor*newLumi )
+	histos[ 'QCD' ].Scale( kfactor )
 	histos[ 'TTJets' ] = inFileTTJets.Get( nameInRoot )
-	histos[ 'TTJets' ].Scale( newLumi )
 	histos[ 'WJets' ] = inFileWJets.Get( nameInRoot )
-	histos[ 'WJets' ].Scale( newLumi )
 	histos[ 'ZJets' ] = inFileZJets.Get( nameInRoot )
-	histos[ 'ZJets' ].Scale( newLumi )
 
 	hData = histos[ 'Data' ].Clone()
 	hBkg = histos[ 'QCD' ].Clone() 
 	#hBkg.Add( histos[ 'TTJets' ].Clone() )
-	#hBkg.Add( histos[ 'WJets' ].Clone() )
-	#hBkg.Add( histos[ 'ZJets' ].Clone() )
+	hBkg.Add( histos[ 'WJets' ].Clone() )
+	hBkg.Add( histos[ 'ZJets' ].Clone() )
 	hRatio = histos[ 'Data' ].Clone()
 	hRatio.Divide( hBkg )
 	
@@ -969,7 +960,7 @@ def plotQuality( inFileData, inFileQCD, kfactor, inFileTTJets, inFileWJets, inFi
 
 	binWidth = histos['Data'].GetBinWidth(1)
 
-	legend=TLegend(0.60,0.60,0.90,0.87)
+	legend=TLegend(0.60,0.75,0.90,0.87)
 	legend.SetFillStyle(0)
 	legend.SetTextSize(0.04)
 	legend.AddEntry( hData, 'Data' , 'ep' )
@@ -994,12 +985,12 @@ def plotQuality( inFileData, inFileQCD, kfactor, inFileTTJets, inFileWJets, inFi
 	if xmax: hData.GetXaxis().SetRangeUser( xmin, xmax )
 	hData.GetYaxis().SetTitle( 'Events / '+str(binWidth) )
 
+	CMS_lumi.relPosX = 0.13
 	CMS_lumi.CMS_lumi(pad1, 4, 0)
-	CMS_lumi.relPosX = 0.20
 	#labelAxis( name, hData, Grom )
 	legend.Draw()
-	if not (labX and labY): labels( name, PU, camp )
-	else: labels( name, PU, camp, labX, labY )
+	if not (labX and labY): labels( name, '', '' )
+	else: labels( name, '', '', labX, labY )
 
 	pad2.cd()
 	pad2.SetGrid()
@@ -1027,7 +1018,8 @@ def plotQuality( inFileData, inFileQCD, kfactor, inFileTTJets, inFileWJets, inFi
 	hRatio.GetYaxis().SetLabelSize(0.12)
 	hRatio.GetYaxis().SetTitleSize(0.12)
 	hRatio.GetYaxis().SetTitleOffset(0.55)
-	#hRatio.SetMaximum(2.7)
+	if( hRatio.GetMaximum() > 2 ): hRatio.SetMaximum( 2.0 )
+	hRatio.SetMinimum( 0.6 )
 	if xmax: hRatio.GetXaxis().SetRangeUser( xmin, xmax )
 	hRatio.Draw()
 
@@ -1211,10 +1203,10 @@ if __name__ == '__main__':
 		[ '1D', 'HT', 0, 1000, '', '', False],
 		[ '1D', 'massAve', 0, massMaxX, '', '', False],
 
-		[ 'qual', 'jetPt', 10, 1000, '', '', True],
-		[ 'qual', 'jetEta', '', '', '', '', True],
-		[ 'qual', 'jetMass', 0, massMaxX, '', '', True],
-		[ 'qual', 'HT', 0, 1000, '', '', False],
+		[ 'qual', 'jetPt', 100, 1500, 0.92, 0.8, True],
+		[ 'qual', 'jetEta', -3, 3, 0.92, 0.8, False],
+		[ 'qual', 'jetMass', 0, 1000, 0.92, 0.8, True],
+		[ 'qual', 'HT', 700, 2000, 0.92, 0.8, True],
 
 		[ 'Norm', 'NPV', '', '', '', '', False],
 		#[ 'Norm', 'jet1Subjet1Pt_cutDijet', '', '', '', '', True],
@@ -1390,7 +1382,7 @@ if __name__ == '__main__':
 			
 			elif 'qual' in process:
 				for cut1 in selection:
-					plotQuality( inputFileData, inputFileQCD, 0.8, inputFileWJetsToQQ, inputFileWJetsToQQ, inputFileZJetsToQQ, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], PU )
+					plotQuality( inputFileData, inputFileQCD, 1.0, inputFileWJetsToQQ, inputFileWJetsToQQ, inputFileZJetsToQQ, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], PU )
 			
 			elif 'mini' in process:
 				plot( inputMiniFileSignal, inputMiniFileSignal200, inputMiniFileQCD, 0.8, inputMiniFileTTJets, inputMiniFileWJetsToQQ, inputMiniFileZJetsToQQ, optGrom, i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU )

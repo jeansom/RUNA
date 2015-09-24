@@ -40,22 +40,15 @@
 #include "FWCore/Framework/interface/GetterOfProducts.h"
 #include "FWCore/Framework/interface/ProcessMatch.h"
 
+#include "RUNA/RUNAnalysis/interface/CommonVariablesStructure.h"
+
 using namespace edm;
 using namespace std;
 
 //
 // constants, enums and typedefs
 //
-typedef struct Jet_struc {
-	TLorentzVector p4;
-	TLorentzVector subjet0;
-	TLorentzVector subjet1;
-	double mass;
-	double tau1;
-	double tau2;
-	double tau3;
-	double btagCSV;
-} JETtype;
+
 //
 // class declaration
 //
@@ -587,8 +580,8 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 				// Mass average and asymmetry
 				jet1Mass = JETS[0].mass;
 				jet2Mass = JETS[1].mass;
-				massAve = ( jet1Mass + jet2Mass ) / 2.0;
-				massAsym = abs( jet1Mass - jet2Mass ) / ( jet1Mass + jet2Mass );
+				massAve = massAverage( jet1Mass, jet2Mass );
+				massAsym = massAsymmetry( jet1Mass, jet2Mass );
 				//////////////////////////////////////////////////////////////////////////
 				
 				// Btag
@@ -596,21 +589,10 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 				jet2btagCSV = JETS[1].btagCSV;
 
 				// Dijet eta
-				deltaEtaDijet = abs( JETS[0].p4.Eta() - JETS[1].p4.Eta() );
+				deltaEtaDijet = deltaValue( JETS[0].p4.Eta(), JETS[1].p4.Eta() );
 
 				// Cos theta star
-				TLorentzVector tmpJet1, tmpJet2, tmpCM;
-				tmpJet1 = JETS[0].p4;
-				tmpJet2 = JETS[1].p4;
-				tmpCM = tmpJet1 + tmpJet2;
-				//LogWarning("Jets") << tmpJet1.Eta() << " " << tmpJet2.Eta() << " " << tmpCM.Eta();
-				tmpJet1.Boost( -tmpCM.BoostVector() );
-				tmpJet2.Boost( -tmpCM.BoostVector() );
-				//LogWarning("JetsBoost") << tmpJet1.Eta() << " " << tmpJet2.Eta();
-				cosThetaStar = TMath::Abs( ( tmpJet1.Px() * tmpCM.Px() +  tmpJet1.Py() * tmpCM.Py() + tmpJet1.Pz() * tmpCM.Pz() ) / (tmpJet1.E() * tmpCM.E() ) ) ;
-				//LogWarning("cos theta") << cosThetaStar ;
-				/////////////////////////////////////////////////////////////////////////////////
-
+				cosThetaStar = calculateCosThetaStar( JETS[0].p4, JETS[1].p4 ) ;
 
 				// Nsubjetiness
 				jet1Tau21 = JETS[0].tau2 / JETS[0].tau1;

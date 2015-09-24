@@ -151,7 +151,7 @@ if 'bj' in NAME: bjsample = True
 else: bjsample = False
 Lumi = 15.47
 
-from scaleFactors import scaleFactor
+from RUNA.RUNAnalysis.scaleFactors import scaleFactor
 SF = scaleFactor(NAME)
 
 if 'JetHT' in NAME:
