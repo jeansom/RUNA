@@ -19,7 +19,7 @@ git cms-addpkg CommonTools/PileupAlgos
 git cms-merge-topic nhanvtran:puppi-etadep-742p1-v6
 git clone https://github.com/cms-jet/JetToolbox JMEAnalysis/JetToolbox -b jetToolbox_74X_PuppiWithGroomers
 git clone https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_7_4_X_V2
-git clone git@github.com:alefisico/RUNA.git -b v745patch1 
+git clone git@github.com:alefisico/RUNA.git
 scram b -j 18
 cmsenv
 ```
