@@ -411,8 +411,6 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 
 		if( TMath::Abs( (*jetEta)[i] ) > 2.4 ) continue;
 
-		tmpTriggerMass.push_back( (*jetTrimmedMass)[i] );
-
 		rawHT += (*jetPt)[i];
 		histos1D_[ "rawJetPt" ]->Fill( (*jetPt)[i], scale  );
 
@@ -422,6 +420,8 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			//LogWarning("jetInfo") << i << " " << (*jetPt)[i] << " " << (*jetEta)[i] << " " << (*jetPhi)[i] << " " << (*jetMass)[i];
 
 			HT += (*jetPt)[i];
+			tmpTriggerMass.push_back( (*jetTrimmedMass)[i] );
+
 			++numJets;
 
 			TLorentzVector tmpJet;
