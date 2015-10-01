@@ -11,7 +11,7 @@ import sys,os,time
 #import optparse
 import argparse
 #from collections import defaultdict
-from ROOT import TFile, TTree, TDirectory, gDirectory, gROOT, TH1F, TH2D, TMath
+from ROOT import TFile, TTree, TDirectory, gDirectory, gROOT, TH1F, TH2D, TMath, TLorentzVector
 from array import array
 from RUNA.RUNAnalysis.scaleFactors import scaleFactor as SF
 
@@ -47,6 +47,8 @@ def myAnalyzer( sample, couts, grooming):
 	massAve_DeltaEtaTau31 	= TH1F('massAve_DeltaEtaTau31', 'massAve_DeltaEtaTau31', nBinsMass, 0, maxMass )
 	massAve_Tau21 	= TH1F('massAve_Tau21', 'massAve_Tau21', nBinsMass, 0, maxMass )
 	massAve_Tau21CosTheta 	= TH1F('massAve_Tau21CosTheta', 'massAve_Tau21CosTheta', nBinsMass, 0, maxMass )
+	massAve_Tau21Tau31 	= TH1F('massAve_Tau21Tau31', 'massAve_Tau21Tau31', nBinsMass, 0, maxMass )
+	massAve_Tau21Tau31CosTheta 	= TH1F('massAve_Tau21Tau31CosTheta', 'massAve_Tau21Tau31CosTheta', nBinsMass, 0, maxMass )
 	massAve_Tau21CosThetaDEta 	= TH1F('massAve_Tau21CosThetaDEta', 'massAve_Tau21CosThetaDEta', nBinsMass, 0, maxMass )
 	massAve_EffStandard 	= TH1F('massAve_EffStandard', 'massAve_EffStandard', nBinsMass, 0, maxMass )
 	massAve_NOMassAsym 	= TH1F('massAve_NOMassAsym', 'massAve_NOMassAsym', nBinsMass, 0, maxMass )
@@ -176,171 +178,174 @@ def myAnalyzer( sample, couts, grooming):
 		cosPhi13412     = events.cosPhi13412
 		cosPhi31234     = events.cosPhi31234
 
-		if ( jet1Mass > 400 ) or ( jet2Mass > 400 ): print 'Entry ', Run, ':', Lumi, ':', NumEvent
+		#if ( jet1Mass > 400 ) or ( jet2Mass > 400 ): print 'Entry ', Run, ':', Lumi, ':', NumEvent
 
 		
-#		#### Optimization
-#		deltaEtaDijet = abs( jet1Eta - jet2Eta )
-#		h_deltaEtaDijet.Fill( deltaEtaDijet, scale )
-#		
-#		h_jet2Tau21.Fill( jet2Tau21, scale )
-#		h_jet2Tau31.Fill( jet2Tau31, scale )
-#		
-#		'''
-#		h_massAveVsHT.Fill( massAve, HT, scale )
-#		h_massAveVsnumJets.Fill( massAve, numJets, scale )
-#		h_massAveVsmassAsym.Fill( massAve, massAsym, scale )
-#		h_massAveVscosThetaStar.Fill( massAve, cosThetaStar, scale )
-#		h_massAveVsjet1SubjetPtRatio.Fill( massAve, jet1SubjetPtRatio, scale )
-#		h_massAveVsjet2SubjetPtRatio.Fill( massAve, jet2SubjetPtRatio, scale )
-#		h_massAveVsTau21.Fill( massAve, jet1Tau21, scale )
-#		h_massAveVsTau31.Fill( massAve, jet1Tau31, scale )
-#		h_massAveVsdeltaEtaDijet.Fill( massAve, deltaEtaDijet, scale )
-#
-#		h_massAsymVscosThetaStar.Fill( massAsym, cosThetaStar, scale )
-#		h_massAsymVsjet1SubjetPtRatio.Fill( massAsym, jet1SubjetPtRatio, scale )
-#		h_massAsymVsjet2SubjetPtRatio.Fill( massAsym, jet2SubjetPtRatio, scale )
-#		h_massAsymVsTau21.Fill( massAsym, jet1Tau21, scale )
-#		h_massAsymVsTau31.Fill( massAsym, jet1Tau31, scale )
-#		h_massAsymVsdeltaEtaDijet.Fill( massAsym, deltaEtaDijet, scale )
-#
-#		h_cosThetaStarVsjet1SubjetPtRatio.Fill( cosThetaStar, jet1SubjetPtRatio, scale )
-#		h_cosThetaStarVsjet2SubjetPtRatio.Fill( cosThetaStar, jet2SubjetPtRatio, scale )
-#		h_cosThetaStarVsTau21.Fill( cosThetaStar, jet1Tau21, scale )
-#		h_cosThetaStarVsTau31.Fill( cosThetaStar, jet1Tau31, scale )
-#		h_cosThetaStarVsdeltaEtaDijet.Fill( cosThetaStar, deltaEtaDijet, scale )
-#
-#		h_jet1SubjetPtRatioVsjet2SubjetPtRatio.Fill( jet1SubjetPtRatio, jet2SubjetPtRatio, scale )
-#		h_jet1SubjetPtRatioVsTau21.Fill( jet1SubjetPtRatio, jet1Tau21, scale )
-#		h_jet1SubjetPtRatioVsTau31.Fill( jet1SubjetPtRatio, jet1Tau31, scale )
-#		h_jet1SubjetPtRatioVsdeltaEtaDijet.Fill( jet1SubjetPtRatio, deltaEtaDijet, scale )
-#
-#		h_jet2SubjetPtRatioVsTau21.Fill( jet2SubjetPtRatio, jet1Tau21, scale )
-#		h_jet2SubjetPtRatioVsTau31.Fill( jet2SubjetPtRatio, jet1Tau31, scale )
-#		h_jet2SubjetPtRatioVsdeltaEtaDijet.Fill( jet2SubjetPtRatio, deltaEtaDijet, scale )
-#
-#		h_jet1Tau21VsdeltaEtaDijet.Fill( jet1Tau21, deltaEtaDijet, scale )
-#		h_jet1Tau31VsdeltaEtaDijet.Fill( jet1Tau31, deltaEtaDijet, scale )
-#		'''
-#
-#		#### TEST
-#		trimmedMassVsHT.Fill( trimmedMass, HT )
-#
-#		#### Apply standard selection
-#		triggerCut = ( ( HT > 700 ) and ( trimmedMass > 50 ) )  
-#		HTCut = ( HT > 800 )
-#		dijetCut =  ( numJets > 1 )
-#		subjetPtRatioCut = ( ( jet1SubjetPtRatio > 0.3 ) and ( jet2SubjetPtRatio > 0.3 )  )
-#		tau21Cut = ( ( jet1Tau21 < 0.5 ) and ( jet2Tau21 < 0.5 ) )
-#		tau31Cut = ( ( jet1Tau31 < 0.5 ) and ( jet2Tau31 < 0.5 ) )
-#		massAsymCut = ( massAsym < 0.1 ) 
-#		deltaEtaDijetCut = ( deltaEtaDijet < 1. ) 
-#		#cosThetaStarCut = ( abs( cosThetaStar ) < 0.3 ) 
-#		cosThetaStarCut = ( abs( cosThetaStar ) < 0.4 ) 
-#		jetPtCut =  ( jet1Pt > 200 ) and ( jet2Pt > 200 )
-#
-#		if HTCut:
-#			eventsHT += 1
-#			if dijetCut:
-#				eventsDijet += 1
-#				if massAsymCut:
-#					eventsMassAsym += 1
-#					if cosThetaStarCut:
-#						eventsCosTheta += 1
-#						if subjetPtRatioCut:
-#							eventsPassed +=1
-#							#AvgMass = massAve
-#							#Scale = scale
-#							#print Run, Lumi, NumEvent
-#							massAve_Standard.Fill( massAve, scale )
-#							#print AvgMass, scale, scale
-#			
-#					if tau21Cut: 
-#						eventsTau21 += 1
-#						massAve_Tau21.Fill( massAve, scale )
-#						if cosThetaStarCut:
-#							eventsTau21CosTheta += 1
-#							massAve_Tau21CosTheta.Fill( massAve, scale )
-#							if deltaEtaDijetCut:
-#								eventsTau21CosThetaDEta += 1
-#								massAve_Tau21CosThetaDEta.Fill( massAve, scale )
-#					else: 
-#						massAve_MassAsymNOTau21.Fill( massAve, scale )
-#						if cosThetaStarCut and deltaEtaDijetCut:
-#							massAve_DEtaNOTau21.Fill( massAve, scale )
-#				else:
-#					massAve_NOMassAsym.Fill( massAve, scale )
-#					if not tau21Cut: 
-#						massAve_NOTau21.Fill( massAve, scale )
-#						if not cosThetaStarCut:
-#							massAve_NOCosTheta.Fill( massAve, scale )
-#							if not deltaEtaDijetCut:
-#								massAve_NODEta.Fill( massAve, scale )
-#					elif cosThetaStarCut and deltaEtaDijetCut:
-#						massAve_NOMassAsymYesCosThetaDEta.Fill( massAve, scale )
-#
-#		if ( ( HT > 700 ) and ( trimmedMass > 50 ) ) and massAsymCut and cosThetaStarCut and subjetPtRatioCut:
-#			massAve_EffStandard.Fill( massAve, scale )
-#		
-#		if ( AK4HT > 800 ) and massAsymCut and cosThetaStarCut and subjetPtRatioCut:
-#			AK4HT_PFHT800.Fill( AK4HT, scale )
-#			massAve_PFHT800.Fill( massAve, scale )
-#
-#		if ( AK4HT > 900 ) and massAsymCut and cosThetaStarCut and subjetPtRatioCut:
-#			AK4HT_EffPFHT800.Fill( AK4HT, scale )
-#			massAve_EffPFHT800.Fill( massAve, scale )
-#
-#		if ( AK4HT > 1600 ) and massAsymCut and cosThetaStarCut and subjetPtRatioCut:
-#			AK4HT_Brock.Fill( AK4HT, scale )
-#			massAve_Brock.Fill( massAve, scale )
-#
-#	cutFlowStandard = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsCosTheta, eventsPassed ]
-#	cutFlowDEtaSubjet = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsDEta, eventsDEtaSubjet ]
-#	cutFlowDEtaTau21 = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsDEta, eventsDEtaTau21 ]
-#	cutFlowDEtaTau31 = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsDEta, eventsDEtaTau31 ]
-#	cutFlowMassAsymTau21CosThetaDEta = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsTau21, eventsTau21CosTheta, eventsTau21CosThetaDEta ]
-#
-#	print eventsPassed
-#	
-#	hcutFlowmassStandard 	= TH1F('cutFlowStandard', 'cutFlowStandard', len(cutFlowStandard), 0, len(cutFlowStandard) )
-#	for i in range( len(cutFlowStandard) ): hcutFlowmassStandard.SetBinContent(i, cutFlowStandard[i])
-#	hcutFlowmassDEtaSubjet 	= TH1F('cutFlowDEtaSubjet', 'cutFlowDEtaSubjet', len(cutFlowDEtaSubjet), 0, len(cutFlowDEtaSubjet) )
-#	for i in range( len(cutFlowDEtaSubjet) ): hcutFlowmassDEtaSubjet.SetBinContent(i, cutFlowDEtaSubjet[i])
-#	hcutFlowmassDEtaTau21 	= TH1F('cutFlowDEtaTau21', 'cutFlowDEtaTau21', len(cutFlowDEtaTau21), 0, len(cutFlowDEtaTau21) )
-#	for i in range( len(cutFlowDEtaTau21) ): hcutFlowmassDEtaTau21.SetBinContent(i, cutFlowDEtaTau21[i])
-#	hcutFlowmassDEtaTau31 	= TH1F('cutFlowDEtaTau31', 'cutFlowDEtaTau31', len(cutFlowDEtaTau31), 0, len(cutFlowDEtaTau31) )
-#	for i in range( len(cutFlowDEtaTau31) ): hcutFlowmassDEtaTau31.SetBinContent(i, cutFlowDEtaTau31[i])
-#	hcutFlowmassMassAsymTau21CosThetaDEta 	= TH1F('cutFlowMassAsymTau21CosThetaDEta', 'cutFlowMassAsymTau21CosThetaDEta', len(cutFlowMassAsymTau21CosThetaDEta), 0, len(cutFlowMassAsymTau21CosThetaDEta) )
-#	for i in range( len(cutFlowMassAsymTau21CosThetaDEta) ): hcutFlowmassMassAsymTau21CosThetaDEta.SetBinContent(i, cutFlowMassAsymTau21CosThetaDEta[i])
-#
-#
-#	##### write output file 
-#	#outputFile.cd()
-#	#for key in inputFile.GetListOfKeys():
-#	#	print key
-#	#	saveDir = TDirectory()
-#		#adir = saveDir.mkdir( key.GetName() )
-#		#adir.cd()
-#		#if key.GetClassName() == 'TDirectoryFile':
-#		#	if not 'Tree' in key.GetName():
-#		#		newDir = outputFile.mkdir( key.GetName() )
-#		#		newDir.cd()
-#		#for q in key.GetList():
-#		#	print q
-#				#	print key.GetName(), q
-#
-#
-#	outputFile.Write()
-#
-#	##### Closing
-#	print 'Writing output file: '+ outputFileName
-#	outputFile.Close()
-#
-#	###### Extra: send prints to file
-#	#if couts == False: 
-#	#	sys.stdout = outfileStdOut
-#	#	f.close()
-#	#########################
+		#### Optimization
+		deltaEtaDijet = abs( jet1Eta - jet2Eta )
+		h_deltaEtaDijet.Fill( deltaEtaDijet, scale )
+		
+		h_jet2Tau21.Fill( jet2Tau21, scale )
+		h_jet2Tau31.Fill( jet2Tau31, scale )
+		
+		'''
+		h_massAveVsHT.Fill( massAve, HT, scale )
+		h_massAveVsnumJets.Fill( massAve, numJets, scale )
+		h_massAveVsmassAsym.Fill( massAve, massAsym, scale )
+		h_massAveVscosThetaStar.Fill( massAve, cosThetaStar, scale )
+		h_massAveVsjet1SubjetPtRatio.Fill( massAve, jet1SubjetPtRatio, scale )
+		h_massAveVsjet2SubjetPtRatio.Fill( massAve, jet2SubjetPtRatio, scale )
+		h_massAveVsTau21.Fill( massAve, jet1Tau21, scale )
+		h_massAveVsTau31.Fill( massAve, jet1Tau31, scale )
+		h_massAveVsdeltaEtaDijet.Fill( massAve, deltaEtaDijet, scale )
+
+		h_massAsymVscosThetaStar.Fill( massAsym, cosThetaStar, scale )
+		h_massAsymVsjet1SubjetPtRatio.Fill( massAsym, jet1SubjetPtRatio, scale )
+		h_massAsymVsjet2SubjetPtRatio.Fill( massAsym, jet2SubjetPtRatio, scale )
+		h_massAsymVsTau21.Fill( massAsym, jet1Tau21, scale )
+		h_massAsymVsTau31.Fill( massAsym, jet1Tau31, scale )
+		h_massAsymVsdeltaEtaDijet.Fill( massAsym, deltaEtaDijet, scale )
+
+		h_cosThetaStarVsjet1SubjetPtRatio.Fill( cosThetaStar, jet1SubjetPtRatio, scale )
+		h_cosThetaStarVsjet2SubjetPtRatio.Fill( cosThetaStar, jet2SubjetPtRatio, scale )
+		h_cosThetaStarVsTau21.Fill( cosThetaStar, jet1Tau21, scale )
+		h_cosThetaStarVsTau31.Fill( cosThetaStar, jet1Tau31, scale )
+		h_cosThetaStarVsdeltaEtaDijet.Fill( cosThetaStar, deltaEtaDijet, scale )
+
+		h_jet1SubjetPtRatioVsjet2SubjetPtRatio.Fill( jet1SubjetPtRatio, jet2SubjetPtRatio, scale )
+		h_jet1SubjetPtRatioVsTau21.Fill( jet1SubjetPtRatio, jet1Tau21, scale )
+		h_jet1SubjetPtRatioVsTau31.Fill( jet1SubjetPtRatio, jet1Tau31, scale )
+		h_jet1SubjetPtRatioVsdeltaEtaDijet.Fill( jet1SubjetPtRatio, deltaEtaDijet, scale )
+
+		h_jet2SubjetPtRatioVsTau21.Fill( jet2SubjetPtRatio, jet1Tau21, scale )
+		h_jet2SubjetPtRatioVsTau31.Fill( jet2SubjetPtRatio, jet1Tau31, scale )
+		h_jet2SubjetPtRatioVsdeltaEtaDijet.Fill( jet2SubjetPtRatio, deltaEtaDijet, scale )
+
+		h_jet1Tau21VsdeltaEtaDijet.Fill( jet1Tau21, deltaEtaDijet, scale )
+		h_jet1Tau31VsdeltaEtaDijet.Fill( jet1Tau31, deltaEtaDijet, scale )
+		'''
+
+		#### TEST
+		trimmedMassVsHT.Fill( trimmedMass, HT )
+		J1 = TLorentzVector()
+		J1.SetPtEtaPhiE( jet1Pt, jet1Eta, jet1Phi, jet1E )
+		J2 = TLorentzVector()
+		J2.SetPtEtaPhiE( jet2Pt, jet2Eta, jet2Phi, jet2E )
+		tmpCM = J1 + J2
+		J2.Boost( -tmpCM.BoostVector() )
+		J2CosThetaStar = abs( ( J2.Px() * tmpCM.Px() +  J2.Py() * tmpCM.Py() + J2.Pz() * tmpCM.Pz() ) / (J2.E() * tmpCM.E() ) ) 
+
+		#### Apply standard selection
+		triggerCut = ( ( HT > 700 ) and ( trimmedMass > 50 ) )  
+		HTCut = ( HT > 800 )
+		dijetCut =  ( numJets > 1 )
+		subjetPtRatioCut = ( ( jet1SubjetPtRatio > 0.3 ) and ( jet2SubjetPtRatio > 0.3 )  )
+		tau21Cut = ( ( jet1Tau21 < 0.4 ) and ( jet2Tau21 < 0.4 ) )
+		tau31Cut = ( ( jet1Tau31 < 0.3 ) and ( jet2Tau31 < 0.3 ) )
+		massAsymCut = ( massAsym < 0.1 ) 
+		deltaEtaDijetCut = ( deltaEtaDijet < 1. ) 
+		#cosThetaStarCut = ( abs( cosThetaStar ) < 0.3 ) 
+		cosThetaStarCut = ( abs( cosThetaStar ) < 0.3 )  and ( abs( J2CosThetaStar ) < 0.3 )
+		jetPtCut =  ( jet1Pt > 200 ) and ( jet2Pt > 200 )
+
+		if HTCut:
+			eventsHT += 1
+			if dijetCut:
+				eventsDijet += 1
+				if massAsymCut:
+					eventsMassAsym += 1
+					if tau21Cut: 
+						eventsTau21 += 1
+						massAve_Tau21.Fill( massAve, scale )
+						if cosThetaStarCut:
+							eventsTau21CosTheta += 1
+							massAve_Tau21CosTheta.Fill( massAve, scale )
+							if deltaEtaDijetCut:
+								eventsTau21CosThetaDEta += 1
+								massAve_Tau21CosThetaDEta.Fill( massAve, scale )
+						if tau31Cut:
+							massAve_Tau21Tau31.Fill( massAve, scale )
+							if cosThetaStarCut:
+								massAve_Tau21Tau31CosTheta.Fill( massAve, scale )
+				'''
+					else: 
+						massAve_MassAsymNOTau21.Fill( massAve, scale )
+						if cosThetaStarCut and deltaEtaDijetCut:
+							massAve_DEtaNOTau21.Fill( massAve, scale )
+				else:
+					massAve_NOMassAsym.Fill( massAve, scale )
+					if not tau21Cut: 
+						massAve_NOTau21.Fill( massAve, scale )
+						if not cosThetaStarCut:
+							massAve_NOCosTheta.Fill( massAve, scale )
+							if not deltaEtaDijetCut:
+								massAve_NODEta.Fill( massAve, scale )
+					elif cosThetaStarCut and deltaEtaDijetCut:
+						massAve_NOMassAsymYesCosThetaDEta.Fill( massAve, scale )
+				'''
+
+		if ( ( HT > 700 ) and ( trimmedMass > 50 ) ) and massAsymCut and cosThetaStarCut and subjetPtRatioCut:
+			massAve_EffStandard.Fill( massAve, scale )
+		
+		if ( AK4HT > 800 ) and massAsymCut and cosThetaStarCut and subjetPtRatioCut:
+			AK4HT_PFHT800.Fill( AK4HT, scale )
+			massAve_PFHT800.Fill( massAve, scale )
+
+		if ( AK4HT > 900 ) and massAsymCut and cosThetaStarCut and subjetPtRatioCut:
+			AK4HT_EffPFHT800.Fill( AK4HT, scale )
+			massAve_EffPFHT800.Fill( massAve, scale )
+
+		if ( AK4HT > 1600 ) and massAsymCut and cosThetaStarCut and subjetPtRatioCut:
+			AK4HT_Brock.Fill( AK4HT, scale )
+			massAve_Brock.Fill( massAve, scale )
+
+	cutFlowStandard = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsCosTheta, eventsPassed ]
+	cutFlowDEtaSubjet = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsDEta, eventsDEtaSubjet ]
+	cutFlowDEtaTau21 = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsDEta, eventsDEtaTau21 ]
+	cutFlowDEtaTau31 = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsDEta, eventsDEtaTau31 ]
+	cutFlowMassAsymTau21CosThetaDEta = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsTau21, eventsTau21CosTheta, eventsTau21CosThetaDEta ]
+
+	print eventsPassed
+	
+	hcutFlowmassStandard 	= TH1F('cutFlowStandard', 'cutFlowStandard', len(cutFlowStandard), 0, len(cutFlowStandard) )
+	for i in range( len(cutFlowStandard) ): hcutFlowmassStandard.SetBinContent(i, cutFlowStandard[i])
+	hcutFlowmassDEtaSubjet 	= TH1F('cutFlowDEtaSubjet', 'cutFlowDEtaSubjet', len(cutFlowDEtaSubjet), 0, len(cutFlowDEtaSubjet) )
+	for i in range( len(cutFlowDEtaSubjet) ): hcutFlowmassDEtaSubjet.SetBinContent(i, cutFlowDEtaSubjet[i])
+	hcutFlowmassDEtaTau21 	= TH1F('cutFlowDEtaTau21', 'cutFlowDEtaTau21', len(cutFlowDEtaTau21), 0, len(cutFlowDEtaTau21) )
+	for i in range( len(cutFlowDEtaTau21) ): hcutFlowmassDEtaTau21.SetBinContent(i, cutFlowDEtaTau21[i])
+	hcutFlowmassDEtaTau31 	= TH1F('cutFlowDEtaTau31', 'cutFlowDEtaTau31', len(cutFlowDEtaTau31), 0, len(cutFlowDEtaTau31) )
+	for i in range( len(cutFlowDEtaTau31) ): hcutFlowmassDEtaTau31.SetBinContent(i, cutFlowDEtaTau31[i])
+	hcutFlowmassMassAsymTau21CosThetaDEta 	= TH1F('cutFlowMassAsymTau21CosThetaDEta', 'cutFlowMassAsymTau21CosThetaDEta', len(cutFlowMassAsymTau21CosThetaDEta), 0, len(cutFlowMassAsymTau21CosThetaDEta) )
+	for i in range( len(cutFlowMassAsymTau21CosThetaDEta) ): hcutFlowmassMassAsymTau21CosThetaDEta.SetBinContent(i, cutFlowMassAsymTau21CosThetaDEta[i])
+
+
+	##### write output file 
+	#outputFile.cd()
+	#for key in inputFile.GetListOfKeys():
+	#	print key
+	#	saveDir = TDirectory()
+		#adir = saveDir.mkdir( key.GetName() )
+		#adir.cd()
+		#if key.GetClassName() == 'TDirectoryFile':
+		#	if not 'Tree' in key.GetName():
+		#		newDir = outputFile.mkdir( key.GetName() )
+		#		newDir.cd()
+		#for q in key.GetList():
+		#	print q
+				#	print key.GetName(), q
+
+
+	outputFile.Write()
+
+	##### Closing
+	print 'Writing output file: '+ outputFileName
+	outputFile.Close()
+
+	###### Extra: send prints to file
+	#if couts == False: 
+	#	sys.stdout = outfileStdOut
+	#	f.close()
+	#########################
 
 
 #################################################################################
@@ -368,7 +373,7 @@ if __name__ == '__main__':
 	samples = args.samples
 
 	if 'RPV' in samples: 
-		inputFileName = 'Rootfiles/RUNAnalysis_RPVSt'+str(mass)+'tojj_RunIISpring15DR74_'+PU+'_v03_v01.root'
+		inputFileName = 'Rootfiles/RUNAnalysis_RPVSt'+str(mass)+'tojj_RunIISpring15DR74_'+PU+'_v03_v01p3.root'
 		myAnalyzer( inputFileName, couts, grooming )
 	elif 'Data' in samples: 
 		inputFileName = 'Rootfiles/RUNAnalysis_JetHT_Run2015C_Asympt25ns_v03_v01p3.root'
@@ -384,6 +389,6 @@ if __name__ == '__main__':
 		#for qcdBin in [ '170to300', '300to470', '470to600', '600to800', '800to1000', '1000to1400', '1400to1800' ]: 
 		#	inputFileName = 'Rootfiles//RUNAnalysis_QCD_Pt_'+qcdBin+'_RunIISpring15DR74_'+PU+'_v01_v07.root'
 		#	myAnalyzer( inputFileName, couts, grooming )
-		inputFileName = 'Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15DR74_Asympt25ns_v03_v01.root'
+		inputFileName = 'Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15DR74_Asympt25ns_v03_v01p3.root'
 		myAnalyzer( inputFileName, couts, grooming )
 

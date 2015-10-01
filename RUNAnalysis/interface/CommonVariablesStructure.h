@@ -36,13 +36,13 @@ typedef struct Jet_struc {
 } JETtype;
 
 
-float massAverage( float m1, float m2 ){ return ( (m1 + m2)/2 ); }
+static float massAverage( float m1, float m2 ){ return ( (m1 + m2)/2 ); }
 
-float massAsymmetry( float m1, float m2 ){ return abs( ( m1 - m2 )/( m1 + m2 ) ); }
+static float massAsymmetry( float m1, float m2 ){ return abs( ( m1 - m2 )/( m1 + m2 ) ); }
 
-float deltaValue( float p1, float p2 ){ return abs( p1 - p2 ); }
+static float deltaValue( float p1, float p2 ){ return abs( p1 - p2 ); }
 
-float calculateCosThetaStar( TLorentzVector jet1, TLorentzVector jet2 ){
+static float calculateCosThetaStar( TLorentzVector jet1, TLorentzVector jet2 ){
 
 	TLorentzVector tmpCM = jet1 + jet2;
 	jet1.Boost( -tmpCM.BoostVector() );
@@ -51,3 +51,34 @@ float calculateCosThetaStar( TLorentzVector jet1, TLorentzVector jet2 ){
 
 	return valueCosThetaStar;
 }
+
+static bool loosejetID( double jetE, double jecFactor, double neutralHadronEnergy, double neutralEmEnergy, double chargedHadronEnergy, double chargedEmEnergy, int chargedHadronMultiplicity, int neutralHadronMultiplicity, double chargedMultiplicity ){ 
+
+	double jec = 1. / ( jecFactor * jetE );
+	double nhf = neutralHadronEnergy * jec;
+	double nEMf = neutralEmEnergy * jec;
+	double chf = chargedHadronEnergy * jec;
+	//double muf = muonEnergy * jec;
+	double cEMf = chargedEmEnergy * jec;
+	int numConst = chargedHadronMultiplicity + neutralHadronMultiplicity ;  //// REMEMBER TO INCLUDE # of constituents
+	double chm = chargedMultiplicity * jec;
+
+	//bool idL = ( (nhf<0.99) && (nEMf<0.99) && (muf<0.8) && (cEMf<0.9) );  /// 8TeV recommendation
+	bool idL = ( (nhf<0.99) && (nEMf<0.99) && (numConst>1) && (chf>0) && (chm>0) && (cEMf<0.99) );
+
+	return idL;
+}
+
+static bool checkTriggerBits( Handle<vector<string>> triggerNames, Handle<vector<float>> triggerBits, TString HLTtrigger  ){
+
+	float triggerFired = 0;
+	for (size_t t = 0; t < triggerNames->size(); t++) {
+		if ( TString( (*triggerNames)[t] ).Contains( HLTtrigger ) ) {
+			triggerFired = (*triggerBits)[t];
+			//LogWarning("triggerbit") << (*triggerNames)[t] << " " <<  (*triggerBits)[t];
+		}
+	}
+	if ( HLTtrigger.Contains( "NOTRIGGER" ) ) triggerFired = 1;
+
+	return triggerFired;
+}	

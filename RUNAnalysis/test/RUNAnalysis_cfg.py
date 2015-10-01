@@ -81,8 +81,8 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
-		#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/B2g_PU40bx50_v0/150219_165100/0000/B2GEDMNtuple_1.root',
-		'file:RUNtuple_1.root'
+		'/store/user/algomez/RPVSt350tobj_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns_v03/150910_123957/0000/RUNtuples_104.root',
+		#'file:RUNtuple_1.root'
 	    )
 	)
 
@@ -91,18 +91,23 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32 (options.max
 
 if 'bj' in NAME: bjsample = True
 else: bjsample = False
-Lumi = 1000
+if '25ns' in NAME:
+	#Lumi = 15.47
+	Lumi = 166.37
+else: Lumi = 71.52
+
 
 from RUNA.RUNAnalysis.scaleFactors import scaleFactor
-SF = 1 #scaleFactor(NAME)
+SF = scaleFactor(NAME)
 
-if 'PU40bx50' in NAME: PU = 'PU40bx50'
-elif 'PU30BX50' in NAME: PU = 'PU30BX50'
-elif 'PU20bx25' in NAME: PU = 'PU20bx25'
-else: PU = 'NOPU'
+if 'JetHT' in NAME:
+	sf = 1
+	HTtrigger = 'HLT_PFHT800'
+else: 
+	sf = SF*Lumi
+	HTtrigger = 'HLT_PFHT900'
 
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNAnalysis_'+NAME+'.root' ) )
-#process.TFileService=cms.Service("TFileService",fileName=cms.string( 'anaPlots.root' ) )
 
 process.AnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 		scale 			= cms.double(SF*Lumi),
@@ -112,25 +117,19 @@ process.AnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 		cutEtaBand 		= cms.double( options.EtaBand ),
 		cutJetPt 		= cms.double( options.JetPt ),
 		bjSample		= cms.bool( bjsample ),
-		jetPt 			= cms.InputTag('jetsAK4:jetAK4Pt'),
-		jetEta			= cms.InputTag('jetsAK4:jetAK4Eta'),
-		jetPhi 			= cms.InputTag('jetsAK4:jetAK4Phi'),
-		jetE 			= cms.InputTag('jetsAK4:jetAK4E'),
-		jetMass 		= cms.InputTag('jetsAK4:jetAK4Mass'),
-		jetTau1 		= cms.InputTag('jetsAK8:jetAK8tau1'),
-		jetTau2 		= cms.InputTag('jetsAK8:jetAK8tau2'),
-		jetTau3 		= cms.InputTag('jetsAK8:jetAK8tau3'),
-		jetKeys 		= cms.InputTag('jetKeysAK8'),
-		jetCSV 			= cms.InputTag('jetsAK4:jetAK4CSV'),
-		jetCSVV1 		= cms.InputTag('jetsAK4:jetAK4CSVV1'),
-		NPV	 		= cms.InputTag('eventUserData:npv'),
-		#### JetID
-		jecFactor 		= cms.InputTag('jetsAK4:jetAK4jecFactor0'),
-		neutralHadronEnergy 	= cms.InputTag('jetsAK4:jetAK4neutralHadronEnergy'),
-		neutralEmEnergy 	= cms.InputTag('jetsAK4:jetAK4neutralEmEnergy'),
-		chargeEmEnergy 		= cms.InputTag('jetsAK4:jetAK4chargedEmEnergy'),
-		muonEnergy 		= cms.InputTag('jetsAK4:jetAK4MuonEnergy'),
+		HLTtriggerOne		= cms.string( HTtrigger ),
+		HLTtriggerTwo		= cms.string( HTtrigger ),
 )
+
+process.AnalysisPlotsPFHT7504Jet = process.AnalysisPlots.clone( 
+		HLTtriggerOne		= cms.string( 'HLT_PFHT750_4Jet_v1' ),
+		HLTtriggerTwo		= cms.string( 'HLT_PFHT750_4Jet_v1' ),
+		)
+
+process.AnalysisPlotsPFHT800PFHT7504Jet = process.AnalysisPlots.clone( 
+		HLTtriggerOne		= cms.string( HTtrigger ),
+		HLTtriggerTwo		= cms.string( 'HLT_PFHT750_4Jet_v1' ),
+		)
 
 process.AnalysisPlotsNOSCALE = process.AnalysisPlots.clone( scale = cms.double(1) )
 
@@ -140,5 +139,7 @@ else:
 
 	process.p = cms.Path( process.AnalysisPlots
 		* process.AnalysisPlotsNOSCALE
+		* process.AnalysisPlotsPFHT7504Jet
+		* process.AnalysisPlotsPFHT800PFHT7504Jet
 		)
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
