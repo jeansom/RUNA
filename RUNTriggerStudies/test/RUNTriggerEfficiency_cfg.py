@@ -9,7 +9,7 @@ from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing ('python')
 
 options.register('PROC', 
-		'RPVSt100tojj_pythia8_13TeV_PU20bx25',
+		'JetHT_Run2015C',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
 		"name"
@@ -78,9 +78,16 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
-		'/store/user/algomez/JetHT/RunIISpring15DR74_RUNA_Asympt25ns_v01p2/150722_101118/0000/RUNtuples_101.root'
-		#'/store/user/jsomalwa/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns_v02p2/150728_150144/0000/RUNtuples_101.root'
-	#	#'file:../../RUNtuples/test/RUNAEDMNtuple.root'
+		   '/store/user/algomez/JetHT/RunIISpring15DR74_RUNA_Asympt25ns_v03p1/150920_062007/0000/RUNtuples_1.root',
+		   '/store/user/algomez/JetHT/RunIISpring15DR74_RUNA_Asympt25ns_v03p1/150920_062007/0000/RUNtuples_10.root',
+		   '/store/user/algomez/JetHT/RunIISpring15DR74_RUNA_Asympt25ns_v03p1/150920_062007/0000/RUNtuples_100.root',
+		   '/store/user/algomez/JetHT/RunIISpring15DR74_RUNA_Asympt25ns_v03p1/150920_062007/0000/RUNtuples_101.root',
+		   '/store/user/algomez/JetHT/RunIISpring15DR74_RUNA_Asympt25ns_v03p1/150920_062007/0000/RUNtuples_102.root',
+		   '/store/user/algomez/JetHT/RunIISpring15DR74_RUNA_Asympt25ns_v03p1/150920_062007/0000/RUNtuples_103.root',
+		   '/store/user/algomez/JetHT/RunIISpring15DR74_RUNA_Asympt25ns_v03p1/150920_062007/0000/RUNtuples_104.root',
+		   '/store/user/algomez/JetHT/RunIISpring15DR74_RUNA_Asympt25ns_v03p1/150920_062007/0000/RUNtuples_105.root',
+		   '/store/user/algomez/JetHT/RunIISpring15DR74_RUNA_Asympt25ns_v03p1/150920_062007/0000/RUNtuples_106.root',
+		   '/store/user/algomez/JetHT/RunIISpring15DR74_RUNA_Asympt25ns_v03p1/150920_062007/0000/RUNtuples_11.root',
 	    )
 	)
 
@@ -158,9 +165,6 @@ process.TriggerEfficiency = cms.EDAnalyzer('RUNTriggerEfficiency',
 process.TriggerEfficiencyPFHT800 = process.TriggerEfficiency.clone( HLTtriggerTwo = cms.string('HLT_PFHT800') )
 process.TriggerEfficiencyAK8PFHT650 = process.TriggerEfficiency.clone( HLTtriggerTwo = cms.string('HLT_AK8PFHT650_TrimR0p1PT0p03Mass50') )
 process.TriggerEfficiencyAK8PFHT650AndPFHT800 = process.TriggerEfficiencyAK8PFHT650.clone( HLTtriggerOne = cms.string('HLT_PFHT800') )
-process.TriggerEfficiencyAK8PFHT600 = process.TriggerEfficiency.clone( HLTtriggerTwo = cms.string('HLT_AK8PFHT600_TrimR0p1PT0p03Mass50') )
-process.TriggerEfficiencyAK8PFHT550 = process.TriggerEfficiency.clone( HLTtriggerTwo = cms.string('HLT_AK8PFHT550_TrimR0p1PT0p03Mass50') )
-process.TriggerEfficiencyAK8PFHT500 = process.TriggerEfficiency.clone( HLTtriggerTwo = cms.string('HLT_AK8PFHT500_TrimR0p1PT0p03Mass50') )
 
 if options.debug:
 	process.p = cms.Path( process.TriggerEfficiencyPruned )
@@ -172,8 +176,5 @@ else:
 	if 'RPV' in NAME:
 		process.p += process.TriggerEfficiencyAK8PFHT650
 		process.p += process.TriggerEfficiencyAK8PFHT650AndPFHT800
-		process.p += process.TriggerEfficiencyAK8PFHT600
-		process.p += process.TriggerEfficiencyAK8PFHT500
-		process.p += process.TriggerEfficiencyAK8PFHT550
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

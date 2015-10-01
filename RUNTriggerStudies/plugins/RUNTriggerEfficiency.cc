@@ -91,8 +91,6 @@ class RUNTriggerEfficiency : public EDAnalyzer {
       double cutHTvalue;*/
       double cutjetPtvalue;
       double cutAsymvalue;
-      double cutCosThetavalue;
-      double cutSubjetPtRatiovalue;
       double cutTau31value;
       double cutTau21value;
 
@@ -197,8 +195,6 @@ RUNTriggerEfficiency::RUNTriggerEfficiency(const ParameterSet& iConfig):
 	HLTtriggerTwo = iConfig.getParameter<string>("HLTtriggerTwo");
 	cutjetPtvalue = iConfig.getParameter<double>("cutjetPtvalue");
 	cutAsymvalue = iConfig.getParameter<double>("cutAsymvalue");
-	cutCosThetavalue = iConfig.getParameter<double>("cutCosThetavalue");
-	cutSubjetPtRatiovalue = iConfig.getParameter<double>("cutSubjetPtRatiovalue");
 	cutTau31value = iConfig.getParameter<double>("cutTau31value");
 	cutTau21value = iConfig.getParameter<double>("cutTau21value");
 }
@@ -347,6 +343,7 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 	/// Applying kinematic, trigger and jet ID
 	vector< JETtype > JETS;
 	vector< float > tmpTriggerMass;
+	vector< float > tmpMass;
 	bool bTagCSV = 0;
 	float HT = 0;
 
@@ -355,6 +352,7 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 		if( TMath::Abs( (*jetEta)[i] ) > 2.4 ) continue;
 
 		tmpTriggerMass.push_back( (*jetTrimmedMass)[i] );
+		tmpMass.push_back( (*jetMass)[i] );
 
 		double jec = 1. / ( (*jecFactor)[i] * (*jetE)[i] );
 		double nhf = (*neutralHadronEnergy)[i] * jec;
@@ -412,8 +410,11 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 	float trimmedMass = -999;
 	if ( ( tmpTriggerMass.size()> 0 ) ) trimmedMass = tmpTriggerMass[0];
 	tmpTriggerMass.clear();
-
-
+	
+	sort(tmpMass.begin(), tmpMass.end(), [](const float p1, const float p2) { return p1 > p2; }); 
+	float leadMass = -999;
+	if ( ( tmpMass.size()> 0 ) ) leadMass = tmpMass[0];
+	tmpMass.clear();
 
 	if (HT > 0 ) { 
 		histos2D_[ "jetMassHT_noTrigger" ]->Fill( JETS[0].mass, HT, scale );
@@ -439,9 +440,6 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 	///////////////////
 
 	bool cutMassAsym = 0;
-	bool cutCosTheta = 0;
-	bool cutSubjetPtRatio= 0;
-
 
 	vector<TLorentzVector> jet1SubjetsTLV, jet2SubjetsTLV;
 
@@ -457,46 +455,8 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 		float massAsym = abs( jet1Mass - jet2Mass ) / ( jet1Mass + jet2Mass );
 		//////////////////////////////////////////////////////////////////////////
 
-		// Cos theta star
-		TLorentzVector tmpJet1, tmpJet2, tmpCM;
-		tmpJet1 = JETS[0].p4;
-		tmpJet2 = JETS[1].p4;
-		tmpCM = tmpJet1 + tmpJet2;
-		//LogWarning("Jets") << tmpJet1.Eta() << " " << tmpJet2.Eta() << " " << tmpCM.Eta();
-		tmpJet1.Boost( -tmpCM.BoostVector() );
-		tmpJet2.Boost( -tmpCM.BoostVector() );
-		//LogWarning("JetsBoost") << tmpJet1.Eta() << " " << tmpJet2.Eta();
-		float cosThetaStar = TMath::Abs( ( tmpJet1.Px() * tmpCM.Px() +  tmpJet1.Py() * tmpCM.Py() + tmpJet1.Pz() * tmpCM.Pz() ) / (tmpJet1.E() * tmpCM.E() ) ) ;
-		//LogWarning("cos theta") << cosThetaStar ;
-		/////////////////////////////////////////////////////////////////////////////////
-
-		/*/ Nsubjetiness
-		jet1Tau21 = JETS[0].tau2 / JETS[0].tau1;
-		jet1Tau31 = JETS[0].tau3 / JETS[0].tau1;
-		jet1Tau32 = JETS[0].tau3 / JETS[0].tau2;
-		///////////////////////////////////////////////////////////////////////////////*/
-
-		// Subjet variables
-		jet1SubjetsTLV.push_back( JETS[0].subjet0 );
-		jet1SubjetsTLV.push_back( JETS[0].subjet1 );
-		//LogWarning("subjet0") <<  jet1SubjetsTLV[0].M() << " " <<  jet1SubjetsTLV[1].M();
-		sort(jet1SubjetsTLV.begin(), jet1SubjetsTLV.end(), [](const TLorentzVector &p1, const TLorentzVector &p2) { return p1.M() > p2.M(); }); 
-		//LogWarning("subjet0") <<  jet1SubjetsTLV[0].M() << " " <<  jet1SubjetsTLV[1].M();
-		jet2SubjetsTLV.push_back( JETS[1].subjet0 );
-		jet2SubjetsTLV.push_back( JETS[1].subjet1 );
-		sort(jet2SubjetsTLV.begin(), jet2SubjetsTLV.end(), [](const TLorentzVector &p1, const TLorentzVector &p2) { return p1.M() > p2.M(); }); 
-		
-		float jet1SubjetPtRatio = 0;
-		float jet2SubjetPtRatio = 0;
-		if( ( jet1SubjetsTLV.size() > 0 ) && ( jet2SubjetsTLV.size() > 0 ) ) {
-			jet1SubjetPtRatio = min( jet1SubjetsTLV[0].Pt(), jet1SubjetsTLV[1].Pt() ) / max( jet1SubjetsTLV[0].Pt(), jet1SubjetsTLV[1].Pt() );
-			jet2SubjetPtRatio = min( jet2SubjetsTLV[0].Pt(), jet2SubjetsTLV[1].Pt() ) / max( jet2SubjetsTLV[0].Pt(), jet2SubjetsTLV[1].Pt() );
-		}
-
 
 		if( massAsym < cutAsymvalue ) cutMassAsym = 1;
-		if( TMath::Abs( cosThetaStar ) < cutCosThetavalue ) cutCosTheta = 1;
-		if( ( jet1SubjetPtRatio > cutSubjetPtRatiovalue ) && ( jet2SubjetPtRatio > cutSubjetPtRatiovalue ) ) cutSubjetPtRatio = 1;
 		
 		histos2D_[ "jetMassHT_cutDijet_noTrigger" ]->Fill( jetPrunedMass, HT, scale );
 		histos2D_[ "jetTrimmedMassHT_cutDijet_noTrigger" ]->Fill( trimmedMass, HT, scale );
@@ -517,7 +477,9 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 			histos1D_[ "massAveDenom_cutDijet" ]->Fill( massAve, scale  );
 			histos1D_[ "trimmedMassDenom_cutDijet" ]->Fill( trimmedMass, scale  );
 			histos1D_[ "jet1MassDenom_cutDijet" ]->Fill( jetPrunedMass, scale  );
+			histos1D_[ "jetLeadMassDenom_cutDijet" ]->Fill( leadMass, scale  );
 			histos1D_[ "jet1PtDenom_cutDijet" ]->Fill( JETS[0].p4.Pt() , scale  );
+			histos1D_[ "jet2PtDenom_cutDijet" ]->Fill( JETS[1].p4.Pt() , scale  );
 			histos1D_[ "HTDenom_cutDijet" ]->Fill( HT, scale  );
 			histos1D_[ "ak4HTDenom_cutDijet" ]->Fill( ak4HT, scale  );
 			histos2D_[ "jetMassHTDenom_cutDijet" ]->Fill( jetPrunedMass, HT, scale );
@@ -527,8 +489,10 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 			if ( triggerFiredTwo ){
 				histos1D_[ "massAvePassing_cutDijet" ]->Fill( massAve, scale  );
 				histos1D_[ "trimmedMassPassing_cutDijet" ]->Fill( trimmedMass, scale  );
+				histos1D_[ "jetLeadMassPassing_cutDijet" ]->Fill( leadMass, scale  );
 				histos1D_[ "jet1MassPassing_cutDijet" ]->Fill( jetPrunedMass, scale  );
 				histos1D_[ "jet1PtPassing_cutDijet" ]->Fill( JETS[0].p4.Pt() , scale  );
+				histos1D_[ "jet2PtPassing_cutDijet" ]->Fill( JETS[1].p4.Pt() , scale  );
 				histos1D_[ "HTPassing_cutDijet" ]->Fill( HT, scale  );
 				histos1D_[ "ak4HTPassing_cutDijet" ]->Fill( ak4HT, scale  );
 				histos2D_[ "jetMassHTPassing_cutDijet" ]->Fill( jetPrunedMass, HT, scale );
@@ -539,13 +503,28 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 			if ( HT > 800 ) {
 				histos1D_[ "jetTrimmedMassDenom_cutHT" ]->Fill( trimmedMass, scale  );
 				histos1D_[ "jet1MassDenom_cutHT" ]->Fill( jetPrunedMass, scale  );
+				histos1D_[ "jetLeadMassDenom_cutHT" ]->Fill( leadMass, scale  );
+				histos1D_[ "HTDenom_cutHT" ]->Fill( HT, scale  );
 				if ( triggerFiredTwo ){
 					histos1D_[ "jetTrimmedMassPassing_cutHT" ]->Fill( trimmedMass, scale  );
 					histos1D_[ "jet1MassPassing_cutHT" ]->Fill( jetPrunedMass, scale  );
+					histos1D_[ "jetLeadMassPassing_cutHT" ]->Fill( leadMass, scale  );
+					histos1D_[ "HTPassing_cutHT" ]->Fill( HT, scale  );
 				}
 			}
 
-			if ( cutMassAsym ) {
+			if ( jetPrunedMass > 60 ) {
+				histos1D_[ "jetTrimmedMassDenom_cutJetMass" ]->Fill( trimmedMass, scale  );
+				histos1D_[ "jet1MassDenom_cutJetMass" ]->Fill( jetPrunedMass, scale  );
+				histos1D_[ "HTDenom_cutJetMass" ]->Fill( HT, scale  );
+				if ( triggerFiredTwo ){
+					histos1D_[ "jetTrimmedMassPassing_cutJetMass" ]->Fill( trimmedMass, scale  );
+					histos1D_[ "jet1MassPassing_cutJetMass" ]->Fill( jetPrunedMass, scale  );
+					histos1D_[ "HTPassing_cutJetMass" ]->Fill( HT, scale  );
+				}
+			}
+
+			if ( ( cutMassAsym ) && ( HT > 800 ) && ( jetPrunedMass > 60 ) ) {
 				histos1D_[ "massAveDenom_cutMassAsym" ]->Fill( massAve, scale  );
 				histos1D_[ "trimmedMassDenom_cutMassAsym" ]->Fill( trimmedMass, scale  );
 				histos1D_[ "jet1MassDenom_cutMassAsym" ]->Fill( jetPrunedMass, scale  );
@@ -566,54 +545,6 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 					histos2D_[ "jetMassHTPassing_cutMassAsym" ]->Fill( jetPrunedMass, HT, scale );
 					histos2D_[ "jetTrimmedMassHTPassing_cutMassAsym" ]->Fill( trimmedMass, HT, scale );
 					histos2D_[ "massAveHTPassing_cutMassAsym" ]->Fill( massAve, HT, scale );
-				}
-
-				if ( cutCosTheta ) {
-					histos1D_[ "massAveDenom_cutCosTheta" ]->Fill( massAve, scale  );
-					histos1D_[ "trimmedMassDenom_cutCosTheta" ]->Fill( trimmedMass, scale  );
-					histos1D_[ "jet1MassDenom_cutCosTheta" ]->Fill( jetPrunedMass, scale  );
-					histos1D_[ "jet1PtDenom_cutCosTheta" ]->Fill( JETS[0].p4.Pt() , scale  );
-					histos1D_[ "HTDenom_cutCosTheta" ]->Fill( HT, scale  );
-					histos1D_[ "ak4HTDenom_cutCosTheta" ]->Fill( ak4HT, scale  );
-					histos2D_[ "jetMassHTDenom_cutCosTheta" ]->Fill( jetPrunedMass, HT, scale );
-					histos2D_[ "jetTrimmedMassHTDenom_cutCosTheta" ]->Fill( trimmedMass, HT, scale );
-					histos2D_[ "massAveHTDenom_cutCosTheta" ]->Fill( massAve, HT, scale );
-
-					if ( triggerFiredTwo ){
-						histos1D_[ "massAvePassing_cutCosTheta" ]->Fill( massAve, scale  );
-						histos1D_[ "trimmedMassPassing_cutCosTheta" ]->Fill( trimmedMass, scale  );
-						histos1D_[ "jet1MassPassing_cutCosTheta" ]->Fill( jetPrunedMass, scale  );
-						histos1D_[ "jet1PtPassing_cutCosTheta" ]->Fill( JETS[0].p4.Pt() , scale  );
-						histos1D_[ "HTPassing_cutCosTheta" ]->Fill( HT, scale  );
-						histos1D_[ "ak4HTPassing_cutCosTheta" ]->Fill( ak4HT, scale  );
-						histos2D_[ "jetMassHTPassing_cutCosTheta" ]->Fill( jetPrunedMass, HT, scale );
-						histos2D_[ "jetTrimmedMassHTPassing_cutCosTheta" ]->Fill( trimmedMass, HT, scale );
-						histos2D_[ "massAveHTPassing_cutCosTheta" ]->Fill( massAve, HT, scale );
-					}
-
-					if ( cutSubjetPtRatio ) {
-						histos1D_[ "massAveDenom_cutSubjetPtRatio" ]->Fill( massAve, scale  );
-						histos1D_[ "trimmedMassDenom_cutSubjetPtRatio" ]->Fill( trimmedMass, scale  );
-						histos1D_[ "jet1MassDenom_cutSubjetPtRatio" ]->Fill( jetPrunedMass, scale  );
-						histos1D_[ "jet1PtDenom_cutSubjetPtRatio" ]->Fill( JETS[0].p4.Pt() , scale  );
-						histos1D_[ "HTDenom_cutSubjetPtRatio" ]->Fill( HT, scale  );
-						histos1D_[ "ak4HTDenom_cutSubjetPtRatio" ]->Fill( ak4HT, scale  );
-						histos2D_[ "jetMassHTDenom_cutSubjetPtRatio" ]->Fill( jetPrunedMass, HT, scale );
-						histos2D_[ "jetTrimmedMassHTDenom_cutSubjetPtRatio" ]->Fill( trimmedMass, HT, scale );
-						histos2D_[ "massAveHTDenom_cutSubjetPtRatio" ]->Fill( massAve, HT, scale );
-
-						if ( triggerFiredTwo ){
-							histos1D_[ "massAvePassing_cutSubjetPtRatio" ]->Fill( massAve, scale  );
-							histos1D_[ "trimmedMassPassing_cutSubjetPtRatio" ]->Fill( trimmedMass, scale  );
-							histos1D_[ "jet1MassPassing_cutSubjetPtRatio" ]->Fill( jetPrunedMass, scale  );
-							histos1D_[ "jet1PtPassing_cutSubjetPtRatio" ]->Fill( JETS[0].p4.Pt() , scale  );
-							histos1D_[ "HTPassing_cutSubjetPtRatio" ]->Fill( HT, scale  );
-							histos1D_[ "ak4HTPassing_cutSubjetPtRatio" ]->Fill( ak4HT, scale  );
-							histos2D_[ "jetMassHTPassing_cutSubjetPtRatio" ]->Fill( jetPrunedMass, HT, scale );
-							histos2D_[ "jetTrimmedMassHTPassing_cutSubjetPtRatio" ]->Fill( trimmedMass, HT, scale );
-							histos2D_[ "massAveHTPassing_cutSubjetPtRatio" ]->Fill( massAve, HT, scale );
-						}
-					}
 				}
 			}
 		}
@@ -636,15 +567,7 @@ void RUNTriggerEfficiency::beginJob() {
 	histos1D_[ "ak4HTPassing_cutMassAsym" ] = fs_->make< TH1D >( "ak4HTPassing_cutMassAsym", "ak4HTPassing_cutMassAsym", 150, 0., 1500. );
 	histos1D_[ "ak4HTPassing_cutMassAsym" ]->Sumw2();
 
-	histos1D_[ "ak4HTDenom_cutCosTheta" ] = fs_->make< TH1D >( "ak4HTDenom_cutCosTheta", "ak4HTDenom_cutCosTheta", 150, 0., 1500. );
-	histos1D_[ "ak4HTDenom_cutCosTheta" ]->Sumw2();
-	histos1D_[ "ak4HTPassing_cutCosTheta" ] = fs_->make< TH1D >( "ak4HTPassing_cutCosTheta", "ak4HTPassing_cutCosTheta", 150, 0., 1500. );
-	histos1D_[ "ak4HTPassing_cutCosTheta" ]->Sumw2();
 
-	histos1D_[ "ak4HTDenom_cutSubjetPtRatio" ] = fs_->make< TH1D >( "ak4HTDenom_cutSubjetPtRatio", "ak4HTDenom_cutSubjetPtRatio", 150, 0., 1500. );
-	histos1D_[ "ak4HTDenom_cutSubjetPtRatio" ]->Sumw2();
-	histos1D_[ "ak4HTPassing_cutSubjetPtRatio" ] = fs_->make< TH1D >( "ak4HTPassing_cutSubjetPtRatio", "ak4HTPassing_cutSubjetPtRatio", 150, 0., 1500. );
-	histos1D_[ "ak4HTPassing_cutSubjetPtRatio" ]->Sumw2();
 
 	histos1D_[ "HTDenom_cutDijet" ] = fs_->make< TH1D >( "HTDenom_cutDijet", "HTDenom_cutDijet", 150, 0., 1500. );
 	histos1D_[ "HTDenom_cutDijet" ]->Sumw2();
@@ -656,15 +579,7 @@ void RUNTriggerEfficiency::beginJob() {
 	histos1D_[ "HTPassing_cutMassAsym" ] = fs_->make< TH1D >( "HTPassing_cutMassAsym", "HTPassing_cutMassAsym", 150, 0., 1500. );
 	histos1D_[ "HTPassing_cutMassAsym" ]->Sumw2();
 
-	histos1D_[ "HTDenom_cutCosTheta" ] = fs_->make< TH1D >( "HTDenom_cutCosTheta", "HTDenom_cutCosTheta", 150, 0., 1500. );
-	histos1D_[ "HTDenom_cutCosTheta" ]->Sumw2();
-	histos1D_[ "HTPassing_cutCosTheta" ] = fs_->make< TH1D >( "HTPassing_cutCosTheta", "HTPassing_cutCosTheta", 150, 0., 1500. );
-	histos1D_[ "HTPassing_cutCosTheta" ]->Sumw2();
 
-	histos1D_[ "HTDenom_cutSubjetPtRatio" ] = fs_->make< TH1D >( "HTDenom_cutSubjetPtRatio", "HTDenom_cutSubjetPtRatio", 150, 0., 1500. );
-	histos1D_[ "HTDenom_cutSubjetPtRatio" ]->Sumw2();
-	histos1D_[ "HTPassing_cutSubjetPtRatio" ] = fs_->make< TH1D >( "HTPassing_cutSubjetPtRatio", "HTPassing_cutSubjetPtRatio", 150, 0., 1500. );
-	histos1D_[ "HTPassing_cutSubjetPtRatio" ]->Sumw2();
 
 	histos1D_[ "trimmedMassDenom_cutDijet" ] = fs_->make< TH1D >( "trimmedMassDenom_cutDijet", "trimmedMassDenom_cutDijet", 60, 0., 600. );
 	histos1D_[ "trimmedMassDenom_cutDijet" ]->Sumw2();
@@ -676,15 +591,7 @@ void RUNTriggerEfficiency::beginJob() {
 	histos1D_[ "trimmedMassPassing_cutMassAsym" ] = fs_->make< TH1D >( "trimmedMassPassing_cutMassAsym", "trimmedMassPassing_cutMassAsym", 60, 0., 600. );
 	histos1D_[ "trimmedMassPassing_cutMassAsym" ]->Sumw2();
 
-	histos1D_[ "trimmedMassDenom_cutCosTheta" ] = fs_->make< TH1D >( "trimmedMassDenom_cutCosTheta", "trimmedMassDenom_cutCosTheta", 60, 0., 600. );
-	histos1D_[ "trimmedMassDenom_cutCosTheta" ]->Sumw2();
-	histos1D_[ "trimmedMassPassing_cutCosTheta" ] = fs_->make< TH1D >( "trimmedMassPassing_cutCosTheta", "trimmedMassPassing_cutCosTheta", 60, 0., 600. );
-	histos1D_[ "trimmedMassPassing_cutCosTheta" ]->Sumw2();
 
-	histos1D_[ "trimmedMassDenom_cutSubjetPtRatio" ] = fs_->make< TH1D >( "trimmedMassDenom_cutSubjetPtRatio", "trimmedMassDenom_cutSubjetPtRatio", 60, 0., 600. );
-	histos1D_[ "trimmedMassDenom_cutSubjetPtRatio" ]->Sumw2();
-	histos1D_[ "trimmedMassPassing_cutSubjetPtRatio" ] = fs_->make< TH1D >( "trimmedMassPassing_cutSubjetPtRatio", "trimmedMassPassing_cutSubjetPtRatio", 60, 0., 600. );
-	histos1D_[ "trimmedMassPassing_cutSubjetPtRatio" ]->Sumw2();
 
 	histos1D_[ "massAveDenom_cutDijet" ] = fs_->make< TH1D >( "massAveDenom_cutDijet", "massAveDenom_cutDijet", 60, 0., 600. );
 	histos1D_[ "massAveDenom_cutDijet" ]->Sumw2();
@@ -696,35 +603,24 @@ void RUNTriggerEfficiency::beginJob() {
 	histos1D_[ "massAvePassing_cutMassAsym" ] = fs_->make< TH1D >( "massAvePassing_cutMassAsym", "massAvePassing_cutMassAsym", 60, 0., 600. );
 	histos1D_[ "massAvePassing_cutMassAsym" ]->Sumw2();
 
-	histos1D_[ "massAveDenom_cutCosTheta" ] = fs_->make< TH1D >( "massAveDenom_cutCosTheta", "massAveDenom_cutCosTheta", 60, 0., 600. );
-	histos1D_[ "massAveDenom_cutCosTheta" ]->Sumw2();
-	histos1D_[ "massAvePassing_cutCosTheta" ] = fs_->make< TH1D >( "massAvePassing_cutCosTheta", "massAvePassing_cutCosTheta", 60, 0., 600. );
-	histos1D_[ "massAvePassing_cutCosTheta" ]->Sumw2();
 
-	histos1D_[ "massAveDenom_cutSubjetPtRatio" ] = fs_->make< TH1D >( "massAveDenom_cutSubjetPtRatio", "massAveDenom_cutSubjetPtRatio", 60, 0., 600. );
-	histos1D_[ "massAveDenom_cutSubjetPtRatio" ]->Sumw2();
-	histos1D_[ "massAvePassing_cutSubjetPtRatio" ] = fs_->make< TH1D >( "massAvePassing_cutSubjetPtRatio", "massAvePassing_cutSubjetPtRatio", 60, 0., 600. );
-	histos1D_[ "massAvePassing_cutSubjetPtRatio" ]->Sumw2();
 
 	histos1D_[ "jet1PtDenom_cutDijet" ] = fs_->make< TH1D >( "jet1PtDenom_cutDijet", "jet1PtDenom_cutDijet", 100, 0., 1000. );
 	histos1D_[ "jet1PtDenom_cutDijet" ]->Sumw2();
 	histos1D_[ "jet1PtPassing_cutDijet" ] = fs_->make< TH1D >( "jet1PtPassing_cutDijet", "jet1PtPassing_cutDijet", 100, 0., 1000. );
 	histos1D_[ "jet1PtPassing_cutDijet" ]->Sumw2();
 
+	histos1D_[ "jet2PtDenom_cutDijet" ] = fs_->make< TH1D >( "jet2PtDenom_cutDijet", "jet2PtDenom_cutDijet", 100, 0., 1000. );
+	histos1D_[ "jet2PtDenom_cutDijet" ]->Sumw2();
+	histos1D_[ "jet2PtPassing_cutDijet" ] = fs_->make< TH1D >( "jet2PtPassing_cutDijet", "jet2PtPassing_cutDijet", 100, 0., 1000. );
+	histos1D_[ "jet2PtPassing_cutDijet" ]->Sumw2();
+
 	histos1D_[ "jet1PtDenom_cutMassAsym" ] = fs_->make< TH1D >( "jet1PtDenom_cutMassAsym", "jet1PtDenom_cutMassAsym", 100, 0., 1000. );
 	histos1D_[ "jet1PtDenom_cutMassAsym" ]->Sumw2();
 	histos1D_[ "jet1PtPassing_cutMassAsym" ] = fs_->make< TH1D >( "jet1PtPassing_cutMassAsym", "jet1PtPassing_cutMassAsym", 100, 0., 1000. );
 	histos1D_[ "jet1PtPassing_cutMassAsym" ]->Sumw2();
 
-	histos1D_[ "jet1PtDenom_cutCosTheta" ] = fs_->make< TH1D >( "jet1PtDenom_cutCosTheta", "jet1PtDenom_cutCosTheta", 100, 0., 1000. );
-	histos1D_[ "jet1PtDenom_cutCosTheta" ]->Sumw2();
-	histos1D_[ "jet1PtPassing_cutCosTheta" ] = fs_->make< TH1D >( "jet1PtPassing_cutCosTheta", "jet1PtPassing_cutCosTheta", 100, 0., 1000. );
-	histos1D_[ "jet1PtPassing_cutCosTheta" ]->Sumw2();
 
-	histos1D_[ "jet1PtDenom_cutSubjetPtRatio" ] = fs_->make< TH1D >( "jet1PtDenom_cutSubjetPtRatio", "jet1PtDenom_cutSubjetPtRatio", 100, 0., 1000. );
-	histos1D_[ "jet1PtDenom_cutSubjetPtRatio" ]->Sumw2();
-	histos1D_[ "jet1PtPassing_cutSubjetPtRatio" ] = fs_->make< TH1D >( "jet1PtPassing_cutSubjetPtRatio", "jet1PtPassing_cutSubjetPtRatio", 100, 0., 1000. );
-	histos1D_[ "jet1PtPassing_cutSubjetPtRatio" ]->Sumw2();
 
 	histos1D_[ "jet1MassDenom_cutDijet" ] = fs_->make< TH1D >( "jet1MassDenom_cutDijet", "jet1MassDenom_cutDijet", 60, 0., 600. );
 	histos1D_[ "jet1MassDenom_cutDijet" ]->Sumw2();
@@ -736,25 +632,51 @@ void RUNTriggerEfficiency::beginJob() {
 	histos1D_[ "jet1MassPassing_cutHT" ] = fs_->make< TH1D >( "jet1MassPassing_cutHT", "jet1MassPassing_cutHT", 60, 0., 600. );
 	histos1D_[ "jet1MassPassing_cutHT" ]->Sumw2();
 
+	histos1D_[ "jetLeadMassDenom_cutDijet" ] = fs_->make< TH1D >( "jetLeadMassDenom_cutDijet", "jetLeadMassDenom_cutDijet", 60, 0., 600. );
+	histos1D_[ "jetLeadMassDenom_cutDijet" ]->Sumw2();
+	histos1D_[ "jetLeadMassPassing_cutDijet" ] = fs_->make< TH1D >( "jetLeadMassPassing_cutDijet", "jetLeadMassPassing_cutDijet", 60, 0., 600. );
+	histos1D_[ "jetLeadMassPassing_cutDijet" ]->Sumw2();
+
+	histos1D_[ "jetLeadMassDenom_cutHT" ] = fs_->make< TH1D >( "jetLeadMassDenom_cutHT", "jetLeadMassDenom_cutHT", 60, 0., 600. );
+	histos1D_[ "jetLeadMassDenom_cutHT" ]->Sumw2();
+	histos1D_[ "jetLeadMassPassing_cutHT" ] = fs_->make< TH1D >( "jetLeadMassPassing_cutHT", "jetLeadMassPassing_cutHT", 60, 0., 600. );
+	histos1D_[ "jetLeadMassPassing_cutHT" ]->Sumw2();
+
 	histos1D_[ "jetTrimmedMassDenom_cutHT" ] = fs_->make< TH1D >( "jetTrimmedMassDenom_cutHT", "jetTrimmedMassDenom_cutHT", 60, 0., 600. );
 	histos1D_[ "jetTrimmedMassDenom_cutHT" ]->Sumw2();
 	histos1D_[ "jetTrimmedMassPassing_cutHT" ] = fs_->make< TH1D >( "jetTrimmedMassPassing_cutHT", "jetTrimmedMassPassing_cutHT", 60, 0., 600. );
 	histos1D_[ "jetTrimmedMassPassing_cutHT" ]->Sumw2();
+
+	histos1D_[ "HTDenom_cutHT" ] = fs_->make< TH1D >( "HTDenom_cutHT", "HTDenom_cutHT", 150, 0., 1500. );
+	histos1D_[ "HTDenom_cutHT" ]->Sumw2();
+	histos1D_[ "HTPassing_cutHT" ] = fs_->make< TH1D >( "HTPassing_cutHT", "HTPassing_cutHT", 150, 0., 1500. );
+	histos1D_[ "HTPassing_cutHT" ]->Sumw2();
+
+	histos1D_[ "jet1MassDenom_cutJetMass" ] = fs_->make< TH1D >( "jet1MassDenom_cutJetMass", "jet1MassDenom_cutJetMass", 60, 0., 600. );
+	histos1D_[ "jet1MassDenom_cutJetMass" ]->Sumw2();
+	histos1D_[ "jet1MassPassing_cutJetMass" ] = fs_->make< TH1D >( "jet1MassPassing_cutJetMass", "jet1MassPassing_cutJetMass", 60, 0., 600. );
+	histos1D_[ "jet1MassPassing_cutJetMass" ]->Sumw2();
+
+	histos1D_[ "jetTrimmedMassDenom_cutJetMass" ] = fs_->make< TH1D >( "jetTrimmedMassDenom_cutJetMass", "jetTrimmedMassDenom_cutJetMass", 60, 0., 600. );
+	histos1D_[ "jetTrimmedMassDenom_cutJetMass" ]->Sumw2();
+	histos1D_[ "jetTrimmedMassPassing_cutJetMass" ] = fs_->make< TH1D >( "jetTrimmedMassPassing_cutJetMass", "jetTrimmedMassPassing_cutJetMass", 60, 0., 600. );
+	histos1D_[ "jetTrimmedMassPassing_cutJetMass" ]->Sumw2();
+
+	histos1D_[ "HTDenom_cutJetMass" ] = fs_->make< TH1D >( "HTDenom_cutJetMass", "HTDenom_cutJetMass", 150, 0., 1500. );
+	histos1D_[ "HTDenom_cutJetMass" ]->Sumw2();
+	histos1D_[ "HTPassing_cutJetMass" ] = fs_->make< TH1D >( "HTPassing_cutJetMass", "HTPassing_cutJetMass", 150, 0., 1500. );
+	histos1D_[ "HTPassing_cutJetMass" ]->Sumw2();
 
 	histos1D_[ "jet1MassDenom_cutMassAsym" ] = fs_->make< TH1D >( "jet1MassDenom_cutMassAsym", "jet1MassDenom_cutMassAsym", 60, 0., 600. );
 	histos1D_[ "jet1MassDenom_cutMassAsym" ]->Sumw2();
 	histos1D_[ "jet1MassPassing_cutMassAsym" ] = fs_->make< TH1D >( "jet1MassPassing_cutMassAsym", "jet1MassPassing_cutMassAsym", 60, 0., 600. );
 	histos1D_[ "jet1MassPassing_cutMassAsym" ]->Sumw2();
 
-	histos1D_[ "jet1MassDenom_cutCosTheta" ] = fs_->make< TH1D >( "jet1MassDenom_cutCosTheta", "jet1MassDenom_cutCosTheta", 60, 0., 600. );
-	histos1D_[ "jet1MassDenom_cutCosTheta" ]->Sumw2();
-	histos1D_[ "jet1MassPassing_cutCosTheta" ] = fs_->make< TH1D >( "jet1MassPassing_cutCosTheta", "jet1MassPassing_cutCosTheta", 60, 0., 600. );
-	histos1D_[ "jet1MassPassing_cutCosTheta" ]->Sumw2();
+	histos1D_[ "jet1MassDenom_cutHT" ] = fs_->make< TH1D >( "jet1MassDenom_cutHT", "jet1MassDenom_cutHT", 60, 0., 600. );
+	histos1D_[ "jet1MassDenom_cutHT" ]->Sumw2();
+	histos1D_[ "jet1MassPassing_cutHT" ] = fs_->make< TH1D >( "jet1MassPassing_cutHT", "jet1MassPassing_cutHT", 60, 0., 600. );
+	histos1D_[ "jet1MassPassing_cutHT" ]->Sumw2();
 
-	histos1D_[ "jet1MassDenom_cutSubjetPtRatio" ] = fs_->make< TH1D >( "jet1MassDenom_cutSubjetPtRatio", "jet1MassDenom_cutSubjetPtRatio", 60, 0., 600. );
-	histos1D_[ "jet1MassDenom_cutSubjetPtRatio" ]->Sumw2();
-	histos1D_[ "jet1MassPassing_cutSubjetPtRatio" ] = fs_->make< TH1D >( "jet1MassPassing_cutSubjetPtRatio", "jet1MassPassing_cutSubjetPtRatio", 60, 0., 600. );
-	histos1D_[ "jet1MassPassing_cutSubjetPtRatio" ]->Sumw2();
 
 	histos2D_[ "jetMassHT_noTrigger" ] = fs_->make< TH2D >( "jetMassHT_noTrigger", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
 	histos2D_[ "jetMassHT_noTrigger" ]->SetYTitle( "HT [GeV]" );
@@ -856,25 +778,7 @@ void RUNTriggerEfficiency::beginJob() {
 	histos2D_[ "jetMassHTPassing_cutMassAsym" ]->SetXTitle( "Leading Jet Pruned Mass [GeV]" );
 	histos2D_[ "jetMassHTPassing_cutMassAsym" ]->Sumw2();
 
-	histos2D_[ "jetMassHTDenom_cutCosTheta" ] = fs_->make< TH2D >( "jetMassHTDenom_cutCosTheta", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
-	histos2D_[ "jetMassHTDenom_cutCosTheta" ]->SetYTitle( "HT [GeV]" );
-	histos2D_[ "jetMassHTDenom_cutCosTheta" ]->SetXTitle( "Leading Jet Pruned Mass [GeV]" );
-	histos2D_[ "jetMassHTDenom_cutCosTheta" ]->Sumw2();
 
-	histos2D_[ "jetMassHTPassing_cutCosTheta" ] = fs_->make< TH2D >( "jetMassHTPassing_cutCosTheta", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
-	histos2D_[ "jetMassHTPassing_cutCosTheta" ]->SetYTitle( "HT [GeV]" );
-	histos2D_[ "jetMassHTPassing_cutCosTheta" ]->SetXTitle( "Leading Jet Pruned Mass [GeV]" );
-	histos2D_[ "jetMassHTPassing_cutCosTheta" ]->Sumw2();
-
-	histos2D_[ "jetMassHTDenom_cutSubjetPtRatio" ] = fs_->make< TH2D >( "jetMassHTDenom_cutSubjetPtRatio", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
-	histos2D_[ "jetMassHTDenom_cutSubjetPtRatio" ]->SetYTitle( "HT [GeV]" );
-	histos2D_[ "jetMassHTDenom_cutSubjetPtRatio" ]->SetXTitle( "Leading Jet Pruned Mass [GeV]" );
-	histos2D_[ "jetMassHTDenom_cutSubjetPtRatio" ]->Sumw2();
-
-	histos2D_[ "jetMassHTPassing_cutSubjetPtRatio" ] = fs_->make< TH2D >( "jetMassHTPassing_cutSubjetPtRatio", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
-	histos2D_[ "jetMassHTPassing_cutSubjetPtRatio" ]->SetYTitle( "HT [GeV]" );
-	histos2D_[ "jetMassHTPassing_cutSubjetPtRatio" ]->SetXTitle( "Leading Jet Pruned Mass [GeV]" );
-	histos2D_[ "jetMassHTPassing_cutSubjetPtRatio" ]->Sumw2();
 
 	histos2D_[ "jetTrimmedMassHTDenom_cutDijet" ] = fs_->make< TH2D >( "jetTrimmedMassHTDenom_cutDijet", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
 	histos2D_[ "jetTrimmedMassHTDenom_cutDijet" ]->SetYTitle( "HT [GeV]" );
@@ -896,25 +800,6 @@ void RUNTriggerEfficiency::beginJob() {
 	histos2D_[ "jetTrimmedMassHTPassing_cutMassAsym" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
 	histos2D_[ "jetTrimmedMassHTPassing_cutMassAsym" ]->Sumw2();
 
-	histos2D_[ "jetTrimmedMassHTDenom_cutCosTheta" ] = fs_->make< TH2D >( "jetTrimmedMassHTDenom_cutCosTheta", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
-	histos2D_[ "jetTrimmedMassHTDenom_cutCosTheta" ]->SetYTitle( "HT [GeV]" );
-	histos2D_[ "jetTrimmedMassHTDenom_cutCosTheta" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
-	histos2D_[ "jetTrimmedMassHTDenom_cutCosTheta" ]->Sumw2();
-
-	histos2D_[ "jetTrimmedMassHTPassing_cutCosTheta" ] = fs_->make< TH2D >( "jetTrimmedMassHTPassing_cutCosTheta", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
-	histos2D_[ "jetTrimmedMassHTPassing_cutCosTheta" ]->SetYTitle( "HT [GeV]" );
-	histos2D_[ "jetTrimmedMassHTPassing_cutCosTheta" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
-	histos2D_[ "jetTrimmedMassHTPassing_cutCosTheta" ]->Sumw2();
-
-	histos2D_[ "jetTrimmedMassHTDenom_cutSubjetPtRatio" ] = fs_->make< TH2D >( "jetTrimmedMassHTDenom_cutSubjetPtRatio", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
-	histos2D_[ "jetTrimmedMassHTDenom_cutSubjetPtRatio" ]->SetYTitle( "HT [GeV]" );
-	histos2D_[ "jetTrimmedMassHTDenom_cutSubjetPtRatio" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
-	histos2D_[ "jetTrimmedMassHTDenom_cutSubjetPtRatio" ]->Sumw2();
-
-	histos2D_[ "jetTrimmedMassHTPassing_cutSubjetPtRatio" ] = fs_->make< TH2D >( "jetTrimmedMassHTPassing_cutSubjetPtRatio", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
-	histos2D_[ "jetTrimmedMassHTPassing_cutSubjetPtRatio" ]->SetYTitle( "HT [GeV]" );
-	histos2D_[ "jetTrimmedMassHTPassing_cutSubjetPtRatio" ]->SetXTitle( "Leading Jet Trimmed Mass [GeV]" );
-	histos2D_[ "jetTrimmedMassHTPassing_cutSubjetPtRatio" ]->Sumw2();
 
 	histos2D_[ "massAveHTDenom_noTrigger" ] = fs_->make< TH2D >( "massAveHTDenom_noTrigger", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
 	histos2D_[ "massAveHTDenom_noTrigger" ]->SetYTitle( "HT [GeV]" );
@@ -955,26 +840,6 @@ void RUNTriggerEfficiency::beginJob() {
 	histos2D_[ "massAveHTPassing_cutMassAsym" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "massAveHTPassing_cutMassAsym" ]->SetXTitle( "Average Pruned Mass [GeV]" );
 	histos2D_[ "massAveHTPassing_cutMassAsym" ]->Sumw2();
-
-	histos2D_[ "massAveHTDenom_cutCosTheta" ] = fs_->make< TH2D >( "massAveHTDenom_cutCosTheta", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
-	histos2D_[ "massAveHTDenom_cutCosTheta" ]->SetYTitle( "HT [GeV]" );
-	histos2D_[ "massAveHTDenom_cutCosTheta" ]->SetXTitle( "Average Pruned Mass [GeV]" );
-	histos2D_[ "massAveHTDenom_cutCosTheta" ]->Sumw2();
-
-	histos2D_[ "massAveHTPassing_cutCosTheta" ] = fs_->make< TH2D >( "massAveHTPassing_cutCosTheta", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
-	histos2D_[ "massAveHTPassing_cutCosTheta" ]->SetYTitle( "HT [GeV]" );
-	histos2D_[ "massAveHTPassing_cutCosTheta" ]->SetXTitle( "Average Pruned Mass [GeV]" );
-	histos2D_[ "massAveHTPassing_cutCosTheta" ]->Sumw2();
-
-	histos2D_[ "massAveHTDenom_cutSubjetPtRatio" ] = fs_->make< TH2D >( "massAveHTDenom_cutSubjetPtRatio", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
-	histos2D_[ "massAveHTDenom_cutSubjetPtRatio" ]->SetYTitle( "HT [GeV]" );
-	histos2D_[ "massAveHTDenom_cutSubjetPtRatio" ]->SetXTitle( "Average Pruned Mass [GeV]" );
-	histos2D_[ "massAveHTDenom_cutSubjetPtRatio" ]->Sumw2();
-
-	histos2D_[ "massAveHTPassing_cutSubjetPtRatio" ] = fs_->make< TH2D >( "massAveHTPassing_cutSubjetPtRatio", "HT vs Leading Jet Mass", 60, 0., 600., 150, 0., 1500.);
-	histos2D_[ "massAveHTPassing_cutSubjetPtRatio" ]->SetYTitle( "HT [GeV]" );
-	histos2D_[ "massAveHTPassing_cutSubjetPtRatio" ]->SetXTitle( "Average Pruned Mass [GeV]" );
-	histos2D_[ "massAveHTPassing_cutSubjetPtRatio" ]->Sumw2();
 
 }
 

@@ -10,7 +10,7 @@ from httplib import HTTPException
 
 config = config()
 
-version = 'v01'
+version = 'v03'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
@@ -24,6 +24,8 @@ config.Data.inputDBS = 'https://cmsweb.cern.ch/dbs/prod/phys03/DBSReader'
 config.Data.outLFNDirBase = '/store/user/algomez/'
 config.Data.publication = False
 config.Data.ignoreLocality = True
+config.Data.splitting = 'FileBased'
+config.Data.unitsPerJob = 1
 
 config.Site.storageSite = 'T3_US_FNALLPC'
 
@@ -38,26 +40,17 @@ if __name__ == '__main__':
 
 
 	Samples = [ 
-			'/JetHT/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v01p2-59a8f6968d1faf0a39f7c4c693699d7c/USER',
-			#'/SingleMu/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v01p2-59a8f6968d1faf0a39f7c4c693699d7c/USER',
-			'/MET/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v01p2-59a8f6968d1faf0a39f7c4c693699d7c/USER',
-			#'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_TS__v02-1886d118546a0d39f46d888ed262e31b/USER',  ### tmp 
-			'/RPVSt100tojj_13TeV_pythia8/jsomalwa-RunIISpring15DR74_RUNA_Asympt25ns_v02p2-1886d118546a0d39f46d888ed262e31b/USER'
+			'/JetHT/algomez-Run2015B-PromptReco-v1_RUNA_v06-0cc1d310cda5930bd3b3a68493077b41/USER'
+			#'/MET/algomez-Run2015B-PromptReco-v1_RunIISpring15DR74_RUNA_Asympt25ns_v03p2-0cc1d310cda5930bd3b3a68493077b41/USER',
 			]
 
 	
 	for dataset in Samples:
 		#procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-RUNA', '').split('-')[0]+'_'+version
-		if 'RPV' in dataset:
-			procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-RunIISpring15DR74_RUNA', '').split('-')[0]+'_'+version
-			config.Data.splitting = 'FileBased'
-			config.Data.unitsPerJob = 1
-		else:
-			procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-RunIISpring15DR74_RUNA_Asympt25ns', '_Asympt50ns').split('-')[0]+'_'+version
-			config.Data.splitting = 'LumiBased'
-			config.Data.unitsPerJob = 3
-			#config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-251252_13TeV_PromptReco_Collisions15_JSON.txt'
-			config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-251883_13TeV_PromptReco_Collisions15_JSON.txt'
+		procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-','').replace('RUNA','TriggerEfficiency').replace('-0cc1d310cda5930bd3b3a68493077b41','')+'_'+version
+		if 'Run2015B' in dataset: config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON.txt'
+		else: config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-256869_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
+
 		config.Data.inputDataset = dataset
 		config.General.requestName = procName
 		config.JobType.pyCfgParams = [ 'PROC='+procName, 'local=0' ]
