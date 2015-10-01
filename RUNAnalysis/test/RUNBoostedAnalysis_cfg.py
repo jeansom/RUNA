@@ -124,21 +124,11 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 if 'bj' in NAME: bjsample = True
 else: bjsample = False
-Lumi = 1000
-
-from RUNA.RUNAnalysis.scaleFactors import scaleFactor
-SF = scaleFactor(NAME)
-
-if 'PU40bx50' in NAME: PU = 'PU40bx50'
-elif 'PU30BX50' in NAME: PU = 'PU30BX50'
-elif 'PU20bx25' in NAME: PU = 'PU20bx25'
-else: PU = 'NOPU'
 
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNBoostedAnalysis_'+NAME+'.root' ) )
 #process.TFileService=cms.Service("TFileService",fileName=cms.string( 'anaPlots.root' ) )
 
 process.AnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
-		scale 			= cms.double(SF*Lumi),
 		cutAK4HTvalue 		= cms.double( options.AK4HT ),
 		cutjetAK4Ptvalue 	= cms.double( options.jetAK4Pt ),
 		cutHTvalue 		= cms.double( options.HT ),
@@ -206,10 +196,6 @@ process.AnalysisPlotsTrimmed = process.AnalysisPlots.clone( jetMass = cms.InputT
 process.AnalysisPlotsFiltered = process.AnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8filteredMass') )
 process.AnalysisPlotsPruned = process.AnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8prunedMass') )
 
-process.AnalysisPlotsNOSCALE = process.AnalysisPlots.clone( scale = cms.double(1) )
-process.AnalysisPlotsTrimmedNOSCALE = process.AnalysisPlotsTrimmed.clone( scale = cms.double(1) )
-process.AnalysisPlotsPrunedNOSCALE = process.AnalysisPlotsPruned.clone( scale = cms.double(1) )
-process.AnalysisPlotsFilteredNOSCALE = process.AnalysisPlotsFiltered.clone( scale = cms.double(1) )
 
 if options.debug:
 	process.p = cms.Path( process.AnalysisPlotsPruned )
@@ -219,9 +205,5 @@ else:
 		* process.AnalysisPlotsTrimmed
 		* process.AnalysisPlotsPruned
 		* process.AnalysisPlotsFiltered
-		* process.AnalysisPlotsNOSCALE
-		* process.AnalysisPlotsTrimmedNOSCALE
-		* process.AnalysisPlotsPrunedNOSCALE
-		* process.AnalysisPlotsFilteredNOSCALE
 		)
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

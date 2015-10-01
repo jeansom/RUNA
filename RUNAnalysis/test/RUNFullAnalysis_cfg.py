@@ -164,20 +164,14 @@ if '25ns' in NAME:
 	Lumi = 166.37
 else: Lumi = 71.52
 
-from RUNA.RUNAnalysis.scaleFactors import scaleFactor
-SF = scaleFactor(NAME)
-
 if 'JetHT' in NAME:
-	sf = 1
 	HTtrigger = 'HLT_PFHT800'
 else: 
-	sf = SF*Lumi
 	HTtrigger = 'HLT_PFHT900'
 
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNFullAnalysis_'+NAME+'.root' ) )
 
 process.AnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
-		scale 			= cms.double( sf ),
 		cutHT	 		= cms.double( options.HT ),
 		cutMassRes 		= cms.double( options.MassRes ),
 		cutDelta 		= cms.double( options.Delta ),
@@ -188,7 +182,6 @@ process.AnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 		HLTtriggerTwo		= cms.string( HTtrigger ),
 )
 
-process.AnalysisPlotsNOSCALE = process.AnalysisPlots.clone( scale = cms.double(1) )
 process.AnalysisPlotsPFHT7504Jet = process.AnalysisPlots.clone( 
 		HLTtriggerOne		= cms.string( 'HLT_PFHT750_4Jet' ),
 		HLTtriggerTwo		= cms.string( 'HLT_PFHT750_4Jet' ),
@@ -200,7 +193,6 @@ process.AnalysisPlotsPFHT800PFHT7504Jet = process.AnalysisPlots.clone(
 		)
 
 process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
-		scale 			= cms.double( sf ),
 		cutjetPtvalue 		= cms.double( options.boostedJetPt ),
 		cutHTvalue  		= cms.double( options.boostedHT ),
 		cutAsymvalue 		= cms.double( options.Asym ),
@@ -252,9 +244,6 @@ process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone(
 		subjetMass 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiMass'),
 		)
 
-process.BoostedAnalysisPlotsNOSCALE = process.BoostedAnalysisPlots.clone( scale = cms.double(1) )
-process.BoostedAnalysisPlotsPrunedNOSCALE = process.BoostedAnalysisPlotsPruned.clone( scale = cms.double(1) )
-process.BoostedAnalysisPlotsSoftDropNOSCALE = process.BoostedAnalysisPlotsSoftDrop.clone( scale = cms.double(1) )
 
 process.BoostedAnalysisPlotsPrunedNOTrigger = process.BoostedAnalysisPlotsPruned.clone( 
 		HLTtriggerOne		= cms.string('NOTRIGGER'),
@@ -284,7 +273,6 @@ if options.debug:
 else:
 
 	process.p = cms.Path( process.AnalysisPlots
-		#* process.AnalysisPlotsNOSCALE
 		* process.AnalysisPlotsPFHT7504Jet
 		* process.AnalysisPlotsPFHT800PFHT7504Jet
 		* process.BoostedAnalysisPlots
@@ -293,8 +281,6 @@ else:
 		* process.BoostedAnalysisPlotsSoftDrop
 		* process.BoostedAnalysisPlotsPuppi
 		* process.BoostedAnalysisPlotsFiltered
-		#* process.BoostedAnalysisPlotsSoftDropNOSCALE
-		#* process.BoostedAnalysisPlotsPrunedNOSCALE
 		#* process.BoostedAnalysisPlotsSoftDropPFHT900
 		#* process.BoostedAnalysisPlotsPrunedPFHT900
 		#* process.BoostedAnalysisPlotsPrunedPFHT7504JetPt50

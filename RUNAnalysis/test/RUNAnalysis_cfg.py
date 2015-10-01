@@ -91,26 +91,13 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32 (options.max
 
 if 'bj' in NAME: bjsample = True
 else: bjsample = False
-if '25ns' in NAME:
-	#Lumi = 15.47
-	Lumi = 166.37
-else: Lumi = 71.52
 
-
-from RUNA.RUNAnalysis.scaleFactors import scaleFactor
-SF = scaleFactor(NAME)
-
-if 'JetHT' in NAME:
-	sf = 1
-	HTtrigger = 'HLT_PFHT800'
-else: 
-	sf = SF*Lumi
-	HTtrigger = 'HLT_PFHT900'
+if 'JetHT' in NAME: HTtrigger = 'HLT_PFHT800'
+else: HTtrigger = 'HLT_PFHT900'
 
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNAnalysis_'+NAME+'.root' ) )
 
 process.AnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
-		scale 			= cms.double(SF*Lumi),
 		cutHT	 		= cms.double( options.HT ),
 		cutMassRes 		= cms.double( options.MassRes ),
 		cutDelta 		= cms.double( options.Delta ),
@@ -131,14 +118,12 @@ process.AnalysisPlotsPFHT800PFHT7504Jet = process.AnalysisPlots.clone(
 		HLTtriggerTwo		= cms.string( 'HLT_PFHT750_4Jet_v1' ),
 		)
 
-process.AnalysisPlotsNOSCALE = process.AnalysisPlots.clone( scale = cms.double(1) )
 
 if options.debug:
 	process.p = cms.Path( process.AnalysisPlots )
 else:
 
 	process.p = cms.Path( process.AnalysisPlots
-		* process.AnalysisPlotsNOSCALE
 		* process.AnalysisPlotsPFHT7504Jet
 		* process.AnalysisPlotsPFHT800PFHT7504Jet
 		)

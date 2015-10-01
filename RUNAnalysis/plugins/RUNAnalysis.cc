@@ -80,7 +80,6 @@ class RUNAnalysis : public EDAnalyzer {
       map< string, double > cutmap;
 
       bool bjSample;
-      double scale;
       bool mkTree;
       TString HLTtriggerOne;
       TString HLTtriggerTwo;
@@ -160,7 +159,6 @@ RUNAnalysis::RUNAnalysis(const ParameterSet& iConfig):
 	chargedMultiplicity_(consumes<vector<float>>(iConfig.getParameter<InputTag>("chargedMultiplicity"))),
 	muonEnergy_(consumes<vector<float>>(iConfig.getParameter<InputTag>("muonEnergy")))
 {
-	scale 		= iConfig.getParameter<double>("scale");
 	bjSample 	= iConfig.getParameter<bool>("bjSample");
 	cutMassRes      = iConfig.getParameter<double>     ("cutMassRes");
 	cutDelta        = iConfig.getParameter<double>     ("cutDelta");
@@ -280,7 +278,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 		if( TMath::Abs( (*jetEta)[i] ) > 2.4 ) continue;
 
 		rawHT += (*jetPt)[i];
-		histos1D_[ "rawJetPt" ]->Fill( (*jetPt)[i], scale  );
+		histos1D_[ "rawJetPt" ]->Fill( (*jetPt)[i]  );
 
 		bool idL = loosejetID( (*jetE)[i], (*jecFactor)[i], (*neutralHadronEnergy)[i], (*neutralEmEnergy)[i], (*chargedHadronEnergy)[i], (*chargedEmEnergy)[i], (*chargedHadronMultiplicity)[i], (*neutralHadronMultiplicity)[i], (*chargedMultiplicity)[i] ); 
 
@@ -305,26 +303,26 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 			*/
 			JETS.push_back( tmpJet );
 	   
-			histos1D_[ "jetPt" ]->Fill( (*jetPt)[i], scale  );
-			histos1D_[ "jetEta" ]->Fill( (*jetEta)[i], scale  );
-			histos1D_[ "jetMass" ]->Fill( (*jetMass)[i], scale  );
+			histos1D_[ "jetPt" ]->Fill( (*jetPt)[i]  );
+			histos1D_[ "jetEta" ]->Fill( (*jetEta)[i]  );
+			histos1D_[ "jetMass" ]->Fill( (*jetMass)[i]  );
 		}
 	}
 
 	//sort(JETS.begin(), JETS.end(), [](const JETtype &p1, const JETtype &p2) { TLorentzVector tmpP1, tmpP2; tmpP1 = p1; tmpP2 = p2;  return tmpP1.M() > tmpP2.M(); }); 
-	histos1D_[ "jetNum" ]->Fill( numJets, scale );
-	histos1D_[ "NPV" ]->Fill( numPV, scale );
-	if ( HT > 0 ) histos1D_[ "HT" ]->Fill( HT, scale  );
-	if ( rawHT > 0 ) histos1D_[ "rawHT" ]->Fill( rawHT, scale  );
+	histos1D_[ "jetNum" ]->Fill( numJets );
+	histos1D_[ "NPV" ]->Fill( numPV );
+	if ( HT > 0 ) histos1D_[ "HT" ]->Fill( HT  );
+	if ( rawHT > 0 ) histos1D_[ "rawHT" ]->Fill( rawHT  );
 
 	clearVariables();
 
 	if ( triggerFiredOne && triggerFiredTwo ) {
 		
 		cutmap["Trigger"] += 1;
-		histos1D_[ "HT_triggerCuts" ]->Fill( HT, scale  );
-		histos1D_[ "NPV_triggerCuts" ]->Fill( numPV, scale );
-		histos1D_[ "jetNum_triggerCuts" ]->Fill( numJets, scale );
+		histos1D_[ "HT_triggerCuts" ]->Fill( HT  );
+		histos1D_[ "NPV_triggerCuts" ]->Fill( numPV );
+		histos1D_[ "jetNum_triggerCuts" ]->Fill( numJets );
 
 		if( ( numJets == 4 ) && ( HT > cutHT ) ){
 	
@@ -375,14 +373,14 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 			double eta1 = ( j1 + j2 ).Eta();
 			double eta2 = ( j3 + j4 ).Eta();
 
-			histos1D_[ "jet4Pt_best" ]->Fill( j4.Pt(), scale );
-			histos1D_[ "massAve_best" ]->Fill( avgMass, scale );
-			histos1D_[ "massRes_best" ]->Fill( massRes, scale );
-			histos1D_[ "deltaEta_best" ]->Fill( TMath::Abs( eta1 - eta2 ), scale );
-			histos1D_[ "minDeltaR_best" ]->Fill( minDeltaR, scale  );
+			histos1D_[ "jet4Pt_best" ]->Fill( j4.Pt() );
+			histos1D_[ "massAve_best" ]->Fill( avgMass );
+			histos1D_[ "massRes_best" ]->Fill( massRes );
+			histos1D_[ "deltaEta_best" ]->Fill( TMath::Abs( eta1 - eta2 ) );
+			histos1D_[ "minDeltaR_best" ]->Fill( minDeltaR  );
 			histos1D_[ "HT_best" ]->Fill( HT );
-			histos2D_[ "deltavsMassAve_best" ]->Fill( avgMass, delta1, scale  );
-			histos2D_[ "deltavsMassAve_best" ]->Fill( avgMass, delta2, scale  );
+			histos2D_[ "deltavsMassAve_best" ]->Fill( avgMass, delta1  );
+			histos2D_[ "deltavsMassAve_best" ]->Fill( avgMass, delta2  );
 
 			bool passcutsdR   = false;
 			if ( massRes < cutMassRes && 
@@ -437,7 +435,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 			double tmpy2 = tmpY3 * ( pow(tmpY4,2) - tmpY5 );
 			double cosPhi31234 = TMath::Abs( tmpy1 / TMath::Sqrt( tmpy2 ) );
 			histos1D_[ "polAngle31234_best" ]->Fill( cosPhi31234 );
-			histos2D_[ "polAngle13412vs31234_best" ]->Fill( cosPhi13412, cosPhi31234, scale );
+			histos2D_[ "polAngle13412vs31234_best" ]->Fill( cosPhi13412, cosPhi31234 );
 
 			double tmptilde1 = pow( m1, 2 ) + pow( m2, 2) + pow( m34, 2 ) + pow( m1234, 2);
 			double mtilde12 = pow( m12, 2 ) / tmptilde1;
@@ -450,30 +448,30 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 			dalitz1.push_back( mtilde234 );
 			sort( dalitz1.begin(), dalitz1.end(), [](const double &p1, const double &p2) { return p1 > p2; }); 
 			//LogWarning("dalitz1") << dalitz1[0] << " " << dalitz1[1] << " " << dalitz1[2];
-			histos1D_[ "mu1_best" ]->Fill( dalitz1[0], scale );
-			histos1D_[ "mu2_best" ]->Fill( dalitz1[1], scale );
-			histos1D_[ "mu3_best" ]->Fill( dalitz1[2], scale );
-			histos2D_[ "mu1234_best" ]->Fill( dalitz1[0], dalitz1[2], scale );
-			histos2D_[ "mu1234_best" ]->Fill( dalitz1[1], dalitz1[2], scale );
-			histos2D_[ "mu1234_best" ]->Fill( dalitz1[0], dalitz1[1], scale );
+			histos1D_[ "mu1_best" ]->Fill( dalitz1[0] );
+			histos1D_[ "mu2_best" ]->Fill( dalitz1[1] );
+			histos1D_[ "mu3_best" ]->Fill( dalitz1[2] );
+			histos2D_[ "mu1234_best" ]->Fill( dalitz1[0], dalitz1[2] );
+			histos2D_[ "mu1234_best" ]->Fill( dalitz1[1], dalitz1[2] );
+			histos2D_[ "mu1234_best" ]->Fill( dalitz1[0], dalitz1[1] );
 
 			dalitzX1 = ( dalitz1[1] + ( 2 * dalitz1[0] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz1234_best" ]->Fill( dalitzX1, dalitz1[1], scale );
+			histos2D_[ "dalitz1234_best" ]->Fill( dalitzX1, dalitz1[1] );
 			//LogWarning("X1") << dalitzX1 << " " << dalitz1[1] ;
 			dalitzX2 = ( dalitz1[2] + ( 2 * dalitz1[0] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz1234_best" ]->Fill( dalitzX2, dalitz1[2], scale );
+			histos2D_[ "dalitz1234_best" ]->Fill( dalitzX2, dalitz1[2] );
 			//LogWarning("X2") << dalitzX2 << " " << dalitz1[2] ;
 			dalitzX3 = ( dalitz1[0] + ( 2 * dalitz1[1] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz1234_best" ]->Fill( dalitzX3, dalitz1[0], scale );
+			histos2D_[ "dalitz1234_best" ]->Fill( dalitzX3, dalitz1[0] );
 			//LogWarning("X3") << dalitzX3 << " " << dalitz1[0] ;
 			dalitzX4 = ( dalitz1[2] + ( 2 * dalitz1[1] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz1234_best" ]->Fill( dalitzX4, dalitz1[2], scale );
+			histos2D_[ "dalitz1234_best" ]->Fill( dalitzX4, dalitz1[2] );
 			//LogWarning("X4") << dalitzX4 << " " << dalitz1[2] ;
 			dalitzX5 = ( dalitz1[0] + ( 2 * dalitz1[2] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz1234_best" ]->Fill( dalitzX5, dalitz1[0], scale );
+			histos2D_[ "dalitz1234_best" ]->Fill( dalitzX5, dalitz1[0] );
 			//LogWarning("X5") << dalitzX5 << " " << dalitz1[0] ;
 			dalitzX6 = ( dalitz1[1] + ( 2 * dalitz1[2] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz1234_best" ]->Fill( dalitzX6, dalitz1[1], scale );
+			histos2D_[ "dalitz1234_best" ]->Fill( dalitzX6, dalitz1[1] );
 			//LogWarning("X6") << dalitzX6 << " " << dalitz1[1] ;
 
 
@@ -485,69 +483,69 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 			dalitz2.push_back( mtilde123 );
 			dalitz2.push_back( mtilde124 );
 			sort( dalitz2.begin(), dalitz2.end(), [](const double &p1, const double &p2) { return p1 > p2; }); 
-			histos1D_[ "mu4_best" ]->Fill( dalitz2[0], scale );
-			histos1D_[ "mu5_best" ]->Fill( dalitz2[1], scale );
-			histos1D_[ "mu6_best" ]->Fill( dalitz2[2], scale );
-			histos2D_[ "mu3412_best" ]->Fill( dalitz2[0], dalitz2[2], scale );
-			histos2D_[ "mu3412_best" ]->Fill( dalitz2[1], dalitz2[2], scale );
-			histos2D_[ "mu3412_best" ]->Fill( dalitz2[0], dalitz2[1], scale );
+			histos1D_[ "mu4_best" ]->Fill( dalitz2[0] );
+			histos1D_[ "mu5_best" ]->Fill( dalitz2[1] );
+			histos1D_[ "mu6_best" ]->Fill( dalitz2[2] );
+			histos2D_[ "mu3412_best" ]->Fill( dalitz2[0], dalitz2[2] );
+			histos2D_[ "mu3412_best" ]->Fill( dalitz2[1], dalitz2[2] );
+			histos2D_[ "mu3412_best" ]->Fill( dalitz2[0], dalitz2[1] );
 
 			dalitzY1 = ( dalitz2[1] + ( 2 * dalitz2[0] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz3412_best" ]->Fill( dalitzY1, dalitz2[1], scale );
+			histos2D_[ "dalitz3412_best" ]->Fill( dalitzY1, dalitz2[1] );
 			dalitzY2 = ( dalitz2[2] + ( 2 * dalitz2[0] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz3412_best" ]->Fill( dalitzY2, dalitz2[2], scale );
+			histos2D_[ "dalitz3412_best" ]->Fill( dalitzY2, dalitz2[2] );
 			dalitzY3 = ( dalitz2[0] + ( 2 * dalitz2[1] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz3412_best" ]->Fill( dalitzY3, dalitz2[0], scale );
+			histos2D_[ "dalitz3412_best" ]->Fill( dalitzY3, dalitz2[0] );
 			dalitzY4 = ( dalitz2[2] + ( 2 * dalitz2[1] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz3412_best" ]->Fill( dalitzY4, dalitz2[2], scale );
+			histos2D_[ "dalitz3412_best" ]->Fill( dalitzY4, dalitz2[2] );
 			dalitzY5 = ( dalitz2[0] + ( 2 * dalitz2[2] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz3412_best" ]->Fill( dalitzY5, dalitz2[0], scale );
+			histos2D_[ "dalitz3412_best" ]->Fill( dalitzY5, dalitz2[0] );
 			dalitzY6 = ( dalitz2[1] + ( 2 * dalitz2[2] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz3412_best" ]->Fill( dalitzY6, dalitz2[1], scale );
+			histos2D_[ "dalitz3412_best" ]->Fill( dalitzY6, dalitz2[1] );
 			*/
 
 			if ( passcutsdR ) {
 
-				histos1D_[ "jet4Pt_allCuts" ]->Fill( j4.Pt(), scale );
-				histos1D_[ "massAve_allCuts" ]->Fill( avgMass, scale );
-				histos1D_[ "massRes_allCuts" ]->Fill( massRes, scale );
-				histos1D_[ "deltaEta_allCuts" ]->Fill( TMath::Abs( eta1 - eta2 ), scale );
-				histos1D_[ "minDeltaR_allCuts" ]->Fill( minDeltaR, scale  );
+				histos1D_[ "jet4Pt_allCuts" ]->Fill( j4.Pt() );
+				histos1D_[ "massAve_allCuts" ]->Fill( avgMass );
+				histos1D_[ "massRes_allCuts" ]->Fill( massRes );
+				histos1D_[ "deltaEta_allCuts" ]->Fill( TMath::Abs( eta1 - eta2 ) );
+				histos1D_[ "minDeltaR_allCuts" ]->Fill( minDeltaR  );
 				histos1D_[ "HT_allCuts" ]->Fill( HT );
-				histos2D_[ "deltavsMassAve_allCuts" ]->Fill( avgMass, delta1, scale  );
-				histos2D_[ "deltavsMassAve_allCuts" ]->Fill( avgMass, delta2, scale  );
+				histos2D_[ "deltavsMassAve_allCuts" ]->Fill( avgMass, delta1  );
+				histos2D_[ "deltavsMassAve_allCuts" ]->Fill( avgMass, delta2  );
 
 				/*histos1D_[ "polAngle13412_allCuts" ]->Fill( cosPhi13412 );
 				histos1D_[ "polAngle31234_allCuts" ]->Fill( cosPhi31234 );
-				histos2D_[ "polAngle13412vs31234_allCuts" ]->Fill( cosPhi13412, cosPhi31234, scale );
+				histos2D_[ "polAngle13412vs31234_allCuts" ]->Fill( cosPhi13412, cosPhi31234 );
 
-				histos1D_[ "mu1_allCuts" ]->Fill( dalitz1[0], scale );
-				histos1D_[ "mu2_allCuts" ]->Fill( dalitz1[1], scale );
-				histos1D_[ "mu3_allCuts" ]->Fill( dalitz1[2], scale );
-				histos2D_[ "mu1234_allCuts" ]->Fill( dalitz1[0], dalitz1[2], scale );
-				histos2D_[ "mu1234_allCuts" ]->Fill( dalitz1[1], dalitz1[2], scale );
-				histos2D_[ "mu1234_allCuts" ]->Fill( dalitz1[0], dalitz1[1], scale );
+				histos1D_[ "mu1_allCuts" ]->Fill( dalitz1[0] );
+				histos1D_[ "mu2_allCuts" ]->Fill( dalitz1[1] );
+				histos1D_[ "mu3_allCuts" ]->Fill( dalitz1[2] );
+				histos2D_[ "mu1234_allCuts" ]->Fill( dalitz1[0], dalitz1[2] );
+				histos2D_[ "mu1234_allCuts" ]->Fill( dalitz1[1], dalitz1[2] );
+				histos2D_[ "mu1234_allCuts" ]->Fill( dalitz1[0], dalitz1[1] );
 
-				histos2D_[ "dalitz1234_allCuts" ]->Fill( dalitzX1, dalitz1[1], scale );
-				histos2D_[ "dalitz1234_allCuts" ]->Fill( dalitzX2, dalitz1[2], scale );
-				histos2D_[ "dalitz1234_allCuts" ]->Fill( dalitzX3, dalitz1[0], scale );
-				histos2D_[ "dalitz1234_allCuts" ]->Fill( dalitzX4, dalitz1[2], scale );
-				histos2D_[ "dalitz1234_allCuts" ]->Fill( dalitzX5, dalitz1[0], scale );
-				histos2D_[ "dalitz1234_allCuts" ]->Fill( dalitzX6, dalitz1[1], scale );
+				histos2D_[ "dalitz1234_allCuts" ]->Fill( dalitzX1, dalitz1[1] );
+				histos2D_[ "dalitz1234_allCuts" ]->Fill( dalitzX2, dalitz1[2] );
+				histos2D_[ "dalitz1234_allCuts" ]->Fill( dalitzX3, dalitz1[0] );
+				histos2D_[ "dalitz1234_allCuts" ]->Fill( dalitzX4, dalitz1[2] );
+				histos2D_[ "dalitz1234_allCuts" ]->Fill( dalitzX5, dalitz1[0] );
+				histos2D_[ "dalitz1234_allCuts" ]->Fill( dalitzX6, dalitz1[1] );
 
-				histos1D_[ "mu4_allCuts" ]->Fill( dalitz2[0], scale );
-				histos1D_[ "mu5_allCuts" ]->Fill( dalitz2[1], scale );
-				histos1D_[ "mu6_allCuts" ]->Fill( dalitz2[2], scale );
-				histos2D_[ "mu3412_allCuts" ]->Fill( dalitz2[0], dalitz2[2], scale );
-				histos2D_[ "mu3412_allCuts" ]->Fill( dalitz2[1], dalitz2[2], scale );
-				histos2D_[ "mu3412_allCuts" ]->Fill( dalitz2[0], dalitz2[1], scale );
+				histos1D_[ "mu4_allCuts" ]->Fill( dalitz2[0] );
+				histos1D_[ "mu5_allCuts" ]->Fill( dalitz2[1] );
+				histos1D_[ "mu6_allCuts" ]->Fill( dalitz2[2] );
+				histos2D_[ "mu3412_allCuts" ]->Fill( dalitz2[0], dalitz2[2] );
+				histos2D_[ "mu3412_allCuts" ]->Fill( dalitz2[1], dalitz2[2] );
+				histos2D_[ "mu3412_allCuts" ]->Fill( dalitz2[0], dalitz2[1] );
 
-				histos2D_[ "dalitz3412_allCuts" ]->Fill( dalitzY1, dalitz2[1], scale );
-				histos2D_[ "dalitz3412_allCuts" ]->Fill( dalitzY2, dalitz2[2], scale );
-				histos2D_[ "dalitz3412_allCuts" ]->Fill( dalitzY3, dalitz2[0], scale );
-				histos2D_[ "dalitz3412_allCuts" ]->Fill( dalitzY4, dalitz2[2], scale );
-				histos2D_[ "dalitz3412_allCuts" ]->Fill( dalitzY5, dalitz2[0], scale );
-				histos2D_[ "dalitz3412_allCuts" ]->Fill( dalitzY6, dalitz2[1], scale );*/
+				histos2D_[ "dalitz3412_allCuts" ]->Fill( dalitzY1, dalitz2[1] );
+				histos2D_[ "dalitz3412_allCuts" ]->Fill( dalitzY2, dalitz2[2] );
+				histos2D_[ "dalitz3412_allCuts" ]->Fill( dalitzY3, dalitz2[0] );
+				histos2D_[ "dalitz3412_allCuts" ]->Fill( dalitzY4, dalitz2[2] );
+				histos2D_[ "dalitz3412_allCuts" ]->Fill( dalitzY5, dalitz2[0] );
+				histos2D_[ "dalitz3412_allCuts" ]->Fill( dalitzY6, dalitz2[1] );*/
 			}
 
 		}
@@ -688,8 +686,6 @@ void RUNAnalysis::beginJob() {
 	cutLabels.push_back("HT");
 	histos1D_[ "hcutflow" ] = fs_->make< TH1D >("cutflow","cut flow", cutLabels.size(), 0.5, cutLabels.size() +0.5 );
 	histos1D_[ "hcutflow" ]->Sumw2();
-	histos1D_[ "hcutflowSimple" ] = fs_->make< TH1D >("cutflowSimple","simple cut flow", cutLabels.size(), 0.5, cutLabels.size() +0.5 );
-	histos1D_[ "hcutflowSimple" ]->Sumw2();
 	for( const string &ivec : cutLabels ) cutmap[ ivec ] = 0;
 }
 
@@ -698,10 +694,8 @@ void RUNAnalysis::endJob() {
 
 	int ibin = 1;
 	for( const string &ivec : cutLabels ) {
-		histos1D_["hcutflow"]->SetBinContent( ibin, cutmap[ ivec ] * scale );
+		histos1D_["hcutflow"]->SetBinContent( ibin, cutmap[ ivec ] );
 		histos1D_["hcutflow"]->GetXaxis()->SetBinLabel( ibin, ivec.c_str() );
-		histos1D_["hcutflowSimple"]->SetBinContent( ibin, cutmap[ ivec ] );
-		histos1D_["hcutflowSimple"]->GetXaxis()->SetBinLabel( ibin, ivec.c_str() );
 		ibin++;
 	}
 
@@ -720,7 +714,6 @@ void RUNAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descriptions
 
 	edm::ParameterSetDescription desc;
 
-	desc.add<double>("scale", 1);
 	desc.add<double>("cutMassRes", 1);
 	desc.add<double>("cutDelta", 1);
 	desc.add<double>("cutEtaBand", 1);
