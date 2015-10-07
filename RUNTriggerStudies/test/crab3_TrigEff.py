@@ -10,7 +10,7 @@ from httplib import HTTPException
 
 config = config()
 
-version = 'v03'
+version = 'v04'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'

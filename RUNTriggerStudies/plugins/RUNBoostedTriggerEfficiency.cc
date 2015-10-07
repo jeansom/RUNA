@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // Package:    RUNA/Ntuples
-// Class:      RUNTriggerEfficiency
+// Class:      RUNBoostedTriggerEfficiency
 // 
-/**\class RUNTriggerEfficiency RUNTriggerEfficiency.cc Ntuples/Ntuples/plugins/RUNTriggerEfficiency.cc
+/**\class RUNBoostedTriggerEfficiency RUNBoostedTriggerEfficiency.cc Ntuples/Ntuples/plugins/RUNBoostedTriggerEfficiency.cc
 
  Description: [one line class summary]
 
@@ -49,11 +49,11 @@ using namespace std;
 //
 // class declaration
 //
-class RUNTriggerEfficiency : public EDAnalyzer {
+class RUNBoostedTriggerEfficiency : public EDAnalyzer {
    public:
-      explicit RUNTriggerEfficiency(const ParameterSet&);
+      explicit RUNBoostedTriggerEfficiency(const ParameterSet&);
       static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
-      ~RUNTriggerEfficiency();
+      ~RUNBoostedTriggerEfficiency();
 
    private:
       virtual void beginJob() override;
@@ -73,14 +73,14 @@ class RUNTriggerEfficiency : public EDAnalyzer {
       vector< string > cutLabels;
 
       bool bjSample;
-      TString HLTtriggerOne;
-      TString HLTtriggerTwo;
+      TString baseTrigger;
       //double cutTrimmedMassvalue;
       double cutHTvalue;
       double cutjetPtvalue;
       double cutAsymvalue;
       double cutTau31value;
       double cutTau21value;
+      vector<string> triggerPass;
 
       ULong64_t event = 0;
       int numJets = 0, numPV = 0;
@@ -140,7 +140,7 @@ class RUNTriggerEfficiency : public EDAnalyzer {
 //
 // constructors and destructor
 //
-RUNTriggerEfficiency::RUNTriggerEfficiency(const ParameterSet& iConfig):
+RUNBoostedTriggerEfficiency::RUNBoostedTriggerEfficiency(const ParameterSet& iConfig):
 	jetAk4Pt_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetAk4Pt"))),
 	jetPt_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetPt"))),
 	jetEta_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetEta"))),
@@ -184,16 +184,16 @@ RUNTriggerEfficiency::RUNTriggerEfficiency(const ParameterSet& iConfig):
 	subjetMass_(consumes<vector<float>>(iConfig.getParameter<InputTag>("subjetMass")))
 {
 	bjSample = iConfig.getParameter<bool>("bjSample");
-	HLTtriggerOne = iConfig.getParameter<string>("HLTtriggerOne");
-	HLTtriggerTwo = iConfig.getParameter<string>("HLTtriggerTwo");
+	baseTrigger = iConfig.getParameter<string>("baseTrigger");
 	cutjetPtvalue = iConfig.getParameter<double>("cutjetPtvalue");
 	cutAsymvalue = iConfig.getParameter<double>("cutAsymvalue");
 	cutTau31value = iConfig.getParameter<double>("cutTau31value");
 	cutTau21value = iConfig.getParameter<double>("cutTau21value");
+	triggerPass = iConfig.getParameter<vector<string>>("triggerPass");
 }
 
 
-RUNTriggerEfficiency::~RUNTriggerEfficiency()
+RUNBoostedTriggerEfficiency::~RUNBoostedTriggerEfficiency()
 {
  
    // do anything here that needs to be done at desctruction time
@@ -207,12 +207,8 @@ RUNTriggerEfficiency::~RUNTriggerEfficiency()
 //
 
 // ------------ method called for each event  ------------
-void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup) {
+void RUNBoostedTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
-
-	/*vector<Handle< vector<float> > > handles;
-	getterOfProducts_.fillHandles(event, handles);
-	*/
 
 	Handle<vector<float> > jetAk4Pt;
 	iEvent.getByToken(jetAk4Pt_, jetAk4Pt);
@@ -331,8 +327,17 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 	Handle<vector<float> > subjetMass;
 	iEvent.getByToken(subjetMass_, subjetMass);
 
-	bool triggerFiredOne = checkTriggerBits( triggerName, triggerBit, HLTtriggerOne  );
-	bool triggerFiredTwo = checkTriggerBits( triggerName, triggerBit, HLTtriggerTwo  );
+	bool basedTriggerFired = checkTriggerBits( triggerName, triggerBit, baseTrigger  );
+	
+	vector<bool> triggersFired;
+	for (size_t t = 0; t < triggerPass.size(); t++) {
+		bool triggerFired = checkTriggerBits( triggerName, triggerBit, triggerPass[t] );
+		triggersFired.push_back( triggerFired );
+		//if ( triggerFired ) LogWarning("test") << triggerPass[t] << " " << triggerFired;
+	}
+	
+	bool ORTriggers = !none_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
+	//if( ORTriggers ) LogWarning("OR") << std::none_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
 
 	/// Applying kinematic, trigger and jet ID
 	vector< JETtype > JETS;
@@ -345,9 +350,6 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 
 		if( TMath::Abs( (*jetEta)[i] ) > 2.4 ) continue;
 
-		tmpTriggerMass.push_back( (*jetTrimmedMass)[i] );
-		tmpMass.push_back( (*jetMass)[i] );
-
 		bool idL = loosejetID( (*jetE)[i], (*jecFactor)[i], (*neutralHadronEnergy)[i], (*neutralEmEnergy)[i], (*chargedHadronEnergy)[i], (*chargedEmEnergy)[i], (*chargedHadronMultiplicity)[i], (*neutralHadronMultiplicity)[i], (*chargedMultiplicity)[i] ); 
 
 		if( (*jetPt)[i] > cutjetPtvalue  && idL ) { 
@@ -355,6 +357,9 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 
 			HT += (*jetPt)[i];
 			++numJets;
+			tmpTriggerMass.push_back( (*jetTrimmedMass)[i] );
+			tmpMass.push_back( (*jetMass)[i] );
+
 
 			TLorentzVector tmpJet;
 			tmpJet.SetPtEtaPhiE( (*jetPt)[i], (*jetEta)[i], (*jetPhi)[i], (*jetE)[i] );
@@ -407,14 +412,14 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 		histos2D_[ "jetMassHT_noTrigger" ]->Fill( JETS[0].mass, HT );
 		histos2D_[ "jetTrimmedMassHT_noTrigger" ]->Fill( trimmedMass, HT );
 	}
-	if ( triggerFiredOne || triggerFiredTwo ) {
-		if ( triggerFiredOne && triggerFiredTwo ) {
+	if ( basedTriggerFired || triggersFired[0] ) {
+		if ( basedTriggerFired && triggersFired[0] ) {
 			if(JETS.size() > 0) histos2D_[ "jetMassHT_triggerOneAndTwo" ]->Fill( JETS[0].mass, HT );
 			histos2D_[ "jetTrimmedMassHT_triggerOneAndTwo" ]->Fill( trimmedMass, HT );
-		} else if ( triggerFiredOne ) {
+		} else if ( basedTriggerFired ) {
 			if(JETS.size() > 0) histos2D_[ "jetMassHT_triggerOne" ]->Fill( JETS[0].mass, HT );
 			histos2D_[ "jetTrimmedMassHT_triggerOne" ]->Fill( trimmedMass, HT );
-		} else if ( triggerFiredTwo ) {
+		} else if ( triggersFired[0] ) {
 			if(JETS.size() > 0) histos2D_[ "jetMassHT_triggerTwo" ]->Fill( JETS[0].mass, HT );
 			histos2D_[ "jetTrimmedMassHT_triggerTwo" ]->Fill( trimmedMass, HT );
 		}
@@ -447,20 +452,20 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 		
 		histos2D_[ "jetMassHT_cutDijet_noTrigger" ]->Fill( jetPrunedMass, HT );
 		histos2D_[ "jetTrimmedMassHT_cutDijet_noTrigger" ]->Fill( trimmedMass, HT );
-		if ( triggerFiredOne || triggerFiredTwo ) {
-			if ( triggerFiredOne && triggerFiredTwo ) {
+		if ( basedTriggerFired || triggersFired[0] ) {
+			if ( basedTriggerFired && triggersFired[0] ) {
 				histos2D_[ "jetMassHT_cutDijet_triggerOneAndTwo" ]->Fill( jetPrunedMass, HT );
 				histos2D_[ "jetTrimmedMassHT_cutDijet_triggerOneAndTwo" ]->Fill( trimmedMass, HT );
-			} else if ( triggerFiredOne ) {
+			} else if ( basedTriggerFired ) {
 				histos2D_[ "jetMassHT_cutDijet_triggerOne" ]->Fill( jetPrunedMass, HT );
 				histos2D_[ "jetTrimmedMassHT_cutDijet_triggerOne" ]->Fill( trimmedMass, HT );
-			} else if ( triggerFiredTwo ) {
+			} else if ( triggersFired[0] ) {
 				histos2D_[ "jetMassHT_cutDijet_triggerTwo" ]->Fill( jetPrunedMass, HT );
 				histos2D_[ "jetTrimmedMassHT_cutDijet_triggerTwo" ]->Fill( trimmedMass, HT );
 			}
 		}
 
-		if ( triggerFiredOne ) {
+		if ( basedTriggerFired ) {
 			histos1D_[ "massAveDenom_cutDijet" ]->Fill( massAve  );
 			histos1D_[ "trimmedMassDenom_cutDijet" ]->Fill( trimmedMass  );
 			histos1D_[ "jet1MassDenom_cutDijet" ]->Fill( jetPrunedMass  );
@@ -473,7 +478,7 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 			histos2D_[ "jetTrimmedMassHTDenom_cutDijet" ]->Fill( trimmedMass, HT );
 			histos2D_[ "massAveHTDenom_cutDijet" ]->Fill( massAve, HT );
 
-			if ( triggerFiredTwo ){
+			if ( ORTriggers ){
 				histos1D_[ "massAvePassing_cutDijet" ]->Fill( massAve  );
 				histos1D_[ "trimmedMassPassing_cutDijet" ]->Fill( trimmedMass  );
 				histos1D_[ "jetLeadMassPassing_cutDijet" ]->Fill( leadMass  );
@@ -492,7 +497,7 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 				histos1D_[ "jet1MassDenom_cutHT" ]->Fill( jetPrunedMass  );
 				histos1D_[ "jetLeadMassDenom_cutHT" ]->Fill( leadMass  );
 				histos1D_[ "HTDenom_cutHT" ]->Fill( HT  );
-				if ( triggerFiredTwo ){
+				if ( ORTriggers ){
 					histos1D_[ "jetTrimmedMassPassing_cutHT" ]->Fill( trimmedMass  );
 					histos1D_[ "jet1MassPassing_cutHT" ]->Fill( jetPrunedMass  );
 					histos1D_[ "jetLeadMassPassing_cutHT" ]->Fill( leadMass  );
@@ -504,7 +509,7 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 				histos1D_[ "jetTrimmedMassDenom_cutJetMass" ]->Fill( trimmedMass  );
 				histos1D_[ "jet1MassDenom_cutJetMass" ]->Fill( jetPrunedMass  );
 				histos1D_[ "HTDenom_cutJetMass" ]->Fill( HT  );
-				if ( triggerFiredTwo ){
+				if ( ORTriggers ){
 					histos1D_[ "jetTrimmedMassPassing_cutJetMass" ]->Fill( trimmedMass  );
 					histos1D_[ "jet1MassPassing_cutJetMass" ]->Fill( jetPrunedMass  );
 					histos1D_[ "HTPassing_cutJetMass" ]->Fill( HT  );
@@ -522,7 +527,7 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 				histos2D_[ "jetTrimmedMassHTDenom_cutMassAsym" ]->Fill( trimmedMass, HT );
 				histos2D_[ "massAveHTDenom_cutMassAsym" ]->Fill( massAve, HT );
 
-				if ( triggerFiredTwo ){
+				if ( ORTriggers ){
 					histos1D_[ "massAvePassing_cutMassAsym" ]->Fill( massAve  );
 					histos1D_[ "trimmedMassPassing_cutMassAsym" ]->Fill( trimmedMass  );
 					histos1D_[ "jet1MassPassing_cutMassAsym" ]->Fill( jetPrunedMass  );
@@ -542,7 +547,7 @@ void RUNTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& iSetup
 
 
 // ------------ method called once each job just before starting event loop  ------------
-void RUNTriggerEfficiency::beginJob() {
+void RUNBoostedTriggerEfficiency::beginJob() {
 
 	histos1D_[ "ak4HTDenom_cutDijet" ] = fs_->make< TH1D >( "ak4HTDenom_cutDijet", "ak4HTDenom_cutDijet", 150, 0., 1500. );
 	histos1D_[ "ak4HTDenom_cutDijet" ]->Sumw2();
@@ -553,7 +558,6 @@ void RUNTriggerEfficiency::beginJob() {
 	histos1D_[ "ak4HTDenom_cutMassAsym" ]->Sumw2();
 	histos1D_[ "ak4HTPassing_cutMassAsym" ] = fs_->make< TH1D >( "ak4HTPassing_cutMassAsym", "ak4HTPassing_cutMassAsym", 150, 0., 1500. );
 	histos1D_[ "ak4HTPassing_cutMassAsym" ]->Sumw2();
-
 
 
 	histos1D_[ "HTDenom_cutDijet" ] = fs_->make< TH1D >( "HTDenom_cutDijet", "HTDenom_cutDijet", 150, 0., 1500. );
@@ -831,11 +835,11 @@ void RUNTriggerEfficiency::beginJob() {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
-void RUNTriggerEfficiency::endJob() {
+void RUNBoostedTriggerEfficiency::endJob() {
 
 }
 
-void RUNTriggerEfficiency::fillDescriptions(edm::ConfigurationDescriptions & descriptions) {
+void RUNBoostedTriggerEfficiency::fillDescriptions(edm::ConfigurationDescriptions & descriptions) {
 
 	edm::ParameterSetDescription desc;
 
@@ -849,8 +853,10 @@ void RUNTriggerEfficiency::fillDescriptions(edm::ConfigurationDescriptions & des
 	//desc.add<double>("cutDEtavalue", 1);
 	//desc.add<double>("cutBtagvalue", 1);
 	desc.add<bool>("bjSample", false);
-	desc.add<string>("HLTtriggerOne", "HLT_PFHT800");
-	desc.add<string>("HLTtriggerTwo", "HLT_PFHT800");
+	desc.add<string>("baseTrigger", "HLT_PFHT475");
+	vector<string> HLTPass;
+	HLTPass.push_back("HLT_AK8PFHT700_TrimR0p1PT0p03Mass50");
+	desc.add<vector<string>>("triggerPass",	HLTPass);
 
 	desc.add<InputTag>("Lumi", 	InputTag("eventInfo:evtInfoLumiBlock"));
 	desc.add<InputTag>("Run", 	InputTag("eventInfo:evtInfoRunNumber"));
@@ -861,7 +867,7 @@ void RUNTriggerEfficiency::fillDescriptions(edm::ConfigurationDescriptions & des
 	desc.add<InputTag>("jetEta", 	InputTag("jetsAK8:jetAK8Eta"));
 	desc.add<InputTag>("jetPhi", 	InputTag("jetsAK8:jetAK8Phi"));
 	desc.add<InputTag>("jetE", 	InputTag("jetsAK8:jetAK8E"));
-	desc.add<InputTag>("jetMass", 	InputTag("jetsAK8:jetAK8Mass"));
+	desc.add<InputTag>("jetMass", 	InputTag("jetsAK8:jetAK8prunedMass"));
 	desc.add<InputTag>("jetTrimmedMass", 	InputTag("jetsAK8:jetAK8trimmedMass"));
 	desc.add<InputTag>("jetTau1", 	InputTag("jetsAK8:jetAK8tau1"));
 	desc.add<InputTag>("jetTau2", 	InputTag("jetsAK8:jetAK8tau2"));
@@ -897,4 +903,4 @@ void RUNTriggerEfficiency::fillDescriptions(edm::ConfigurationDescriptions & des
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(RUNTriggerEfficiency);
+DEFINE_FWK_MODULE(RUNBoostedTriggerEfficiency);
