@@ -70,8 +70,6 @@ class RUNAnalysis : public EDAnalyzer {
       //virtual void endLuminosityBlock(LuminosityBlock const&, EventSetup const&) override;
 
       // ----------member data ---------------------------
-      //GetterOfProducts< vector<float> > getterOfProducts_;
-      //EDGetTokenT<TriggerResults> triggerBits_;
       Service<TFileService> fs_;
       TTree *RUNAtree;
       map< string, TH1D* > histos1D_;
@@ -80,20 +78,22 @@ class RUNAnalysis : public EDAnalyzer {
       map< string, double > cutmap;
 
       bool bjSample;
-      double scale;
       bool mkTree;
-      TString HLTtriggerOne;
-      TString HLTtriggerTwo;
       double cutMassRes;
       double cutDelta;
       double cutEtaBand;
       double cutJetPt;
       double cutHT;
+      vector<string> triggerPass;
 
       vector<float> *jetsPt = new std::vector<float>();
       vector<float> *jetsEta = new std::vector<float>();
       vector<float> *jetsPhi = new std::vector<float>();
       vector<float> *jetsE = new std::vector<float>();
+      ULong64_t event = 0;
+      int numJets = 0, numPV = 0;
+      unsigned int lumi = 0, run=0;
+      float HT = 0, mass1 = -999, mass2 = -999, avgMass = -999, delta1 = -999, delta2 = -999, massRes = -999, eta1 = -999, eta2 = -999, deltaEta = -999;
 
       EDGetTokenT<vector<float>> jetPt_;
       EDGetTokenT<vector<float>> jetEta_;
@@ -160,15 +160,14 @@ RUNAnalysis::RUNAnalysis(const ParameterSet& iConfig):
 	chargedMultiplicity_(consumes<vector<float>>(iConfig.getParameter<InputTag>("chargedMultiplicity"))),
 	muonEnergy_(consumes<vector<float>>(iConfig.getParameter<InputTag>("muonEnergy")))
 {
-	scale 		= iConfig.getParameter<double>("scale");
 	bjSample 	= iConfig.getParameter<bool>("bjSample");
+	mkTree 		= iConfig.getParameter<bool>("mkTree");
 	cutMassRes      = iConfig.getParameter<double>     ("cutMassRes");
 	cutDelta        = iConfig.getParameter<double>     ("cutDelta");
 	cutEtaBand      = iConfig.getParameter<double>     ("cutEtaBand");
 	cutJetPt	= iConfig.getParameter<double>     ("cutJetPt");
 	cutHT 		= iConfig.getParameter<double>("cutHT");
-	HLTtriggerOne 	= iConfig.getParameter<string>("HLTtriggerOne");
-	HLTtriggerTwo 	= iConfig.getParameter<string>("HLTtriggerTwo");
+	triggerPass 	= iConfig.getParameter<vector<string>>("triggerPass");
 }
 
 
@@ -261,9 +260,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 	Handle<vector<float> > muonEnergy;
 	iEvent.getByToken(muonEnergy_, muonEnergy);
 
-
-	bool triggerFiredOne = checkTriggerBits( triggerName, triggerBit, HLTtriggerOne  );
-	bool triggerFiredTwo = checkTriggerBits( triggerName, triggerBit, HLTtriggerTwo  );
+	bool ORTriggers = checkORListOfTriggerBits( triggerName, triggerBit, triggerPass );
 	
 	cutmap["Processed"] += 1;
 
@@ -272,7 +269,6 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 	vector< TLorentzVector > JETS;
 	vector< float > tmpTriggerMass;
 	int numJets = 0;
-	double HT = 0;
 	double rawHT = 0;
 	//bool bTagCSV = 0;
 	for (size_t i = 0; i < jetPt->size(); i++) {
@@ -280,11 +276,11 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 		if( TMath::Abs( (*jetEta)[i] ) > 2.4 ) continue;
 
 		rawHT += (*jetPt)[i];
-		histos1D_[ "rawJetPt" ]->Fill( (*jetPt)[i], scale  );
+		histos1D_[ "rawJetPt" ]->Fill( (*jetPt)[i]  );
 
 		bool idL = loosejetID( (*jetE)[i], (*jecFactor)[i], (*neutralHadronEnergy)[i], (*neutralEmEnergy)[i], (*chargedHadronEnergy)[i], (*chargedEmEnergy)[i], (*chargedHadronMultiplicity)[i], (*neutralHadronMultiplicity)[i], (*chargedMultiplicity)[i] ); 
 
-		if( ( (*jetPt)[i] > cutJetPt ) && idL ) { 
+		if( ( (*jetPt)[i] > 40. ) && idL ) { 
 
 			HT += (*jetPt)[i];
 			++numJets;
@@ -305,251 +301,176 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 			*/
 			JETS.push_back( tmpJet );
 	   
-			histos1D_[ "jetPt" ]->Fill( (*jetPt)[i], scale  );
-			histos1D_[ "jetEta" ]->Fill( (*jetEta)[i], scale  );
-			histos1D_[ "jetMass" ]->Fill( (*jetMass)[i], scale  );
+			histos1D_[ "jetPt" ]->Fill( (*jetPt)[i]  );
+			histos1D_[ "jetEta" ]->Fill( (*jetEta)[i]  );
+			double jec = 1. / ( (*jecFactor)[i] * (*jetE)[i] );
+			histos1D_[ "neutralHadronEnergy" ]->Fill( (*neutralHadronEnergy)[i] * jec );
+			histos1D_[ "neutralEmEnergy" ]->Fill( (*neutralEmEnergy)[i] * jec );
+			histos1D_[ "chargedHadronEnergy" ]->Fill( (*chargedHadronEnergy)[i] * jec );
+			histos1D_[ "chargedEmEnergy" ]->Fill( (*chargedEmEnergy)[i] * jec );
+			histos1D_[ "numConst" ]->Fill( (*chargedHadronMultiplicity)[i] + (*neutralHadronMultiplicity)[i] );
+			histos1D_[ "chargedMultiplicity" ]->Fill( (*chargedMultiplicity)[i] * jec );
+
 		}
 	}
 
 	//sort(JETS.begin(), JETS.end(), [](const JETtype &p1, const JETtype &p2) { TLorentzVector tmpP1, tmpP2; tmpP1 = p1; tmpP2 = p2;  return tmpP1.M() > tmpP2.M(); }); 
-	histos1D_[ "jetNum" ]->Fill( numJets, scale );
-	histos1D_[ "NPV" ]->Fill( numPV, scale );
-	if ( HT > 0 ) histos1D_[ "HT" ]->Fill( HT, scale  );
-	if ( rawHT > 0 ) histos1D_[ "rawHT" ]->Fill( rawHT, scale  );
+	numPV = *NPV;
+	histos1D_[ "jetNum" ]->Fill( numJets );
+	histos1D_[ "NPV" ]->Fill( numPV );
+	if ( HT > 0 ) histos1D_[ "HT" ]->Fill( HT  );
+	if ( rawHT > 0 ) histos1D_[ "rawHT" ]->Fill( rawHT  );
 
 	clearVariables();
 
-	if ( triggerFiredOne && triggerFiredTwo ) {
+	if ( ORTriggers ) {
 		
 		cutmap["Trigger"] += 1;
-		histos1D_[ "HT_triggerCuts" ]->Fill( HT, scale  );
-		histos1D_[ "NPV_triggerCuts" ]->Fill( numPV, scale );
-		histos1D_[ "jetNum_triggerCuts" ]->Fill( numJets, scale );
+		histos1D_[ "HT_cutTrigger" ]->Fill( HT  );
+		histos1D_[ "NPV_cutTrigger" ]->Fill( numPV );
+		histos1D_[ "jetNum_cutTrigger" ]->Fill( numJets );
+		for (int i = 0; i < numJets; i++) {
+			histos1D_[ "jetPt_cut4Trigger" ]->Fill( JETS[i].Pt() );
+			histos1D_[ "jetEta_cut4Trigger" ]->Fill( JETS[i].Eta() );
+			jetsPt->push_back( JETS[i].Pt() );
+			jetsEta->push_back( JETS[i].Eta() );
+			jetsPhi->push_back( JETS[i].Phi() );
+			jetsE->push_back( JETS[i].E() );
+		}
+		event		= *ievent;
+		run		= *Run;
+		lumi		= *Lumi;
 
-		if( ( numJets == 4 ) && ( HT > cutHT ) ){
-	
-			vector<double> tmpDijetR;
-			double dR12 = JETS[0].DeltaR( JETS[1] );
-			double dR34 = JETS[2].DeltaR( JETS[3] );
-			double dijetR1234 = abs( dR12 - 1 )  + abs( dR34 - 1 );
-			tmpDijetR.push_back( dijetR1234 );
-
-			double dR13 = JETS[0].DeltaR( JETS[2] );
-			double dR24 = JETS[1].DeltaR( JETS[3] );
-			double dijetR1324 = abs( dR13 - 1 )  + abs( dR24 - 1 );
-			tmpDijetR.push_back( dijetR1324 );
-
-			double dR14 = JETS[0].DeltaR( JETS[3] );
-			double dR23 = JETS[1].DeltaR( JETS[2] );
-			double dijetR1423 = abs( dR14 - 1 )  + abs( dR23 - 1 );
-			tmpDijetR.push_back( dijetR1423 );
-
-			//LogWarning("test") << min_element(tmpDijetR.begin(), tmpDijetR.end()) - tmpDijetR.begin()  << " " << dijetR1234 << " " << dijetR1324 << " " << dijetR1423 ;
-			int minDeltaR = min_element(tmpDijetR.begin(), tmpDijetR.end()) - tmpDijetR.begin();
-			TLorentzVector j1, j2, j3, j4;
-
-			if( minDeltaR == 0 ){
-				j1 = JETS[0];
-				j2 = JETS[1];
-				j3 = JETS[2];
-				j4 = JETS[3];
-			} else if ( minDeltaR == 1 ) {
-				j1 = JETS[0];
-				j2 = JETS[2];
-				j3 = JETS[1];
-				j4 = JETS[3];
-			} else if ( minDeltaR == 2 ) {
-				j1 = JETS[0];
-				j2 = JETS[3];
-				j3 = JETS[1];
-				j4 = JETS[2];
-			}
-
-
-			double mass1 = ( j1 + j2 ).M();
-			double mass2 = ( j3 + j4 ).M();
-			double avgMass = ( mass1 + mass2 ) / 2;
-			double delta1 = ( j1.Pt() + j2.Pt() ) - avgMass;
-			double delta2 = ( j3.Pt() + j4.Pt() ) - avgMass;
-			double massRes = TMath::Abs( mass1 - mass2 ) / avgMass;
-			double eta1 = ( j1 + j2 ).Eta();
-			double eta2 = ( j3 + j4 ).Eta();
-
-			histos1D_[ "jet4Pt_best" ]->Fill( j4.Pt(), scale );
-			histos1D_[ "massAve_best" ]->Fill( avgMass, scale );
-			histos1D_[ "massRes_best" ]->Fill( massRes, scale );
-			histos1D_[ "deltaEta_best" ]->Fill( TMath::Abs( eta1 - eta2 ), scale );
-			histos1D_[ "minDeltaR_best" ]->Fill( minDeltaR, scale  );
-			histos1D_[ "HT_best" ]->Fill( HT );
-			histos2D_[ "deltavsMassAve_best" ]->Fill( avgMass, delta1, scale  );
-			histos2D_[ "deltavsMassAve_best" ]->Fill( avgMass, delta2, scale  );
-
-			bool passcutsdR   = false;
-			if ( massRes < cutMassRes && 
-					delta1  > cutDelta   && 
-					delta2  > cutDelta   &&
-					fabs(eta1 - eta2) <  cutEtaBand)
-				passcutsdR = true;
-
-			/*vector<double> dalitz1, dalitz2;
-			double dalitzY1 = -9999;
-			double dalitzY2 = -9999;
-			double dalitzY3 = -9999;
-			double dalitzY4 = -9999;
-			double dalitzY5 = -9999;
-			double dalitzY6 = -9999;
-			double dalitzX1 = -9999; 
-			double dalitzX2 = -9999; 
-			double dalitzX3 = -9999; 
-			double dalitzX4 = -9999; 
-			double dalitzX5 = -9999; 
-			double dalitzX6 = -9999; 
+		if( numJets > 3 ) { 
 			
-			double m1 = j1.M();
-			double m2 = j2.M();
-			double m3 = j3.M();
-			double m4 = j4.M();
+			cutmap["4Jets"] += 1;
+			histos1D_[ "HT_cut4Jets" ]->Fill( HT );
+			histos1D_[ "jetNum_cut4Jets" ]->Fill( numJets );
+			histos1D_[ "jet1Pt_cut4Jets" ]->Fill( JETS[0].Pt() );
+			histos1D_[ "jet2Pt_cut4Jets" ]->Fill( JETS[1].Pt() );
+			histos1D_[ "jet3Pt_cut4Jets" ]->Fill( JETS[2].Pt() );
+			histos1D_[ "jet4Pt_cut4Jets" ]->Fill( JETS[3].Pt() );
 
-			double m12 = ( j1 + j2 ).M() ;
-			double m34 = ( j3 + j4 ).M() ;
-			double m134 = ( j1 + j3 + j4 ).M() ;
-			double m123 = ( j1 + j2 + j3 ).M() ;
-			double m124 = ( j1 + j2 + j4 ).M() ;
-			double m234 = ( j2 + j3 + j4 ).M() ;
-			double m1234 = ( j1 + j2 + j3 + j4 ).M() ;
-			
-			double tmpX1 = pow(m1234,2) * ( ( 2 * ( pow(m12,2) + pow(m1,2) ) ) - pow(m2,2) ) ;
-			double tmpX2 = pow(m12,2) * ( pow(m134,2) - pow(m34,2) - pow(m1,2) );
-			double tmpX3 = pow(m1234,4) - ( pow(m12,2) * pow(m34,2) ) ; 
-			double tmpX4 = ( 2 * ( pow(m12,2) + pow(m1,2) ) ) - pow(m2,2);
-			double tmpX5 = pow(m12,2) * pow(m1,2);
-			double tmpx1 = tmpX1 - (tmpX2/2);
-			double tmpx2 = tmpX3 * ( pow(tmpX4,2) - tmpX5 );
-			double cosPhi13412 = TMath::Abs( tmpx1 / TMath::Sqrt( tmpx2 ) );
-			histos1D_[ "polAngle13412_best" ]->Fill( cosPhi13412 );
+			if( ( numJets == 4 ) && ( JETS[3].Pt() > cutJetPt ) && ( HT > cutHT ) ){
+				
+				cutmap["4JetPt"] += 1;
+				histos1D_[ "HT_cut4JetPt" ]->Fill( HT );
+				histos1D_[ "jetNum_cut4JetPt" ]->Fill( numJets );
+				histos1D_[ "jet1Pt_cut4JetPt" ]->Fill( JETS[0].Pt() );
+				histos1D_[ "jet2Pt_cut4JetPt" ]->Fill( JETS[1].Pt() );
+				histos1D_[ "jet3Pt_cut4JetPt" ]->Fill( JETS[2].Pt() );
+				histos1D_[ "jet4Pt_cut4JetPt" ]->Fill( JETS[3].Pt() );
 
-			double tmpY1 = pow(m1234,2) * ( ( 2 * ( pow(m34,2) + pow(m3,2) ) ) - pow(m4,2) ) ;
-			double tmpY2 = pow(m34,2) * ( pow(m123,2) - pow(m12,2) - pow(m3,2) );
-			double tmpY3 = pow(m1234,4) - ( pow(m12,2) * pow(m34,2) ) ; 
-			double tmpY4 = ( 2 * ( pow(m34,2) + pow(m3,2) ) ) - pow(m4,2);
-			double tmpY5 = pow(m34,2) * pow(m3,2);
-			double tmpy1 = tmpY1 - (tmpY2/2);
-			double tmpy2 = tmpY3 * ( pow(tmpY4,2) - tmpY5 );
-			double cosPhi31234 = TMath::Abs( tmpy1 / TMath::Sqrt( tmpy2 ) );
-			histos1D_[ "polAngle31234_best" ]->Fill( cosPhi31234 );
-			histos2D_[ "polAngle13412vs31234_best" ]->Fill( cosPhi13412, cosPhi31234, scale );
+		
+				vector<double> tmpDijetR;
+				double dR12 = JETS[0].DeltaR( JETS[1] );
+				double dR34 = JETS[2].DeltaR( JETS[3] );
+				double dijetR1234 = abs( dR12 - 1 )  + abs( dR34 - 1 );
+				tmpDijetR.push_back( dijetR1234 );
 
-			double tmptilde1 = pow( m1, 2 ) + pow( m2, 2) + pow( m34, 2 ) + pow( m1234, 2);
-			double mtilde12 = pow( m12, 2 ) / tmptilde1;
-			double mtilde134 = pow( m134, 2 ) / tmptilde1;
-			double mtilde234 = pow( m234, 2 ) / tmptilde1;
-			//double tmpMtilde = mtilde12 + mtilde134 + mtilde234;
-			//LogWarning("dalitz0") << tmpMtilde << " " << mtilde12 << " " << mtilde134 << " " <<  mtilde234;
-			dalitz1.push_back( mtilde12 );
-			dalitz1.push_back( mtilde134 );
-			dalitz1.push_back( mtilde234 );
-			sort( dalitz1.begin(), dalitz1.end(), [](const double &p1, const double &p2) { return p1 > p2; }); 
-			//LogWarning("dalitz1") << dalitz1[0] << " " << dalitz1[1] << " " << dalitz1[2];
-			histos1D_[ "mu1_best" ]->Fill( dalitz1[0], scale );
-			histos1D_[ "mu2_best" ]->Fill( dalitz1[1], scale );
-			histos1D_[ "mu3_best" ]->Fill( dalitz1[2], scale );
-			histos2D_[ "mu1234_best" ]->Fill( dalitz1[0], dalitz1[2], scale );
-			histos2D_[ "mu1234_best" ]->Fill( dalitz1[1], dalitz1[2], scale );
-			histos2D_[ "mu1234_best" ]->Fill( dalitz1[0], dalitz1[1], scale );
+				double dR13 = JETS[0].DeltaR( JETS[2] );
+				double dR24 = JETS[1].DeltaR( JETS[3] );
+				double dijetR1324 = abs( dR13 - 1 )  + abs( dR24 - 1 );
+				tmpDijetR.push_back( dijetR1324 );
 
-			dalitzX1 = ( dalitz1[1] + ( 2 * dalitz1[0] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz1234_best" ]->Fill( dalitzX1, dalitz1[1], scale );
-			//LogWarning("X1") << dalitzX1 << " " << dalitz1[1] ;
-			dalitzX2 = ( dalitz1[2] + ( 2 * dalitz1[0] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz1234_best" ]->Fill( dalitzX2, dalitz1[2], scale );
-			//LogWarning("X2") << dalitzX2 << " " << dalitz1[2] ;
-			dalitzX3 = ( dalitz1[0] + ( 2 * dalitz1[1] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz1234_best" ]->Fill( dalitzX3, dalitz1[0], scale );
-			//LogWarning("X3") << dalitzX3 << " " << dalitz1[0] ;
-			dalitzX4 = ( dalitz1[2] + ( 2 * dalitz1[1] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz1234_best" ]->Fill( dalitzX4, dalitz1[2], scale );
-			//LogWarning("X4") << dalitzX4 << " " << dalitz1[2] ;
-			dalitzX5 = ( dalitz1[0] + ( 2 * dalitz1[2] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz1234_best" ]->Fill( dalitzX5, dalitz1[0], scale );
-			//LogWarning("X5") << dalitzX5 << " " << dalitz1[0] ;
-			dalitzX6 = ( dalitz1[1] + ( 2 * dalitz1[2] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz1234_best" ]->Fill( dalitzX6, dalitz1[1], scale );
-			//LogWarning("X6") << dalitzX6 << " " << dalitz1[1] ;
+				double dR14 = JETS[0].DeltaR( JETS[3] );
+				double dR23 = JETS[1].DeltaR( JETS[2] );
+				double dijetR1423 = abs( dR14 - 1 )  + abs( dR23 - 1 );
+				tmpDijetR.push_back( dijetR1423 );
+
+				//LogWarning("test") << min_element(tmpDijetR.begin(), tmpDijetR.end()) - tmpDijetR.begin()  << " " << dijetR1234 << " " << dijetR1324 << " " << dijetR1423 ;
+				int minDeltaR = min_element(tmpDijetR.begin(), tmpDijetR.end()) - tmpDijetR.begin();
+				TLorentzVector j1, j2, j3, j4;
+
+				if( minDeltaR == 0 ){
+					j1 = JETS[0];
+					j2 = JETS[1];
+					j3 = JETS[2];
+					j4 = JETS[3];
+				} else if ( minDeltaR == 1 ) {
+					j1 = JETS[0];
+					j2 = JETS[2];
+					j3 = JETS[1];
+					j4 = JETS[3];
+				} else if ( minDeltaR == 2 ) {
+					j1 = JETS[0];
+					j2 = JETS[3];
+					j3 = JETS[1];
+					j4 = JETS[2];
+				}
 
 
-			double tmptilde2 = pow( m3, 2 ) + pow( m4, 2) + pow( m12, 2 ) + pow( m1234, 2);
-			double mtilde34 = pow( m34, 2 ) / tmptilde2;
-			double mtilde123 = pow( m123, 2 ) / tmptilde2;
-			double mtilde124 = pow( m124, 2 ) / tmptilde2;
-			dalitz2.push_back( mtilde34 );
-			dalitz2.push_back( mtilde123 );
-			dalitz2.push_back( mtilde124 );
-			sort( dalitz2.begin(), dalitz2.end(), [](const double &p1, const double &p2) { return p1 > p2; }); 
-			histos1D_[ "mu4_best" ]->Fill( dalitz2[0], scale );
-			histos1D_[ "mu5_best" ]->Fill( dalitz2[1], scale );
-			histos1D_[ "mu6_best" ]->Fill( dalitz2[2], scale );
-			histos2D_[ "mu3412_best" ]->Fill( dalitz2[0], dalitz2[2], scale );
-			histos2D_[ "mu3412_best" ]->Fill( dalitz2[1], dalitz2[2], scale );
-			histos2D_[ "mu3412_best" ]->Fill( dalitz2[0], dalitz2[1], scale );
+				mass1 = ( j1 + j2 ).M();
+				mass2 = ( j3 + j4 ).M();
+				avgMass = ( mass1 + mass2 ) / 2;
+				delta1 = ( j1.Pt() + j2.Pt() ) - avgMass;
+				delta2 = ( j3.Pt() + j4.Pt() ) - avgMass;
+				massRes = TMath::Abs( mass1 - mass2 ) / avgMass;
+				eta1 = ( j1 + j2 ).Eta();
+				eta2 = ( j3 + j4 ).Eta();
+				deltaEta = TMath::Abs( eta1 - eta2 );
 
-			dalitzY1 = ( dalitz2[1] + ( 2 * dalitz2[0] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz3412_best" ]->Fill( dalitzY1, dalitz2[1], scale );
-			dalitzY2 = ( dalitz2[2] + ( 2 * dalitz2[0] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz3412_best" ]->Fill( dalitzY2, dalitz2[2], scale );
-			dalitzY3 = ( dalitz2[0] + ( 2 * dalitz2[1] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz3412_best" ]->Fill( dalitzY3, dalitz2[0], scale );
-			dalitzY4 = ( dalitz2[2] + ( 2 * dalitz2[1] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz3412_best" ]->Fill( dalitzY4, dalitz2[2], scale );
-			dalitzY5 = ( dalitz2[0] + ( 2 * dalitz2[2] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz3412_best" ]->Fill( dalitzY5, dalitz2[0], scale );
-			dalitzY6 = ( dalitz2[1] + ( 2 * dalitz2[2] ) ) / TMath::Sqrt(3);
-			histos2D_[ "dalitz3412_best" ]->Fill( dalitzY6, dalitz2[1], scale );
-			*/
+				if ( !mkTree ) {
+					RUNAtree->Fill();
+				} else {
+					histos1D_[ "jet4Pt_cutBestPair" ]->Fill( j4.Pt() );
+					histos1D_[ "massAve_cutBestPair" ]->Fill( avgMass );
+					histos1D_[ "massRes_cutBestPair" ]->Fill( massRes );
+					histos1D_[ "deltaEta_cutBestPair" ]->Fill( deltaEta );
+					histos1D_[ "minDeltaR_cutBestPair" ]->Fill( minDeltaR  );
+					histos1D_[ "HT_cutBestPair" ]->Fill( HT );
+					histos2D_[ "deltavsMassAve_cutBestPair" ]->Fill( avgMass, delta1  );
+					histos2D_[ "deltavsMassAve_cutBestPair" ]->Fill( avgMass, delta2  );
 
-			if ( passcutsdR ) {
+					if ( massRes < cutMassRes ) { 
+						cutmap["MassRes"] += 1;
+						histos1D_[ "HT_cutMassRes" ]->Fill( HT );
+						histos1D_[ "jetNum_cutMassRes" ]->Fill( numJets );
+						histos1D_[ "jet1Pt_cutMassRes" ]->Fill( JETS[0].Pt() );
+						histos1D_[ "jet2Pt_cutMassRes" ]->Fill( JETS[1].Pt() );
+						histos1D_[ "jet3Pt_cutMassRes" ]->Fill( JETS[2].Pt() );
+						histos1D_[ "jet4Pt_cutMassRes" ]->Fill( JETS[3].Pt() );
+						histos1D_[ "massAve_cutMassRes" ]->Fill( avgMass );
+						histos1D_[ "massRes_cutMassRes" ]->Fill( massRes );
+						histos1D_[ "deltaEta_cutMassRes" ]->Fill( deltaEta );
+						histos1D_[ "minDeltaR_cutMassRes" ]->Fill( minDeltaR  );
+						histos2D_[ "deltavsMassAve_cutMassRes" ]->Fill( avgMass, delta1  );
+						histos2D_[ "deltavsMassAve_cutMassRes" ]->Fill( avgMass, delta2  );
+						
+						if ( ( delta1 > cutDelta ) && ( delta2  > cutDelta ) ) {
+							cutmap["Delta"] += 1;
+							histos1D_[ "HT_cutDelta" ]->Fill( HT );
+							histos1D_[ "jetNum_cutDelta" ]->Fill( numJets );
+							histos1D_[ "jet1Pt_cutDelta" ]->Fill( JETS[0].Pt() );
+							histos1D_[ "jet2Pt_cutDelta" ]->Fill( JETS[1].Pt() );
+							histos1D_[ "jet3Pt_cutDelta" ]->Fill( JETS[2].Pt() );
+							histos1D_[ "jet4Pt_cutDelta" ]->Fill( JETS[3].Pt() );
+							histos1D_[ "massAve_cutDelta" ]->Fill( avgMass );
+							histos1D_[ "massRes_cutDelta" ]->Fill( massRes );
+							histos1D_[ "deltaEta_cutDelta" ]->Fill( deltaEta );
+							histos1D_[ "minDeltaR_cutDelta" ]->Fill( minDeltaR  );
+							histos2D_[ "deltavsMassAve_cutDelta" ]->Fill( avgMass, delta1  );
+							histos2D_[ "deltavsMassAve_cutDelta" ]->Fill( avgMass, delta2  );
 
-				histos1D_[ "jet4Pt_allCuts" ]->Fill( j4.Pt(), scale );
-				histos1D_[ "massAve_allCuts" ]->Fill( avgMass, scale );
-				histos1D_[ "massRes_allCuts" ]->Fill( massRes, scale );
-				histos1D_[ "deltaEta_allCuts" ]->Fill( TMath::Abs( eta1 - eta2 ), scale );
-				histos1D_[ "minDeltaR_allCuts" ]->Fill( minDeltaR, scale  );
-				histos1D_[ "HT_allCuts" ]->Fill( HT );
-				histos2D_[ "deltavsMassAve_allCuts" ]->Fill( avgMass, delta1, scale  );
-				histos2D_[ "deltavsMassAve_allCuts" ]->Fill( avgMass, delta2, scale  );
-
-				/*histos1D_[ "polAngle13412_allCuts" ]->Fill( cosPhi13412 );
-				histos1D_[ "polAngle31234_allCuts" ]->Fill( cosPhi31234 );
-				histos2D_[ "polAngle13412vs31234_allCuts" ]->Fill( cosPhi13412, cosPhi31234, scale );
-
-				histos1D_[ "mu1_allCuts" ]->Fill( dalitz1[0], scale );
-				histos1D_[ "mu2_allCuts" ]->Fill( dalitz1[1], scale );
-				histos1D_[ "mu3_allCuts" ]->Fill( dalitz1[2], scale );
-				histos2D_[ "mu1234_allCuts" ]->Fill( dalitz1[0], dalitz1[2], scale );
-				histos2D_[ "mu1234_allCuts" ]->Fill( dalitz1[1], dalitz1[2], scale );
-				histos2D_[ "mu1234_allCuts" ]->Fill( dalitz1[0], dalitz1[1], scale );
-
-				histos2D_[ "dalitz1234_allCuts" ]->Fill( dalitzX1, dalitz1[1], scale );
-				histos2D_[ "dalitz1234_allCuts" ]->Fill( dalitzX2, dalitz1[2], scale );
-				histos2D_[ "dalitz1234_allCuts" ]->Fill( dalitzX3, dalitz1[0], scale );
-				histos2D_[ "dalitz1234_allCuts" ]->Fill( dalitzX4, dalitz1[2], scale );
-				histos2D_[ "dalitz1234_allCuts" ]->Fill( dalitzX5, dalitz1[0], scale );
-				histos2D_[ "dalitz1234_allCuts" ]->Fill( dalitzX6, dalitz1[1], scale );
-
-				histos1D_[ "mu4_allCuts" ]->Fill( dalitz2[0], scale );
-				histos1D_[ "mu5_allCuts" ]->Fill( dalitz2[1], scale );
-				histos1D_[ "mu6_allCuts" ]->Fill( dalitz2[2], scale );
-				histos2D_[ "mu3412_allCuts" ]->Fill( dalitz2[0], dalitz2[2], scale );
-				histos2D_[ "mu3412_allCuts" ]->Fill( dalitz2[1], dalitz2[2], scale );
-				histos2D_[ "mu3412_allCuts" ]->Fill( dalitz2[0], dalitz2[1], scale );
-
-				histos2D_[ "dalitz3412_allCuts" ]->Fill( dalitzY1, dalitz2[1], scale );
-				histos2D_[ "dalitz3412_allCuts" ]->Fill( dalitzY2, dalitz2[2], scale );
-				histos2D_[ "dalitz3412_allCuts" ]->Fill( dalitzY3, dalitz2[0], scale );
-				histos2D_[ "dalitz3412_allCuts" ]->Fill( dalitzY4, dalitz2[2], scale );
-				histos2D_[ "dalitz3412_allCuts" ]->Fill( dalitzY5, dalitz2[0], scale );
-				histos2D_[ "dalitz3412_allCuts" ]->Fill( dalitzY6, dalitz2[1], scale );*/
+							if ( TMath::Abs(eta1 - eta2) <  cutEtaBand ) {
+								cutmap["EtaBand"] += 1;
+								histos1D_[ "HT_cutEtaBand" ]->Fill( HT );
+								histos1D_[ "jetNum_cutEtaBand" ]->Fill( numJets );
+								histos1D_[ "jet1Pt_cutEtaBand" ]->Fill( JETS[0].Pt() );
+								histos1D_[ "jet2Pt_cutEtaBand" ]->Fill( JETS[1].Pt() );
+								histos1D_[ "jet3Pt_cutEtaBand" ]->Fill( JETS[2].Pt() );
+								histos1D_[ "jet4Pt_cutEtaBand" ]->Fill( JETS[3].Pt() );
+								histos1D_[ "massAve_cutEtaBand" ]->Fill( avgMass );
+								histos1D_[ "massRes_cutEtaBand" ]->Fill( massRes );
+								histos1D_[ "deltaEta_cutEtaBand" ]->Fill( deltaEta );
+								histos1D_[ "minEtaBandR_cutEtaBand" ]->Fill( minDeltaR  );
+								histos2D_[ "deltavsMassAve_cutEtaBand" ]->Fill( avgMass, delta1  );
+								histos2D_[ "deltavsMassAve_cutEtaBand" ]->Fill( avgMass, delta2  );
+							}
+						}
+					}
+				}
 			}
-
 		}
 	}
 	JETS.clear();
@@ -559,15 +480,9 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 // ------------ method called once each job just before starting event loop  ------------
 void RUNAnalysis::beginJob() {
 
-	RUNAtree = fs_->make< TTree >("RUNATree", "RUNATree"); 
-	RUNAtree->Branch( "jetsPt", "vector<float>", &jetsPt);
-	RUNAtree->Branch( "jetsEta", "vector<float>", &jetsEta);
-	RUNAtree->Branch( "jetsPhi", "vector<float>", &jetsPhi);
-	RUNAtree->Branch( "jetsE", "vector<float>", &jetsE);
-
 	histos1D_[ "rawJetPt" ] = fs_->make< TH1D >( "rawJetPt", "rawJetPt", 100, 0., 1000. );
 	histos1D_[ "rawJetPt" ]->Sumw2();
-	histos1D_[ "rawHT" ] = fs_->make< TH1D >( "rawHT", "rawHT", 150, 0., 1500. );
+	histos1D_[ "rawHT" ] = fs_->make< TH1D >( "rawHT", "rawHT", 300, 0., 3000. );
 	histos1D_[ "rawHT" ]->Sumw2();
 
 	histos1D_[ "jetPt" ] = fs_->make< TH1D >( "jetPt", "jetPt", 100, 0., 1000. );
@@ -576,120 +491,178 @@ void RUNAnalysis::beginJob() {
 	histos1D_[ "jetEta" ]->Sumw2();
 	histos1D_[ "jetNum" ] = fs_->make< TH1D >( "jetNum", "jetNum", 10, 0., 10. );
 	histos1D_[ "jetNum" ]->Sumw2();
-	histos1D_[ "jetMass" ] = fs_->make< TH1D >( "jetMass", "jetMass", 50, 0., 500. );
-	histos1D_[ "jetMass" ]->Sumw2();
-	histos1D_[ "HT" ] = fs_->make< TH1D >( "HT", "HT", 150, 0., 1500. );
+	histos1D_[ "HT" ] = fs_->make< TH1D >( "HT", "HT", 300, 0., 3000. );
 	histos1D_[ "HT" ]->Sumw2();
 	histos1D_[ "NPV" ] = fs_->make< TH1D >( "NPV", "NPV", 80, 0., 80. );
 	histos1D_[ "NPV" ]->Sumw2();
+	histos1D_[ "neutralHadronEnergy" ] = fs_->make< TH1D >( "neutralHadronEnergy", "neutralHadronEnergy", 50, 0., 1. );
+	histos1D_[ "neutralHadronEnergy" ]->Sumw2();
+	histos1D_[ "neutralEmEnergy" ] = fs_->make< TH1D >( "neutralEmEnergy", "neutralEmEnergy", 50, 0., 1. );
+	histos1D_[ "neutralEmEnergy" ]->Sumw2();
+	histos1D_[ "chargedHadronEnergy" ] = fs_->make< TH1D >( "chargedHadronEnergy", "chargedHadronEnergy", 50, 0., 1. );
+	histos1D_[ "chargedHadronEnergy" ]->Sumw2();
+	histos1D_[ "chargedEmEnergy" ] = fs_->make< TH1D >( "chargedEmEnergy", "chargedEmEnergy", 50, 0., 1. );
+	histos1D_[ "chargedEmEnergy" ]->Sumw2();
+	histos1D_[ "chargedMultiplicity" ] = fs_->make< TH1D >( "chargedMultiplicity", "chargedMultiplicity", 50, 0., 1. );
+	histos1D_[ "chargedMultiplicity" ]->Sumw2();
+	histos1D_[ "numConst" ] = fs_->make< TH1D >( "numConst", "numConst", 100, 0., 100. );
+	histos1D_[ "numConst" ]->Sumw2();
 
 
-	histos1D_[ "jetPt_triggerCuts" ] = fs_->make< TH1D >( "jetPt_triggerCuts", "jetPt_triggerCuts", 100, 0., 1000. );
-	histos1D_[ "jetPt_triggerCuts" ]->Sumw2();
-	histos1D_[ "jetEta_triggerCuts" ] = fs_->make< TH1D >( "jetEta_triggerCuts", "jetEta_triggerCuts", 100, -5., 5. );
-	histos1D_[ "jetEta_triggerCuts" ]->Sumw2();
-	histos1D_[ "jetNum_triggerCuts" ] = fs_->make< TH1D >( "jetNum_triggerCuts", "jetNum_triggerCuts", 10, 0., 10. );
-	histos1D_[ "jetNum_triggerCuts" ]->Sumw2();
-	histos1D_[ "jetMass_triggerCuts" ] = fs_->make< TH1D >( "jetMass_triggerCuts", "jetMass_triggerCuts", 50, 0., 500. );
-	histos1D_[ "jetMass_triggerCuts" ]->Sumw2();
-	histos1D_[ "HT_triggerCuts" ] = fs_->make< TH1D >( "HT_triggerCuts", "HT_triggerCuts", 150, 0., 1500. );
-	histos1D_[ "HT_triggerCuts" ]->Sumw2();
-	histos1D_[ "NPV_triggerCuts" ] = fs_->make< TH1D >( "NPV_triggerCuts", "NPV_triggerCuts", 80, 0., 80. );
-	histos1D_[ "NPV_triggerCuts" ]->Sumw2();
+	histos1D_[ "jetPt_cutTrigger" ] = fs_->make< TH1D >( "jetPt_cutTrigger", "jetPt_cutTrigger", 100, 0., 1000. );
+	histos1D_[ "jetPt_cutTrigger" ]->Sumw2();
+	histos1D_[ "jetEta_cutTrigger" ] = fs_->make< TH1D >( "jetEta_cutTrigger", "jetEta_cutTrigger", 100, -5., 5. );
+	histos1D_[ "jetEta_cutTrigger" ]->Sumw2();
+	histos1D_[ "jetNum_cutTrigger" ] = fs_->make< TH1D >( "jetNum_cutTrigger", "jetNum_cutTrigger", 10, 0., 10. );
+	histos1D_[ "jetNum_cutTrigger" ]->Sumw2();
+	histos1D_[ "HT_cutTrigger" ] = fs_->make< TH1D >( "HT_cutTrigger", "HT_cutTrigger", 300, 0., 3000. );
+	histos1D_[ "HT_cutTrigger" ]->Sumw2();
+	histos1D_[ "NPV_cutTrigger" ] = fs_->make< TH1D >( "NPV_cutTrigger", "NPV_cutTrigger", 80, 0., 80. );
+	histos1D_[ "NPV_cutTrigger" ]->Sumw2();
 
-	histos1D_[ "jet4Pt_best" ] = fs_->make< TH1D >( "jet4Pt_best", "jet4Pt_best", 100, 0., 1000. );
-	histos1D_[ "jet4Pt_best" ]->Sumw2();
-	histos1D_[ "massAve_best" ] = fs_->make< TH1D >( "massAve_best", "massAve_best", 50, 0., 500. );
-	histos1D_[ "massAve_best" ]->Sumw2();
-	histos1D_[ "massRes_best" ] = fs_->make< TH1D >( "massRes_best", "massRes_best", 50, 0., 2. );
-	histos1D_[ "massRes_best" ]->Sumw2();
-	histos1D_[ "deltaEta_best" ] = fs_->make< TH1D >( "deltaEta_best", "deltaEta_best", 400, 0., 10. );
-	histos1D_[ "deltaEta_best" ]->Sumw2();
-	histos1D_[ "minDeltaR_best" ] = fs_->make< TH1D >( "minDeltaR_best", "minDeltaR_best", 400, 0., 10. );
-	histos1D_[ "minDeltaR_best" ]->Sumw2();
-	histos1D_[ "HT_best" ] = fs_->make< TH1D >( "HT_best", "HT_best", 150, 0., 1500. );
-	histos1D_[ "HT_best" ]->Sumw2();
-	histos2D_[ "deltavsMassAve_best" ] = fs_->make< TH2D >( "deltavsMassAve_best", "deltavsMassAve_best", 200, 0., 2000.,  300, -500., 1000. );
-	histos2D_[ "deltavsMassAve_best" ]->Sumw2();
+	histos1D_[ "jet1Pt_cut4Jets" ] = fs_->make< TH1D >( "jet1Pt_cut4Jets", "jet1Pt_cut4Jets", 100, 0., 1000. );
+	histos1D_[ "jet1Pt_cut4Jets" ]->Sumw2();
+	histos1D_[ "jet2Pt_cut4Jets" ] = fs_->make< TH1D >( "jet2Pt_cut4Jets", "jet2Pt_cut4Jets", 100, 0., 1000. );
+	histos1D_[ "jet2Pt_cut4Jets" ]->Sumw2();
+	histos1D_[ "jet3Pt_cut4Jets" ] = fs_->make< TH1D >( "jet3Pt_cut4Jets", "jet3Pt_cut4Jets", 100, 0., 1000. );
+	histos1D_[ "jet3Pt_cut4Jets" ]->Sumw2();
+	histos1D_[ "jet4Pt_cut4Jets" ] = fs_->make< TH1D >( "jet4Pt_cut4Jets", "jet4Pt_cut4Jets", 100, 0., 1000. );
+	histos1D_[ "jet4Pt_cut4Jets" ]->Sumw2();
+	histos1D_[ "jetNum_cut4Jets" ] = fs_->make< TH1D >( "jetNum_cut4Jets", "jetNum_cut4Jets", 10, 0., 10. );
+	histos1D_[ "jetNum_cut4Jets" ]->Sumw2();
+	histos1D_[ "HT_cut4Jets" ] = fs_->make< TH1D >( "HT_cut4Jets", "HT_cut4Jets", 300, 0., 3000. );
+	histos1D_[ "HT_cut4Jets" ]->Sumw2();
 
-	/*histos1D_[ "polAngle13412_best" ] = fs_->make< TH1D >( "polAngle13412_best", "polAngle13412_best", 20, 0., 1. );
-	histos1D_[ "polAngle13412_best" ]->Sumw2();
-	histos1D_[ "polAngle31234_best" ] = fs_->make< TH1D >( "polAngle31234_best", "polAngle31234_best", 20, 0., 1. );
-	histos1D_[ "polAngle31234_best" ]->Sumw2();
-	histos2D_[ "polAngle13412vs31234_best" ] = fs_->make< TH2D >( "polAngle13412vs31234_best", "polAngle13412vs31234_best", 20, 0., 1., 20, 0., 1. );
-	histos2D_[ "polAngle13412vs31234_best" ]->Sumw2();
-	histos1D_[ "mu1_best" ] = fs_->make< TH1D >( "mu1_best", "mu1_best", 150, 0., 1.5 );
-	histos1D_[ "mu1_best" ]->Sumw2();
-	histos1D_[ "mu2_best" ] = fs_->make< TH1D >( "mu2_best", "mu2_best", 150, 0., 1.5 );
-	histos1D_[ "mu2_best" ]->Sumw2();
-	histos1D_[ "mu3_best" ] = fs_->make< TH1D >( "mu3_best", "mu3_best", 150, 0., 1.5 );
-	histos1D_[ "mu3_best" ]->Sumw2();
-	histos2D_[ "mu1234_best" ] = fs_->make< TH2D >( "mu1234_best", "mu1234_best", 150, 0., 1.5, 150, 0., 1.5 );
-	histos2D_[ "mu1234_best" ]->Sumw2();
-	histos2D_[ "dalitz1234_best" ] = fs_->make< TH2D >( "dalitz1234_best", "dalitz1234_best", 150, 0., 1.5, 150, 0., 1.5 );
-	histos2D_[ "dalitz1234_best" ]->Sumw2();
-	histos1D_[ "mu4_best" ] = fs_->make< TH1D >( "mu4_best", "mu4_best", 150, 0., 1.5 );
-	histos1D_[ "mu4_best" ]->Sumw2();
-	histos1D_[ "mu5_best" ] = fs_->make< TH1D >( "mu5_best", "mu5_best", 150, 0., 1.5 );
-	histos1D_[ "mu5_best" ]->Sumw2();
-	histos1D_[ "mu6_best" ] = fs_->make< TH1D >( "mu6_best", "mu6_best", 150, 0., 1.5 );
-	histos1D_[ "mu6_best" ]->Sumw2();
-	histos2D_[ "mu3412_best" ] = fs_->make< TH2D >( "mu3412_best", "mu3412_best", 150, 0., 1.5, 150, 0., 1.5 );
-	histos2D_[ "mu3412_best" ]->Sumw2();
-	histos2D_[ "dalitz3412_best" ] = fs_->make< TH2D >( "dalitz3412_best", "dalitz3412_best", 150, 0., 1.5, 150, 0., 1.5 );
-	histos2D_[ "dalitz3412_best" ]->Sumw2();*/
-
-	histos1D_[ "HT_allCuts" ] = fs_->make< TH1D >( "HT_allCuts", "HT_allCuts", 150, 0., 1500. );
-	histos1D_[ "HT_allCuts" ]->Sumw2();
-	histos1D_[ "jet4Pt_allCuts" ] = fs_->make< TH1D >( "jet4Pt_allCuts", "jet4Pt_allCuts", 100, 0., 1000. );
-	histos1D_[ "jet4Pt_allCuts" ]->Sumw2();
-	histos1D_[ "massAve_allCuts" ] = fs_->make< TH1D >( "massAve_allCuts", "massAve_allCuts", 50, 0., 500. );
-	histos1D_[ "massAve_allCuts" ]->Sumw2();
-	histos1D_[ "massRes_allCuts" ] = fs_->make< TH1D >( "massRes_allCuts", "massRes_allCuts", 50, 0., 2. );
-	histos1D_[ "massRes_allCuts" ]->Sumw2();
-	histos1D_[ "deltaEta_allCuts" ] = fs_->make< TH1D >( "deltaEta_allCuts", "deltaEta_allCuts", 400, 0., 10. );
-	histos1D_[ "deltaEta_allCuts" ]->Sumw2();
-	histos1D_[ "minDeltaR_allCuts" ] = fs_->make< TH1D >( "minDeltaR_allCuts", "minDeltaR_allCuts", 400, 0., 10. );
-	histos1D_[ "minDeltaR_allCuts" ]->Sumw2();
-	histos2D_[ "deltavsMassAve_allCuts" ] = fs_->make< TH2D >( "deltavsMassAve_allCuts", "deltavsMassAve_allCuts", 200, 0., 2000.,  300, -500., 1000. );
-	histos2D_[ "deltavsMassAve_allCuts" ]->Sumw2();
-
-	/*histos1D_[ "polAngle13412_allCuts" ] = fs_->make< TH1D >( "polAngle13412_allCuts", "polAngle13412_allCuts", 20, 0., 1. );
-	histos1D_[ "polAngle13412_allCuts" ]->Sumw2();
-	histos1D_[ "polAngle31234_allCuts" ] = fs_->make< TH1D >( "polAngle31234_allCuts", "polAngle31234_allCuts", 20, 0., 1. );
-	histos1D_[ "polAngle31234_allCuts" ]->Sumw2();
-	histos2D_[ "polAngle13412vs31234_allCuts" ] = fs_->make< TH2D >( "polAngle13412vs31234_allCuts", "polAngle13412vs31234_allCuts", 20, 0., 1., 20, 0., 1. );
-	histos2D_[ "polAngle13412vs31234_allCuts" ]->Sumw2();
-	histos1D_[ "mu1_allCuts" ] = fs_->make< TH1D >( "mu1_allCuts", "mu1_allCuts", 150, 0., 1.5 );
-	histos1D_[ "mu1_allCuts" ]->Sumw2();
-	histos1D_[ "mu2_allCuts" ] = fs_->make< TH1D >( "mu2_allCuts", "mu2_allCuts", 150, 0., 1.5 );
-	histos1D_[ "mu2_allCuts" ]->Sumw2();
-	histos1D_[ "mu3_allCuts" ] = fs_->make< TH1D >( "mu3_allCuts", "mu3_allCuts", 150, 0., 1.5 );
-	histos1D_[ "mu3_allCuts" ]->Sumw2();
-	histos2D_[ "mu1234_allCuts" ] = fs_->make< TH2D >( "mu1234_allCuts", "mu1234_allCuts", 150, 0., 1.5, 150, 0., 1.5 );
-	histos2D_[ "mu1234_allCuts" ]->Sumw2();
-	histos2D_[ "dalitz1234_allCuts" ] = fs_->make< TH2D >( "dalitz1234_allCuts", "dalitz1234_allCuts", 150, 0., 1.5, 150, 0., 1.5 );
-	histos2D_[ "dalitz1234_allCuts" ]->Sumw2();
-	histos1D_[ "mu4_allCuts" ] = fs_->make< TH1D >( "mu4_allCuts", "mu4_allCuts", 150, 0., 1.5 );
-	histos1D_[ "mu4_allCuts" ]->Sumw2();
-	histos1D_[ "mu5_allCuts" ] = fs_->make< TH1D >( "mu5_allCuts", "mu5_allCuts", 150, 0., 1.5 );
-	histos1D_[ "mu5_allCuts" ]->Sumw2();
-	histos1D_[ "mu6_allCuts" ] = fs_->make< TH1D >( "mu6_allCuts", "mu6_allCuts", 150, 0., 1.5 );
-	histos1D_[ "mu6_allCuts" ]->Sumw2();
-	histos2D_[ "mu3412_allCuts" ] = fs_->make< TH2D >( "mu3412_allCuts", "mu3412_allCuts", 150, 0., 1.5, 150, 0., 1.5 );
-	histos2D_[ "mu3412_allCuts" ]->Sumw2();
-	histos2D_[ "dalitz3412_allCuts" ] = fs_->make< TH2D >( "dalitz3412_allCuts", "dalitz3412_allCuts", 150, 0., 1.5, 150, 0., 1.5 );
-	histos2D_[ "dalitz3412_allCuts" ]->Sumw2();*/
+	histos1D_[ "jet1Pt_cut4JetPt" ] = fs_->make< TH1D >( "jet1Pt_cut4JetPt", "jet1Pt_cut4JetPt", 100, 0., 1000. );
+	histos1D_[ "jet1Pt_cut4JetPt" ]->Sumw2();
+	histos1D_[ "jet2Pt_cut4JetPt" ] = fs_->make< TH1D >( "jet2Pt_cut4JetPt", "jet2Pt_cut4JetPt", 100, 0., 1000. );
+	histos1D_[ "jet2Pt_cut4JetPt" ]->Sumw2();
+	histos1D_[ "jet3Pt_cut4JetPt" ] = fs_->make< TH1D >( "jet3Pt_cut4JetPt", "jet3Pt_cut4JetPt", 100, 0., 1000. );
+	histos1D_[ "jet3Pt_cut4JetPt" ]->Sumw2();
+	histos1D_[ "jet4Pt_cut4JetPt" ] = fs_->make< TH1D >( "jet4Pt_cut4JetPt", "jet4Pt_cut4JetPt", 100, 0., 1000. );
+	histos1D_[ "jet4Pt_cut4JetPt" ]->Sumw2();
+	histos1D_[ "jetNum_cut4JetPt" ] = fs_->make< TH1D >( "jetNum_cut4JetPt", "jetNum_cut4JetPt", 10, 0., 10. );
+	histos1D_[ "jetNum_cut4JetPt" ]->Sumw2();
+	histos1D_[ "HT_cut4JetPt" ] = fs_->make< TH1D >( "HT_cut4JetPt", "HT_cut4JetPt", 300, 0., 3000. );
+	histos1D_[ "HT_cut4JetPt" ]->Sumw2();
 
 
+	if (mkTree) {
+		RUNAtree = fs_->make< TTree >("RUNATree", "RUNATree"); 
+		RUNAtree->Branch( "run", &run, "run/I" );
+		RUNAtree->Branch( "lumi", &lumi, "lumi/I" );
+		RUNAtree->Branch( "event", &event, "event/I" );
+		RUNAtree->Branch( "numJets", &numJets, "numJets/I" );
+		RUNAtree->Branch( "numPV", &numPV, "numPV/I" );
+		RUNAtree->Branch( "HT", &HT, "HT/F" );
+		RUNAtree->Branch( "mass1", &mass1, "mass1/F" );
+		RUNAtree->Branch( "mass2", &mass2, "mass2/F" );
+		RUNAtree->Branch( "avgMass", &avgMass, "avgMass/F" );
+		RUNAtree->Branch( "delta1", &delta1, "delta1/F" );
+		RUNAtree->Branch( "delta2", &delta2, "delta2/F" );
+		RUNAtree->Branch( "massRes", &massRes, "massRes/F" );
+		RUNAtree->Branch( "eta1", &eta1, "eta1/F" );
+		RUNAtree->Branch( "eta2", &eta2, "eta2/F" );
+		RUNAtree->Branch( "deltaEta", &deltaEta, "deltaEta/F" );
+		RUNAtree->Branch( "jetsPt", "vector<float>", &jetsPt);
+		RUNAtree->Branch( "jetsEta", "vector<float>", &jetsEta);
+		RUNAtree->Branch( "jetsPhi", "vector<float>", &jetsPhi);
+		RUNAtree->Branch( "jetsE", "vector<float>", &jetsE);
+	} else {
+		histos1D_[ "jet4Pt_cutBestPair" ] = fs_->make< TH1D >( "jet4Pt_cutBestPair", "jet4Pt_cutBestPair", 100, 0., 1000. );
+		histos1D_[ "jet4Pt_cutBestPair" ]->Sumw2();
+		histos1D_[ "massAve_cutBestPair" ] = fs_->make< TH1D >( "massAve_cutBestPair", "massAve_cutBestPair", 50, 0., 500. );
+		histos1D_[ "massAve_cutBestPair" ]->Sumw2();
+		histos1D_[ "massRes_cutBestPair" ] = fs_->make< TH1D >( "massRes_cutBestPair", "massRes_cutBestPair", 50, 0., 2. );
+		histos1D_[ "massRes_cutBestPair" ]->Sumw2();
+		histos1D_[ "deltaEta_cutBestPair" ] = fs_->make< TH1D >( "deltaEta_cutBestPair", "deltaEta_cutBestPair", 400, 0., 10. );
+		histos1D_[ "deltaEta_cutBestPair" ]->Sumw2();
+		histos1D_[ "minDeltaR_cutBestPair" ] = fs_->make< TH1D >( "minDeltaR_cutBestPair", "minDeltaR_cutBestPair", 400, 0., 10. );
+		histos1D_[ "minDeltaR_cutBestPair" ]->Sumw2();
+		histos1D_[ "HT_cutBestPair" ] = fs_->make< TH1D >( "HT_cutBestPair", "HT_cutBestPair", 300, 0., 3000. );
+		histos1D_[ "HT_cutBestPair" ]->Sumw2();
+		histos2D_[ "deltavsMassAve_cutBestPair" ] = fs_->make< TH2D >( "deltavsMassAve_cutBestPair", "deltavsMassAve_cutBestPair", 200, 0., 2000.,  300, -500., 1000. );
+		histos2D_[ "deltavsMassAve_cutBestPair" ]->Sumw2();
+
+		histos1D_[ "jet1Pt_cutMassRes" ] = fs_->make< TH1D >( "jet1Pt_cutMassRes", "jet1Pt_cutMassRes", 100, 0., 1000. );
+		histos1D_[ "jet1Pt_cutMassRes" ]->Sumw2();
+		histos1D_[ "jet2Pt_cutMassRes" ] = fs_->make< TH1D >( "jet2Pt_cutMassRes", "jet2Pt_cutMassRes", 100, 0., 1000. );
+		histos1D_[ "jet2Pt_cutMassRes" ]->Sumw2();
+		histos1D_[ "jet3Pt_cutMassRes" ] = fs_->make< TH1D >( "jet3Pt_cutMassRes", "jet3Pt_cutMassRes", 100, 0., 1000. );
+		histos1D_[ "jet3Pt_cutMassRes" ]->Sumw2();
+		histos1D_[ "jet4Pt_cutMassRes" ] = fs_->make< TH1D >( "jet4Pt_cutMassRes", "jet4Pt_cutMassRes", 100, 0., 1000. );
+		histos1D_[ "jet4Pt_cutMassRes" ]->Sumw2();
+		histos1D_[ "jetNum_cutMassRes" ] = fs_->make< TH1D >( "jetNum_cutMassRes", "jetNum_cutMassRes", 10, 0., 10. );
+		histos1D_[ "jetNum_cutMassRes" ]->Sumw2();
+		histos1D_[ "HT_cutMassRes" ] = fs_->make< TH1D >( "HT_cutMassRes", "HT_cutMassRes", 300, 0., 3000. );
+		histos1D_[ "HT_cutMassRes" ]->Sumw2();
+		histos1D_[ "massAve_cutMassRes" ] = fs_->make< TH1D >( "massAve_cutMassRes", "massAve_cutMassRes", 50, 0., 500. );
+		histos1D_[ "massAve_cutMassRes" ]->Sumw2();
+		histos1D_[ "massRes_cutMassRes" ] = fs_->make< TH1D >( "massRes_cutMassRes", "massRes_cutMassRes", 50, 0., 2. );
+		histos1D_[ "massRes_cutMassRes" ]->Sumw2();
+		histos1D_[ "deltaEta_cutMassRes" ] = fs_->make< TH1D >( "deltaEta_cutMassRes", "deltaEta_cutMassRes", 400, 0., 10. );
+		histos1D_[ "deltaEta_cutMassRes" ]->Sumw2();
+		histos1D_[ "minDeltaR_cutMassRes" ] = fs_->make< TH1D >( "minDeltaR_cutMassRes", "minDeltaR_cutMassRes", 400, 0., 10. );
+		histos1D_[ "minDeltaR_cutMassRes" ]->Sumw2();
+		histos2D_[ "deltavsMassAve_cutMassRes" ] = fs_->make< TH2D >( "deltavsMassAve_cutMassRes", "deltavsMassAve_cutMassRes", 200, 0., 2000.,  300, -500., 1000. );
+		histos2D_[ "deltavsMassAve_cutMassRes" ]->Sumw2();
+
+		histos1D_[ "jet1Pt_cutDelta" ] = fs_->make< TH1D >( "jet1Pt_cutDelta", "jet1Pt_cutDelta", 100, 0., 1000. );
+		histos1D_[ "jet1Pt_cutDelta" ]->Sumw2();
+		histos1D_[ "jet2Pt_cutDelta" ] = fs_->make< TH1D >( "jet2Pt_cutDelta", "jet2Pt_cutDelta", 100, 0., 1000. );
+		histos1D_[ "jet2Pt_cutDelta" ]->Sumw2();
+		histos1D_[ "jet3Pt_cutDelta" ] = fs_->make< TH1D >( "jet3Pt_cutDelta", "jet3Pt_cutDelta", 100, 0., 1000. );
+		histos1D_[ "jet3Pt_cutDelta" ]->Sumw2();
+		histos1D_[ "jet4Pt_cutDelta" ] = fs_->make< TH1D >( "jet4Pt_cutDelta", "jet4Pt_cutDelta", 100, 0., 1000. );
+		histos1D_[ "jet4Pt_cutDelta" ]->Sumw2();
+		histos1D_[ "jetNum_cutDelta" ] = fs_->make< TH1D >( "jetNum_cutDelta", "jetNum_cutDelta", 10, 0., 10. );
+		histos1D_[ "jetNum_cutDelta" ]->Sumw2();
+		histos1D_[ "HT_cutDelta" ] = fs_->make< TH1D >( "HT_cutDelta", "HT_cutDelta", 300, 0., 3000. );
+		histos1D_[ "HT_cutDelta" ]->Sumw2();
+		histos1D_[ "massAve_cutDelta" ] = fs_->make< TH1D >( "massAve_cutDelta", "massAve_cutDelta", 50, 0., 500. );
+		histos1D_[ "massAve_cutDelta" ]->Sumw2();
+		histos1D_[ "massRes_cutDelta" ] = fs_->make< TH1D >( "massRes_cutDelta", "massRes_cutDelta", 50, 0., 2. );
+		histos1D_[ "massRes_cutDelta" ]->Sumw2();
+		histos1D_[ "deltaEta_cutDelta" ] = fs_->make< TH1D >( "deltaEta_cutDelta", "deltaEta_cutDelta", 400, 0., 10. );
+		histos1D_[ "deltaEta_cutDelta" ]->Sumw2();
+		histos1D_[ "minDeltaR_cutDelta" ] = fs_->make< TH1D >( "minDeltaR_cutDelta", "minDeltaR_cutDelta", 400, 0., 10. );
+		histos1D_[ "minDeltaR_cutDelta" ]->Sumw2();
+		histos2D_[ "deltavsMassAve_cutDelta" ] = fs_->make< TH2D >( "deltavsMassAve_cutDelta", "deltavsMassAve_cutDelta", 200, 0., 2000.,  300, -500., 1000. );
+		histos2D_[ "deltavsMassAve_cutDelta" ]->Sumw2();
+
+		histos1D_[ "jet1Pt_cutEtaBand" ] = fs_->make< TH1D >( "jet1Pt_cutEtaBand", "jet1Pt_cutEtaBand", 100, 0., 1000. );
+		histos1D_[ "jet1Pt_cutEtaBand" ]->Sumw2();
+		histos1D_[ "jet2Pt_cutEtaBand" ] = fs_->make< TH1D >( "jet2Pt_cutEtaBand", "jet2Pt_cutEtaBand", 100, 0., 1000. );
+		histos1D_[ "jet2Pt_cutEtaBand" ]->Sumw2();
+		histos1D_[ "jet3Pt_cutEtaBand" ] = fs_->make< TH1D >( "jet3Pt_cutEtaBand", "jet3Pt_cutEtaBand", 100, 0., 1000. );
+		histos1D_[ "jet3Pt_cutEtaBand" ]->Sumw2();
+		histos1D_[ "jet4Pt_cutEtaBand" ] = fs_->make< TH1D >( "jet4Pt_cutEtaBand", "jet4Pt_cutEtaBand", 100, 0., 1000. );
+		histos1D_[ "jet4Pt_cutEtaBand" ]->Sumw2();
+		histos1D_[ "jetNum_cutEtaBand" ] = fs_->make< TH1D >( "jetNum_cutEtaBand", "jetNum_cutEtaBand", 10, 0., 10. );
+		histos1D_[ "jetNum_cutEtaBand" ]->Sumw2();
+		histos1D_[ "HT_cutEtaBand" ] = fs_->make< TH1D >( "HT_cutEtaBand", "HT_cutEtaBand", 300, 0., 3000. );
+		histos1D_[ "HT_cutEtaBand" ]->Sumw2();
+		histos1D_[ "massAve_cutEtaBand" ] = fs_->make< TH1D >( "massAve_cutEtaBand", "massAve_cutEtaBand", 50, 0., 500. );
+		histos1D_[ "massAve_cutEtaBand" ]->Sumw2();
+		histos1D_[ "massRes_cutEtaBand" ] = fs_->make< TH1D >( "massRes_cutEtaBand", "massRes_cutEtaBand", 50, 0., 2. );
+		histos1D_[ "massRes_cutEtaBand" ]->Sumw2();
+		histos1D_[ "deltaEta_cutEtaBand" ] = fs_->make< TH1D >( "deltaEta_cutEtaBand", "deltaEta_cutEtaBand", 400, 0., 10. );
+		histos1D_[ "deltaEta_cutEtaBand" ]->Sumw2();
+		histos1D_[ "minEtaBandR_cutEtaBand" ] = fs_->make< TH1D >( "minEtaBandR_cutEtaBand", "minEtaBandR_cutEtaBand", 400, 0., 10. );
+		histos1D_[ "minEtaBandR_cutEtaBand" ]->Sumw2();
+		histos2D_[ "deltavsMassAve_cutEtaBand" ] = fs_->make< TH2D >( "deltavsMassAve_cutEtaBand", "deltavsMassAve_cutEtaBand", 200, 0., 2000.,  300, -500., 1000. );
+		histos2D_[ "deltavsMassAve_cutEtaBand" ]->Sumw2();
+	}
 
 	cutLabels.push_back("Processed");
 	cutLabels.push_back("Trigger");
-	cutLabels.push_back("HT");
+	cutLabels.push_back("4Jets");
+	cutLabels.push_back("4JetPt");
+	cutLabels.push_back("MassRes");
+	cutLabels.push_back("Delta");
+	cutLabels.push_back("EtaBand");
 	histos1D_[ "hcutflow" ] = fs_->make< TH1D >("cutflow","cut flow", cutLabels.size(), 0.5, cutLabels.size() +0.5 );
 	histos1D_[ "hcutflow" ]->Sumw2();
-	histos1D_[ "hcutflowSimple" ] = fs_->make< TH1D >("cutflowSimple","simple cut flow", cutLabels.size(), 0.5, cutLabels.size() +0.5 );
-	histos1D_[ "hcutflowSimple" ]->Sumw2();
 	for( const string &ivec : cutLabels ) cutmap[ ivec ] = 0;
 }
 
@@ -698,10 +671,8 @@ void RUNAnalysis::endJob() {
 
 	int ibin = 1;
 	for( const string &ivec : cutLabels ) {
-		histos1D_["hcutflow"]->SetBinContent( ibin, cutmap[ ivec ] * scale );
+		histos1D_["hcutflow"]->SetBinContent( ibin, cutmap[ ivec ] );
 		histos1D_["hcutflow"]->GetXaxis()->SetBinLabel( ibin, ivec.c_str() );
-		histos1D_["hcutflowSimple"]->SetBinContent( ibin, cutmap[ ivec ] );
-		histos1D_["hcutflowSimple"]->GetXaxis()->SetBinLabel( ibin, ivec.c_str() );
 		ibin++;
 	}
 
@@ -720,15 +691,16 @@ void RUNAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descriptions
 
 	edm::ParameterSetDescription desc;
 
-	desc.add<double>("scale", 1);
 	desc.add<double>("cutMassRes", 1);
 	desc.add<double>("cutDelta", 1);
 	desc.add<double>("cutEtaBand", 1);
 	desc.add<double>("cutJetPt", 1);
 	desc.add<double>("cutHT", 1);
 	desc.add<bool>("bjSample", false);
-	desc.add<string>("HLTtriggerOne", "HLT_PFHT800");
-	desc.add<string>("HLTtriggerTwo", "HLT_PFHT800");
+	desc.add<bool>("mkTree", false);
+	vector<string> HLTPass;
+	HLTPass.push_back("HLT_PFHT800");
+	desc.add<vector<string>>("triggerPass",	HLTPass);
 
 	desc.add<InputTag>("Lumi", 	InputTag("eventInfo:evtInfoLumiBlock"));
 	desc.add<InputTag>("Run", 	InputTag("eventInfo:evtInfoRunNumber"));

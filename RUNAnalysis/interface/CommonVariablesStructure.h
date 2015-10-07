@@ -82,3 +82,18 @@ static bool checkTriggerBits( Handle<vector<string>> triggerNames, Handle<vector
 
 	return triggerFired;
 }	
+
+static bool checkORListOfTriggerBits( Handle<vector<string>> triggerNames, Handle<vector<float>> triggerBits, vector<string>  triggerPass  ){
+
+	vector<bool> triggersFired;
+	for (size_t t = 0; t < triggerPass.size(); t++) {
+		bool triggerFired = checkTriggerBits( triggerNames, triggerBits, triggerPass[t] );
+		triggersFired.push_back( triggerFired );
+		//if ( triggerFired ) LogWarning("test") << triggerPass[t] << " " << triggerFired;
+	}
+	
+	bool ORTriggers = !none_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
+	//if( ORTriggers ) LogWarning("OR") << std::none_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
+	
+	return ORTriggers;
+}

@@ -675,7 +675,7 @@ def plot2DOptimization( inFileSig, inFileBkg, Grom, name, titleXAxis, titleXAxis
 def plotQuality( dataFile, bkgFiles, Grom, nameInRoot, name, xmin, xmax, labX, labY, log, PU ):
 	"""docstring for plot"""
 
-	outputFileName = name+'_'+Grom+'_'+PU+'_dataQualityPlots.pdf' 
+	outputFileName = name+'_'+Grom+'_'+PU+'_dataQualityPlots.png' 
 	print 'Processing.......', outputFileName
 
 	histos = {}
@@ -837,20 +837,20 @@ if __name__ == '__main__':
 		inputMiniFileZJetsToQQ = TFile.Open('Rootfiles/RUNMiniAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v01p2_v06.root')
 	else:
 		if '50ns' in PU:
-			dataFile 		= TFile.Open('Rootfiles/RUNAnalysis_JetHT_Run2015B_Asympt50ns_v03_v01p3.root')
-			bkgFiles[ 'QCD' ] 	= [ TFile.Open('Rootfiles/RUNAnalysis_QCDHTAll_'+camp+'_'+PU+'_v03_v01p3.root'), 	2.6, 'QCD', kBlue ]
-			CMS_lumi.lumi_13TeV = "71.52 pb^{-1}"
+			dataFile 		= TFile.Open('Rootfiles/RUNAnalysis_JetHTRun2015B-PromptReco-v1_v06_v00p2.root')
+			bkgFiles[ 'QCD' ] 	= [ TFile.Open('Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15DR74_Asympt50ns_v06_v00p2.root'), 	0.50, 'QCD', kBlue ]
+			CMS_lumi.lumi_13TeV = "46.15 pb^{-1}"
 		else:
-			dataFile		= TFile.Open('Rootfiles/RUNAnalysis_JetHT_Run2015All_Asympt25ns_v03_v01p3.root')
+			dataFile		= TFile.Open('Rootfiles/RUNAnalysis_JetHTRun2015CD-PromptReco-v1_v06_v00p2.root')
 			signalFiles[ 'Signal' ] 	= [ TFile.Open('Rootfiles/RUNAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v03_v01p3.root'),	10.75, 'RPV #tilde{t}#rightarrow '+jj+' 100 GeV']
 			signalFiles[ 'Signal2' ] 	= [ TFile.Open('Rootfiles/RUNAnalysis_RPVSt200tojj_'+camp+'_'+PU+'_v03_v01p3.root'),	10.75, 'RPV #tilde{t}#rightarrow '+jj+' 200 GeV' ]
 			#signalFiles[ 'Signal350' ] 	= [ TFile.Open('Rootfiles/RUNAnalysis_RPVSt350to'+jj+'_'+camp+'_'+PU+'_v02p3_v06.root'),	1 ]
 			#signalFiles[ 'Signal' ] 	= [ TFile.Open('Rootfiles/RUNTriggerEfficiency_RPVSt100tojj_RunIISpring16DR74_Asympt25ns_TS_v02_v09.root'),	1 ]
-			bkgFiles[ 'QCD' ] 		= [ TFile.Open('Rootfiles/RUNAnalysis_QCD'+qcd+'All_'+camp+'_'+PU+'_v03_v01p3.root'),	0.8*10.75, 'QCD', kBlue ]
+			bkgFiles[ 'QCD' ] 		= [ TFile.Open('Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15DR74_Asympt25ns_v06_v00p2.root'),	0.78, 'QCD', kBlue ]
 			#bkgFiles[ 'TTJets' ] 	= [ TFile.Open('Rootfiles/RUNAnalysis_TTJets_'+camp+'_'+PU+'_v03_v01p3p2.root'),	1, 	't #bar{t} + Jets', kGreen ]
-			bkgFiles[ 'WJets' ]	 	= [ TFile.Open('Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01p3.root'),	10.75, 'W + Jets', kMagenta ]
-			bkgFiles[ 'ZJets' ] 		= [ TFile.Open('Rootfiles/RUNAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01p3.root'),	10.75, 'Z + Jets', kOrange ]
-			CMS_lumi.lumi_13TeV = "166.37 pb^{-1}"
+			#bkgFiles[ 'WJets' ]	 	= [ TFile.Open('Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01p3.root'),	10.75, 'W + Jets', kMagenta ]
+			#bkgFiles[ 'ZJets' ] 		= [ TFile.Open('Rootfiles/RUNAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01p3.root'),	10.75, 'Z + Jets', kOrange ]
+			CMS_lumi.lumi_13TeV = "163.21 pb^{-1}"
 
 	dijetlabX = 0.15
 	dijetlabY = 0.88
@@ -965,7 +965,8 @@ if __name__ == '__main__':
 		#[ 'qual', 'subjetPtRatio', '', '', '', '', True],
 		[ 'qual', 'deltaEtaDijet', '', '', '', '', True],
 		[ 'qual', 'massAsymmetry', '', '', 0.85, 0.45, False],
-		[ 'qual', 'cosThetaStar', '', '', '', '', False],
+		[ 'qual', 'jet1CosThetaStar', '', '', '', '', False],
+		[ 'qual', 'jet2CosThetaStar', '', '', '', '', False],
 		[ 'qual', 'jet1Tau21', '', '', 0.85, 0.45, False],
 		[ 'qual', 'jet2Tau21', '', '', 0.85, 0.45, False],
 
