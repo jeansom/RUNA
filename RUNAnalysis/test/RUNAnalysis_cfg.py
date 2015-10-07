@@ -81,7 +81,16 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
-		'/store/user/algomez/RPVSt350tobj_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns_v03/150910_123957/0000/RUNtuples_104.root',
+		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_1.root',
+		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_10.root',
+		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_100.root',
+		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_101.root',
+		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_102.root',
+		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_103.root',
+		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_104.root',
+		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_105.root',
+		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_106.root',
+		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_107.root',
 		#'file:RUNtuple_1.root'
 	    )
 	)
@@ -104,19 +113,9 @@ process.AnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 		cutEtaBand 		= cms.double( options.EtaBand ),
 		cutJetPt 		= cms.double( options.JetPt ),
 		bjSample		= cms.bool( bjsample ),
-		HLTtriggerOne		= cms.string( HTtrigger ),
-		HLTtriggerTwo		= cms.string( HTtrigger ),
+		triggerPass 		= cms.vstring( ['HLT_PFHT800', 'HLT_PFHT750_4JetPt'] ) 
 )
 
-process.AnalysisPlotsPFHT7504Jet = process.AnalysisPlots.clone( 
-		HLTtriggerOne		= cms.string( 'HLT_PFHT750_4Jet_v1' ),
-		HLTtriggerTwo		= cms.string( 'HLT_PFHT750_4Jet_v1' ),
-		)
-
-process.AnalysisPlotsPFHT800PFHT7504Jet = process.AnalysisPlots.clone( 
-		HLTtriggerOne		= cms.string( HTtrigger ),
-		HLTtriggerTwo		= cms.string( 'HLT_PFHT750_4Jet_v1' ),
-		)
 
 
 if options.debug:
@@ -124,7 +123,5 @@ if options.debug:
 else:
 
 	process.p = cms.Path( process.AnalysisPlots
-		* process.AnalysisPlotsPFHT7504Jet
-		* process.AnalysisPlotsPFHT800PFHT7504Jet
 		)
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

@@ -33,7 +33,7 @@ options.register('debug',
 		"Run just pruned"
 		)
 options.register('HT', 
-		0.0,
+		900.0,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
 		"HT cut"
@@ -57,7 +57,7 @@ options.register('EtaBand',
 		"EtaBand cut"
 		)
 options.register('JetPt', 
-		80.0,
+		0.0,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
 		"JetPt cut"
@@ -137,8 +137,6 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
-		   '/store/user/algomez/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt50ns_v06/150929_221717/0000/RUNtuples_143.root',
-		   '/store/user/algomez/RPVSt350tobj_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns_v03/150910_123957/0001/RUNtuples_1717.root',
 		   '/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_1.root',
 		   '/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_10.root',
 		   '/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_100.root',
@@ -178,19 +176,10 @@ process.AnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 		cutEtaBand 		= cms.double( options.EtaBand ),
 		cutJetPt 		= cms.double( options.JetPt ),
 		bjSample		= cms.bool( bjsample ),
-		HLTtriggerOne		= cms.string( HTtrigger ),
-		HLTtriggerTwo		= cms.string( HTtrigger ),
+		triggerPass 		= cms.vstring( [ HTtrigger ] ) 
 )
+process.RUNATree = process.AnalysisPlots.clone( mkTree = cms.bool( True ) )
 
-process.AnalysisPlotsPFHT7504Jet = process.AnalysisPlots.clone( 
-		HLTtriggerOne		= cms.string( 'HLT_PFHT750_4Jet' ),
-		HLTtriggerTwo		= cms.string( 'HLT_PFHT750_4Jet' ),
-		)
-
-process.AnalysisPlotsPFHT800PFHT7504Jet = process.AnalysisPlots.clone( 
-		HLTtriggerOne		= cms.string( HTtrigger ),
-		HLTtriggerTwo		= cms.string( 'HLT_PFHT750_4Jet' ),
-		)
 
 process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		cutjetPtvalue 		= cms.double( options.boostedJetPt ),
@@ -204,8 +193,7 @@ process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		cutBtagvalue 		= cms.double( options.btag ),
 		bjSample		= cms.bool( bjsample ),
 		mkTree			= cms.bool( False  ),
-		HLTtriggerOne		= cms.string('HLT_AK8PFHT700_TrimR0p1PT0p03Mass50'),
-		HLTtriggerTwo		= cms.string('HLT_AK8PFHT700_TrimR0p1PT0p03Mass50'),
+		triggerPass 		= cms.vstring( [ 'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', HTtrigger ] )
 
 )
 
@@ -245,25 +233,6 @@ process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone(
 		)
 
 
-process.BoostedAnalysisPlotsPrunedNOTrigger = process.BoostedAnalysisPlotsPruned.clone( 
-		HLTtriggerOne		= cms.string('NOTRIGGER'),
-		)
-process.BoostedAnalysisPlotsPrunedPFHT900 = process.BoostedAnalysisPlotsPruned.clone( 
-		HLTtriggerOne		= cms.string(HTtrigger),
-		HLTtriggerTwo		= cms.string(HTtrigger),
-		)
-process.BoostedAnalysisPlotsPrunedPFHT7504JetPt50 = process.BoostedAnalysisPlotsPruned.clone( 
-		HLTtriggerOne		= cms.string('HLT_PFHT750_4JetPt50'),
-		HLTtriggerTwo		= cms.string('HLT_PFHT750_4JetPt50'),
-		)
-process.BoostedAnalysisPlotsPrunedAK8PFHT700ANDPFHT7504Jet = process.BoostedAnalysisPlotsPruned.clone( 
-		HLTtriggerOne		= cms.string('HLT_AK8PFHT700_TrimR0p1PT0p03Mass50'),
-		HLTtriggerTwo		= cms.string('HLT_PFHT750_4JetPt50'),
-		)
-process.BoostedAnalysisPlotsSoftDropPFHT900 = process.BoostedAnalysisPlotsSoftDrop.clone( 
-		HLTtrigger		= cms.string(HTtrigger),
-		)
-
 process.RUNATreeSoftDrop = process.BoostedAnalysisPlotsSoftDrop.clone( mkTree = cms.bool( True ) )
 process.RUNATreePruned = process.BoostedAnalysisPlotsPruned.clone( mkTree = cms.bool( True ) )
 
@@ -273,19 +242,13 @@ if options.debug:
 else:
 
 	process.p = cms.Path( process.AnalysisPlots
-		* process.AnalysisPlotsPFHT7504Jet
-		* process.AnalysisPlotsPFHT800PFHT7504Jet
+		* process.RUNATree
 		* process.BoostedAnalysisPlots
 		* process.BoostedAnalysisPlotsTrimmed
 		* process.BoostedAnalysisPlotsPruned
 		* process.BoostedAnalysisPlotsSoftDrop
 		* process.BoostedAnalysisPlotsPuppi
 		* process.BoostedAnalysisPlotsFiltered
-		#* process.BoostedAnalysisPlotsSoftDropPFHT900
-		#* process.BoostedAnalysisPlotsPrunedPFHT900
-		#* process.BoostedAnalysisPlotsPrunedPFHT7504JetPt50
-		#* process.BoostedAnalysisPlotsPrunedAK8PFHT700ANDPFHT7504Jet	
-		#* process.BoostedAnalysisPlotsPrunedNOTrigger
 		* process.RUNATreeSoftDrop
 		* process.RUNATreePruned
 		)

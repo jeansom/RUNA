@@ -75,8 +75,6 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 
       bool bjSample;
       bool mkTree;
-      TString HLTtriggerOne;
-      TString HLTtriggerTwo;
       /*double cutAK4HTvalue;
       double cutjetAK4Ptvalue;
       double cutTrimmedMassvalue;*/
@@ -89,6 +87,7 @@ class RUNBoostedAnalysis : public EDAnalyzer {
       double cutTau21value;
       double cutBtagvalue;
       double cutDEtavalue;
+      vector<string> triggerPass;
 
       ULong64_t event = 0;
       int numJets = 0, numPV = 0;
@@ -213,9 +212,8 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 	subjetMass_(consumes<vector<float>>(iConfig.getParameter<InputTag>("subjetMass")))
 {
 	bjSample = iConfig.getParameter<bool>("bjSample");
-	HLTtriggerOne = iConfig.getParameter<string>("HLTtriggerOne");
-	HLTtriggerTwo = iConfig.getParameter<string>("HLTtriggerTwo");
 	mkTree = iConfig.getParameter<bool>("mkTree");
+	triggerPass 	= iConfig.getParameter<vector<string>>("triggerPass");
 	/*
 	cutAK4HTvalue = iConfig.getParameter<double>("cutAK4HTvalue");
 	cutjetAK4Ptvalue = iConfig.getParameter<double>("cutjetAK4Ptvalue");
@@ -377,8 +375,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	Handle<vector<float> > subjetMass;
 	iEvent.getByToken(subjetMass_, subjetMass);
 
-	bool triggerFiredOne = checkTriggerBits( triggerName, triggerBit, HLTtriggerOne  );
-	bool triggerFiredTwo = checkTriggerBits( triggerName, triggerBit, HLTtriggerTwo  );
+	bool ORTriggers = checkORListOfTriggerBits( triggerName, triggerBit, triggerPass );
 	
 	///////// AK4 jets to model PFHT trigger
 	//bool cutAK4HT = 0;
@@ -458,10 +455,18 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			histos1D_[ "jetPt" ]->Fill( (*jetPt)[i]  );
 			histos1D_[ "jetEta" ]->Fill( (*jetEta)[i]  );
 			histos1D_[ "jetMass" ]->Fill( (*jetMass)[i]  );
+			double jec = 1. / ( (*jecFactor)[i] * (*jetE)[i] );
+			histos1D_[ "neutralHadronEnergy" ]->Fill( (*neutralHadronEnergy)[i] * jec );
+			histos1D_[ "neutralEmEnergy" ]->Fill( (*neutralEmEnergy)[i] * jec );
+			histos1D_[ "chargedHadronEnergy" ]->Fill( (*chargedHadronEnergy)[i] * jec );
+			histos1D_[ "chargedEmEnergy" ]->Fill( (*chargedEmEnergy)[i] * jec );
+			histos1D_[ "numConst" ]->Fill( (*chargedHadronMultiplicity)[i] + (*neutralHadronMultiplicity)[i] );
+			histos1D_[ "chargedMultiplicity" ]->Fill( (*chargedMultiplicity)[i] * jec );
 		}
 	}
 
 	numPV = *NPV;
+	//sort(JETS.begin(), JETS.end(), [](const JETtype &p1, const JETtype &p2) { return p1.mass > p2.mass; }); 
 	//sort(JETS.begin(), JETS.end(), [](const JETtype &p1, const JETtype &p2) { TLorentzVector tmpP1, tmpP2; tmpP1 = p1.p4; tmpP2 = p2.p4;  return tmpP1.M() > tmpP2.M(); }); 
 	histos1D_[ "jetNum" ]->Fill( numJets );
 	histos1D_[ "NPV" ]->Fill( numPV );
@@ -488,7 +493,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	tmpMass.clear();
 
 	//if ( HT > 0 ) 	LogWarning("NOT fired") << HT << " " << trimmedMass;
-	if ( triggerFiredOne && triggerFiredTwo ) {
+	if ( ORTriggers ) {
 		//LogWarning("fired") << HT << " " << trimmedMass;
 		cutmap["Trigger"] += 1; 
 		histos1D_[ "HT_cutTrigger" ]->Fill( HT  );
@@ -1406,6 +1411,18 @@ void RUNBoostedAnalysis::beginJob() {
 	histos2D_[ "jetTrimmedMassHT" ]->Sumw2();
 	histos2D_[ "leadMassHT" ] = fs_->make< TH2D >( "leadMassHT", "leadMassHT", 30, 0., 300., 500, 0., 5000. );
 	histos2D_[ "leadMassHT" ]->Sumw2();
+	histos1D_[ "neutralHadronEnergy" ] = fs_->make< TH1D >( "neutralHadronEnergy", "neutralHadronEnergy", 50, 0., 1. );
+	histos1D_[ "neutralHadronEnergy" ]->Sumw2();
+	histos1D_[ "neutralEmEnergy" ] = fs_->make< TH1D >( "neutralEmEnergy", "neutralEmEnergy", 50, 0., 1. );
+	histos1D_[ "neutralEmEnergy" ]->Sumw2();
+	histos1D_[ "chargedHadronEnergy" ] = fs_->make< TH1D >( "chargedHadronEnergy", "chargedHadronEnergy", 50, 0., 1. );
+	histos1D_[ "chargedHadronEnergy" ]->Sumw2();
+	histos1D_[ "chargedEmEnergy" ] = fs_->make< TH1D >( "chargedEmEnergy", "chargedEmEnergy", 50, 0., 1. );
+	histos1D_[ "chargedEmEnergy" ]->Sumw2();
+	histos1D_[ "chargedMultiplicity" ] = fs_->make< TH1D >( "chargedMultiplicity", "chargedMultiplicity", 50, 0., 1. );
+	histos1D_[ "chargedMultiplicity" ]->Sumw2();
+	histos1D_[ "numConst" ] = fs_->make< TH1D >( "numConst", "numConst", 100, 0., 100. );
+	histos1D_[ "numConst" ]->Sumw2();
 
 	histos1D_[ "HT_cutTrigger" ] = fs_->make< TH1D >( "HT_cutTrigger", "HT_cutTrigger", 500, 0., 5000. );
 	histos1D_[ "HT_cutTrigger" ]->Sumw2();
@@ -2722,8 +2739,9 @@ void RUNBoostedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descr
 	desc.add<double>("cutBtagvalue", 1);
 	desc.add<bool>("bjSample", false);
 	desc.add<bool>("mkTree", false);
-	desc.add<string>("HLTtriggerOne", "HLT_PFHT800");
-	desc.add<string>("HLTtriggerTwo", "HLT_PFHT800");
+	vector<string> HLTPass;
+	HLTPass.push_back("HLT_AK8PFHT700_TrimR0p1PT0p03Mass50");
+	desc.add<vector<string>>("triggerPass",	HLTPass);
 
 	desc.add<InputTag>("Lumi", 	InputTag("eventInfo:evtInfoLumiBlock"));
 	desc.add<InputTag>("Run", 	InputTag("eventInfo:evtInfoRunNumber"));
