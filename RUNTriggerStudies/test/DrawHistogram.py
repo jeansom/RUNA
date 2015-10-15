@@ -272,7 +272,7 @@ if __name__ == '__main__':
 			SAMPLE = 'MET'
 			BASEDTrigger = 'PFMET170'
 		else:
-			inputTrigger = TFile.Open('Rootfiles/RUNTriggerEfficiency_JetHT_Run2015B-PromptReco-v1_v06_v04.root')
+			inputTrigger = TFile.Open('Rootfiles/RUNTriggerEfficiency_JetHT_Run2015B-PromptReco-v1_v06_v05.root')
 			SAMPLE = 'JetHT_Run2015B'
 			BASEDTrigger = 'PFHT475'
 	else:
@@ -320,6 +320,7 @@ if __name__ == '__main__':
 		#[ '2D', 'jetMassHTDenom_triggerTwo', 'Leading Trimmed Jet Mass [GeV]', 'H_{T} [GeV]', 0, 200, 2, 100, HTMaxX, 5, 0.85, 0.2],
 		#[ '2D', 'jetMassHTDenom_triggerOneAndTwo', 'Leading Trimmed Jet Mass [GeV]', 'H_{T} [GeV]', 0, 200, 2, 100, HTMaxX, 5, 0.85, 0.25],
 		[ '2D', 'jetMassHT', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'jet4PtHT', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
 		[ '2D', 'jetTrimmedMassHT', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
 		[ '2D', 'massAveHT', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
 		]
