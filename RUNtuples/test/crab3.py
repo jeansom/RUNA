@@ -2,14 +2,14 @@ from CRABClient.UserUtilities import config
 config = config()
 
 name = 'RunIISpring15DR74_RUNA_Asympt25ns'
-version = 'v03'
+version = 'v08'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
 
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'RUNtuples_cfg.py'
-config.JobType.pyCfgParams = [ 'globalTag=74X_mcRun2_asymptotic_v2' ]
+config.JobType.pyCfgParams = [ 'DataProcessing=MC25ns' ]
 config.JobType.allowUndistributedCMSSW = True
 
 config.Data.inputDataset = ''

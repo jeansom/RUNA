@@ -8,7 +8,7 @@ from httplib import HTTPException
 config = config()
 
 name = 'RUNA'
-version = 'v06'
+version = 'v08'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
@@ -49,9 +49,9 @@ if __name__ == '__main__':
 	from multiprocessing import Process
 	for dataset in Samples:
 		config.Data.inputDataset = dataset
-		config.JobType.pyCfgParams = [ 'isData=1', 'globalTag=74X_dataRun2_v2' ]
-		if 'Run2015B' in dataset: config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON.txt'
-		else: config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-256869_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
+		config.JobType.pyCfgParams = [ 'DataProcessing=Data25ns' ]
+		if 'Run2015B' in dataset: config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON_v2.txt'
+		else: config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258159_13TeV_PromptReco_Collisions15_25ns_JSON_v3.txt'
 		config.General.requestName = dataset.split('/')[1]+"_"+dataset.split('/')[2]+'_'+name+'_'+version
 		config.Data.publishDataName = dataset.split('/')[2]+'_'+name+'_'+version
 		p = Process(target=submit, args=(config,))

@@ -10,7 +10,7 @@ config = config()
 
 PU = sys.argv[1]
 name = 'RunIISpring15DR74_RUNA_'+PU
-version = 'v07'
+version = 'v08'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
@@ -91,8 +91,8 @@ if __name__ == '__main__':
 	for dataset in Samples:
 		if PU in dataset:
 			config.Data.inputDataset = dataset
-			if 'Asympt50ns' in dataset: config.JobType.pyCfgParams = [ 'globalTag=74X_mcRun2_startup_v2' ]  
-			elif 'Asympt25ns' in dataset: config.JobType.pyCfgParams = [ 'globalTag=74X_mcRun2_asymptotic_v2' ]  
+			if 'Asympt50ns' in dataset: config.JobType.pyCfgParams = [ 'DataProcessing=MC50ns' ]  
+			elif 'Asympt25ns' in dataset: config.JobType.pyCfgParams = [ 'DataProcessing=MC25ns' ]  
 			config.General.requestName = dataset.split('/')[1]+"_"+dataset.split('/')[2]+'_'+name+'_'+version
 			config.Data.publishDataName = name+'_'+version
 			p = Process(target=submit, args=(config,))
