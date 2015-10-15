@@ -33,19 +33,19 @@ options.register('debug',
 		"Run just pruned"
 		)
 options.register('HT', 
-		900.0,
+		800.0,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
 		"HT cut"
 		)
 options.register('MassRes', 
-		0.15,
+		0.30,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
 		"MassRes cut"
 		)
 options.register('Delta', 
-		70.0,
+		300.0,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
 		"Delta cut"
@@ -137,6 +137,8 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
+		   '/store/user/decosa/ttDM/CMSSW_7_4_X/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/QCD_HT1000to1500/150927_053249/0000/B2GEDMNtuple_101.root',
+		   '/store/user/algomez/QCD_Pt_1400to1800_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns_v06p1/151001_090133/0000/RUNtuples_100.root',
 		   '/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_1.root',
 		   '/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_10.root',
 		   '/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_100.root',
@@ -157,11 +159,6 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32 (options.max
 if 'bj' in NAME: bjsample = True
 else: bjsample = False
 
-if '25ns' in NAME:
-	#Lumi = 15.47
-	Lumi = 166.37
-else: Lumi = 71.52
-
 if 'JetHT' in NAME:
 	HTtrigger = 'HLT_PFHT800'
 else: 
@@ -169,16 +166,16 @@ else:
 
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNFullAnalysis_'+NAME+'.root' ) )
 
-process.AnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
+process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 		cutHT	 		= cms.double( options.HT ),
 		cutMassRes 		= cms.double( options.MassRes ),
 		cutDelta 		= cms.double( options.Delta ),
 		cutEtaBand 		= cms.double( options.EtaBand ),
 		cutJetPt 		= cms.double( options.JetPt ),
 		bjSample		= cms.bool( bjsample ),
-		triggerPass 		= cms.vstring( [ HTtrigger ] ) 
+		triggerPass 		= cms.vstring( [ HTtrigger, 'HLT_PFHT750_4JetPt' ] ) 
 )
-process.RUNATree = process.AnalysisPlots.clone( mkTree = cms.bool( True ) )
+process.RUNATree = process.ResolvedAnalysisPlots.clone( mkTree = cms.bool( True ) )
 
 
 process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
@@ -202,11 +199,11 @@ process.BoostedAnalysisPlotsFiltered = process.BoostedAnalysisPlots.clone( jetMa
 process.BoostedAnalysisPlotsPruned = process.BoostedAnalysisPlots.clone( 
 		jetMass 		= cms.InputTag('jetsAK8:jetAK8prunedMass'),
 		#### Subjets
-		subjetPt 		= cms.InputTag('subjetsAK8Pruned:subjetAK8PrunedPt'),
-		subjetEta 		= cms.InputTag('subjetsAK8Pruned:subjetAK8PrunedEta'),
-		subjetPhi 		= cms.InputTag('subjetsAK8Pruned:subjetAK8PrunedPhi'),
-		subjetE 		= cms.InputTag('subjetsAK8Pruned:subjetAK8PrunedE'),
-		subjetMass 		= cms.InputTag('subjetsAK8Pruned:subjetAK8PrunedMass'),
+		#subjetPt 		= cms.InputTag('subjetsAK8Pruned:subjetAK8PrunedPt'),
+		#subjetEta 		= cms.InputTag('subjetsAK8Pruned:subjetAK8PrunedEta'),
+		#subjetPhi 		= cms.InputTag('subjetsAK8Pruned:subjetAK8PrunedPhi'),
+		#subjetE 		= cms.InputTag('subjetsAK8Pruned:subjetAK8PrunedE'),
+		#subjetMass 		= cms.InputTag('subjetsAK8Pruned:subjetAK8PrunedMass'),
 		)
 process.BoostedAnalysisPlotsSoftDrop = process.BoostedAnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8softDropMass') )
 process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone( 
@@ -237,20 +234,20 @@ process.RUNATreeSoftDrop = process.BoostedAnalysisPlotsSoftDrop.clone( mkTree = 
 process.RUNATreePruned = process.BoostedAnalysisPlotsPruned.clone( mkTree = cms.bool( True ) )
 
 if options.debug:
-	process.p = cms.Path( process.AnalysisPlots
+	process.p = cms.Path( process.ResolvedAnalysisPlots
 			* process.BoostedAnalysisPlots )
 else:
 
-	process.p = cms.Path( process.AnalysisPlots
-		* process.RUNATree
-		* process.BoostedAnalysisPlots
-		* process.BoostedAnalysisPlotsTrimmed
+	process.p = cms.Path( process.ResolvedAnalysisPlots
+		#* process.RUNATree
+		#* process.BoostedAnalysisPlots
+		#* process.BoostedAnalysisPlotsTrimmed
 		* process.BoostedAnalysisPlotsPruned
-		* process.BoostedAnalysisPlotsSoftDrop
-		* process.BoostedAnalysisPlotsPuppi
-		* process.BoostedAnalysisPlotsFiltered
-		* process.RUNATreeSoftDrop
-		* process.RUNATreePruned
+		#* process.BoostedAnalysisPlotsSoftDrop
+		#* process.BoostedAnalysisPlotsPuppi
+		#* process.BoostedAnalysisPlotsFiltered
+		#* process.RUNATreeSoftDrop
+		#* process.RUNATreePruned
 		)
 
 

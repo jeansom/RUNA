@@ -8,7 +8,7 @@ from httplib import HTTPException
 
 config = config()
 
-version = 'v00p2'
+version = 'B2Gv02'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
@@ -41,17 +41,18 @@ if __name__ == '__main__':
 
 
 			#### RunIISpring15DR74
-#			'/QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06-b4868673ff475f0715ff7cbd0e4e7e14/USER',
-			'/QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06-b4868673ff475f0715ff7cbd0e4e7e14/USER',
-#			'/QCD_Pt_470to600_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06-b4868673ff475f0715ff7cbd0e4e7e14/USER',
-#			'/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06-b4868673ff475f0715ff7cbd0e4e7e14/USER',
-#			'/QCD_Pt_800to1000_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06-b4868673ff475f0715ff7cbd0e4e7e14/USER',
-#			'/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06-b4868673ff475f0715ff7cbd0e4e7e14/USER',
-#			'/QCD_Pt_1400to1800_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06-b4868673ff475f0715ff7cbd0e4e7e14/USER',
-#			'/QCD_Pt_1800to2400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06-b4868673ff475f0715ff7cbd0e4e7e14/USER',
-#			'/QCD_Pt_2400to3200_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06-b4868673ff475f0715ff7cbd0e4e7e14/USER',
-#			'/QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06-b4868673ff475f0715ff7cbd0e4e7e14/USER',
-#
+#			'/QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06p1-b4868673ff475f0715ff7cbd0e4e7e14/USER',
+#			'/QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06p1-b4868673ff475f0715ff7cbd0e4e7e14/USER',
+#			'/QCD_Pt_470to600_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06p1-b4868673ff475f0715ff7cbd0e4e7e14/USER',
+#			'/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06p1-b4868673ff475f0715ff7cbd0e4e7e14/USER',
+#			'/QCD_Pt_800to1000_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06p1-b4868673ff475f0715ff7cbd0e4e7e14/USER',
+#			'/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06p1-b4868673ff475f0715ff7cbd0e4e7e14/USER',
+#			'/QCD_Pt_1400to1800_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06p1-b4868673ff475f0715ff7cbd0e4e7e14/USER',
+#			'/QCD_Pt_1800to2400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06p1-b4868673ff475f0715ff7cbd0e4e7e14/USER',
+#			'/QCD_Pt_2400to3200_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06p1-b4868673ff475f0715ff7cbd0e4e7e14/USER',
+#			'/QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v06p1-b4868673ff475f0715ff7cbd0e4e7e14/USER',
+#			'/WWTo4Q_13TeV-powheg/jsomalwa-RunIISpring15DR74_RUNA_Asympt25ns_v10-b4868673ff475f0715ff7cbd0e4e7e14/USER',
+
 #			'/QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt50ns_v06-1c38a9eb9711f82aabe7a19f984a8f27/USER',
 #			'/QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt50ns_v06-1c38a9eb9711f82aabe7a19f984a8f27/USER',
 #			'/QCD_Pt_470to600_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt50ns_v06-1c38a9eb9711f82aabe7a19f984a8f27/USER',
@@ -62,15 +63,21 @@ if __name__ == '__main__':
 #			'/QCD_Pt_1800to2400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt50ns_v06-1c38a9eb9711f82aabe7a19f984a8f27/USER',
 #			'/QCD_Pt_2400to3200_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt50ns_v06-1c38a9eb9711f82aabe7a19f984a8f27/USER',
 #
-#			'/JetHT/algomez-Run2015B-PromptReco-v1_RUNA_v06-0cc1d310cda5930bd3b3a68493077b41/USER',			
+#			#'/JetHT/algomez-Run2015B-PromptReco-v1_RUNA_v06-0cc1d310cda5930bd3b3a68493077b41/USER',			
 #			'/JetHT/algomez-Run2015C-PromptReco-v1_RUNA_v06-0cc1d310cda5930bd3b3a68493077b41/USER',			
 #			'/JetHT/algomez-Run2015D-PromptReco-v3_RUNA_v06-0cc1d310cda5930bd3b3a68493077b41/USER',			
 
 #			'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v03-b4868673ff475f0715ff7cbd0e4e7e14/USER',
-			#'/RPVSt100tobj_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v03-b4868673ff475f0715ff7cbd0e4e7e14/USER',
+#			#'/RPVSt100tobj_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v03-b4868673ff475f0715ff7cbd0e4e7e14/USER',
 #			'/RPVSt200tobj_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v03-b4868673ff475f0715ff7cbd0e4e7e14/USER',
 #			'/RPVSt350tobj_13TeV_pythia8/algomez-RunIISpring15DR74_RUNA_Asympt25ns_v03-b4868673ff475f0715ff7cbd0e4e7e14/USER',
 
+#			'/JetHT/knash-crab_Run2015D-PromptReco-v3_Sep25_v74x_V7_25ns-a32da5ec5dfae8851e50d18ebe4dfe7f/USER',
+			'/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/decosa-QCD_HT500to700-6cd0525a22c1e7f79f9247caf4357294/USER',
+			'/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/decosa-QCD_HT700to1000-6cd0525a22c1e7f79f9247caf4357294/USER',
+			'/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/decosa-QCD_HT1000to1500-6cd0525a22c1e7f79f9247caf4357294/USER',
+			'/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/decosa-QCD_HT1500to2000-6cd0525a22c1e7f79f9247caf4357294/USER',
+			'/QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/phys_b2g-B2GAnaFW_v74x_v6p1_25ns-d5e3976e154b1b4043d031aaa9c2809b/USER',
 
 			]
 
