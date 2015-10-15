@@ -35,6 +35,7 @@ dictXS = {
 		#### TTJets
 		'TTJets' : 670.3, #  831.0 this is from twiki, 670.3 is from MCM
 		'WJetsToQQ' : 95.14,
+		'WWTo4Q' : 45.20,
 		'ZJetsToQQ' : 5.67,
 		#### RPV
 		'RPVSt100' : 1521.11,
@@ -68,6 +69,7 @@ dictEvents = {
 
 		'TTJets' :	[ 4994250., 	42730273. 	 ],
 		'WJetsToQQ' : 	[ 0., 		1006060. 	 ],
+		'WWTo4Q' : 	[ 0., 		1995200. 	 ],
 		'ZJetsToQQ' : 	[ 0., 		982095. 	 ],
 
 		#### RPV Stop

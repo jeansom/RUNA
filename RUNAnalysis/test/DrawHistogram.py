@@ -23,10 +23,10 @@ tdrstyle.setTDRStyle()
 
 gStyle.SetOptStat(0)
 
-def plotSignalBkg( signalFiles, bkgFiles, Grom, nameInRoot, name, xmin, xmax, rebinX, labX, labY, log, PU, boosted, Norm=False ):
+def plotSignalBkg( signalFiles, bkgFiles, Grom, nameInRoot, name, xmin, xmax, rebinX, labX, labY, log, PU, version, Norm=False ):
 	"""docstring for plot"""
 
-	outputFileName = name+'_'+Grom+'_RPVSt'+jj+'_'+PU+'_PlusBkg_'+boosted+'AnalysisPlots.'+ext 
+	outputFileName = name+'_'+Grom+'_RPVSt'+jj+'_'+PU+'_PlusBkg_'+version+'AnalysisPlots.'+ext 
 	print 'Processing.......', outputFileName
 
 	legend=TLegend(0.60,0.60,0.90,0.87)
@@ -189,12 +189,13 @@ def plotSignalBkg( signalFiles, bkgFiles, Grom, nameInRoot, name, xmin, xmax, re
 		del can
 
 
-def plot2D( inFile, sample, Grom, name, titleXAxis, titleXAxis2, Xmin, Xmax, rebinx, Ymin, Ymax, rebiny, legX, legY, PU ):
+def plot2D( inFiles, sample, Grom, name, titleXAxis, titleXAxis2, Xmin, Xmax, rebinx, Ymin, Ymax, rebiny, legX, legY, PU, version ):
 	"""docstring for plot"""
 
-	outputFileName = name+'_'+Grom+'_'+sample+'_'+camp+'_'+PU+'_AnalysisPlots.'+ext 
+	outputFileName = name+'_'+Grom+'_'+sample+'_'+camp+'_'+PU+'_'+version+'AnalysisPlots.'+ext 
 	print 'Processing.......', outputFileName
-	h1 = inFile.Get( boosted+'AnalysisPlots'+Grom+'/'+name )
+	for samples in inFiles:
+		h1 = inFiles[ samples ][0].Get( version+'AnalysisPlots'+Grom+'/'+name )
 	#h1 = inFile.Get( 'AnalysisPlots'+Grom+'/'+name )
 	#h1 = inFile.Get( 'TriggerEfficiency'+Grom+'/'+name )
 	tmph1 = h1.Clone()
@@ -237,7 +238,7 @@ def plot2D( inFile, sample, Grom, name, titleXAxis, titleXAxis2, Xmin, Xmax, reb
 	tdrStyle.SetPadRightMargin(0.12)
 	can = TCanvas('c1', 'c1',  750, 500 )
 	can.SetLogz()
-	h1.SetMaximum(5000)
+	if 'Boosted' in version: h1.SetMaximum(5000)
 	h1.Draw('colz')
 
 	CMS_lumi.relPosX = 0.13
@@ -259,14 +260,14 @@ def plotCutFlow( signalFiles, bkgFiles, Grom, name, xmax, log, PU, Norm=False ):
 	histos = {}
 	if len(signalFiles) > 0:
 		for samples in signalFiles:
-			histos[ samples ] = signalFiles[ samples ][0].Get(boosted+'AnalysisPlots'+Grom+'/'+name)
+			histos[ samples ] = signalFiles[ samples ][0].Get(version+'AnalysisPlots'+Grom+'/'+name)
 			if signalFiles[ samples ][1] != 1: histos[ samples ].Scale( signalFiles[ samples ][1] ) 
 
 	dummy = 0
 	if len(bkgFiles) > 0:
 		for samples in bkgFiles:
 			dummy += 1
-			histos[ samples ] = bkgFiles[ samples ][0].Get(boosted+'AnalysisPlots'+Grom+'/'+name)
+			histos[ samples ] = bkgFiles[ samples ][0].Get(version+'AnalysisPlots'+Grom+'/'+name)
 			if bkgFiles[ samples ][1] != 1: histos[ samples ].Scale( bkgFiles[ samples ][1] ) 
 			if (dummy == 1): hBkg = histos[ samples ].Clone()
 
@@ -407,7 +408,7 @@ def plotSimple( inFile, sample, Grom, name, xmax, labX, labY, log, PU, Norm=Fals
 	outputFileName = name+'_'+sample+'_AnalysisPlots.'+ext 
 	print 'Processing.......', outputFileName
 
-	histo = inFile.Get( boosted+'AnalysisPlots'+Grom+'/'+name )
+	histo = inFile.Get( version+'AnalysisPlots'+Grom+'/'+name )
 
 #	histos.values()[0].SetMaximum( 2* max( listMax ) ) 
 #	histos.values()[0].GetXaxis().SetRangeUser( 0, xmax )
@@ -448,8 +449,8 @@ def plotDiffSample( inFileSample1, inFileSample2, sample1, sample2, Grom, name, 
 	print 'Processing.......', outputFileName
 
 	histos = {}
-	histos[ 'Sample1' ] = inFileSample1.Get( boosted+'AnalysisPlots'+Grom+'/'+name )
-	histos[ 'Sample2' ] = inFileSample2.Get( boosted+'AnalysisPlots'+Grom+'/'+name )
+	histos[ 'Sample1' ] = inFileSample1.Get( version+'AnalysisPlots'+Grom+'/'+name )
+	histos[ 'Sample2' ] = inFileSample2.Get( version+'AnalysisPlots'+Grom+'/'+name )
 
 	hSample1 = histos[ 'Sample2' ].Clone()
 	hSample2 = histos[ 'Sample1' ].Clone()
@@ -610,10 +611,10 @@ def plot2DOptimization( inFileSig, inFileBkg, Grom, name, titleXAxis, titleXAxis
 	can.SaveAs( 'Plots/'+outputFileName )
 	del can
 
-def plotQuality( dataFile, bkgFiles, Grom, nameInRoot, name, xmin, xmax, labX, labY, log, PU, boosted ):
+def plotQuality( dataFile, bkgFiles, Grom, nameInRoot, name, xmin, xmax, labX, labY, log, PU, version ):
 	"""docstring for plot"""
 
-	outputFileName = name+'_'+Grom+'_'+PU+'_dataQuality'+boosted+'Plots.'+ext
+	outputFileName = name+'_'+Grom+'_'+PU+'_dataQuality'+version+'Plots.'+ext
 	print 'Processing.......', outputFileName
 
 	histos = {}
@@ -725,7 +726,7 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-p', '--proc', action='store', default='1D', help='Process to draw, example: 1D, 2D, MC.' )
 	parser.add_argument('-d', '--decay', action='store', default='jj', help='Decay, example: jj, bj.' )
-	parser.add_argument('-b', '--boosted', action='store', default='Boosted', help='Boosted or non boosted, example: Boosted' )
+	parser.add_argument('-v', '--version', action='store', default='Boosted', help='Boosted or non version, example: Boosted' )
 	parser.add_argument('-g', '--grom', action='store', default='Pruned', help='Grooming Algorithm, example: Pruned, Filtered.' )
 	parser.add_argument('-m', '--mass', action='store', default='100', help='Mass of Stop, example: 100' )
 	parser.add_argument('-C', '--cut', action='store', default='_cutDEta', help='cut, example: cutDEta' )
@@ -754,14 +755,14 @@ if __name__ == '__main__':
 	cut = args.cut
 	grom = args.grom
 	single = args.single
-	boosted = args.boosted
+	version = args.version
 	#triggerUsed = args.trigger
 	ext = args.extension
 	
 	bkgFiles = {}
 	signalFiles = {}
 	CMS_lumi.extraText = "Preliminary"
-	QCDSF = 1.1 #0.78
+	QCDSF = 1.1 #1.1 #0.78
 
 	if ( 'mini' in process ) or ( '2dOpt' in process ):
 		inputMiniFileSignal = TFile.Open('Rootfiles/RUNMiniAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v02p2_v06.root')
@@ -776,20 +777,26 @@ if __name__ == '__main__':
 			bkgFiles[ 'QCD' ] 	= [ TFile.Open('Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15DR74_Asympt50ns_v06_v00p2.root'), 	0.50, 'QCD', kBlue ]
 			CMS_lumi.lumi_13TeV = "46.15 pb^{-1}"
 		else:
-			dataFile		= TFile.Open('Rootfiles/RUNAnalysis_JetHTRun2015D-PromptReco-v3_v06_v01.root')
-			if 'Boosted' in boosted:
-				signalFiles[ 'Signal' ] 	= [ TFile.Open('Rootfiles/RUNAnalysis_RPVSt100tojj_'+camp+'_'+PU+'_v06_v01.root'), lumi*SF('RPVSt10025ns'), 'RPV #tilde{t}#rightarrow '+jj+' 100 GeV', kRed-4]
-				#signalFiles[ 'Signal2' ] 	= [ TFile.Open('Rootfiles/RUNAnalysis_RPVSt200tojj_'+camp+'_'+PU+'_v06_v01.root'), lumi*SF('RPVSt20025ns') , 'RPV #tilde{t}#rightarrow '+jj+' 200 GeV', kRed ]
-			else: signalFiles[ 'Signal' ] 	= [ TFile.Open('Rootfiles/RUNAnalysis_RPVSt350tojj_'+camp+'_'+PU+'_v06_v01.root'), lumi*SF('RPVSt350_25ns') , 'RPV #tilde{t}#rightarrow '+jj+' 350 GeV', kRed ]
-			#signalFiles[ 'Signal' ] 	= [ TFile.Open('Rootfiles/RUNTriggerEfficiency_RPVSt100tojj_RunIISpring16DR74_Asympt25ns_TS_v02_v09.root'),	1 ]
-			bkgFiles[ 'QCD' ] 	= [ TFile.Open('Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15DR74_Asympt25ns_v06p1_v01.root'), QCDSF, 'QCD', kBlue-4 ]
+			if 'Boosted' in version:
+				lumi = 149.9
+				CMS_lumi.lumi_13TeV = str(lumi)+" pb^{-1}"
+				dataFile = TFile.Open('Rootfiles/RUNAnalysis_JetHTRun2015D-PromptReco-v3_v06_v01.root')
+				signalFiles[ 'Signal' ] = [ TFile.Open('Rootfiles/RUNAnalysis_RPVSt100tojj_'+camp+'_'+PU+'_v06_v01.root'), lumi*SF('RPVSt10025ns'), 'RPV #tilde{t}#rightarrow '+jj+' 100 GeV', kRed-4]
+				#signalFiles[ 'Signal2' ] = [ TFile.Open('Rootfiles/RUNAnalysis_RPVSt200tojj_'+camp+'_'+PU+'_v06_v01.root'), lumi*SF('RPVSt20025ns') , 'RPV #tilde{t}#rightarrow '+jj+' 200 GeV', kRed ]
+				bkgFiles[ 'QCD' ] = [ TFile.Open('Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15DR74_Asympt25ns_v06p1_v01.root'), QCDSF, 'QCD', kBlue-4 ]
+			else: 
+				lumi = 106.5
+				CMS_lumi.lumi_13TeV = str(lumi)+" pb^{-1}"
+				dataFile = TFile.Open('Rootfiles/RUNAnalysis_JetHTRun2015D-PromptReco-v3_B2Gv02.root')
+				signalFiles[ 'Signal' ] 	= [ TFile.Open('Rootfiles/RUNAnalysis_RPVSt350tojj_'+camp+'_'+PU+'_B2Gv02.root'), lumi*SF('RPVSt350_25ns') , 'RPV #tilde{t}#rightarrow '+jj+' 350 GeV', kRed ]
+				bkgFiles[ 'QCD' ] 	= [ TFile.Open('Rootfiles/RUNAnalysis_QCDHTAll_RunIISpring15DR74_Asympt25ns_B2Gv02.root'), QCDSF, 'QCD', kBlue-4 ]
+			
 			#bkgFiles[ 'TTJets' ] 	= [ TFile.Open('Rootfiles/RUNAnalysis_TTJets_'+camp+'_'+PU+'_v03_v01p3p2.root'),	1, 	't #bar{t} + Jets', kGreen ]
 			#bkgFiles[ 'WJets' ]	 	= [ TFile.Open('Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01p3.root'),	10.75, 'W + Jets', kMagenta ]
 			#bkgFiles[ 'ZJets' ] 		= [ TFile.Open('Rootfiles/RUNAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01p3.root'),	10.75, 'Z + Jets', kOrange ]
-			CMS_lumi.lumi_13TeV = str(lumi)+" pb^{-1}"
 
-	dijetlabX = 0.15
-	dijetlabY = 0.88
+	dijetlabX = 0.85
+	dijetlabY = 0.55
 	subjet112vs212labX = 0.7
 	subjet112vs212labY = 0.88
 	jetMassHTlabX = 0.85
@@ -812,71 +819,51 @@ if __name__ == '__main__':
 
 
 	plotList = [ 
-		[ '2D', 'jetTrimmedMassHT', 'Leading Trimmed Jet Mass [GeV]', 'HT [GeV]', 0, massMaxX, 1, 100, HTMaxX, 1, jetMassHTlabX, jetMassHTlabY],
-		[ '2D', 'leadMassHT', 'Leading Jet Mass [GeV]', 'HT [GeV]', 0, massMaxX, 1, 100, HTMaxX, 1, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'Boosted', 'jetTrimmedMassHT', 'Leading Trimmed Jet Mass [GeV]', 'HT [GeV]', 0, massMaxX, 1, 100, HTMaxX, 1, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'Boosted', 'leadMassHT', 'Leading Jet Mass [GeV]', 'HT [GeV]', 0, massMaxX, 1, 100, HTMaxX, 1, jetMassHTlabX, jetMassHTlabY],
 
-		[ '2D', 'leadMassHT_cutTrigger', 'Leading Jet Mass [GeV]', 'HT [GeV]', 0, massMaxX, 1, 100, HTMaxX, 1, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'Boosted', 'leadMassHT_cutTrigger', 'Leading Jet Mass [GeV]', 'HT [GeV]', 0, massMaxX, 1, 100, HTMaxX, 1, jetMassHTlabX, jetMassHTlabY],
 
-		[ '2D', 'jet1Subjet112vs212MassRatio_cutDijet', 'm_{1}/m_{12}', 'm_{2}/m_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
-		[ '2D', 'jet1Subjet1JetvsSubjet2JetMassRatio_cutDijet', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
-		[ '2D', 'jet2Subjet112vs212MassRatio_cutDijet', 'm_{3}/m_{34}', 'm_{4}/m_{34}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
-		[ '2D', 'jet2Subjet1JetvsSubjet2JetMassRatio_cutDijet', 'm_{3}/M_{34}', 'm_{4}/M_{34}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
-		[ '2D', 'subjet12Mass_cutDijet', 'm_{1}', 'm_{2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		[ '2D', 'dijetCorr_cutDijet', '#eta_{sjet1}', '#eta_{sjet2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		[ '2D', 'dijetCorrPhi_cutDijet', '#phi_{sjet1}', '#phi_{sjet2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		[ '2D', 'subjet112vs212MassRatio_cutDijet', 'm_{1}/m_{12}', 'm_{2}/m_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
-		[ '2D', 'subjet1JetvsSubjet2JetMassRatio_cutDijet', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
-		[ '2D', 'subjetPolAngle13412vs31234_cutDijet', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', polAngXmin, polAngXmax, 1, polAngXmin, polAngXmax, 1, cosPhilabX, cosPhilabY  ],
-		[ '2D', 'mu1234_cutDijet', '', '', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		[ '2D', 'mu3412_cutDijet', '', '', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		[ '2D', 'dalitz1234_cutDijet', 'X', 'Y', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		[ '2D', 'dalitz3412_cutDijet', 'X', 'Y', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		[ '2D', 'leadMassHT_cutDijet', 'Leading Jet Mass [GeV]', 'HT [GeV]', 0, massMaxX, 1, 100, HTMaxX, 1, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'Boosted', 'jet1Subjet112vs212MassRatio_cutDijet', 'm_{1}/m_{12}', 'm_{2}/m_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
+		[ '2D', 'Boosted', 'jet1Subjet1JetvsSubjet2JetMassRatio_cutDijet', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
+		[ '2D', 'Boosted', 'jet2Subjet112vs212MassRatio_cutDijet', 'm_{3}/m_{34}', 'm_{4}/m_{34}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
+		[ '2D', 'Boosted', 'jet2Subjet1JetvsSubjet2JetMassRatio_cutDijet', 'm_{3}/M_{34}', 'm_{4}/M_{34}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
+		[ '2D', 'Boosted', 'subjet12Mass_cutDijet', 'm_{1}', 'm_{2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2D', 'Boosted', 'dijetCorr_cutDijet', '#eta_{sjet1}', '#eta_{sjet2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2D', 'Boosted', 'dijetCorrPhi_cutDijet', '#phi_{sjet1}', '#phi_{sjet2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2D', 'Boosted', 'subjet112vs212MassRatio_cutDijet', 'm_{1}/m_{12}', 'm_{2}/m_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
+		[ '2D', 'Boosted', 'subjet1JetvsSubjet2JetMassRatio_cutDijet', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
+		[ '2D', 'Boosted', 'subjetPolAngle13412vs31234_cutDijet', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', polAngXmin, polAngXmax, 1, polAngXmin, polAngXmax, 1, cosPhilabX, cosPhilabY  ],
+		[ '2D', 'Boosted', 'mu1234_cutDijet', '', '', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2D', 'Boosted', 'mu3412_cutDijet', '', '', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2D', 'Boosted', 'dalitz1234_cutDijet', 'X', 'Y', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2D', 'Boosted', 'dalitz3412_cutDijet', 'X', 'Y', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2D', 'Boosted', 'leadMassHT_cutDijet', 'Leading Jet Mass [GeV]', 'HT [GeV]', 0, massMaxX, 1, 100, HTMaxX, 1, jetMassHTlabX, jetMassHTlabY],
 
-		#[ '2D', 'subjet12Mass_cutAsym', 'm_{1}', 'm_{2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		[ '2D', 'dijetCorr_cutAsym', '#eta_{sjet1}', '#eta_{sjet2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		[ '2D', 'dijetCorrPhi_cutAsym', '#phi_{sjet1}', '#phi_{sjet2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		#[ '2D', 'subjet112vs212MassRatio_cutAsym', 'm_{1}/m_{12}', 'm_{2}/m_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
-		#[ '2D', 'subjet1JetvsSubjet2JetMassRatio_cutAsym', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
-		#[ '2D', 'subjetPolAngle13412vs31234_cutAsym', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', '', '', 1, '', '', 1, '', ''  ],
-		#[ '2D', 'mu1234_cutAsym', '', '', 1, '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		#[ '2D', 'mu3412_cutAsym', '', '', 1, '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		#[ '2D', 'dalitz1234_cutAsym', 'X', 'Y', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		#[ '2D', 'dalitz3412_cutAsym', 'X', 'Y', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		#[ '2D', 'Boosted', 'subjet12Mass_cutAsym', 'm_{1}', 'm_{2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2D', 'Boosted', 'dijetCorr_cutAsym', '#eta_{sjet1}', '#eta_{sjet2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2D', 'Boosted', 'dijetCorrPhi_cutAsym', '#phi_{sjet1}', '#phi_{sjet2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		#[ '2D', 'Boosted', 'subjet112vs212MassRatio_cutAsym', 'm_{1}/m_{12}', 'm_{2}/m_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
+		#[ '2D', 'Boosted', 'subjet1JetvsSubjet2JetMassRatio_cutAsym', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
+		#[ '2D', 'Boosted', 'subjetPolAngle13412vs31234_cutAsym', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', '', '', 1, '', '', 1, '', ''  ],
+		#[ '2D', 'Boosted', 'mu1234_cutAsym', '', '', 1, '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		#[ '2D', 'Boosted', 'mu3412_cutAsym', '', '', 1, '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		#[ '2D', 'Boosted', 'dalitz1234_cutAsym', 'X', 'Y', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		#[ '2D', 'Boosted', 'dalitz3412_cutAsym', 'X', 'Y', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
 
-		#[ '2D', 'subjet12Mass_cutCosTheta', 'm_{1}', 'm_{2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		#[ '2D', 'dijetCorr_cutCosTheta', '#eta_{sjet1}', '#eta_{sjet2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		#[ '2D', 'dijetCorrPhi_cutCosTheta', '#phi_{sjet1}', '#phi_{sjet2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		#[ '2D', 'subjet112vs212MassRatio_cutCosTheta', 'm_{1}/m_{12}', 'm_{2}/m_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
-		#[ '2D', 'subjet1JetvsSubjet2JetMassRatio_cutCosTheta', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
-		#[ '2D', 'subjetPolAngle13412vs31234_cutCosTheta', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', '', '', 1, '', '', 1, '', ''  ],
-		#[ '2D', 'mu1234_cutCosTheta', '', '', 1, '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		#[ '2D', 'mu3412_cutCosTheta', '', '', 1, '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		#[ '2D', 'dalitz1234_cutCosTheta', 'X', 'Y', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		#[ '2D', 'dalitz3412_cutCosTheta', 'X', 'Y', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		#[ '2D', 'Boosted', 'subjet12Mass_cutCosTheta', 'm_{1}', 'm_{2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		#[ '2D', 'Boosted', 'dijetCorr_cutCosTheta', '#eta_{sjet1}', '#eta_{sjet2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		#[ '2D', 'Boosted', 'dijetCorrPhi_cutCosTheta', '#phi_{sjet1}', '#phi_{sjet2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		#[ '2D', 'Boosted', 'subjet112vs212MassRatio_cutCosTheta', 'm_{1}/m_{12}', 'm_{2}/m_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
+		#[ '2D', 'Boosted', 'subjet1JetvsSubjet2JetMassRatio_cutCosTheta', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
+		#[ '2D', 'Boosted', 'subjetPolAngle13412vs31234_cutCosTheta', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', '', '', 1, '', '', 1, '', ''  ],
+		#[ '2D', 'Boosted', 'mu1234_cutCosTheta', '', '', 1, '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		#[ '2D', 'Boosted', 'mu3412_cutCosTheta', '', '', 1, '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		#[ '2D', 'Boosted', 'dalitz1234_cutCosTheta', 'X', 'Y', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		#[ '2D', 'Boosted', 'dalitz3412_cutCosTheta', 'X', 'Y', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2D', 'Resolved', 'deltavsMassAve_cutBestPair', 'Average dijet mass [GeV]', 'Delta',  '', '', 1, '', '', 1, dijetlabX, dijetlabY ],
+		[ '2D', 'Resolved', 'dijetsEta_cutBestPair', '#Eta dijet1', '#Eta dijet2',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
 
-		[ '2D', 'subjet12Mass_cutSubjetPtRatio', 'm_{1}', 'm_{2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		[ '2D', 'dijetCorr_cutSubjetPtRatio', '#eta_{sjet1}', '#eta_{sjet2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		[ '2D', 'dijetCorrPhi_cutSubjetPtRatio', '#phi_{sjet1}', '#phi_{sjet2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		[ '2D', 'subjet112vs212MassRatio_cutSubjetPtRatio', 'm_{1}/m_{12}', 'm_{2}/m_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
-		[ '2D', 'subjet1JetvsSubjet2JetMassRatio_cutSubjetPtRatio', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
-		[ '2D', 'subjetPolAngle13412vs31234_cutSubjetPtRatio', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', polAngXmin, polAngXmax, 1, polAngXmin, polAngXmax, 1, cosPhilabX, cosPhilabY  ],
-		#[ '2D', 'subjetPolAngle13412vsSubjetPtRatio_cutSubjePtRatio', 'cos #psi_{1(34)}^{[12]}', 'Subjet Pt Ratio', polAngXmin, polAngXmax, 1, polAngXmin, polAngXmax, 1, cosPhilabX, cosPhilabY  ],
-		[ '2D', 'mu1234_cutSubjetPtRatio', '', '', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		[ '2D', 'mu3412_cutSubjetPtRatio', '', '', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		[ '2D', 'dalitz1234_cutSubjetPtRatio', 'X', 'Y', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		[ '2D', 'dalitz3412_cutSubjetPtRatio', 'X', 'Y', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-
-		#[ '2D', 'subjet12Mass_cutTau31', 'm_{1}', 'm_{2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		#[ '2D', 'dijetCorr_cutTau31', '#eta_{sjet1}', '#eta_{sjet2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		#[ '2D', 'dijetCorrPhi_cutTau31', '#phi_{sjet1}', '#phi_{sjet2}', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		#[ '2D', 'subjet112vs212MassRatio_cutTau31', 'm_{1}/m_{12}', 'm_{2}/m_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
-		#[ '2D', 'subjet1JetvsSubjet2JetMassRatio_cutTau31', 'm_{1}/M_{12}', 'm_{2}/M_{12}', '', '', 1, '', '', 1, subjet112vs212labX, subjet112vs212labY  ],
-		#[ '2D', 'subjetPolAngle13412vs31234_cutTau31', 'cos #psi_{1(34)}^{[12]}', 'cos #psi_{3(12)}^{[34]}', '', '', 1, '', '', 1, '', ''  ],
-		#[ '2D', 'mu1234_cutTau31', '', '', 1, '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		#[ '2D', 'mu3412_cutTau31', '', '', 1, '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		#[ '2D', 'dalitz1234_cutTau31', 'y', 'x', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
-		#[ '2D', 'dalitz3412_cutTau31', 'y', 'x', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
 
 		[ '1D', 'Boosted', 'jet1Pt', 100, 1500, 1, '', '', False],
 		[ '1D', 'Boosted', 'jet1Eta', -3, 3, 1, '', '', False],
@@ -916,12 +903,12 @@ if __name__ == '__main__':
 		[ 'qual', 'Resolved', 'jet4Pt', 0, 300, 0.85, 0.45, False],
 		[ 'qual', 'Resolved', 'HT', 700, 2000, 0.85, 0.45, False],
 		[ 'qual', 'Resolved', 'jetNum', '', '', 0.85, 0.45, False],
-		[ 'qual', boosted, 'neutralHadronEnergy', '', '', 0.85, 0.45, False],
-		[ 'qual', boosted, 'neutralEmEnergy', '', '', 0.85, 0.45, False],
-		[ 'qual', boosted, 'chargedHadronEnergy', '', '', 0.85, 0.45, False],
-		[ 'qual', boosted, 'chargedEmEnergy', '', '', 0.85, 0.45, False],
-		[ 'qual', boosted, 'chargedMultiplicity', '', '', 0.85, 0.45, False],
-		[ 'qual', boosted, 'numConst', '', '', 0.85, 0.45, False],
+		[ 'qual', version, 'neutralHadronEnergy', '', '', 0.85, 0.45, False],
+		[ 'qual', version, 'neutralEmEnergy', '', '', 0.85, 0.45, False],
+		[ 'qual', version, 'chargedHadronEnergy', '', '', 0.85, 0.45, False],
+		[ 'qual', version, 'chargedEmEnergy', '', '', 0.85, 0.45, False],
+		[ 'qual', version, 'chargedMultiplicity', '', '', 0.85, 0.45, False],
+		[ 'qual', version, 'numConst', '', '', 0.85, 0.45, False],
 
 		[ 'Norm', 'Boosted', 'NPV', '', '', 1, '', '', False],
 		#[ 'Norm', 'Boosted', 'jet1Subjet1Pt', '', '', '', '', True],
@@ -945,7 +932,8 @@ if __name__ == '__main__':
 		[ 'Norm', 'Boosted', 'jet2SubjetPtRatio', '', '', 1, '', '', True],
 		[ 'Norm', 'Boosted', 'subjetPtRatio', '', '', 1, '', '', True],
 		[ 'Norm', 'Boosted', 'massAsymmetry', '', '', 1, 0.55, 0.83, False],
-		[ 'Norm', 'Boosted', 'cosThetaStar', '', '', 1, '', '', False],
+		[ 'Norm', 'Boosted', 'jet1CosThetaStar', '', '', 1, '', '', False],
+		[ 'Norm', 'Boosted', 'jet2CosThetaStar', '', '', 1, '', '', False],
 		[ 'Norm', 'Boosted', 'deltaEtaDijet', '', '', 1, '', '', False],
 		#[ 'Norm', 'Boosted', 'jet1Subjet21MassRatio', '', '', 1, '', '', False],
 		[ 'Norm', 'Boosted', 'jet1Subjet112MassRatio', '', '', 1, '', '', False],
@@ -965,6 +953,7 @@ if __name__ == '__main__':
 		[ 'Norm', 'Resolved', 'massRes', '', '', 1, '', '', False],
 		[ 'Norm', 'Resolved', 'deltaEta', '', '', 1, '', '', False],
 		[ 'Norm', 'Resolved', 'minDeltaR', '', '', 1, '', '', False],
+		[ 'Norm', 'Resolved', 'jet4Pt', 0, 300, 1, '', '', False],
 
 		[ 'CF', 'cutflow', 10, True],
 		[ 'CF', 'cutflowSimple', 10, True],
@@ -993,15 +982,15 @@ if __name__ == '__main__':
 
 		]
 
-	if 'all' in single: Plots = [ x[2:] for x in plotList if ( ( x[0] in process ) and ( x[1] in boosted ) )  ]
-	else: Plots = [ y[2:] for y in plotList if ( ( y[0] in process ) and ( y[1] in boosted ) and ( y[2] in single ) )  ]
+	if 'all' in single: Plots = [ x[2:] for x in plotList if ( ( x[0] in process ) and ( x[1] in version ) )  ]
+	else: Plots = [ y[2:] for y in plotList if ( ( y[0] in process ) and ( y[1] in version ) and ( y[2] in single ) )  ]
 
-	if 'Resolved' in boosted: grom =  '' 
+	if 'Resolved' in version: grom =  '' 
 	if 'all' in grom: Groomers = [ '', 'Trimmed', 'Pruned', 'Filtered' ]
 	else: Grommers = [ grom ]
 
 	if 'all' in cut: 
-		if 'Boosted' in boosted: selection = [ '_cutDijet', '_cutMassAsym', '_cutTau21', '_cutCosTheta', '_cutDEta', '_cutBtag' ]
+		if 'Boosted' in version: selection = [ '_cutDijet', '_cutMassAsym', '_cutTau21', '_cutCosTheta', '_cutDEta', '_cutBtag' ]
 		else: selection = [ '_cutBestPair', '_cutMassRes', '_cutDelta', '_cutEtaBand' ]
 	elif 'NO' in cut: selection = [ '_cutNOMassAsym', '_cutTau21_NOMA', '_cutCosTheta_NOMA', '_cutDEta_NOMA', '_cutBtag_NOMA' ]
 	else: selection = [ cut ]
@@ -1018,29 +1007,26 @@ if __name__ == '__main__':
 		for i in Plots:
 			for optGrom in Grommers:
 				if '2D' in process: 
-					plot2D( inputFileSignal, 'RPVSt100to'+jj, optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU )
-					plot2D( inputFileQCD, 'QCD'+qcd, optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU )
-					plot2D( inputFileTTJets, 'TTJets', optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU )
-					plot2D( inputFileWJetsToQQ, 'WJets', optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU )
-					plot2D( inputFileZJetsToQQ, 'ZJets', optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU )
+					plot2D( signalFiles, 'RPVStto'+jj, optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
+					plot2D( bkgFiles, 'QCD', optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
+					#plot2D( inputFileTTJets, 'TTJets', optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
+					#plot2D( inputFileWJetsToQQ, 'WJets', optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
+					#plot2D( inputFileZJetsToQQ, 'ZJets', optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
 
 				elif '1D' in process:
 					for cut1 in selection:
-						if 'Boosted' in boosted: plotSignalBkg( signalFiles, bkgFiles, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], i[6], PU, boosted )
-						else: plotSignalBkg( signalFiles, bkgFiles, optGrom, 'AnalysisPlots/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], i[6], PU, boosted )
+						plotSignalBkg( signalFiles, bkgFiles, optGrom, version+'AnalysisPlots'+optGrom+'/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], i[6], PU, version )
 				
 				elif 'qual' in process:
 					for cut1 in selection:
-						if 'Boosted' in boosted: plotQuality( dataFile, bkgFiles, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], PU, boosted )
-						else: plotQuality( dataFile, bkgFiles, optGrom, 'AnalysisPlots/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], PU, boosted )
+						plotQuality( dataFile, bkgFiles, optGrom, version+'AnalysisPlots'+optGrom+'/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], PU, version )
 				
 				elif 'mini' in process:
 					plot( inputMiniFileSignal, inputMiniFileSignal200, inputMiniFileQCD, 0.8, inputMiniFileTTJets, inputMiniFileWJetsToQQ, inputMiniFileZJetsToQQ, optGrom, i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU )
 				
 				elif 'Norm' in process:
 					for cut1 in selection:
-						if 'Boosted' in boosted: plotSignalBkg( signalFiles, bkgFiles, optGrom, boosted+'AnalysisPlots'+optGrom+'/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], i[6], PU, boosted, True )
-						else: plotSignalBkg( signalFiles, bkgFiles, optGrom, 'AnalysisPlots/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], i[6], PU, boosted, True )
+						plotSignalBkg( signalFiles, bkgFiles, optGrom, version+'AnalysisPlots'+optGrom+'/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], i[6], PU, version, True )
 
 				elif 'CF' in process:
 					plotCutFlow( signalFiles, bkgFiles, optGrom, i[0], i[1], i[2], PU, True )
