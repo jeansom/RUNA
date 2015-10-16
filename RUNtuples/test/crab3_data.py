@@ -39,9 +39,9 @@ if __name__ == '__main__':
 
 	Samples = [ 
 			#### DATA
-			'/JetHT/Run2015B-PromptReco-v1/MINIAOD',
-			'/JetHT/Run2015C-PromptReco-v1/MINIAOD',
-			'/JetHT/Run2015D-PromptReco-v3/MINIAOD',
+			#'/JetHT/Run2015B-PromptReco-v1/MINIAOD',
+			#'/JetHT/Run2015C-PromptReco-v1/MINIAOD',
+			'/JetHT/Run2015D-PromptReco-v4/MINIAOD',
 			#'/MET/Run2015B-PromptReco-v1/MINIAOD',
 			##'/SingleMu/Run2015B-PromptReco-v1/MINIAOD',
 			]

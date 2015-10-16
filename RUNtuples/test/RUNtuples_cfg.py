@@ -212,13 +212,13 @@ if options.usePrivateSQLite:
     if options.DataProcessing=="Data50ns":
       era="Summer15_50nsV5_DATA" 
     elif options.DataProcessing=="Data25ns":
-      era="Summer15_25nsV3_DATA" 
+      era="Summer15_25nsV5_DATA" 
     elif options.DataProcessing=="Data25nsv2":
-      era="Summer15_25nsV3_DATA" 
+      era="Summer15_25nsV5_DATA" 
     elif options.DataProcessing=="MC50ns":
       era="Summer15_50nsV5_DATA" 
     elif options.DataProcessing=="MC25ns":
-      era="Summer15_25nsV3_MC" 
+      era="Summer15_25nsV5_MC" 
     dBFile = era+".db"
     print "\nUsing private SQLite file", dBFile, "\n"
     process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
