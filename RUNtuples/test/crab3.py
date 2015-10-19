@@ -10,6 +10,7 @@ config.General.workArea = 'crab_projects'
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'RUNtuples_cfg.py'
 config.JobType.pyCfgParams = [ 'DataProcessing=MC25ns' ]
+config.JobType.inputFiles = [ 'Summer15_25nsV5_MC.db' ]
 config.JobType.allowUndistributedCMSSW = True
 
 config.Data.inputDataset = ''
