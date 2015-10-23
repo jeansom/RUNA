@@ -19,7 +19,7 @@ config.JobType.allowUndistributedCMSSW = True
 
 config.Data.inputDataset = ''
 config.Data.splitting = 'LumiBased'
-config.Data.unitsPerJob = 1
+config.Data.unitsPerJob = 2
 config.Data.publication = True
 config.Data.ignoreLocality = True
 
@@ -49,10 +49,11 @@ if __name__ == '__main__':
 	from multiprocessing import Process
 	for dataset in Samples:
 		config.Data.inputDataset = dataset
-		config.JobType.pyCfgParams = [ 'DataProcessing=Data25ns' ]
+		config.JobType.pyCfgParams = [ 'DataProcessing=Data25nsv2' ]
 		config.JobType.inputFiles = [ 'Summer15_25nsV5_DATA.db' ]
-		if 'Run2015B' in dataset: config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON_v2.txt'
-		else: config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258159_13TeV_PromptReco_Collisions15_25ns_JSON_v3.txt'
+		#if 'Run2015B' in dataset: config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON_v2.txt'
+		#else: config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258159_13TeV_PromptReco_Collisions15_25ns_JSON_v3.txt'
+		config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258750_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
 		config.General.requestName = dataset.split('/')[1]+"_"+dataset.split('/')[2]+'_'+name+'_'+version
 		config.Data.publishDataName = dataset.split('/')[2]+'_'+name+'_'+version
 		p = Process(target=submit, args=(config,))

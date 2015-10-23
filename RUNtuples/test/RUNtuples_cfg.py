@@ -7,15 +7,15 @@ header = """
 ###
 ### Examples: 
 ###    Running on 25 ns MC:
-###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC25ns'
+###    cmsRun RUNtuples_cfg.py maxEvents=1000 DataProcessing='MC25ns'
 ###    Running on 25 ns data (Run2015 A, B, and C):
-###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data25ns'
+###    cmsRun RUNtuples_cfg.py maxEvents=1000 DataProcessing='Data25ns'
 ###    Running on 25 ns data (Run2015 D and MiniAODv2):
-###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data25nsv2'
+###    cmsRun RUNtuples_cfg.py maxEvents=1000 DataProcessing='Data25nsv2'
 ###    Running on 50 ns MC:
-###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC50ns'
+###    cmsRun RUNtuples_cfg.py maxEvents=1000 DataProcessing='MC50ns'
 ###    Running on 50 ns data:
-###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data50ns'
+###    cmsRun RUNtuples_cfg.py maxEvents=1000 DataProcessing='Data50ns'
 ###
 ### *****************************************************************************************
 """
@@ -30,7 +30,9 @@ options = opts.VarParsing ('analysis')
 
 options.register('sample',
                  #'/store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/00000/0014DC94-DC5C-E511-82FB-7845C4FC39F5.root',
-		 '/store/mc/RunIISpring15MiniAODv2/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/50000/009A4754-EA70-E511-B389-0025905938AA.root',
+		# '/store/mc/RunIISpring15MiniAODv2/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/50000/009A4754-EA70-E511-B389-0025905938AA.root',
+		 '/store/data/Run2015D/JetHT/MINIAOD/PromptReco-v4/000/258/159/00000/36DC8060-3B6C-E511-BC73-02163E0143DD.root',
+		 #'/store/user/algomez/RPVSt350tobj_13TeV_pythia8/RunIISpring15DR74_newMiniAOD_Asympt25ns/151019_202818/0000/EXO-RunIISpring15MiniAODv2-00903_103.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
@@ -373,13 +375,13 @@ process.skimmedPatElectrons = cms.EDFilter(
 
 process.skimmedPatMET = cms.EDFilter(
     "PATMETSelector",
-    src = cms.InputTag(metLabel, "", "PAT"),
+    src = cms.InputTag(metLabel, "", "RECO" if 'Data' in options.DataProcessing else "PAT" ),
     cut = cms.string("")
     )
 
 process.skimmedPatMETNoHF = cms.EDFilter(
     "PATMETSelector",
-    src = cms.InputTag(metNoHFLabel, "", "PAT"),
+    src = cms.InputTag(metNoHFLabel, "", "RECO" if 'Data' in options.DataProcessing else "PAT"),
     cut = cms.string("")
     )
 

@@ -39,19 +39,9 @@ if __name__ == '__main__':
 	from multiprocessing import Process
 
 	QCDHT = [ 
-			#### CSA14
-			#'/RPVSt100tojj_13TeV_pythia8_GENSIM/algomez-RPVSt100tojj_13TeV_pythia8_MiniAOD_v706_PU40bx50-b71e879835d2f0083a0e044b05216236/USER'
-			#### PHYS14
-			#'/RPVSt100tojj_13TeV_pythia8/algomez-MiniAOD_PHYS14_v720_PU40bx50-159f4f639b95c6d4636b9f3013c28473/USER'
-			#'/RPVSt100tojj_13TeV_pythia8/algomez-MiniAOD_PHYS14_v720-b1b44dbfc276814daa37c582f825184d/USER',
-			#'/RPVSt100tobj_pythia8_13TeV/algomez-MiniAOD_PHYS14_v720_PU20bx25-b1b44dbfc276814daa37c582f825184d/USER',
-			#'/RPVSt350tojj_13TeV_pythia8/algomez-MiniAOD_PHYS14_v720_PU20bx25-b1b44dbfc276814daa37c582f825184d/USER'
-			##### RunIISpring15DR74
-			#'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15DR74_MiniAOD_Asympt25ns-aaa2c03e98f1a25cd2e28ba65d8e2a63/USER',
-			#'/RPVSt100tobj_13TeV_pythia8/algomez-RunIISpring15DR74_MiniAOD_Asympt25ns-aaa2c03e98f1a25cd2e28ba65d8e2a63/USER',
-			#'/RPVSt200tobj_13TeV_pythia8/algomez-RunIISpring15DR74_MiniAOD_Asympt25ns-aaa2c03e98f1a25cd2e28ba65d8e2a63/USER',
-			'/RPVSt350tobj_13TeV_pythia8/algomez-RunIISpring15DR74_MiniAOD_Asympt25ns-aaa2c03e98f1a25cd2e28ba65d8e2a63/USER',
-
+			'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15DR74_newMiniAOD_Asympt25ns-612faf0bd9dc3ce1d1b2e0252700e0a7/USER',
+			'/RPVSt200tobj_13TeV_pythia8/algomez-RunIISpring15DR74_newMiniAOD_Asympt25ns-612faf0bd9dc3ce1d1b2e0252700e0a7/USER',
+			'/RPVSt350tobj_13TeV_pythia8/algomez-RunIISpring15DR74_newMiniAOD_Asympt25ns-612faf0bd9dc3ce1d1b2e0252700e0a7/USER',
 			]
 	
 	for dataset in QCDHT:
