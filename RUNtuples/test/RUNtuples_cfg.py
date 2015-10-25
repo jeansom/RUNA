@@ -705,7 +705,6 @@ process.jetsAK8.src = 'boostedJetUserDataAK8'
 process.jetsAK8.variables += jetToolboxAK8Vars
 
 process.subjetsAK8Pruned = process.subjetsAK8.clone( prefix = 'subjetAK8Pruned', src = cms.InputTag('selectedPatJetsAK8PFCHSPrunedPacked', "SubJets") )
-process.edmNtuplesOut.outputCommands+=('keep *_subjetsAK8Pruned_*_*',)
 
 ### Puppi
 process.jetsAK8Puppi = copy.deepcopy(basic)
@@ -716,10 +715,6 @@ process.jetsAK8Puppi.src = cms.InputTag( 'boostedJetUserDataAK8Puppi' )
 process.subjetsAK8Puppi = process.subjetsAK8.clone( prefix = 'subjetAK8Puppi', src = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked', "SubJets") )
 process.subjetsAK8PuppiPruned = process.subjetsAK8.clone( prefix = 'subjetAK8PuppiPruned', src = cms.InputTag('selectedPatJetsAK8PFPuppiPrunedPacked', "SubJets") )
 process.jetKeysAK8Puppi = process.jetKeysAK8.clone( jetLabel = 'jetUserDataAK8Puppi' )
-process.edmNtuplesOut.outputCommands+=('keep *_jetsAK8Puppi_*_*',)
-process.edmNtuplesOut.outputCommands+=('keep *_jetKeysAK8Puppi_*_*',)
-process.edmNtuplesOut.outputCommands+=('keep *_subjetsAK8Puppi_*_*',)
-process.edmNtuplesOut.outputCommands+=('keep *_subjetsAK8PuppiPruned_*_*',)
 
 ### SK
 process.jetsAK8SK = copy.deepcopy(basic)
@@ -730,10 +725,6 @@ process.jetsAK8SK.src = cms.InputTag( 'boostedJetUserDataAK8SK' )
 process.subjetsAK8SK = process.subjetsAK8.clone( prefix = 'subjetAK8SK', src = cms.InputTag('selectedPatJetsAK8PFSKSoftDropPacked', "SubJets") )
 process.subjetsAK8SKPruned = process.subjetsAK8.clone( prefix = 'subjetAK8SKPruned', src = cms.InputTag('selectedPatJetsAK8PFSKPrunedPacked', "SubJets") )
 process.jetKeysAK8SK = process.jetKeysAK8.clone( jetLabel = 'jetUserDataAK8SK' )
-process.edmNtuplesOut.outputCommands+=('keep *_jetsAK8SK_*_*',)
-process.edmNtuplesOut.outputCommands+=('keep *_jetKeysAK8SK_*_*',)
-process.edmNtuplesOut.outputCommands+=('keep *_subjetsAK8SK_*_*',)
-process.edmNtuplesOut.outputCommands+=('keep *_subjetsAK8SKPruned_*_*',)
 process.options.allowUnscheduled = cms.untracked.bool(True)
 
 process.edmNtuplesOut = cms.OutputModule(
@@ -771,6 +762,15 @@ process.edmNtuplesOut = cms.OutputModule(
     dropMetaData = cms.untracked.string('ALL'),
     )
 
+process.edmNtuplesOut.outputCommands+=('keep *_subjetsAK8Pruned_*_*',)
+process.edmNtuplesOut.outputCommands+=('keep *_jetsAK8Puppi_*_*',)
+process.edmNtuplesOut.outputCommands+=('keep *_jetKeysAK8Puppi_*_*',)
+process.edmNtuplesOut.outputCommands+=('keep *_subjetsAK8Puppi_*_*',)
+process.edmNtuplesOut.outputCommands+=('keep *_subjetsAK8PuppiPruned_*_*',)
+process.edmNtuplesOut.outputCommands+=('keep *_jetsAK8SK_*_*',)
+process.edmNtuplesOut.outputCommands+=('keep *_jetKeysAK8SK_*_*',)
+process.edmNtuplesOut.outputCommands+=('keep *_subjetsAK8SK_*_*',)
+process.edmNtuplesOut.outputCommands+=('keep *_subjetsAK8SKPruned_*_*',)
 ### keep NoHF jets if needed:
 if( options.useNoHFMET ):
   process.edmNtuplesOut.outputCommands+=('keep *_jetsAK4NoHF_*_*',)

@@ -1,7 +1,13 @@
+##################################################################
+########   TO RUN THIS: python crab3_QCD.py
+########   DO NOT DO: crab submit crab3_QCD.py
+##################################################################
+
 from CRABClient.UserUtilities import config
+from httplib import HTTPException
 config = config()
 
-name = 'RunIISpring15DR74_RUNA_Asympt25ns'
+name = 'RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns'
 version = 'v08'
 
 config.General.requestName = ''
@@ -38,16 +44,15 @@ if __name__ == '__main__':
 	from CRABAPI.RawCommand import crabCommand
 	from multiprocessing import Process
 
-	QCDHT = [ 
+	Samples = [ 
 			'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15DR74_newMiniAOD_Asympt25ns-612faf0bd9dc3ce1d1b2e0252700e0a7/USER',
 			'/RPVSt200tobj_13TeV_pythia8/algomez-RunIISpring15DR74_newMiniAOD_Asympt25ns-612faf0bd9dc3ce1d1b2e0252700e0a7/USER',
 			'/RPVSt350tobj_13TeV_pythia8/algomez-RunIISpring15DR74_newMiniAOD_Asympt25ns-612faf0bd9dc3ce1d1b2e0252700e0a7/USER',
 			]
 	
-	for dataset in QCDHT:
+	for dataset in Samples:
 		config.Data.inputDataset = dataset
 		procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-', '').split('-')[0]+'_'+version
-		#procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-', '').split('-')[0]+name+'_'+version
 		config.General.requestName = procName
 		#crabCommand('submit', config = config)
 		p = Process(target=submit, args=(config,))
