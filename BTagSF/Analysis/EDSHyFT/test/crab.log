@@ -1,0 +1,438 @@
+DEBUG 2015-09-02 14:38:34,007: 	 Executing command: 'submit'
+DEBUG 2015-09-02 14:38:34,008: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2015-09-02 14:38:34,019: 	 Checking credentials
+DEBUG 2015-09-02 14:38:34,019: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2015-09-02 14:38:34,019: 	 Getting proxy life time left
+DEBUG 2015-09-02 14:38:34,122: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 36269
+
+ error: 
+ retcode : 0
+DEBUG 2015-09-02 14:38:34,225: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 36269
+
+ error: 
+ retcode : 0
+DEBUG 2015-09-02 14:38:34,225: 	 Proxy valid for 10:04:29 hours
+ERROR 2015-09-02 14:38:34,226: 	 CRAB configuration file CRAB_Jobscfg_files/*_crab.py not found.
+ERROR 2015-09-02 14:38:34,226: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 151, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 137, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/submit.py", line 38, in __init__
+    SubCommand.__init__(self, logger, cmdargs, disable_interspersed_args=True)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 296, in __init__
+    self.loadConfig(self.options.config, self.args)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 47, in loadConfig
+    raise ConfigurationException("CRAB configuration file %s not found." % (configname))
+ConfigurationException: CRAB configuration file CRAB_Jobscfg_files/*_crab.py not found.
+DEBUG 2015-09-03 10:08:42,797: 	 Executing command: 'getoutput'
+DEBUG 2015-09-03 10:08:42,797: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2015-09-03 10:09:03,724: 	 Executing command: 'getoutput'
+DEBUG 2015-09-03 10:09:03,725: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+ERROR 2015-09-03 10:09:03,726: 	 Error: /uscms/home/jsomalwa/CMSSW_7_4_1/src/Analysis/EDSHyFT/test/bTaggingEfficiency/btaggingefficiency/CRAB_Jobs/Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER is not a valid CRAB project directory.
+ERROR 2015-09-03 10:09:03,727: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 151, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 137, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 255, in __init__
+    self.validateOptions()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/getcommand.py", line 194, in validateOptions
+    SubCommand.validateOptions(self)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 565, in validateOptions
+    raise ConfigurationException(msg)
+ConfigurationException: [91mError[0m: /uscms/home/jsomalwa/CMSSW_7_4_1/src/Analysis/EDSHyFT/test/bTaggingEfficiency/btaggingefficiency/CRAB_Jobs/Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER is not a valid CRAB project directory.
+DEBUG 2015-09-03 11:22:14,216: 	 Executing command: 'submit'
+DEBUG 2015-09-03 11:22:14,216: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2015-09-03 11:22:14,223: 	 Checking credentials
+DEBUG 2015-09-03 11:22:14,224: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2015-09-03 11:22:14,224: 	 Getting proxy life time left
+DEBUG 2015-09-03 11:22:14,326: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42000
+
+ error: 
+ retcode : 0
+DEBUG 2015-09-03 11:22:14,429: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42000
+
+ error: 
+ retcode : 0
+DEBUG 2015-09-03 11:22:14,430: 	 Proxy valid for 11:40:00 hours
+INFO 2015-09-03 11:22:14,430: 	 Will use CRAB configuration file CRAB_Jobs/cfg_files/Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER_crab.py
+DEBUG 2015-09-03 11:22:14,430: 	 Loading CRAB configuration file.
+DEBUG 2015-09-03 11:22:14,434: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+ERROR 2015-09-03 11:22:14,434: 	 Working area '/uscms/home/jsomalwa/CMSSW_7_4_1/src/Analysis/EDSHyFT/test/bTaggingEfficiency/btaggingefficiency/crab_Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER' already exists 
+Please change the requestName in the config file
+ERROR 2015-09-03 11:22:14,434: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 151, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 137, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/submit.py", line 38, in __init__
+    SubCommand.__init__(self, logger, cmdargs, disable_interspersed_args=True)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 300, in __init__
+    getattr(self.configuration.General, 'requestName', None))
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/ClientUtilities.py", line 387, in createWorkArea
+    raise ConfigException("Working area '%s' already exists \nPlease change the requestName in the config file" % fullpath)
+ConfigException: Working area '/uscms/home/jsomalwa/CMSSW_7_4_1/src/Analysis/EDSHyFT/test/bTaggingEfficiency/btaggingefficiency/crab_Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER' already exists 
+Please change the requestName in the config file
+DEBUG 2015-09-03 11:22:30,319: 	 Executing command: 'submit'
+DEBUG 2015-09-03 11:22:30,319: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2015-09-03 11:22:30,326: 	 Checking credentials
+DEBUG 2015-09-03 11:22:30,326: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2015-09-03 11:22:30,326: 	 Getting proxy life time left
+DEBUG 2015-09-03 11:22:30,429: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41984
+
+ error: 
+ retcode : 0
+DEBUG 2015-09-03 11:22:30,532: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41984
+
+ error: 
+ retcode : 0
+DEBUG 2015-09-03 11:22:30,532: 	 Proxy valid for 11:39:44 hours
+INFO 2015-09-03 11:22:30,533: 	 Will use CRAB configuration file CRAB_Jobs2/cfg_files/Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER_crab.py
+DEBUG 2015-09-03 11:22:30,533: 	 Loading CRAB configuration file.
+DEBUG 2015-09-03 11:22:30,538: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+ERROR 2015-09-03 11:22:30,538: 	 Working area '/uscms/home/jsomalwa/CMSSW_7_4_1/src/Analysis/EDSHyFT/test/bTaggingEfficiency/btaggingefficiency/crab_Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER' already exists 
+Please change the requestName in the config file
+ERROR 2015-09-03 11:22:30,539: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 151, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 137, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/submit.py", line 38, in __init__
+    SubCommand.__init__(self, logger, cmdargs, disable_interspersed_args=True)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 300, in __init__
+    getattr(self.configuration.General, 'requestName', None))
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/ClientUtilities.py", line 387, in createWorkArea
+    raise ConfigException("Working area '%s' already exists \nPlease change the requestName in the config file" % fullpath)
+ConfigException: Working area '/uscms/home/jsomalwa/CMSSW_7_4_1/src/Analysis/EDSHyFT/test/bTaggingEfficiency/btaggingefficiency/crab_Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER' already exists 
+Please change the requestName in the config file
+DEBUG 2015-09-03 11:26:11,628: 	 Executing command: 'submit'
+DEBUG 2015-09-03 11:26:11,629: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2015-09-03 11:26:11,639: 	 Checking credentials
+DEBUG 2015-09-03 11:26:11,639: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2015-09-03 11:26:11,639: 	 Getting proxy life time left
+DEBUG 2015-09-03 11:26:11,742: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41763
+
+ error: 
+ retcode : 0
+DEBUG 2015-09-03 11:26:11,845: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41763
+
+ error: 
+ retcode : 0
+DEBUG 2015-09-03 11:26:11,845: 	 Proxy valid for 11:36:03 hours
+ERROR 2015-09-03 11:26:11,845: 	 CRAB configuration file CRAB_Jobs2cfg_files/*_crab.py not found.
+ERROR 2015-09-03 11:26:11,846: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 151, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 137, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/submit.py", line 38, in __init__
+    SubCommand.__init__(self, logger, cmdargs, disable_interspersed_args=True)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 296, in __init__
+    self.loadConfig(self.options.config, self.args)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 47, in loadConfig
+    raise ConfigurationException("CRAB configuration file %s not found." % (configname))
+ConfigurationException: CRAB configuration file CRAB_Jobs2cfg_files/*_crab.py not found.
+DEBUG 2015-09-03 11:29:14,274: 	 Executing command: 'submit'
+DEBUG 2015-09-03 11:29:14,275: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2015-09-03 11:29:14,282: 	 Checking credentials
+DEBUG 2015-09-03 11:29:14,282: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2015-09-03 11:29:14,282: 	 Getting proxy life time left
+DEBUG 2015-09-03 11:29:14,385: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41580
+
+ error: 
+ retcode : 0
+DEBUG 2015-09-03 11:29:14,488: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41580
+
+ error: 
+ retcode : 0
+DEBUG 2015-09-03 11:29:14,488: 	 Proxy valid for 11:33:00 hours
+ERROR 2015-09-03 11:29:14,488: 	 CRAB configuration file CRAB_Jobs2cfg_files/*_crab.py not found.
+ERROR 2015-09-03 11:29:14,488: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 151, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 137, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/submit.py", line 38, in __init__
+    SubCommand.__init__(self, logger, cmdargs, disable_interspersed_args=True)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 296, in __init__
+    self.loadConfig(self.options.config, self.args)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 47, in loadConfig
+    raise ConfigurationException("CRAB configuration file %s not found." % (configname))
+ConfigurationException: CRAB configuration file CRAB_Jobs2cfg_files/*_crab.py not found.
+DEBUG 2015-09-09 14:53:05,945: 	 Executing command: 'getoutput'
+DEBUG 2015-09-09 14:53:05,946: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+ERROR 2015-09-09 14:53:05,952: 	 Error: /uscms/home/jsomalwa/CMSSW_7_4_1/src/Analysis/EDSHyFT/test/bTaggingEfficiency/btaggingefficiency/CRAB_JobsAK4/crab_Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER is not a valid CRAB project directory.
+ERROR 2015-09-09 14:53:05,952: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 151, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 137, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 255, in __init__
+    self.validateOptions()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/getcommand.py", line 194, in validateOptions
+    SubCommand.validateOptions(self)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 565, in validateOptions
+    raise ConfigurationException(msg)
+ConfigurationException: [91mError[0m: /uscms/home/jsomalwa/CMSSW_7_4_1/src/Analysis/EDSHyFT/test/bTaggingEfficiency/btaggingefficiency/CRAB_JobsAK4/crab_Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER is not a valid CRAB project directory.
+DEBUG 2015-09-09 14:57:23,690: 	 Executing command: 'submit'
+DEBUG 2015-09-09 14:57:23,691: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2015-09-09 14:57:23,699: 	 Checking credentials
+DEBUG 2015-09-09 14:57:23,699: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2015-09-09 14:57:23,699: 	 Getting proxy life time left
+DEBUG 2015-09-09 14:57:23,802: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41272
+
+ error: 
+ retcode : 0
+DEBUG 2015-09-09 14:57:23,905: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41272
+
+ error: 
+ retcode : 0
+DEBUG 2015-09-09 14:57:23,905: 	 Proxy valid for 11:27:52 hours
+INFO 2015-09-09 14:57:23,906: 	 Will use CRAB configuration file CRAB_JobsAK4/cfg_files/Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER_crab.py
+DEBUG 2015-09-09 14:57:23,906: 	 Loading CRAB configuration file.
+DEBUG 2015-09-09 14:57:23,908: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+ERROR 2015-09-09 14:57:23,909: 	 Working area '/uscms/home/jsomalwa/CMSSW_7_4_1/src/Analysis/EDSHyFT/test/bTaggingEfficiency/btaggingefficiency/crab_Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER' already exists 
+Please change the requestName in the config file
+ERROR 2015-09-09 14:57:23,909: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 151, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 137, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/submit.py", line 38, in __init__
+    SubCommand.__init__(self, logger, cmdargs, disable_interspersed_args=True)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 300, in __init__
+    getattr(self.configuration.General, 'requestName', None))
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/ClientUtilities.py", line 387, in createWorkArea
+    raise ConfigException("Working area '%s' already exists \nPlease change the requestName in the config file" % fullpath)
+ConfigException: Working area '/uscms/home/jsomalwa/CMSSW_7_4_1/src/Analysis/EDSHyFT/test/bTaggingEfficiency/btaggingefficiency/crab_Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER' already exists 
+Please change the requestName in the config file
+DEBUG 2015-09-09 14:57:59,303: 	 Executing command: 'submit'
+DEBUG 2015-09-09 14:57:59,303: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2015-09-09 14:57:59,310: 	 Checking credentials
+DEBUG 2015-09-09 14:57:59,310: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2015-09-09 14:57:59,311: 	 Getting proxy life time left
+DEBUG 2015-09-09 14:57:59,413: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41236
+
+ error: 
+ retcode : 0
+DEBUG 2015-09-09 14:57:59,517: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41236
+
+ error: 
+ retcode : 0
+DEBUG 2015-09-09 14:57:59,517: 	 Proxy valid for 11:27:16 hours
+ERROR 2015-09-09 14:57:59,517: 	 CRAB configuration file CRAB_JobsAK4cfg_files/*_crab.py not found.
+ERROR 2015-09-09 14:57:59,517: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 151, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 137, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/submit.py", line 38, in __init__
+    SubCommand.__init__(self, logger, cmdargs, disable_interspersed_args=True)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 296, in __init__
+    self.loadConfig(self.options.config, self.args)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 47, in loadConfig
+    raise ConfigurationException("CRAB configuration file %s not found." % (configname))
+ConfigurationException: CRAB configuration file CRAB_JobsAK4cfg_files/*_crab.py not found.
+DEBUG 2015-09-09 15:02:53,692: 	 Executing command: 'submit'
+DEBUG 2015-09-09 15:02:53,693: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2015-09-09 15:02:53,701: 	 Checking credentials
+DEBUG 2015-09-09 15:02:53,702: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2015-09-09 15:02:53,702: 	 Getting proxy life time left
+DEBUG 2015-09-09 15:02:53,805: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 40942
+
+ error: 
+ retcode : 0
+DEBUG 2015-09-09 15:02:53,908: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 40942
+
+ error: 
+ retcode : 0
+DEBUG 2015-09-09 15:02:53,908: 	 Proxy valid for 11:22:22 hours
+ERROR 2015-09-09 15:02:53,908: 	 CRAB configuration file CRAB_JobsAK8cfg_files/*_crab.py not found.
+ERROR 2015-09-09 15:02:53,908: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 151, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/bin/crab", line 137, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/submit.py", line 38, in __init__
+    SubCommand.__init__(self, logger, cmdargs, disable_interspersed_args=True)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 296, in __init__
+    self.loadConfig(self.options.config, self.args)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1509/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 47, in loadConfig
+    raise ConfigurationException("CRAB configuration file %s not found." % (configname))
+ConfigurationException: CRAB configuration file CRAB_JobsAK8cfg_files/*_crab.py not found.
+DEBUG 2015-10-23 16:10:32,367: 	 Executing command: 'submit'
+DEBUG 2015-10-23 16:10:32,369: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2015-10-23 16:10:32,383: 	 Checking credentials
+DEBUG 2015-10-23 16:10:32,384: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2015-10-23 16:10:32,384: 	 Getting proxy life time left
+DEBUG 2015-10-23 16:10:32,487: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 43094
+
+ error: 
+ retcode : 0
+DEBUG 2015-10-23 16:10:32,590: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 43094
+
+ error: 
+ retcode : 0
+DEBUG 2015-10-23 16:10:32,590: 	 Proxy valid for 11:58:14 hours
+INFO 2015-10-23 16:10:32,592: 	 Will use CRAB configuration file CRAB_Jobs/cfg_files/Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER_crab.py
+DEBUG 2015-10-23 16:10:32,593: 	 Loading CRAB configuration file.
+ERROR 2015-10-23 16:10:32,608: 	 Error in CRAB configuration file:
+EOL while scanning string literal (Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER_crab.py, line 32)
+Please refer to https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3CommonErrors#Syntax_error_in_CRAB_configurati
+See the ./crab.log file for more details.
+The documentation about the CRAB configuration file can be found in https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile
+ERROR 2015-10-23 16:10:32,608: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/bin/crab", line 159, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/bin/crab", line 145, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/lib/python2.6/site-packages/CRABClient/Commands/submit.py", line 32, in __init__
+    SubCommand.__init__(self, logger, cmdargs, disable_interspersed_args=True)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 294, in __init__
+    self.loadConfig(self.options.config, self.args)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 83, in loadConfig
+    raise ConfigurationException(configmsg)
+ConfigurationException: Error in CRAB configuration file:
+EOL while scanning string literal (Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER_crab.py, line 32)
+Please refer to https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3CommonErrors#Syntax_error_in_CRAB_configurati
+See the ./crab.log file for more details.
+The documentation about the CRAB configuration file can be found in https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile
+ERROR 2015-10-23 16:10:32,613: 	 Unhandled Exception!
+ERROR 2015-10-23 16:10:32,614: 	 'NoneType' object has no attribute 'terminate'
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/bin/crab", line 213, in <module>
+    client.cmd.terminate( exitcode )
+AttributeError: 'NoneType' object has no attribute 'terminate'
+ERROR 2015-10-23 16:10:32,614: 	 ERROR: AttributeError: 'NoneType' object has no attribute 'terminate'
+ERROR 2015-10-23 16:10:32,614: 	 
+	Please email hn-cms-computing-tools@cern.ch for support with the crab.log file or crab.log URL.
+ERROR 2015-10-23 16:10:32,614: 	 	Client Version: 3.3.1510
+ERROR 2015-10-23 16:10:32,614: 	 	Please use 'crab uploadlog' to upload the log file /uscms/home/jsomalwa/CMSSW_7_4_1/src/Analysis/EDSHyFT/test/crab.log to the CRAB cache.
+DEBUG 2015-10-23 16:11:42,460: 	 Executing command: 'submit'
+DEBUG 2015-10-23 16:11:42,462: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2015-10-23 16:11:42,473: 	 Checking credentials
+DEBUG 2015-10-23 16:11:42,473: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2015-10-23 16:11:42,473: 	 Getting proxy life time left
+DEBUG 2015-10-23 16:11:42,576: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 43024
+
+ error: 
+ retcode : 0
+DEBUG 2015-10-23 16:11:42,678: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 43024
+
+ error: 
+ retcode : 0
+DEBUG 2015-10-23 16:11:42,679: 	 Proxy valid for 11:57:04 hours
+INFO 2015-10-23 16:11:42,679: 	 Will use CRAB configuration file CRAB_Jobs/cfg_files/Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER_crab.py
+DEBUG 2015-10-23 16:11:42,679: 	 Loading CRAB configuration file.
+ERROR 2015-10-23 16:11:42,683: 	 Error in CRAB configuration file:
+EOL while scanning string literal (Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER_crab.py, line 32)
+Please refer to https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3CommonErrors#Syntax_error_in_CRAB_configurati
+See the ./crab.log file for more details.
+The documentation about the CRAB configuration file can be found in https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile
+ERROR 2015-10-23 16:11:42,683: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/bin/crab", line 159, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/bin/crab", line 145, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/lib/python2.6/site-packages/CRABClient/Commands/submit.py", line 32, in __init__
+    SubCommand.__init__(self, logger, cmdargs, disable_interspersed_args=True)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 294, in __init__
+    self.loadConfig(self.options.config, self.args)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 83, in loadConfig
+    raise ConfigurationException(configmsg)
+ConfigurationException: Error in CRAB configuration file:
+EOL while scanning string literal (Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER_crab.py, line 32)
+Please refer to https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3CommonErrors#Syntax_error_in_CRAB_configurati
+See the ./crab.log file for more details.
+The documentation about the CRAB configuration file can be found in https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile
+ERROR 2015-10-23 16:11:42,686: 	 Unhandled Exception!
+ERROR 2015-10-23 16:11:42,686: 	 'NoneType' object has no attribute 'terminate'
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/bin/crab", line 213, in <module>
+    client.cmd.terminate( exitcode )
+AttributeError: 'NoneType' object has no attribute 'terminate'
+ERROR 2015-10-23 16:11:42,687: 	 ERROR: AttributeError: 'NoneType' object has no attribute 'terminate'
+ERROR 2015-10-23 16:11:42,687: 	 
+	Please email hn-cms-computing-tools@cern.ch for support with the crab.log file or crab.log URL.
+ERROR 2015-10-23 16:11:42,687: 	 	Client Version: 3.3.1510
+ERROR 2015-10-23 16:11:42,687: 	 	Please use 'crab uploadlog' to upload the log file /uscms/home/jsomalwa/CMSSW_7_4_1/src/Analysis/EDSHyFT/test/crab.log to the CRAB cache.
+DEBUG 2015-10-23 16:18:06,625: 	 Executing command: 'status'
+DEBUG 2015-10-23 16:18:06,625: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+ERROR 2015-10-23 16:18:06,627: 	 Error: /uscms/home/jsomalwa/CMSSW_7_4_1/src/Analysis/EDSHyFT/test/crab_Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER is not a valid CRAB project directory.
+ERROR 2015-10-23 16:18:06,628: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/bin/crab", line 159, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/bin/crab", line 145, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 253, in __init__
+    self.validateOptions()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/lib/python2.6/site-packages/CRABClient/Commands/status.py", line 747, in validateOptions
+    SubCommand.validateOptions(self)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 558, in validateOptions
+    raise ConfigurationException(msg)
+ConfigurationException: [91mError[0m: /uscms/home/jsomalwa/CMSSW_7_4_1/src/Analysis/EDSHyFT/test/crab_Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER is not a valid CRAB project directory.
+ERROR 2015-10-23 16:18:06,630: 	 Unhandled Exception!
+ERROR 2015-10-23 16:18:06,631: 	 'NoneType' object has no attribute 'terminate'
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/bin/crab", line 213, in <module>
+    client.cmd.terminate( exitcode )
+AttributeError: 'NoneType' object has no attribute 'terminate'
+ERROR 2015-10-23 16:18:06,631: 	 ERROR: AttributeError: 'NoneType' object has no attribute 'terminate'
+ERROR 2015-10-23 16:18:06,631: 	 
+	Please email hn-cms-computing-tools@cern.ch for support with the crab.log file or crab.log URL.
+ERROR 2015-10-23 16:18:06,631: 	 	Client Version: 3.3.1510
+ERROR 2015-10-23 16:18:06,631: 	 	Please use 'crab uploadlog' to upload the log file /uscms/home/jsomalwa/CMSSW_7_4_1/src/Analysis/EDSHyFT/test/crab.log to the CRAB cache.

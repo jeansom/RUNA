@@ -1,0 +1,18 @@
+DEBUG 2015-09-02 13:47:03,817: 	 Executing command: 'status'
+DEBUG 2015-09-02 13:47:03,818: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2015-09-02 13:47:11,444: 	 Executing command: 'status'
+DEBUG 2015-09-02 13:47:11,445: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2015-10-23 15:30:13,186: 	 Executing command: 'submit'
+DEBUG 2015-10-23 15:30:13,187: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+ERROR 2015-10-23 15:30:13,190: 	 Keyboard Interrupted
+ERROR 2015-10-23 15:30:13,193: 	 Unhandled Exception!
+ERROR 2015-10-23 15:30:13,193: 	 'NoneType' object has no attribute 'terminate'
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/bin/crab", line 213, in <module>
+    client.cmd.terminate( exitcode )
+AttributeError: 'NoneType' object has no attribute 'terminate'
+ERROR 2015-10-23 15:30:13,194: 	 ERROR: AttributeError: 'NoneType' object has no attribute 'terminate'
+ERROR 2015-10-23 15:30:13,194: 	 
+	Please email hn-cms-computing-tools@cern.ch for support with the crab.log file or crab.log URL.
+ERROR 2015-10-23 15:30:13,194: 	 	Client Version: 3.3.1510
+ERROR 2015-10-23 15:30:13,194: 	 	Please use 'crab uploadlog' to upload the log file /uscms/home/jsomalwa/CMSSW_7_4_1/src/BTagSFTool/MiniAnalyzer/test/crab.log to the CRAB cache.

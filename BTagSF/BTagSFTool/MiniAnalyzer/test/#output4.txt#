@@ -1,0 +1,1834 @@
+2
+14-Sep-2015 16:07:48 CDT  Initiating request to open file file:///eos/uscms/store/user/morris17/Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1/RunIISpring15DR74_MiniAOD/150616_165451/0000/Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1_MiniAOD_Asympt25ns_132.root
+14-Sep-2015 16:07:49 CDT  Successfully opened file file:///eos/uscms/store/user/morris17/Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1/RunIISpring15DR74_MiniAOD/150616_165451/0000/Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1_MiniAOD_Asympt25ns_132.root
+Begin processing the 1st record. Run 1, Event 1, LumiSection 16 at 14-Sep-2015 16:07:50.983 CDT
+AK8 SF 0.963622
+AK8 SFup 1.02626
+AK8 SFerr 0.12527
+AK8 pt 390.299
+AK8 eta 0.00590722
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.916254
+AK8 SF 0.96539
+AK8 SFup 0.99191
+AK8 SFerr 0.0530382
+AK8 pt 318.764
+AK8 eta 1.02501
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.887825
+AK8 wtbtagError0.172043
+AK8 wtbtag: 0.930272
+Begin processing the 2nd record. Run 1, Event 2, LumiSection 16 at 14-Sep-2015 16:07:55.108 CDT
+AK8 SF 0.962706
+AK8 SFup 0.983175
+AK8 SFerr 0.0409377
+AK8 pt 210.849
+AK8 eta 0.0157178
+AK8 partonFlavor: 5
+AK8 eff: 0.254263
+AK8 csv: 0.261989
+AK8 wtbtagError0.0139579
+AK8 wtbtag: 1.01272
+Begin processing the 3rd record. Run 1, Event 3, LumiSection 16 at 14-Sep-2015 16:07:55.331 CDT
+AK8 SF 0.98318
+AK8 SFup 1.07771
+AK8 SFerr 0.0945319
+AK8 pt 442.399
+AK8 eta 1.82138
+AK8 partonFlavor: 1
+AK8 eff: 0.0140251
+AK8 csv: 0.702614
+AK8 SF 0.962509
+AK8 SFup 1.00405
+AK8 SFerr 0.0830834
+AK8 pt 412.315
+AK8 eta 0.534612
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.875854
+AK8 SF 0.96541
+AK8 SFup 1.01845
+AK8 SFerr 0.106076
+AK8 pt 306.633
+AK8 eta 0.613102
+AK8 partonFlavor: 4
+AK8 eff: 0.0512647
+AK8 csv: 0.838309
+AK8 wtbtagError0.182357
+AK8 wtbtag: 0.929438
+Begin processing the 4th record. Run 1, Event 4, LumiSection 16 at 14-Sep-2015 16:07:55.546 CDT
+AK8 SF 0.947999
+AK8 SFup 1.02204
+AK8 SFerr 0.148089
+AK8 pt 560.823
+AK8 eta 1.84885
+AK8 partonFlavor: 5
+AK8 eff: 0.206087
+AK8 csv: 0.961496
+AK8 SF 0.956388
+AK8 SFup 0.997929
+AK8 SFerr 0.0830834
+AK8 pt 490.517
+AK8 eta 0.413216
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.418769
+AK8 SF 1.0574
+AK8 SFup 1.16774
+AK8 SFerr 0.110339
+AK8 pt 274.316
+AK8 eta 2.04114
+AK8 partonFlavor: 21
+AK8 eff: 0.0140251
+AK8 csv: 0.219177
+AK8 wtbtagError0.126141
+AK8 wtbtag: 0.959711
+Begin processing the 5th record. Run 1, Event 5, LumiSection 16 at 14-Sep-2015 16:07:55.761 CDT
+AK8 SF 0.949254
+AK8 SFup 1.0233
+AK8 SFerr 0.148089
+AK8 pt 551.611
+AK8 eta 0.709046
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.796661
+AK8 SF 0.954472
+AK8 SFup 1.02852
+AK8 SFerr 0.148089
+AK8 pt 508.772
+AK8 eta 0.0775053
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.90178
+AK8 wtbtagError0.107071
+AK8 wtbtag: 0.969317
+Begin processing the 6th record. Run 1, Event 6, LumiSection 16 at 14-Sep-2015 16:07:55.976 CDT
+AK8 SF 0.965413
+AK8 SFup 0.991932
+AK8 SFerr 0.0530382
+AK8 pt 309.594
+AK8 eta 1.54828
+AK8 partonFlavor: 5
+AK8 eff: 0.206087
+AK8 csv: 0.167081
+AK8 SF 1.07105
+AK8 SFup 1.1842
+AK8 SFerr 0.113147
+AK8 pt 230.447
+AK8 eta 1.89664
+AK8 partonFlavor: 2
+AK8 eff: 0.0140251
+AK8 csv: 0.953513
+AK8 wtbtagError0.115111
+AK8 wtbtag: 1.08067
+Begin processing the 7th record. Run 1, Event 7, LumiSection 16 at 14-Sep-2015 16:07:56.189 CDT
+AK8 wtbtagError0
+AK8 wtbtag: 1
+Begin processing the 8th record. Run 1, Event 8, LumiSection 16 at 14-Sep-2015 16:07:56.403 CDT
+AK8 SF 0.963725
+AK8 SFup 0.995043
+AK8 SFerr 0.0626351
+AK8 pt 387.945
+AK8 eta 1.09879
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.980965
+AK8 SF 0.964354
+AK8 SFup 0.995671
+AK8 SFerr 0.0626351
+AK8 pt 371.705
+AK8 eta 0.529808
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.848286
+AK8 wtbtagError0.120765
+AK8 wtbtag: 0.929372
+Begin processing the 9th record. Run 1, Event 9, LumiSection 16 at 14-Sep-2015 16:07:56.617 CDT
+AK8 SF 1.38559
+AK8 SFup 1.56823
+AK8 SFerr 0.182639
+AK8 pt 504.829
+AK8 eta 0.559541
+AK8 partonFlavor: 3
+AK8 eff: 0.00568348
+AK8 csv: 0.359358
+AK8 SF 0.964115
+AK8 SFup 0.984584
+AK8 SFerr 0.0409375
+AK8 pt 241.283
+AK8 eta 0.579665
+AK8 partonFlavor: 5
+AK8 eff: 0.254263
+AK8 csv: 0.230005
+AK8 wtbtagError0.0139672
+AK8 wtbtag: 1.01
+Begin processing the 10th record. Run 1, Event 10, LumiSection 16 at 14-Sep-2015 16:07:56.830 CDT
+AK8 SF 0.962877
+AK8 SFup 1.04596
+AK8 SFerr 0.166167
+AK8 pt 405.587
+AK8 eta 0.198277
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.938703
+AK8 SF 0.965387
+AK8 SFup 1.01843
+AK8 SFerr 0.106076
+AK8 pt 319.372
+AK8 eta 0.75345
+AK8 partonFlavor: 4
+AK8 eff: 0.0512647
+AK8 csv: 0.837557
+AK8 SF 0.96475
+AK8 SFup 0.991269
+AK8 SFerr 0.0530381
+AK8 pt 260.824
+AK8 eta 0.18708
+AK8 partonFlavor: 5
+AK8 eff: 0.254263
+AK8 csv: 0.160525
+AK8 wtbtagError0.2489
+AK8 wtbtag: 0.940722
+Begin processing the 11th record. Run 1, Event 11, LumiSection 16 at 14-Sep-2015 16:07:57.039 CDT
+AK8 SF 0.956739
+AK8 SFup 0.998281
+AK8 SFerr 0.0830834
+AK8 pt 486.963
+AK8 eta 0.0451989
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.520188
+AK8 SF 0.96268
+AK8 SFup 1.00422
+AK8 SFerr 0.0830834
+AK8 pt 409.246
+AK8 eta 0.389391
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.250718
+AK8 wtbtagError0.0508349
+AK8 wtbtag: 1.0245
+Begin processing the 12th record. Run 1, Event 12, LumiSection 16 at 14-Sep-2015 16:07:57.250 CDT
+AK8 SF 0.962424
+AK8 SFup 0.984277
+AK8 SFerr 0.0437062
+AK8 pt 205.813
+AK8 eta 1.14962
+AK8 partonFlavor: 5
+AK8 eff: 0.257757
+AK8 csv: 0.946847
+AK8 wtbtagError0.0437062
+AK8 wtbtag: 0.962424
+Begin processing the 13th record. Run 1, Event 13, LumiSection 16 at 14-Sep-2015 16:07:57.456 CDT
+AK8 wtbtagError0
+AK8 wtbtag: 1
+Begin processing the 14th record. Run 1, Event 14, LumiSection 16 at 14-Sep-2015 16:07:57.661 CDT
+AK8 SF 0.958903
+AK8 SFup 1.00044
+AK8 SFerr 0.0830834
+AK8 pt 463.284
+AK8 eta 0.559846
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.628664
+AK8 SF 0.96311
+AK8 SFup 1.00465
+AK8 SFerr 0.0830835
+AK8 pt 401.083
+AK8 eta 1.95383
+AK8 partonFlavor: 5
+AK8 eff: 0.206087
+AK8 csv: 0.997881
+AK8 wtbtagError0.0599303
+AK8 wtbtag: 0.975073
+Begin processing the 15th record. Run 1, Event 15, LumiSection 16 at 14-Sep-2015 16:07:57.866 CDT
+AK8 SF 0.964892
+AK8 SFup 0.99621
+AK8 SFerr 0.0626351
+AK8 pt 353.201
+AK8 eta 0.304365
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 1
+AK8 SF 0.965315
+AK8 SFup 1.02795
+AK8 SFerr 0.12527
+AK8 pt 328.625
+AK8 eta 0.0962698
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.389616
+AK8 wtbtagError0.0570111
+AK8 wtbtag: 0.966478
+Begin processing the 16th record. Run 1, Event 16, LumiSection 16 at 14-Sep-2015 16:07:58.073 CDT
+AK8 wtbtagError0
+AK8 wtbtag: 1
+Begin processing the 17th record. Run 1, Event 17, LumiSection 16 at 14-Sep-2015 16:07:58.278 CDT
+AK8 wtbtagError0
+AK8 wtbtag: 1
+Begin processing the 18th record. Run 1, Event 18, LumiSection 16 at 14-Sep-2015 16:07:58.482 CDT
+AK8 SF 0.964741
+AK8 SFup 0.991261
+AK8 SFerr 0.0530382
+AK8 pt 260.524
+AK8 eta 1.75875
+AK8 partonFlavor: 5
+AK8 eff: 0.212046
+AK8 csv: 0.704864
+AK8 wtbtagError0.0142731
+AK8 wtbtag: 1.00949
+Begin processing the 19th record. Run 1, Event 19, LumiSection 16 at 14-Sep-2015 16:07:58.687 CDT
+AK8 SF 0.965391
+AK8 SFup 0.99191
+AK8 SFerr 0.0530382
+AK8 pt 300.941
+AK8 eta 1.54161
+AK8 partonFlavor: 5
+AK8 eff: 0.206087
+AK8 csv: 0.597736
+AK8 SF 0.965242
+AK8 SFup 1.01828
+AK8 SFerr 0.106076
+AK8 pt 284.924
+AK8 eta 0.0099834
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.821971
+AK8 wtbtagError0.0937401
+AK8 wtbtag: 0.973913
+Begin processing the 20th record. Run 1, Event 20, LumiSection 16 at 14-Sep-2015 16:07:58.892 CDT
+AK8 SF 0.96426
+AK8 SFup 1.0052
+AK8 SFerr 0.0818752
+AK8 pt 245.224
+AK8 eta 0.492514
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.151752
+AK8 wtbtagError0.00387924
+AK8 wtbtag: 1.00169
+Begin processing the 21st record. Run 1, Event 21, LumiSection 16 at 14-Sep-2015 16:07:59.104 CDT
+AK8 SF 0.964967
+AK8 SFup 1.01801
+AK8 SFerr 0.106076
+AK8 pt 269.644
+AK8 eta 0.0274003
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.373213
+AK8 SF 0.962346
+AK8 SFup 0.984199
+AK8 SFerr 0.0437063
+AK8 pt 204.461
+AK8 eta 0.502979
+AK8 partonFlavor: 5
+AK8 eff: 0.254263
+AK8 csv: 0.999608
+AK8 wtbtagError0.0389422
+AK8 wtbtag: 0.963943
+Begin processing the 22nd record. Run 1, Event 22, LumiSection 16 at 14-Sep-2015 16:07:59.318 CDT
+AK8 SF 1.42195
+AK8 SFup 1.63405
+AK8 SFerr 0.212105
+AK8 pt 343.821
+AK8 eta 0.340588
+AK8 partonFlavor: 2
+AK8 eff: 0.00568348
+AK8 csv: 0.615723
+AK8 SF 0.964911
+AK8 SFup 0.991431
+AK8 SFerr 0.0530382
+AK8 pt 267.223
+AK8 eta 0.572404
+AK8 partonFlavor: 5
+AK8 eff: 0.254263
+AK8 csv: 0.571114
+AK8 wtbtagError0.0180818
+AK8 wtbtag: 1.00952
+Begin processing the 23rd record. Run 1, Event 23, LumiSection 16 at 14-Sep-2015 16:07:59.531 CDT
+AK8 SF 1.18931
+AK8 SFup 1.31506
+AK8 SFerr 0.125742
+AK8 pt 540.688
+AK8 eta 1.17518
+AK8 partonFlavor: 21
+AK8 eff: 0.00681528
+AK8 csv: 0.527958
+AK8 SF 0.965393
+AK8 SFup 0.991912
+AK8 SFerr 0.0530382
+AK8 pt 318.18
+AK8 eta 0.970585
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.99616
+AK8 SF 1.38886
+AK8 SFup 1.60039
+AK8 SFerr 0.211526
+AK8 pt 226.821
+AK8 eta 0.457222
+AK8 partonFlavor: 21
+AK8 eff: 0.00568348
+AK8 csv: 0.17103
+AK8 wtbtagError0.0528893
+AK8 wtbtag: 0.961996
+Begin processing the 24th record. Run 1, Event 24, LumiSection 16 at 14-Sep-2015 16:07:59.739 CDT
+AK8 SF 0.964501
+AK8 SFup 0.995819
+AK8 SFerr 0.0626351
+AK8 pt 367.239
+AK8 eta 0.302314
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.898075
+AK8 SF 0.964441
+AK8 SFup 1.00538
+AK8 SFerr 0.0818753
+AK8 pt 250.511
+AK8 eta 0.22228
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.820943
+AK8 SF 0.962809
+AK8 SFup 0.983277
+AK8 SFerr 0.0409377
+AK8 pt 212.737
+AK8 eta 0.0103942
+AK8 partonFlavor: 5
+AK8 eff: 0.254263
+AK8 csv: 0.582954
+AK8 wtbtagError0.12816
+AK8 wtbtag: 0.942
+Begin processing the 25th record. Run 1, Event 25, LumiSection 16 at 14-Sep-2015 16:07:59.945 CDT
+AK8 wtbtagError0
+AK8 wtbtag: 1
+Begin processing the 26th record. Run 1, Event 26, LumiSection 16 at 14-Sep-2015 16:08:00.157 CDT
+AK8 SF 0.965068
+AK8 SFup 0.991587
+AK8 SFerr 0.0530382
+AK8 pt 274.504
+AK8 eta 0.065411
+AK8 partonFlavor: 5
+AK8 eff: 0.254263
+AK8 csv: 0.994529
+AK8 wtbtagError0.0530382
+AK8 wtbtag: 0.965068
+Begin processing the 27th record. Run 1, Event 27, LumiSection 16 at 14-Sep-2015 16:08:00.370 CDT
+AK8 SF 0.964336
+AK8 SFup 0.995654
+AK8 SFerr 0.0626349
+AK8 pt 372.213
+AK8 eta 0.0413674
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.226995
+AK8 SF 1.38779
+AK8 SFup 1.5991
+AK8 SFerr 0.211301
+AK8 pt 225.017
+AK8 eta 0.132685
+AK8 partonFlavor: 3
+AK8 eff: 0.00568348
+AK8 csv: 0.161353
+AK8 wtbtagError0.0189286
+AK8 wtbtag: 1.00854
+Begin processing the 28th record. Run 1, Event 28, LumiSection 16 at 14-Sep-2015 16:08:00.596 CDT
+AK8 SF 0.953719
+AK8 SFup 1.02776
+AK8 SFerr 0.148089
+AK8 pt 515.506
+AK8 eta 0.198322
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.983062
+AK8 SF 0.963075
+AK8 SFup 1.00462
+AK8 SFerr 0.0830835
+AK8 pt 401.779
+AK8 eta 0.236142
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.286479
+AK8 SF 1.41927
+AK8 SFup 1.62592
+AK8 SFerr 0.20665
+AK8 pt 387.161
+AK8 eta 0.442218
+AK8 partonFlavor: 21
+AK8 eff: 0.00568348
+AK8 csv: 0.276823
+AK8 wtbtagError0.125496
+AK8 wtbtag: 0.962052
+Begin processing the 29th record. Run 1, Event 29, LumiSection 16 at 14-Sep-2015 16:08:00.809 CDT
+AK8 SF 0.964045
+AK8 SFup 1.00498
+AK8 SFerr 0.0818752
+AK8 pt 239.451
+AK8 eta 0.915296
+AK8 partonFlavor: 4
+AK8 eff: 0.0512647
+AK8 csv: 0.939498
+AK8 SF 0.963633
+AK8 SFup 0.984102
+AK8 SFerr 0.0409377
+AK8 pt 229.554
+AK8 eta 0.655435
+AK8 partonFlavor: 5
+AK8 eff: 0.257757
+AK8 csv: 0.959821
+AK8 wtbtagError0.118363
+AK8 wtbtag: 0.928985
+Begin processing the 30th record. Run 1, Event 30, LumiSection 16 at 14-Sep-2015 16:08:01.023 CDT
+AK8 SF 0.963594
+AK8 SFup 0.984063
+AK8 SFerr 0.0409377
+AK8 pt 228.696
+AK8 eta 2.20201
+AK8 partonFlavor: 5
+AK8 eff: 0.212046
+AK8 csv: 0.972417
+AK8 SF 0.962338
+AK8 SFup 1.00604
+AK8 SFerr 0.0874124
+AK8 pt 204.338
+AK8 eta 1.63662
+AK8 partonFlavor: 4
+AK8 eff: 0.0494709
+AK8 csv: 0.266899
+AK8 wtbtagError0.0366341
+AK8 wtbtag: 0.965483
+Begin processing the 31st record. Run 1, Event 31, LumiSection 16 at 14-Sep-2015 16:08:01.237 CDT
+AK8 SF 0.959456
+AK8 SFup 1.001
+AK8 SFerr 0.0830835
+AK8 pt 456.617
+AK8 eta 0.599555
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.7181
+AK8 wtbtagError0.0251117
+AK8 wtbtag: 1.01225
+Begin processing the 32nd record. Run 1, Event 32, LumiSection 16 at 14-Sep-2015 16:08:01.450 CDT
+AK8 SF 0.917786
+AK8 SFup 0.977457
+AK8 SFerr 0.119343
+AK8 pt 724.937
+AK8 eta 0.583175
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.16242
+AK8 SF 0.926392
+AK8 SFup 0.986064
+AK8 SFerr 0.119343
+AK8 pt 685.56
+AK8 eta 1.1483
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.749888
+AK8 SF 1.19123
+AK8 SFup 1.31836
+AK8 SFerr 0.127134
+AK8 pt 528.627
+AK8 eta 1.44559
+AK8 partonFlavor: 1
+AK8 eff: 0.0140251
+AK8 csv: 0.177011
+AK8 wtbtagError0.0741934
+AK8 wtbtag: 1.04512
+Begin processing the 33rd record. Run 1, Event 33, LumiSection 16 at 14-Sep-2015 16:08:01.664 CDT
+AK8 SF 0.965346
+AK8 SFup 1.01838
+AK8 SFerr 0.106076
+AK8 pt 294.24
+AK8 eta 0.0877839
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.999546
+AK8 SF 0.964399
+AK8 SFup 0.984868
+AK8 SFerr 0.0409377
+AK8 pt 249.237
+AK8 eta 1.05271
+AK8 partonFlavor: 5
+AK8 eff: 0.257757
+AK8 csv: 0.9009
+AK8 wtbtagError0.141819
+AK8 wtbtag: 0.930978
+Begin processing the 34th record. Run 1, Event 34, LumiSection 16 at 14-Sep-2015 16:08:01.878 CDT
+AK8 SF 0.953578
+AK8 SFup 1.02762
+AK8 SFerr 0.148089
+AK8 pt 516.743
+AK8 eta 1.06403
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.952584
+AK8 SF 0.96314
+AK8 SFup 1.00468
+AK8 SFerr 0.0830834
+AK8 pt 400.499
+AK8 eta 1.16678
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.910537
+AK8 wtbtagError0.221857
+AK8 wtbtag: 0.918429
+Begin processing the 35th record. Run 1, Event 35, LumiSection 16 at 14-Sep-2015 16:08:02.092 CDT
+AK8 SF 0
+AK8 SFup 0
+AK8 SFerr 0
+AK8 pt 816.612
+AK8 eta 1.25624
+AK8 partonFlavor: 5
+AK8 eff: 0.206087
+AK8 csv: 0.183188
+AK8 SF 0.956927
+AK8 SFup 0.998469
+AK8 SFerr 0.0830834
+AK8 pt 485.034
+AK8 eta 0.880943
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.438795
+AK8 SF 1.03114
+AK8 SFup 1.13571
+AK8 SFerr 0.104572
+AK8 pt 340.332
+AK8 eta 1.77129
+AK8 partonFlavor: 21
+AK8 eff: 0.0140251
+AK8 csv: 0.770588
+AK8 SF 1.42077
+AK8 SFup 1.63452
+AK8 SFerr 0.213747
+AK8 pt 323.627
+AK8 eta 0.247687
+AK8 partonFlavor: 1
+AK8 eff: 0.00568348
+AK8 csv: 0.25148
+AK8 wtbtagError0.0255394
+AK8 wtbtag: 1.01032
+Begin processing the 36th record. Run 1, Event 36, LumiSection 16 at 14-Sep-2015 16:08:02.305 CDT
+AK8 SF 0.965258
+AK8 SFup 0.996575
+AK8 SFerr 0.0626351
+AK8 pt 333.478
+AK8 eta 0.552618
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.774387
+AK8 wtbtagError0.0189312
+AK8 wtbtag: 1.0105
+Begin processing the 37th record. Run 1, Event 37, LumiSection 16 at 14-Sep-2015 16:08:02.519 CDT
+AK8 SF 1.21088
+AK8 SFup 1.36206
+AK8 SFerr 0.151187
+AK8 pt 274.248
+AK8 eta 1.11918
+AK8 partonFlavor: 1
+AK8 eff: 0.00681528
+AK8 csv: 0.763998
+AK8 wtbtagError0.00103745
+AK8 wtbtag: 0.998553
+Begin processing the 38th record. Run 1, Event 38, LumiSection 16 at 14-Sep-2015 16:08:02.747 CDT
+AK8 SF 0.964552
+AK8 SFup 0.985021
+AK8 SFerr 0.0409375
+AK8 pt 254.017
+AK8 eta 0.445956
+AK8 partonFlavor: 5
+AK8 eff: 0.254263
+AK8 csv: 0.810665
+AK8 wtbtagError0.0409375
+AK8 wtbtag: 0.964552
+Begin processing the 39th record. Run 1, Event 39, LumiSection 16 at 14-Sep-2015 16:08:02.968 CDT
+AK8 SF 0.965359
+AK8 SFup 0.991878
+AK8 SFerr 0.0530382
+AK8 pt 295.904
+AK8 eta 0.863177
+AK8 partonFlavor: 5
+AK8 eff: 0.257757
+AK8 csv: 0.42325
+AK8 SF 0.964971
+AK8 SFup 0.99149
+AK8 SFerr 0.0530382
+AK8 pt 269.825
+AK8 eta 1.72022
+AK8 partonFlavor: 5
+AK8 eff: 0.212046
+AK8 csv: 0.246372
+AK8 SF 1.07055
+AK8 SFup 1.1836
+AK8 SFerr 0.113051
+AK8 pt 232.292
+AK8 eta 1.673
+AK8 partonFlavor: 2
+AK8 eff: 0.0140251
+AK8 csv: 0.66348
+AK8 wtbtagError0.0330446
+AK8 wtbtag: 1.02054
+Begin processing the 40th record. Run 1, Event 40, LumiSection 16 at 14-Sep-2015 16:08:03.173 CDT
+AK8 SF 1.21376
+AK8 SFup 1.3614
+AK8 SFerr 0.147644
+AK8 pt 340.823
+AK8 eta 1.18964
+AK8 partonFlavor: 3
+AK8 eff: 0.00681528
+AK8 csv: 0.648059
+AK8 SF 0.964894
+AK8 SFup 1.01793
+AK8 SFerr 0.106076
+AK8 pt 266.486
+AK8 eta 0.0824618
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.666295
+AK8 SF 1.39327
+AK8 SFup 1.60569
+AK8 SFerr 0.212419
+AK8 pt 234.671
+AK8 eta 0.411113
+AK8 partonFlavor: 21
+AK8 eff: 0.00568348
+AK8 csv: 0.198256
+AK8 wtbtagError0.00548012
+AK8 wtbtag: 0.997946
+Begin processing the 41st record. Run 1, Event 41, LumiSection 16 at 14-Sep-2015 16:08:03.379 CDT
+AK8 SF 0.94529
+AK8 SFup 1.01933
+AK8 SFerr 0.148089
+AK8 pt 579.641
+AK8 eta 0.535313
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.921933
+AK8 SF 0.961684
+AK8 SFup 1.00323
+AK8 SFerr 0.0830833
+AK8 pt 425.956
+AK8 eta 0.526933
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.939239
+AK8 SF 1.38195
+AK8 SFup 1.59196
+AK8 SFerr 0.210009
+AK8 pt 215.633
+AK8 eta 0.708975
+AK8 partonFlavor: 1
+AK8 eff: 0.00681528
+AK8 csv: 0.417313
+AK8 wtbtagError0.220378
+AK8 wtbtag: 0.906688
+Begin processing the 42nd record. Run 1, Event 42, LumiSection 16 at 14-Sep-2015 16:08:03.586 CDT
+AK8 SF 1.41913
+AK8 SFup 1.63359
+AK8 SFerr 0.214457
+AK8 pt 310.766
+AK8 eta 0.151961
+AK8 partonFlavor: 3
+AK8 eff: 0.00568348
+AK8 csv: 0.187358
+AK8 SF 0.96488
+AK8 SFup 1.01792
+AK8 SFerr 0.106076
+AK8 pt 265.897
+AK8 eta 0.78559
+AK8 partonFlavor: 4
+AK8 eff: 0.0512647
+AK8 csv: 0.510655
+AK8 wtbtagError0.00584849
+AK8 wtbtag: 0.999497
+Begin processing the 43rd record. Run 1, Event 43, LumiSection 16 at 14-Sep-2015 16:08:03.791 CDT
+AK8 SF 0.962841
+AK8 SFup 1.00438
+AK8 SFerr 0.0830835
+AK8 pt 406.264
+AK8 eta 0.280229
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.261165
+AK8 SF 0.965412
+AK8 SFup 1.01845
+AK8 SFerr 0.106076
+AK8 pt 310.834
+AK8 eta 0.259518
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.206911
+AK8 SF 0.965352
+AK8 SFup 0.991871
+AK8 SFerr 0.0530381
+AK8 pt 295.005
+AK8 eta 0.606723
+AK8 partonFlavor: 5
+AK8 eff: 0.257757
+AK8 csv: 0.973905
+AK8 SF 1.21062
+AK8 SFup 1.36186
+AK8 SFerr 0.151243
+AK8 pt 272.055
+AK8 eta 1.08065
+AK8 partonFlavor: 3
+AK8 eff: 0.00681528
+AK8 csv: 0.272297
+AK8 wtbtagError0.0245197
+AK8 wtbtag: 0.976381
+Begin processing the 44th record. Run 1, Event 44, LumiSection 16 at 14-Sep-2015 16:08:03.997 CDT
+AK8 SF 0.964692
+AK8 SFup 0.99601
+AK8 SFerr 0.0626351
+AK8 pt 360.87
+AK8 eta 1.21093
+AK8 partonFlavor: 5
+AK8 eff: 0.206087
+AK8 csv: 0.991109
+AK8 SF 0.963595
+AK8 SFup 0.984064
+AK8 SFerr 0.0409375
+AK8 pt 228.702
+AK8 eta 0.0201888
+AK8 partonFlavor: 5
+AK8 eff: 0.254263
+AK8 csv: 0.830008
+AK8 SF 0.962175
+AK8 SFup 1.00588
+AK8 SFerr 0.0874125
+AK8 pt 201.566
+AK8 eta 0.221837
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.936678
+AK8 wtbtagError0.177326
+AK8 wtbtag: 0.894411
+Begin processing the 45th record. Run 1, Event 45, LumiSection 16 at 14-Sep-2015 16:08:04.203 CDT
+AK8 SF 0.964129
+AK8 SFup 0.995446
+AK8 SFerr 0.0626349
+AK8 pt 377.965
+AK8 eta 0.0634074
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.95435
+AK8 SF 0.965396
+AK8 SFup 0.991915
+AK8 SFerr 0.0530382
+AK8 pt 302.093
+AK8 eta 0.776952
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 1
+AK8 SF 1.07321
+AK8 SFup 1.18676
+AK8 SFerr 0.11355
+AK8 pt 222.144
+AK8 eta 2.23793
+AK8 partonFlavor: 2
+AK8 eff: 0.0140251
+AK8 csv: 0.383592
+AK8 wtbtagError0.111497
+AK8 wtbtag: 0.929797
+Begin processing the 46th record. Run 1, Event 46, LumiSection 16 at 14-Sep-2015 16:08:04.409 CDT
+AK8 SF 0.965373
+AK8 SFup 0.996691
+AK8 SFerr 0.0626349
+AK8 pt 321.75
+AK8 eta 0.807504
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.942397
+AK8 wtbtagError0.0626349
+AK8 wtbtag: 0.965373
+Begin processing the 47th record. Run 1, Event 47, LumiSection 16 at 14-Sep-2015 16:08:04.614 CDT
+AK8 SF 0.958181
+AK8 SFup 1.04126
+AK8 SFerr 0.166167
+AK8 pt 471.573
+AK8 eta 0.240979
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.727197
+AK8 SF 1.40609
+AK8 SFup 1.60184
+AK8 SFerr 0.195755
+AK8 pt 446.718
+AK8 eta 0.443153
+AK8 partonFlavor: 21
+AK8 eff: 0.00568348
+AK8 csv: 0.808642
+AK8 wtbtagError0.196455
+AK8 wtbtag: 1.40887
+Begin processing the 48th record. Run 1, Event 48, LumiSection 16 at 14-Sep-2015 16:08:04.820 CDT
+AK8 SF 0.965355
+AK8 SFup 0.996673
+AK8 SFerr 0.0626349
+AK8 pt 324.216
+AK8 eta 0.71469
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.874401
+AK8 wtbtagError0.0626349
+AK8 wtbtag: 0.965355
+Begin processing the 49th record. Run 1, Event 49, LumiSection 16 at 14-Sep-2015 16:08:05.026 CDT
+AK8 SF 0.964799
+AK8 SFup 1.01784
+AK8 SFerr 0.106076
+AK8 pt 262.7
+AK8 eta 0.186225
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.772177
+AK8 wtbtagError0.00502589
+AK8 wtbtag: 1.00167
+Begin processing the 50th record. Run 1, Event 50, LumiSection 16 at 14-Sep-2015 16:08:05.232 CDT
+AK8 SF 0.965412
+AK8 SFup 0.991931
+AK8 SFerr 0.0530381
+AK8 pt 308.789
+AK8 eta 1.286
+AK8 partonFlavor: 5
+AK8 eff: 0.206087
+AK8 csv: 0.990728
+AK8 SF 0.965089
+AK8 SFup 0.991608
+AK8 SFerr 0.0530381
+AK8 pt 275.605
+AK8 eta 0.352528
+AK8 partonFlavor: 5
+AK8 eff: 0.254263
+AK8 csv: 0.104238
+AK8 wtbtagError0.0362112
+AK8 wtbtag: 0.976904
+Begin processing the 51st record. Run 1, Event 51, LumiSection 16 at 14-Sep-2015 16:08:05.438 CDT
+AK8 SF 1.40871
+AK8 SFup 1.62347
+AK8 SFerr 0.214764
+AK8 pt 269.373
+AK8 eta 0.466492
+AK8 partonFlavor: 2
+AK8 eff: 0.00568348
+AK8 csv: 0.645223
+AK8 SF 0.964674
+AK8 SFup 1.00561
+AK8 SFerr 0.0818752
+AK8 pt 258.11
+AK8 eta 0.0417445
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.862605
+AK8 wtbtagError0.0816925
+AK8 wtbtag: 0.96242
+Begin processing the 52nd record. Run 1, Event 52, LumiSection 16 at 14-Sep-2015 16:08:05.644 CDT
+AK8 SF 1.4157
+AK8 SFup 1.61886
+AK8 SFerr 0.20316
+AK8 pt 408.365
+AK8 eta 0.160631
+AK8 partonFlavor: 3
+AK8 eff: 0.00568348
+AK8 csv: 0.469513
+AK8 SF 0.965215
+AK8 SFup 0.991734
+AK8 SFerr 0.0530382
+AK8 pt 283.034
+AK8 eta 1.54394
+AK8 partonFlavor: 5
+AK8 eff: 0.212046
+AK8 csv: 0.98158
+AK8 wtbtagError0.0529241
+AK8 wtbtag: 0.962921
+Begin processing the 53rd record. Run 1, Event 53, LumiSection 16 at 14-Sep-2015 16:08:05.848 CDT
+AK8 SF 1.40487
+AK8 SFup 1.61921
+AK8 SFerr 0.214341
+AK8 pt 259.251
+AK8 eta 0.0584755
+AK8 partonFlavor: 21
+AK8 eff: 0.00568348
+AK8 csv: 0.751049
+AK8 wtbtagError0.00122516
+AK8 wtbtag: 0.997686
+Begin processing the 54th record. Run 1, Event 54, LumiSection 16 at 14-Sep-2015 16:08:06.055 CDT
+AK8 SF 1.41819
+AK8 SFup 1.62369
+AK8 SFerr 0.205496
+AK8 pt 394.507
+AK8 eta 0.448056
+AK8 partonFlavor: 2
+AK8 eff: 0.00568348
+AK8 csv: 0.244545
+AK8 SF 1.20245
+AK8 SFup 1.35379
+AK8 SFerr 0.151345
+AK8 pt 226.11
+AK8 eta 1.03238
+AK8 partonFlavor: 2
+AK8 eff: 0.00681528
+AK8 csv: 0.242922
+AK8 wtbtagError0.00220903
+AK8 wtbtag: 0.996224
+Begin processing the 55th record. Run 1, Event 55, LumiSection 16 at 14-Sep-2015 16:08:06.261 CDT
+AK8 SF 0.960565
+AK8 SFup 1.00211
+AK8 SFerr 0.0830834
+AK8 pt 442.245
+AK8 eta 0.118297
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.993474
+AK8 SF 1.41358
+AK8 SFup 1.61496
+AK8 SFerr 0.201372
+AK8 pt 418.266
+AK8 eta 0.494048
+AK8 partonFlavor: 21
+AK8 eff: 0.00568348
+AK8 csv: 0.100642
+AK8 SF 1.21372
+AK8 SFup 1.36307
+AK8 SFerr 0.14935
+AK8 pt 315.993
+AK8 eta 1.00963
+AK8 partonFlavor: 21
+AK8 eff: 0.00681528
+AK8 csv: 0.460898
+AK8 wtbtagError0.0827917
+AK8 wtbtag: 0.956889
+Begin processing the 56th record. Run 1, Event 56, LumiSection 16 at 14-Sep-2015 16:08:06.467 CDT
+AK8 SF 1.17965
+AK8 SFup 1.29821
+AK8 SFerr 0.118566
+AK8 pt 610.968
+AK8 eta 1.42404
+AK8 partonFlavor: 1
+AK8 eff: 0.0140251
+AK8 csv: 0.0576724
+AK8 SF 1.3532
+AK8 SFup 1.51757
+AK8 SFerr 0.16437
+AK8 pt 579.819
+AK8 eta 0.0617513
+AK8 partonFlavor: 2
+AK8 eff: 0.00568348
+AK8 csv: 0.182658
+AK8 wtbtagError0.00262028
+AK8 wtbtag: 0.995431
+Begin processing the 57th record. Run 1, Event 57, LumiSection 16 at 14-Sep-2015 16:08:06.675 CDT
+AK8 SF 1.21367
+AK8 SFup 1.36102
+AK8 SFerr 0.147354
+AK8 pt 344.554
+AK8 eta 1.2416
+AK8 partonFlavor: 21
+AK8 eff: 0.0140251
+AK8 csv: 0.0315728
+AK8 SF 0.965269
+AK8 SFup 0.991788
+AK8 SFerr 0.0530382
+AK8 pt 287.018
+AK8 eta 0.16064
+AK8 partonFlavor: 5
+AK8 eff: 0.254263
+AK8 csv: 0.502029
+AK8 wtbtagError0.0181531
+AK8 wtbtag: 1.00877
+Begin processing the 58th record. Run 1, Event 58, LumiSection 16 at 14-Sep-2015 16:08:06.881 CDT
+AK8 SF 0.965367
+AK8 SFup 0.996684
+AK8 SFerr 0.0626351
+AK8 pt 322.709
+AK8 eta 0.458521
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.999391
+AK8 SF 1.05653
+AK8 SFup 1.16668
+AK8 SFerr 0.110152
+AK8 pt 276.781
+AK8 eta 2.31743
+AK8 partonFlavor: 2
+AK8 eff: 0.0140251
+AK8 csv: 0.682686
+AK8 SF 1.40093
+AK8 SFup 1.6147
+AK8 SFerr 0.213774
+AK8 pt 250.074
+AK8 eta 0.196663
+AK8 partonFlavor: 21
+AK8 eff: 0.00568348
+AK8 csv: 0.720031
+AK8 SF 0.964336
+AK8 SFup 1.00527
+AK8 SFerr 0.0818751
+AK8 pt 247.392
+AK8 eta 0.506043
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.462098
+AK8 SF 1.39778
+AK8 SFup 1.61103
+AK8 SFerr 0.213252
+AK8 pt 243.415
+AK8 eta 0.681217
+AK8 partonFlavor: 21
+AK8 eff: 0.00681528
+AK8 csv: 0.663278
+AK8 wtbtagError0.0587958
+AK8 wtbtag: 0.961375
+Begin processing the 59th record. Run 1, Event 59, LumiSection 16 at 14-Sep-2015 16:08:07.094 CDT
+AK8 SF 1.41941
+AK8 SFup 1.62622
+AK8 SFerr 0.206808
+AK8 pt 386.121
+AK8 eta 0.787974
+AK8 partonFlavor: 1
+AK8 eff: 0.00681528
+AK8 csv: 0.862525
+AK8 SF 0.965066
+AK8 SFup 0.996384
+AK8 SFerr 0.0626351
+AK8 pt 345.218
+AK8 eta 0.157782
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.998816
+AK8 SF 1.39446
+AK8 SFup 1.60711
+AK8 SFerr 0.212647
+AK8 pt 236.894
+AK8 eta 0.361896
+AK8 partonFlavor: 1
+AK8 eff: 0.00568348
+AK8 csv: 0.332998
+AK8 wtbtagError0.216477
+AK8 wtbtag: 1.36674
+Begin processing the 60th record. Run 1, Event 60, LumiSection 16 at 14-Sep-2015 16:08:07.306 CDT
+AK8 SF 0.961633
+AK8 SFup 1.00317
+AK8 SFerr 0.0830835
+AK8 pt 426.753
+AK8 eta 0.103748
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.920717
+AK8 SF 1.42177
+AK8 SFup 1.63442
+AK8 SFerr 0.212649
+AK8 pt 337.912
+AK8 eta 0.677036
+AK8 partonFlavor: 21
+AK8 eff: 0.00681528
+AK8 csv: 0.39126
+AK8 SF 1.38289
+AK8 SFup 1.59312
+AK8 SFerr 0.210224
+AK8 pt 217.095
+AK8 eta 0.0493109
+AK8 partonFlavor: 21
+AK8 eff: 0.00568348
+AK8 csv: 0.870757
+AK8 wtbtagError0.230169
+AK8 wtbtag: 1.32599
+Begin processing the 61st record. Run 1, Event 61, LumiSection 16 at 14-Sep-2015 16:08:07.512 CDT
+AK8 SF 0.964166
+AK8 SFup 0.984635
+AK8 SFerr 0.0409375
+AK8 pt 242.656
+AK8 eta 0.953495
+AK8 partonFlavor: 5
+AK8 eff: 0.257757
+AK8 csv: 0.999413
+AK8 SF 0.963508
+AK8 SFup 1.00445
+AK8 SFerr 0.0818751
+AK8 pt 226.779
+AK8 eta 0.293576
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.615295
+AK8 wtbtagError0.0372681
+AK8 wtbtag: 0.965834
+Begin processing the 62nd record. Run 1, Event 62, LumiSection 16 at 14-Sep-2015 16:08:07.718 CDT
+AK8 SF 0.965369
+AK8 SFup 0.991888
+AK8 SFerr 0.0530382
+AK8 pt 297.196
+AK8 eta 1.05525
+AK8 partonFlavor: 5
+AK8 eff: 0.257757
+AK8 csv: 0.473283
+AK8 SF 0.964644
+AK8 SFup 1.00558
+AK8 SFerr 0.0818751
+AK8 pt 257.067
+AK8 eta 0.663391
+AK8 partonFlavor: 4
+AK8 eff: 0.0512647
+AK8 csv: 0.288023
+AK8 SF 1.20294
+AK8 SFup 1.35433
+AK8 SFerr 0.151388
+AK8 pt 228.197
+AK8 eta 1.52193
+AK8 partonFlavor: 21
+AK8 eff: 0.0140251
+AK8 csv: 0.291835
+AK8 wtbtagError0.0229688
+AK8 wtbtag: 1.01103
+Begin processing the 63rd record. Run 1, Event 63, LumiSection 16 at 14-Sep-2015 16:08:07.923 CDT
+AK8 SF 0.964818
+AK8 SFup 1.02745
+AK8 SFerr 0.12527
+AK8 pt 356.178
+AK8 eta 0.929388
+AK8 partonFlavor: 4
+AK8 eff: 0.0512647
+AK8 csv: 0.475285
+AK8 wtbtagError0.00676894
+AK8 wtbtag: 1.0019
+Begin processing the 64th record. Run 1, Event 64, LumiSection 16 at 14-Sep-2015 16:08:08.136 CDT
+AK8 SF 1.21191
+AK8 SFup 1.3563
+AK8 SFerr 0.144393
+AK8 pt 378.115
+AK8 eta 1.49593
+AK8 partonFlavor: 2
+AK8 eff: 0.0140251
+AK8 csv: 0.626183
+AK8 SF 0.965392
+AK8 SFup 0.991912
+AK8 SFerr 0.0530382
+AK8 pt 318.36
+AK8 eta 1.57064
+AK8 partonFlavor: 5
+AK8 eff: 0.206087
+AK8 csv: 0.643435
+AK8 SF 0.965349
+AK8 SFup 1.01839
+AK8 SFerr 0.106076
+AK8 pt 294.655
+AK8 eta 0.926639
+AK8 partonFlavor: 4
+AK8 eff: 0.0512647
+AK8 csv: 0.223358
+AK8 wtbtagError0.0196281
+AK8 wtbtag: 1.00783
+Begin processing the 65th record. Run 1, Event 65, LumiSection 16 at 14-Sep-2015 16:08:08.370 CDT
+AK8 SF 0.964914
+AK8 SFup 0.991433
+AK8 SFerr 0.0530382
+AK8 pt 267.344
+AK8 eta 1.33402
+AK8 partonFlavor: 5
+AK8 eff: 0.212046
+AK8 csv: 0.999068
+AK8 SF 0.964912
+AK8 SFup 1.01795
+AK8 SFerr 0.106076
+AK8 pt 267.228
+AK8 eta 1.92435
+AK8 partonFlavor: 4
+AK8 eff: 0.0494709
+AK8 csv: 0.832931
+AK8 wtbtagError0.153532
+AK8 wtbtag: 0.931057
+Begin processing the 66th record. Run 1, Event 66, LumiSection 16 at 14-Sep-2015 16:08:08.575 CDT
+AK8 SF 0.94851
+AK8 SFup 1.02255
+AK8 SFerr 0.148089
+AK8 pt 557.111
+AK8 eta 0.314516
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.398459
+AK8 SF 0.955905
+AK8 SFup 0.997446
+AK8 SFerr 0.0830834
+AK8 pt 495.288
+AK8 eta 0.0509778
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.741043
+AK8 wtbtagError0.0708584
+AK8 wtbtag: 1.0291
+Begin processing the 67th record. Run 1, Event 67, LumiSection 16 at 14-Sep-2015 16:08:08.781 CDT
+AK8 SF 1.41252
+AK8 SFup 1.62753
+AK8 SFerr 0.215001
+AK8 pt 281.179
+AK8 eta 0.0967526
+AK8 partonFlavor: 1
+AK8 eff: 0.00568348
+AK8 csv: 0.129886
+AK8 SF 1.40438
+AK8 SFup 1.61865
+AK8 SFerr 0.214275
+AK8 pt 258.034
+AK8 eta 0.733856
+AK8 partonFlavor: 21
+AK8 eff: 0.00681528
+AK8 csv: 0.209799
+AK8 wtbtagError0.00269243
+AK8 wtbtag: 0.994874
+Begin processing the 68th record. Run 1, Event 68, LumiSection 16 at 14-Sep-2015 16:08:08.986 CDT
+AK8 SF 0.963004
+AK8 SFup 1.00455
+AK8 SFerr 0.0830833
+AK8 pt 403.164
+AK8 eta 0.4993
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.720185
+AK8 SF 0.965377
+AK8 SFup 0.991896
+AK8 SFerr 0.0530382
+AK8 pt 298.455
+AK8 eta 1.0359
+AK8 partonFlavor: 5
+AK8 eff: 0.257757
+AK8 csv: 0.999854
+AK8 wtbtagError0.0293891
+AK8 wtbtag: 0.976172
+Begin processing the 69th record. Run 1, Event 69, LumiSection 16 at 14-Sep-2015 16:08:09.191 CDT
+AK8 SF 1.21219
+AK8 SFup 1.36295
+AK8 SFerr 0.150758
+AK8 pt 287.517
+AK8 eta 1.35028
+AK8 partonFlavor: 2
+AK8 eff: 0.0140251
+AK8 csv: 0.65814
+AK8 wtbtagError0.00214446
+AK8 wtbtag: 0.996982
+Begin processing the 70th record. Run 1, Event 70, LumiSection 16 at 14-Sep-2015 16:08:09.397 CDT
+AK8 SF 0.965132
+AK8 SFup 0.996449
+AK8 SFerr 0.0626349
+AK8 pt 341.694
+AK8 eta 1.06823
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.89142
+AK8 wtbtagError0.0626349
+AK8 wtbtag: 0.965132
+Begin processing the 71st record. Run 1, Event 71, LumiSection 16 at 14-Sep-2015 16:08:09.602 CDT
+AK8 SF 0.963373
+AK8 SFup 1.02601
+AK8 SFerr 0.12527
+AK8 pt 395.711
+AK8 eta 0.63177
+AK8 partonFlavor: 4
+AK8 eff: 0.0512647
+AK8 csv: 0.188884
+AK8 SF 0.965319
+AK8 SFup 0.996636
+AK8 SFerr 0.0626349
+AK8 pt 328.224
+AK8 eta 1.36552
+AK8 partonFlavor: 5
+AK8 eff: 0.206087
+AK8 csv: 0.275059
+AK8 SF 0.962372
+AK8 SFup 0.984225
+AK8 SFerr 0.0437062
+AK8 pt 204.914
+AK8 eta 1.13202
+AK8 partonFlavor: 5
+AK8 eff: 0.257757
+AK8 csv: 0.971503
+AK8 wtbtagError0.0219358
+AK8 wtbtag: 0.972958
+Begin processing the 72nd record. Run 1, Event 72, LumiSection 16 at 14-Sep-2015 16:08:09.807 CDT
+AK8 SF 0.965317
+AK8 SFup 0.991836
+AK8 SFerr 0.0530381
+AK8 pt 291.179
+AK8 eta 0.00184585
+AK8 partonFlavor: 5
+AK8 eff: 0.254263
+AK8 csv: 0.980329
+AK8 SF 1.40846
+AK8 SFup 1.6232
+AK8 SFerr 0.214742
+AK8 pt 268.676
+AK8 eta 0.0362984
+AK8 partonFlavor: 2
+AK8 eff: 0.00568348
+AK8 csv: 0.338366
+AK8 wtbtagError0.0529276
+AK8 wtbtag: 0.963063
+Begin processing the 73rd record. Run 1, Event 73, LumiSection 16 at 14-Sep-2015 16:08:10.013 CDT
+AK8 SF 1.2031
+AK8 SFup 1.33921
+AK8 SFerr 0.136106
+AK8 pt 453.652
+AK8 eta 0.885929
+AK8 partonFlavor: 2
+AK8 eff: 0.00681528
+AK8 csv: 0.968692
+AK8 SF 0.963125
+AK8 SFup 1.00467
+AK8 SFerr 0.0830835
+AK8 pt 400.791
+AK8 eta 0.956001
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.976269
+AK8 wtbtagError0.16485
+AK8 wtbtag: 1.15874
+Begin processing the 74th record. Run 1, Event 74, LumiSection 16 at 14-Sep-2015 16:08:10.218 CDT
+AK8 SF 0.964616
+AK8 SFup 1.02725
+AK8 SFerr 0.12527
+AK8 pt 363.49
+AK8 eta 0.475304
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.545947
+AK8 SF 0.964747
+AK8 SFup 0.996064
+AK8 SFerr 0.0626349
+AK8 pt 358.902
+AK8 eta 0.440662
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.975291
+AK8 wtbtagError0.0570139
+AK8 wtbtag: 0.966364
+Begin processing the 75th record. Run 1, Event 75, LumiSection 16 at 14-Sep-2015 16:08:10.431 CDT
+AK8 SF 0.965296
+AK8 SFup 1.01833
+AK8 SFerr 0.106076
+AK8 pt 289.303
+AK8 eta 0.133444
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.968966
+AK8 wtbtagError0.106076
+AK8 wtbtag: 0.965296
+Begin processing the 76th record. Run 1, Event 76, LumiSection 16 at 14-Sep-2015 16:08:10.645 CDT
+AK8 SF 0.965388
+AK8 SFup 1.01843
+AK8 SFerr 0.106076
+AK8 pt 319.293
+AK8 eta 0.231967
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.905826
+AK8 wtbtagError0.106076
+AK8 wtbtag: 0.965388
+Begin processing the 77th record. Run 1, Event 77, LumiSection 16 at 14-Sep-2015 16:08:10.858 CDT
+AK8 SF 0.952049
+AK8 SFup 1.02609
+AK8 SFerr 0.148089
+AK8 pt 529.702
+AK8 eta 1.14185
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.970037
+AK8 SF 1.40317
+AK8 SFup 1.59691
+AK8 SFerr 0.193744
+AK8 pt 456.205
+AK8 eta 0.187405
+AK8 partonFlavor: 21
+AK8 eff: 0.00568348
+AK8 csv: 0.105897
+AK8 SF 0.964388
+AK8 SFup 0.995705
+AK8 SFerr 0.0626351
+AK8 pt 370.697
+AK8 eta 0.8719
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.401926
+AK8 SF 1.40321
+AK8 SFup 1.61732
+AK8 SFerr 0.214116
+AK8 pt 255.252
+AK8 eta 0.0340463
+AK8 partonFlavor: 2
+AK8 eff: 0.00568348
+AK8 csv: 0.31275
+AK8 wtbtagError0.130843
+AK8 wtbtag: 0.95801
+Begin processing the 78th record. Run 1, Event 78, LumiSection 16 at 14-Sep-2015 16:08:11.073 CDT
+AK8 wtbtagError0
+AK8 wtbtag: 1
+Begin processing the 79th record. Run 1, Event 79, LumiSection 16 at 14-Sep-2015 16:08:11.286 CDT
+AK8 SF 1.37178
+AK8 SFup 1.5464
+AK8 SFerr 0.174618
+AK8 pt 537.904
+AK8 eta 0.12348
+AK8 partonFlavor: 21
+AK8 eff: 0.00568348
+AK8 csv: 0.177873
+AK8 SF 0.965312
+AK8 SFup 1.02795
+AK8 SFerr 0.12527
+AK8 pt 328.898
+AK8 eta 1.22052
+AK8 partonFlavor: 4
+AK8 eff: 0.0494709
+AK8 csv: 0.772805
+AK8 wtbtagError0.0065823
+AK8 wtbtag: 0.999676
+Begin processing the 80th record. Run 1, Event 80, LumiSection 16 at 14-Sep-2015 16:08:11.499 CDT
+AK8 wtbtagError0
+AK8 wtbtag: 1
+Begin processing the 81st record. Run 1, Event 81, LumiSection 16 at 14-Sep-2015 16:08:11.713 CDT
+AK8 SF 0.965376
+AK8 SFup 0.996694
+AK8 SFerr 0.0626349
+AK8 pt 321.292
+AK8 eta 1.17608
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.94414
+AK8 SF 1.04589
+AK8 SFup 1.15372
+AK8 SFerr 0.107828
+AK8 pt 305.057
+AK8 eta 1.71769
+AK8 partonFlavor: 3
+AK8 eff: 0.0140251
+AK8 csv: 0.950084
+AK8 wtbtagError0.122993
+AK8 wtbtag: 1.00968
+Begin processing the 82nd record. Run 1, Event 82, LumiSection 16 at 14-Sep-2015 16:08:11.930 CDT
+AK8 SF 0.955973
+AK8 SFup 0.997515
+AK8 SFerr 0.0830834
+AK8 pt 494.616
+AK8 eta 0.735524
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.559413
+AK8 SF 0.963094
+AK8 SFup 1.00464
+AK8 SFerr 0.0830834
+AK8 pt 401.412
+AK8 eta 0.728069
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.645549
+AK8 SF 0.964503
+AK8 SFup 0.984972
+AK8 SFerr 0.0409377
+AK8 pt 252.442
+AK8 eta 0.114378
+AK8 partonFlavor: 5
+AK8 eff: 0.254263
+AK8 csv: 0.445514
+AK8 wtbtagError0.0664908
+AK8 wtbtag: 1.03736
+Begin processing the 83rd record. Run 1, Event 83, LumiSection 16 at 14-Sep-2015 16:08:12.143 CDT
+AK8 SF 0.965285
+AK8 SFup 1.01832
+AK8 SFerr 0.106076
+AK8 pt 288.335
+AK8 eta 0.400263
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.872085
+AK8 SF 0.964123
+AK8 SFup 1.00506
+AK8 SFerr 0.0818752
+AK8 pt 241.484
+AK8 eta 0.381051
+AK8 partonFlavor: 4
+AK8 eff: 0.0452366
+AK8 csv: 0.557645
+AK8 SF 1.39542
+AK8 SFup 1.60824
+AK8 SFerr 0.212826
+AK8 pt 238.728
+AK8 eta 0.114118
+AK8 partonFlavor: 3
+AK8 eff: 0.00568348
+AK8 csv: 0.0863049
+AK8 wtbtagError0.102287
+AK8 wtbtag: 0.964741
+Begin processing the 84th record. Run 1, Event 84, LumiSection 16 at 14-Sep-2015 16:08:12.357 CDT
+AK8 SF 1.20967
+AK8 SFup 1.36107
+AK8 SFerr 0.151399
+AK8 pt 264.681
+AK8 eta 1.44264
+AK8 partonFlavor: 21
+AK8 eff: 0.0140251
+AK8 csv: 0.25404
+AK8 wtbtagError0.00215358
+AK8 wtbtag: 0.997018
+Begin processing the 85th record. Run 1, Event 85, LumiSection 16 at 14-Sep-2015 16:08:12.573 CDT
+AK8 wtbtagError0
+AK8 wtbtag: 1
+Begin processing the 86th record. Run 1, Event 86, LumiSection 16 at 14-Sep-2015 16:08:12.786 CDT
+AK8 SF 0.965309
+AK8 SFup 0.996626
+AK8 SFerr 0.0626351
+AK8 pt 329.178
+AK8 eta 0.690075
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.326475
+AK8 SF 1.41516
+AK8 SFup 1.63016
+AK8 SFerr 0.214997
+AK8 pt 290.956
+AK8 eta 0.103283
+AK8 partonFlavor: 3
+AK8 eff: 0.00568348
+AK8 csv: 0.227176
+AK8 wtbtagError0.0191918
+AK8 wtbtag: 1.00823
+Begin processing the 87th record. Run 1, Event 87, LumiSection 16 at 14-Sep-2015 16:08:12.999 CDT
+AK8 SF 0.963966
+AK8 SFup 0.995283
+AK8 SFerr 0.0626351
+AK8 pt 382.159
+AK8 eta 0.481404
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.90162
+AK8 SF 1.38251
+AK8 SFup 1.59264
+AK8 SFerr 0.210136
+AK8 pt 216.496
+AK8 eta 0.137442
+AK8 partonFlavor: 21
+AK8 eff: 0.00568348
+AK8 csv: 0.445724
+AK8 wtbtagError0.0625088
+AK8 wtbtag: 0.961858
+Begin processing the 88th record. Run 1, Event 88, LumiSection 16 at 14-Sep-2015 16:08:13.212 CDT
+AK8 SF 1.41562
+AK8 SFup 1.6306
+AK8 SFerr 0.214975
+AK8 pt 292.848
+AK8 eta 0.0898717
+AK8 partonFlavor: 3
+AK8 eff: 0.00568348
+AK8 csv: 0.0963676
+AK8 SF 1.38364
+AK8 SFup 1.59403
+AK8 SFerr 0.210392
+AK8 pt 218.267
+AK8 eta 0.14133
+AK8 partonFlavor: 1
+AK8 eff: 0.00568348
+AK8 csv: 0.111997
+AK8 wtbtagError0.00242584
+AK8 wtbtag: 0.995437
+Begin processing the 89th record. Run 1, Event 89, LumiSection 16 at 14-Sep-2015 16:08:13.425 CDT
+AK8 SF 1.42198
+AK8 SFup 1.63354
+AK8 SFerr 0.211556
+AK8 pt 349.283
+AK8 eta 0.381781
+AK8 partonFlavor: 1
+AK8 eff: 0.00568348
+AK8 csv: 0.201982
+AK8 SF 0.965379
+AK8 SFup 0.996697
+AK8 SFerr 0.0626351
+AK8 pt 320.786
+AK8 eta 0.370741
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.9646
+AK8 wtbtagError0.0624949
+AK8 wtbtag: 0.963051
+Begin processing the 90th record. Run 1, Event 90, LumiSection 16 at 14-Sep-2015 16:08:13.638 CDT
+AK8 SF 0.963471
+AK8 SFup 0.983939
+AK8 SFerr 0.0409375
+AK8 pt 225.979
+AK8 eta 0.951024
+AK8 partonFlavor: 5
+AK8 eff: 0.257757
+AK8 csv: 0.499866
+AK8 wtbtagError0.0142163
+AK8 wtbtag: 1.01269
+Begin processing the 91st record. Run 1, Event 91, LumiSection 16 at 14-Sep-2015 16:08:13.858 CDT
+AK8 SF 1.40902
+AK8 SFup 1.60687
+AK8 SFerr 0.197856
+AK8 pt 436.462
+AK8 eta 0.662041
+AK8 partonFlavor: 3
+AK8 eff: 0.00681528
+AK8 csv: 0.431484
+AK8 SF 1.21088
+AK8 SFup 1.36206
+AK8 SFerr 0.151186
+AK8 pt 274.26
+AK8 eta 0.890712
+AK8 partonFlavor: 1
+AK8 eff: 0.00681528
+AK8 csv: 0.42078
+AK8 SF 1.20652
+AK8 SFup 1.35808
+AK8 SFerr 0.151561
+AK8 pt 245.228
+AK8 eta 1.45218
+AK8 partonFlavor: 3
+AK8 eff: 0.0140251
+AK8 csv: 0.531474
+AK8 wtbtagError0.00452998
+AK8 wtbtag: 0.992825
+Begin processing the 92nd record. Run 1, Event 92, LumiSection 16 at 14-Sep-2015 16:08:14.071 CDT
+AK8 SF 0.960799
+AK8 SFup 1.04388
+AK8 SFerr 0.166167
+AK8 pt 439.013
+AK8 eta 1.12523
+AK8 partonFlavor: 4
+AK8 eff: 0.0512647
+AK8 csv: 0.774909
+AK8 SF 1.4208
+AK8 SFup 1.63453
+AK8 SFerr 0.213729
+AK8 pt 323.908
+AK8 eta 0.505297
+AK8 partonFlavor: 21
+AK8 eff: 0.00568348
+AK8 csv: 0.933492
+AK8 SF 0.965015
+AK8 SFup 0.991534
+AK8 SFerr 0.0530382
+AK8 pt 271.872
+AK8 eta 0.0781885
+AK8 partonFlavor: 5
+AK8 eff: 0.254263
+AK8 csv: 0.346547
+AK8 wtbtagError0.220157
+AK8 wtbtag: 1.44079
+Begin processing the 93rd record. Run 1, Event 93, LumiSection 16 at 14-Sep-2015 16:08:14.284 CDT
+AK8 SF 0.965004
+AK8 SFup 1.02764
+AK8 SFerr 0.12527
+AK8 pt 348.247
+AK8 eta 1.67916
+AK8 partonFlavor: 4
+AK8 eff: 0.0494709
+AK8 csv: 0.457681
+AK8 SF 0.965204
+AK8 SFup 0.991723
+AK8 SFerr 0.0530381
+AK8 pt 282.352
+AK8 eta 0.718545
+AK8 partonFlavor: 5
+AK8 eff: 0.257757
+AK8 csv: 0.196142
+AK8 wtbtagError0.0250505
+AK8 wtbtag: 1.01393
+Begin processing the 94th record. Run 1, Event 94, LumiSection 16 at 14-Sep-2015 16:08:14.499 CDT
+AK8 SF 0.963386
+AK8 SFup 0.994704
+AK8 SFerr 0.0626351
+AK8 pt 395.431
+AK8 eta 2.31776
+AK8 partonFlavor: 5
+AK8 eff: 0.206087
+AK8 csv: 0.860959
+AK8 SF 0.964143
+AK8 SFup 0.995461
+AK8 SFerr 0.0626351
+AK8 pt 377.581
+AK8 eta 0.834737
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.865009
+AK8 wtbtagError0.120731
+AK8 wtbtag: 0.928842
+Begin processing the 95th record. Run 1, Event 95, LumiSection 16 at 14-Sep-2015 16:08:14.711 CDT
+AK8 SF 0.952507
+AK8 SFup 1.02655
+AK8 SFerr 0.148089
+AK8 pt 525.901
+AK8 eta 0.509811
+AK8 partonFlavor: 5
+AK8 eff: 0.232096
+AK8 csv: 0.758021
+AK8 SF 0.965224
+AK8 SFup 0.991743
+AK8 SFerr 0.0530382
+AK8 pt 283.703
+AK8 eta 0.635432
+AK8 partonFlavor: 5
+AK8 eff: 0.257757
+AK8 csv: 0.989766
+AK8 SF 1.40832
+AK8 SFup 1.62304
+AK8 SFerr 0.214728
+AK8 pt 268.27
+AK8 eta 0.405292
+AK8 partonFlavor: 2
+AK8 eff: 0.00568348
+AK8 csv: 0.362099
+AK8 wtbtagError0.01064
+AK8 wtbtag: 0.976794
+Begin processing the 96th record. Run 1, Event 96, LumiSection 16 at 14-Sep-2015 16:08:14.924 CDT
+AK8 SF 0.96506
+AK8 SFup 0.991579
+AK8 SFerr 0.0530382
+AK8 pt 274.091
+AK8 eta 0.281238
+AK8 partonFlavor: 5
+AK8 eff: 0.254263
+AK8 csv: 0.927057
+AK8 wtbtagError0.0530382
+AK8 wtbtag: 0.96506
+Begin processing the 97th record. Run 1, Event 97, LumiSection 16 at 14-Sep-2015 16:08:15.137 CDT
+AK8 wtbtagError0
+AK8 wtbtag: 1
+Begin processing the 98th record. Run 1, Event 98, LumiSection 16 at 14-Sep-2015 16:08:15.349 CDT
+AK8 wtbtagError0
+AK8 wtbtag: 1
+Begin processing the 99th record. Run 1, Event 99, LumiSection 16 at 14-Sep-2015 16:08:15.561 CDT
+AK8 SF 0.965139
+AK8 SFup 0.991658
+AK8 SFerr 0.0530382
+AK8 pt 278.318
+AK8 eta 0.615515
+AK8 partonFlavor: 5
+AK8 eff: 0.257757
+AK8 csv: 0.817434
+AK8 wtbtagError0.0530382
+AK8 wtbtag: 0.965139
+Begin processing the 100th record. Run 1, Event 100, LumiSection 16 at 14-Sep-2015 16:08:15.774 CDT
+AK8 SF 0.965399
+AK8 SFup 0.991918
+AK8 SFerr 0.0530382
+AK8 pt 302.665
+AK8 eta 0.876293
+AK8 partonFlavor: 5
+AK8 eff: 0.234592
+AK8 csv: 0.487627
+AK8 wtbtagError0.0162558
+AK8 wtbtag: 1.01061
+14-Sep-2015 16:08:15 CDT  Closed file file:///eos/uscms/store/user/morris17/Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1/RunIISpring15DR74_MiniAOD/150616_165451/0000/Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1_MiniAOD_Asympt25ns_132.root
+
+=============================================
+
+MessageLogger Summary
+
+ type     category        sev    module        subroutine        count    total
+ ---- -------------------- -- ---------------- ----------------  -----    -----
+    1 fileAction           -s file_close                             1        1
+    2 fileAction           -s file_open                              2        2
+
+ type    category    Examples: run/evt        run/evt          run/evt
+ ---- -------------------- ---------------- ---------------- ----------------
+    1 fileAction           PostEndRun                        
+    2 fileAction           pre-events       pre-events       
+
+Severity    # Occurrences   Total Occurrences
+--------    -------------   -----------------
+System                  3                   3
