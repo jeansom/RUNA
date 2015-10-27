@@ -101,7 +101,7 @@ MAIN_WORKDIR/ (Main working directory)
 
 The dataset list file contains the following entries
 
-# Dataset_name                                                                                                                                                                                  Unit(lumi:1,event:0)   Total_units   Number_of_jobs   Run_selection   Lumi_mask   Scheduler   Use_server             DBS_instance   Publication_name   PyCfg_parameters (optional)
+\# Dataset_name                                                                                                                                                                                  Unit(lumi:1,event:0)   Total_units   Number_of_jobs   Run_selection   Lumi_mask   Scheduler   Use_server             DBS_instance   Publication_name   PyCfg_parameters (optional)
 /BprimeBprimeToBHBHinc_M-600_TuneZ2star_8TeV-madgraph/cjenkins-BprimeBprimeToBHBHinc_M600_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2-fe5dcf8cf2a24180bf030f68a7d97dda/USER                      0            -1                1               -           -      condor            0   cms_dbs_ph_analysis_02                  -   wantSummary=True
 /BprimeBprimeToBHBHinc_M-800_TuneZ2star_8TeV-madgraph/cjenkins-BprimeBprimeToBHBHinc_M800_TuneZ2star_8TeVmadgraphSum12_DR53X_PU_S10_START53_V7A_TLBSMv2-fe5dcf8cf2a24180bf030f68a7d97dda/USER                      0            -1                1               -           -      condor            0   cms_dbs_ph_analysis_02                  -   wantSummary=True
 
