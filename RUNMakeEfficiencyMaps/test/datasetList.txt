@@ -1,0 +1,3 @@
+# Signal
+# Dataset_name                                                                                                                                                                                                  Unit(lumi:1,event:0)   Total_units   Number_of_jobs   Run_selection   Lumi_mask   Scheduler   Use_server             DBS_instance   Publication_name   PyCfg_parameters (optional)
+/Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1/mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d/USER                        0            12                -               -           -      condor            0   phys03                  -   wantSummary=True
