@@ -98,6 +98,13 @@ options.register('DEta',
 		VarParsing.varType.float,
 		"DEta cut"
 		)
+options.register('namePUFile', 
+		'PileupData2015D_JSON_10-23-2015.root',
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.string,
+		"namePUFile"
+		)
+
 
 
 options.parseArguments()
@@ -107,6 +114,8 @@ process = cms.Process("Demo")
 process.load("FWCore.MessageService.MessageLogger_cfi")
 
 NAME = options.PROC
+if 'Run2015' in NAME: isData=True
+else: isData=False
 
 if options.local:
 	process.load(NAME+'_RUNA_cfi')
@@ -114,7 +123,10 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
-		'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns__v01/150703_162457/0000/RUNtuples_10.root'
+		'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v08/151023_030853/0000/RUNtuple_102.root'
+		#'/store/user/algomez/QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v08/151024_054631/0000/RUNtuple_101.root',
+		#'/store/user/algomez/RPVSt200tobj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v08/151023_030910/0000/RUNtuple_102.root',
+		#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v08/151023_031004/0000/RUNtuple_100.root',
 	#	#'file:../../RUNtuples/test/RUNAEDMNtuple.root'
 	    )
 	)
@@ -141,6 +153,8 @@ process.AnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		cutTau21value 		= cms.double( options.Tau21 ),
 		bjSample		= cms.bool( bjsample ),
 		mkTree			= cms.bool( False  ),
+		dataPUFile		= cms.string( '../data/'+options.namePUFile  ),
+		isData			= cms.bool( isData ),
 )
 
 process.test = process.AnalysisPlots.clone( mkTree = cms.bool( True ) )

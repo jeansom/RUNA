@@ -402,7 +402,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	// PU Reweight
 	if ( isData ) puWeight = 1;
 	else puWeight = PUWeight_.getPUWeight( *trueNInt, *bunchCross );
-	histos1D_[ "PUWeight" ]->Fill( puWeight);
+	histos1D_[ "PUWeight" ]->Fill( puWeight );
 	
 	///////// AK4 jets to model PFHT trigger
 	//bool cutAK4HT = 0;
@@ -499,6 +499,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	//sort(JETS.begin(), JETS.end(), [](const JETtype &p1, const JETtype &p2) { return p1.mass > p2.mass; }); 
 	//sort(JETS.begin(), JETS.end(), [](const JETtype &p1, const JETtype &p2) { TLorentzVector tmpP1, tmpP2; tmpP1 = p1.p4; tmpP2 = p2.p4;  return tmpP1.M() > tmpP2.M(); }); 
 	histos1D_[ "jetNum" ]->Fill( numJets, puWeight );
+	histos1D_[ "NPV_NOPUWeight" ]->Fill( numPV );
 	histos1D_[ "NPV" ]->Fill( numPV, puWeight );
 	if ( HT > 0 ) histos1D_[ "HT" ]->Fill( HT, puWeight );
 	if ( rawHT > 0 ) histos1D_[ "rawHT" ]->Fill( rawHT, puWeight );
@@ -1134,7 +1135,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 void RUNBoostedAnalysis::beginJob() {
 
 	// Calculate PUWeight
-	if ( isData ) PUWeight_.generateWeights( dataPUFile );
+	if ( !isData ) PUWeight_.generateWeights( dataPUFile );
 
 	histos1D_[ "rawJetPt" ] = fs_->make< TH1D >( "rawJetPt", "rawJetPt", 100, 0., 1000. );
 	histos1D_[ "rawJetPt" ]->Sumw2();
@@ -1155,6 +1156,8 @@ void RUNBoostedAnalysis::beginJob() {
 	histos1D_[ "leadMass" ]->Sumw2();
 	histos1D_[ "HT" ] = fs_->make< TH1D >( "HT", "HT", 500, 0., 5000. );
 	histos1D_[ "HT" ]->Sumw2();
+	histos1D_[ "NPV_NOPUWeight" ] = fs_->make< TH1D >( "NPV_NOPUWeight", "NPV_NOPUWeight", 80, 0., 80. );
+	histos1D_[ "NPV_NOPUWeight" ]->Sumw2();
 	histos1D_[ "NPV" ] = fs_->make< TH1D >( "NPV", "NPV", 80, 0., 80. );
 	histos1D_[ "NPV" ]->Sumw2();
 	histos1D_[ "PUWeight" ] = fs_->make< TH1D >( "PUWeight", "PUWeight", 50, 0., 5. );

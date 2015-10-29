@@ -60,7 +60,7 @@ static bool loosejetID( double jetE, double jecFactor, double neutralHadronEnerg
 	double chf = chargedHadronEnergy * jec;
 	//double muf = muonEnergy * jec;
 	double cEMf = chargedEmEnergy * jec;
-	int numConst = chargedHadronMultiplicity + neutralHadronMultiplicity ;  //// REMEMBER TO INCLUDE # of constituents
+	int numConst = chargedHadronMultiplicity + neutralHadronMultiplicity ; 
 	double chm = chargedMultiplicity * jec;
 
 	//bool idL = ( (nhf<0.99) && (nEMf<0.99) && (muf<0.8) && (cEMf<0.9) );  /// 8TeV recommendation

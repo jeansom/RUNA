@@ -1,5 +1,4 @@
 import FWCore.ParameterSet.Config as cms
-
 from FWCore.ParameterSet.VarParsing import VarParsing
 
 ###############################
@@ -8,18 +7,13 @@ from FWCore.ParameterSet.VarParsing import VarParsing
 
 options = VarParsing ('python')
 
-#options.register('NAME', False,
-#		    VarParsing.multiplicity.singleton,
-#		        VarParsing.varType.bool,
-#			    "Run this on real data"
-#			    )
+### General Options
 options.register('PROC', 
 		'RPVSt350tojj_pythia8_13TeV_PU20bx25',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
 		"name"
 		)
-
 options.register('local', 
 		True,
 		VarParsing.multiplicity.singleton,
@@ -32,6 +26,14 @@ options.register('debug',
 		VarParsing.varType.bool,
 		"Run just pruned"
 		)
+options.register('version', 
+		'Both',
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.string,
+		"Version of the analysis to run. (Both, Resolved, Boosted)"
+		)
+
+### Resolved Analysis Options
 options.register('HT', 
 		800.0,
 		VarParsing.multiplicity.singleton,
@@ -63,6 +65,7 @@ options.register('JetPt',
 		"JetPt cut"
 		)
 
+### Boosted Analysis Options
 options.register('boostedJetPt', 
 		150.0,
 		VarParsing.multiplicity.singleton,
@@ -120,51 +123,41 @@ options.register('btag',
 		VarParsing.varType.float,
 		"Btag cut"
 		)
-
+options.register('namePUFile', 
+		'PileupData2015D_JSON_10-23-2015.root',
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.string,
+		"namePUFile"
+		)
 
 
 options.parseArguments()
 
-process = cms.Process("Demo")
-
+process = cms.Process("RUNAnalysis")
 process.load("FWCore.MessageService.MessageLogger_cfi")
-
 NAME = options.PROC
+if 'Run2015' in NAME: isData=True
+else: isData=False
 
 if options.local:
 	process.load(NAME+'_RUNA_cfi')
 	#process.load('RPVSt100tojj_13TeV_pythia8_RUNtuples_cfi')
 else:
 	process.source = cms.Source("PoolSource",
-	   fileNames = cms.untracked.vstring(
-		   '/store/user/decosa/ttDM/CMSSW_7_4_X/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/QCD_HT1000to1500/150927_053249/0000/B2GEDMNtuple_101.root',
-		   '/store/user/algomez/QCD_Pt_1400to1800_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74_RUNA_Asympt25ns_v06p1/151001_090133/0000/RUNtuples_100.root',
-		   '/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_1.root',
-		   '/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_10.root',
-		   '/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_100.root',
-		   '/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_101.root',
-		   '/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_103.root',
-		   '/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_104.root',
-		   '/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_105.root',
-		   '/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_106.root',
-		   '/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_107.root',
-		   '/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_108.root',
-		#'file:RUNtuple_1.root'
+			fileNames = cms.untracked.vstring(
+				'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v08/151023_030853/0000/RUNtuple_101.root',
 	    )
 	)
 
-#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32 (options.maxEvents) )
+process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNFullAnalysis_'+NAME+'.root' ) )
 
 if 'bj' in NAME: bjsample = True
 else: bjsample = False
 
-if 'JetHT' in NAME:
-	HTtrigger = 'HLT_PFHT800'
-else: 
-	HTtrigger = 'HLT_PFHT900'
+if 'JetHT' in NAME: HTtrigger = 'HLT_PFHT800'
+else: HTtrigger = 'HLT_PFHT900'
 
-process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNFullAnalysis_'+NAME+'.root' ) )
 
 process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 		cutHT	 		= cms.double( options.HT ),
@@ -173,7 +166,9 @@ process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 		cutEtaBand 		= cms.double( options.EtaBand ),
 		cutJetPt 		= cms.double( options.JetPt ),
 		bjSample		= cms.bool( bjsample ),
-		triggerPass 		= cms.vstring( [ HTtrigger, 'HLT_PFHT750_4JetPt' ] ) 
+		triggerPass 		= cms.vstring( [ HTtrigger, 'HLT_PFHT750_4JetPt' ] ),
+		dataPUFile		= cms.string( '../data/'+options.namePUFile  ),
+		isData			= cms.bool( isData ),
 )
 process.RUNATree = process.ResolvedAnalysisPlots.clone( mkTree = cms.bool( True ) )
 
@@ -190,8 +185,9 @@ process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		cutBtagvalue 		= cms.double( options.btag ),
 		bjSample		= cms.bool( bjsample ),
 		mkTree			= cms.bool( False  ),
-		triggerPass 		= cms.vstring( [ 'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', HTtrigger ] )
-
+		triggerPass 		= cms.vstring( [ 'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', HTtrigger ] ),
+		dataPUFile		= cms.string( '../data/'+options.namePUFile  ),
+		isData			= cms.bool( isData ),
 )
 
 process.BoostedAnalysisPlotsTrimmed = process.BoostedAnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8trimmedMass') )
@@ -239,15 +235,15 @@ if options.debug:
 else:
 
 	process.p = cms.Path( process.ResolvedAnalysisPlots
-		#* process.RUNATree
-		#* process.BoostedAnalysisPlots
-		#* process.BoostedAnalysisPlotsTrimmed
+		* process.RUNATree
+		* process.BoostedAnalysisPlots
+		* process.BoostedAnalysisPlotsTrimmed
 		* process.BoostedAnalysisPlotsPruned
-		#* process.BoostedAnalysisPlotsSoftDrop
+		* process.BoostedAnalysisPlotsSoftDrop
 		#* process.BoostedAnalysisPlotsPuppi
-		#* process.BoostedAnalysisPlotsFiltered
-		#* process.RUNATreeSoftDrop
-		#* process.RUNATreePruned
+		* process.BoostedAnalysisPlotsFiltered
+		* process.RUNATreeSoftDrop
+		* process.RUNATreePruned
 		)
 
 
