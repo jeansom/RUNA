@@ -83,6 +83,7 @@ class RUNAnalysis : public EDAnalyzer {
       bool mkTree;
       bool isData;
       string dataPUFile;
+      double scale;
       double cutMassRes;
       double cutDelta;
       double cutEtaBand;
@@ -97,7 +98,7 @@ class RUNAnalysis : public EDAnalyzer {
       ULong64_t event = 0;
       int numJets = 0, numPV = 0;
       unsigned int lumi = 0, run=0;
-      float HT = 0, mass1 = -999, mass2 = -999, avgMass = -999, delta1 = -999, delta2 = -999, massRes = -999, eta1 = -999, eta2 = -999, deltaEta = -999, puWeight = -999;
+      float HT = 0, mass1 = -999, mass2 = -999, avgMass = -999, delta1 = -999, delta2 = -999, massRes = -999, eta1 = -999, eta2 = -999, deltaEta = -999, puWeight = -999, lumiWeight = -999 ;
 
       EDGetTokenT<vector<float>> jetPt_;
       EDGetTokenT<vector<float>> jetEta_;
@@ -170,6 +171,7 @@ RUNAnalysis::RUNAnalysis(const ParameterSet& iConfig):
 	chargedMultiplicity_(consumes<vector<float>>(iConfig.getParameter<InputTag>("chargedMultiplicity"))),
 	muonEnergy_(consumes<vector<float>>(iConfig.getParameter<InputTag>("muonEnergy")))
 {
+	scale 		= iConfig.getParameter<double>("scale");
 	bjSample 	= iConfig.getParameter<bool>("bjSample");
 	mkTree 		= iConfig.getParameter<bool>("mkTree");
 	cutMassRes      = iConfig.getParameter<double>     ("cutMassRes");
@@ -286,8 +288,10 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 	if ( isData ) puWeight = 1;
 	else puWeight = PUWeight_.getPUWeight( *trueNInt, *bunchCross );
 	histos1D_[ "PUWeight" ]->Fill( puWeight );
+	lumiWeight = scale;
+	double totalWeight = puWeight * lumiWeight;
 	
-	cutmap["Processed"] += 1;
+	cutmap["Processed"] += totalWeight;
 
 	int numPV = *NPV;
 	//vector< JETtype > JETS;
@@ -352,7 +356,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 	if ( ORTriggers ) {
 		
-		cutmap["Trigger"] += 1;
+		cutmap["Trigger"] += totalWeight;
 		histos1D_[ "HT_cutTrigger" ]->Fill( HT , puWeight );
 		histos1D_[ "NPV_cutTrigger" ]->Fill( numPV, puWeight );
 		histos1D_[ "jetNum_cutTrigger" ]->Fill( numJets, puWeight );
@@ -369,7 +373,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 		lumi		= *Lumi;
 		if( numJets > 3 ) { 
 			
-			cutmap["4Jets"] += 1;
+			cutmap["4Jets"] += totalWeight;
 			histos1D_[ "HT_cut4Jets" ]->Fill( HT, puWeight );
 			histos1D_[ "jetNum_cut4Jets" ]->Fill( numJets, puWeight );
 			histos1D_[ "jet1Pt_cut4Jets" ]->Fill( JETS[0].Pt(), puWeight );
@@ -379,7 +383,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 			if( ( numJets == 4 ) && ( JETS[3].Pt() > cutJetPt ) && ( HT > cutHT ) ){
 				
-				cutmap["4JetPt"] += 1;
+				cutmap["4JetPt"] += totalWeight;
 				histos1D_[ "HT_cutHT" ]->Fill( HT, puWeight );
 				histos1D_[ "jetNum_cutHT" ]->Fill( numJets, puWeight );
 				histos1D_[ "jet1Pt_cutHT" ]->Fill( JETS[0].Pt(), puWeight );
@@ -450,7 +454,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 					histos2D_[ "dijetsEta_cutBestPair" ]->Fill( eta1, eta2, puWeight );
 
 					if ( ( delta1 > cutDelta ) && ( delta2  > cutDelta ) ) {
-						cutmap["Delta"] += 1;
+						cutmap["Delta"] += totalWeight;
 						histos1D_[ "HT_cutDelta" ]->Fill( HT, puWeight );
 						histos1D_[ "jetNum_cutDelta" ]->Fill( numJets, puWeight );
 						histos1D_[ "jet1Pt_cutDelta" ]->Fill( JETS[0].Pt(), puWeight );
@@ -466,7 +470,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 						histos2D_[ "dijetsEta_cutDelta" ]->Fill( eta1, eta2, puWeight );
 
 						if ( massRes < cutMassRes ) { 
-							cutmap["MassRes"] += 1;
+							cutmap["MassRes"] += totalWeight;
 							histos1D_[ "HT_cutMassRes" ]->Fill( HT, puWeight );
 							histos1D_[ "jetNum_cutMassRes" ]->Fill( numJets, puWeight );
 							histos1D_[ "jet1Pt_cutMassRes" ]->Fill( JETS[0].Pt(), puWeight );
@@ -482,7 +486,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 							histos2D_[ "dijetsEta_cutMassRes" ]->Fill( eta1, eta2, puWeight );
 						
 							if ( TMath::Abs(eta1 - eta2) <  cutEtaBand ) {
-								cutmap["EtaBand"] += 1;
+								cutmap["EtaBand"] += totalWeight;
 								histos1D_[ "HT_cutEtaBand" ]->Fill( HT, puWeight );
 								histos1D_[ "jetNum_cutEtaBand" ]->Fill( numJets, puWeight );
 								histos1D_[ "jet1Pt_cutEtaBand" ]->Fill( JETS[0].Pt(), puWeight );
@@ -592,6 +596,7 @@ void RUNAnalysis::beginJob() {
 		RUNAtree->Branch( "numJets", &numJets, "numJets/I" );
 		RUNAtree->Branch( "numPV", &numPV, "numPV/I" );
 		RUNAtree->Branch( "puWeight", &puWeight, "puWeight/F" );
+		RUNAtree->Branch( "lumiWeight", &lumiWeight, "lumiWeight/F" );
 		RUNAtree->Branch( "HT", &HT, "HT/F" );
 		RUNAtree->Branch( "mass1", &mass1, "mass1/F" );
 		RUNAtree->Branch( "mass2", &mass2, "mass2/F" );
@@ -742,6 +747,7 @@ void RUNAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descriptions
 	desc.add<double>("cutEtaBand", 1);
 	desc.add<double>("cutJetPt", 1);
 	desc.add<double>("cutHT", 1);
+	desc.add<double>("scale", 1);
 	desc.add<bool>("bjSample", false);
 	desc.add<bool>("mkTree", false);
 	desc.add<bool>("isData", false);

@@ -136,8 +136,6 @@ options.parseArguments()
 process = cms.Process("RUNAnalysis")
 process.load("FWCore.MessageService.MessageLogger_cfi")
 NAME = options.PROC
-if 'Run2015' in NAME: isData=True
-else: isData=False
 
 if options.local:
 	process.load(NAME+'_RUNA_cfi')
@@ -152,11 +150,17 @@ else:
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32 (options.maxEvents) )
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUNFullAnalysis_'+NAME+'.root' ) )
 
-if 'bj' in NAME: bjsample = True
-else: bjsample = False
+from RUNA.RUNAnalysis.scaleFactors import scaleFactor
 
-if 'JetHT' in NAME: HTtrigger = 'HLT_PFHT800'
-else: HTtrigger = 'HLT_PFHT900'
+bjsample = True if 'bj' in NAME else False
+if 'Run2015' in NAME: 
+	isData=True
+	SF = 1 
+	HTtrigger = 'HLT_PFHT800'
+else:
+	isData=False
+	SF = scaleFactor(NAME) 
+	HTtrigger = 'HLT_PFHT900'
 
 
 process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
@@ -165,9 +169,10 @@ process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 		cutDelta 		= cms.double( options.Delta ),
 		cutEtaBand 		= cms.double( options.EtaBand ),
 		cutJetPt 		= cms.double( options.JetPt ),
-		bjSample		= cms.bool( bjsample ),
 		triggerPass 		= cms.vstring( [ HTtrigger, 'HLT_PFHT750_4JetPt' ] ),
-		dataPUFile		= cms.string( '../data/'+options.namePUFile  ),
+		scale 			= cms.double( SF ),
+		bjSample		= cms.bool( bjsample ),
+		dataPUFile		= cms.string( options.namePUFile  ),
 		isData			= cms.bool( isData ),
 )
 process.RUNATree = process.ResolvedAnalysisPlots.clone( mkTree = cms.bool( True ) )
@@ -183,10 +188,10 @@ process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		cutTau21value 		= cms.double( options.Tau21 ),
 		cutDEtavalue 		= cms.double( options.DEta ),
 		cutBtagvalue 		= cms.double( options.btag ),
-		bjSample		= cms.bool( bjsample ),
-		mkTree			= cms.bool( False  ),
 		triggerPass 		= cms.vstring( [ 'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', HTtrigger ] ),
-		dataPUFile		= cms.string( '../data/'+options.namePUFile  ),
+		scale 			= cms.double( SF ),
+		bjSample		= cms.bool( bjsample ),
+		dataPUFile		= cms.string( options.namePUFile  ),
 		isData			= cms.bool( isData ),
 )
 
