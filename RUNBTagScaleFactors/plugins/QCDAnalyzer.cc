@@ -53,10 +53,6 @@ class QCDAnalyzer : public EDAnalyzer {
        TFile * f_EffMap_AK4 = new TFile("EfficiencyMaps.root");  //Name of the Efficiency Map file
 
       // Book a set of histograms      
-      TH1D * h_bjet_pt_AK8 = fs_->make<TH1D>("h_bjet_pt_AK8","",50,0.,1000.);
-      TH1D * h_bjet_pt_wt_AK8 = fs_->make<TH1D>("h_bjet_pt_wt_AK8","",50,0.,1000.);
-      TH1D * h_weights_AK8 = fs_->make<TH1D>("h_weights_AK8","",50,-2,2);
-      TH1D * h_bjet_wt_errorsquared_AK8 = fs_->make<TH1D>("h_bjet_wt_errorsquared_AK8","",50,0.,1000.);
       TH1D * h_bjet_pt_AK4 = fs_->make<TH1D>("h_bjet_pt_AK4","",50,0.,1000.);
       TH1D * h_bjet_pt_wt_AK4 = fs_->make<TH1D>("h_bjet_pt_wt_AK4","",50,0.,1000.);
       TH1D * h_weights_AK4 = fs_->make<TH1D>("h_weights_AK4","",50,-2,2);

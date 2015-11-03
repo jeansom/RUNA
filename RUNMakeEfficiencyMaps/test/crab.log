@@ -1,0 +1,106 @@
+DEBUG 2015-10-28 13:43:44,211: 	 Executing command: 'submit'
+DEBUG 2015-10-28 13:43:44,212: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2015-10-28 13:43:44,249: 	 Checking credentials
+DEBUG 2015-10-28 13:43:44,249: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2015-10-28 13:43:44,249: 	 Getting proxy life time left
+DEBUG 2015-10-28 13:43:44,352: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41897
+
+ error: 
+ retcode : 0
+DEBUG 2015-10-28 13:43:44,455: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41897
+
+ error: 
+ retcode : 0
+DEBUG 2015-10-28 13:43:44,455: 	 Proxy valid for 11:38:17 hours
+INFO 2015-10-28 13:43:44,456: 	 Will use CRAB configuration file CRAB_Jobs/cfg_files/Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER_crab.py
+DEBUG 2015-10-28 13:43:44,456: 	 Loading CRAB configuration file.
+ERROR 2015-10-28 13:43:44,459: 	 Error in CRAB configuration file:
+EOL while scanning string literal (Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER_crab.py, line 32)
+Please refer to https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3CommonErrors#Syntax_error_in_CRAB_configurati
+See the ./crab.log file for more details.
+The documentation about the CRAB configuration file can be found in https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile
+ERROR 2015-10-28 13:43:44,460: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/bin/crab", line 159, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/bin/crab", line 145, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/lib/python2.6/site-packages/CRABClient/Commands/submit.py", line 32, in __init__
+    SubCommand.__init__(self, logger, cmdargs, disable_interspersed_args=True)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 294, in __init__
+    self.loadConfig(self.options.config, self.args)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 83, in loadConfig
+    raise ConfigurationException(configmsg)
+ConfigurationException: Error in CRAB configuration file:
+EOL while scanning string literal (Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER_crab.py, line 32)
+Please refer to https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3CommonErrors#Syntax_error_in_CRAB_configurati
+See the ./crab.log file for more details.
+The documentation about the CRAB configuration file can be found in https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile
+ERROR 2015-10-28 13:43:44,464: 	 Unhandled Exception!
+ERROR 2015-10-28 13:43:44,464: 	 'NoneType' object has no attribute 'terminate'
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/bin/crab", line 213, in <module>
+    client.cmd.terminate( exitcode )
+AttributeError: 'NoneType' object has no attribute 'terminate'
+ERROR 2015-10-28 13:43:44,464: 	 ERROR: AttributeError: 'NoneType' object has no attribute 'terminate'
+ERROR 2015-10-28 13:43:44,464: 	 
+	Please email hn-cms-computing-tools@cern.ch for support with the crab.log file or crab.log URL.
+ERROR 2015-10-28 13:43:44,464: 	 	Client Version: 3.3.1510
+ERROR 2015-10-28 13:43:44,464: 	 	Please use 'crab uploadlog' to upload the log file /uscms/home/jsomalwa/CMSSW_7_4_5_patch1/src/RUNA/RUNMakeEfficiencyMaps/test/crab.log to the CRAB cache.
+DEBUG 2015-10-28 13:44:39,592: 	 Executing command: 'submit'
+DEBUG 2015-10-28 13:44:39,592: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2015-10-28 13:44:39,599: 	 Checking credentials
+DEBUG 2015-10-28 13:44:39,599: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2015-10-28 13:44:39,599: 	 Getting proxy life time left
+DEBUG 2015-10-28 13:44:39,702: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41842
+
+ error: 
+ retcode : 0
+DEBUG 2015-10-28 13:44:39,805: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41842
+
+ error: 
+ retcode : 0
+DEBUG 2015-10-28 13:44:39,806: 	 Proxy valid for 11:37:22 hours
+INFO 2015-10-28 13:44:39,806: 	 Will use CRAB configuration file CRAB_Jobs/cfg_files/Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER_crab.py
+DEBUG 2015-10-28 13:44:39,806: 	 Loading CRAB configuration file.
+ERROR 2015-10-28 13:44:39,809: 	 Error in CRAB configuration file:
+EOL while scanning string literal (Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER_crab.py, line 32)
+Please refer to https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3CommonErrors#Syntax_error_in_CRAB_configurati
+See the ./crab.log file for more details.
+The documentation about the CRAB configuration file can be found in https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile
+ERROR 2015-10-28 13:44:39,809: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/bin/crab", line 159, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/bin/crab", line 145, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/lib/python2.6/site-packages/CRABClient/Commands/submit.py", line 32, in __init__
+    SubCommand.__init__(self, logger, cmdargs, disable_interspersed_args=True)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 294, in __init__
+    self.loadConfig(self.options.config, self.args)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/lib/python2.6/site-packages/CRABClient/Commands/SubCommand.py", line 83, in loadConfig
+    raise ConfigurationException(configmsg)
+ConfigurationException: Error in CRAB configuration file:
+EOL while scanning string literal (Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1__mmorris-RunIISpring15DR74_MiniAOD-fb89f44b0d6970d718ed21d513cd1c9d__USER_crab.py, line 32)
+Please refer to https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3CommonErrors#Syntax_error_in_CRAB_configurati
+See the ./crab.log file for more details.
+The documentation about the CRAB configuration file can be found in https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile
+ERROR 2015-10-28 13:44:39,813: 	 Unhandled Exception!
+ERROR 2015-10-28 13:44:39,813: 	 'NoneType' object has no attribute 'terminate'
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc481/cms/crabclient/3.3.1510/bin/crab", line 213, in <module>
+    client.cmd.terminate( exitcode )
+AttributeError: 'NoneType' object has no attribute 'terminate'
+ERROR 2015-10-28 13:44:39,813: 	 ERROR: AttributeError: 'NoneType' object has no attribute 'terminate'
+ERROR 2015-10-28 13:44:39,813: 	 
+	Please email hn-cms-computing-tools@cern.ch for support with the crab.log file or crab.log URL.
+ERROR 2015-10-28 13:44:39,813: 	 	Client Version: 3.3.1510
+ERROR 2015-10-28 13:44:39,814: 	 	Please use 'crab uploadlog' to upload the log file /uscms/home/jsomalwa/CMSSW_7_4_5_patch1/src/RUNA/RUNMakeEfficiencyMaps/test/crab.log to the CRAB cache.
