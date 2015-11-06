@@ -11,23 +11,59 @@ import sys,os,time
 #import optparse
 import argparse
 #from collections import defaultdict
-from ROOT import TFile, TTree, TDirectory, gDirectory, gROOT, TH1F, TH2D, TMath, TLorentzVector
+from ROOT import TFile, TTree, TDirectory, gDirectory, gROOT, TH1F, TH2D, TMath, TLorentzVector, TVector3
 from array import array
 from RUNA.RUNAnalysis.scaleFactors import scaleFactor as SF
 
 gROOT.SetBatch()
 
+def Pairing( tmpj1, tmpj2, tmpj3, tmpj4, offset ):
+	"""docstring for Pairing"""
+
+	deltaRPairing = {}
+	Pairing = False
+	j1 = TLorentzVector()
+	j2 = TLorentzVector()
+	j3 = TLorentzVector()
+	j4 = TLorentzVector()
+	deltaRPairing[ '1234' ] = ( abs( tmpj1.DeltaR(tmpj2) - offset ) + abs( tmpj3.DeltaR(tmpj4) - offset ) )
+	deltaRPairing[ '1324' ] = ( abs( tmpj1.DeltaR(tmpj3) - offset ) + abs( tmpj2.DeltaR(tmpj4) - offset ) )
+	deltaRPairing[ '1423' ] = ( abs( tmpj1.DeltaR(tmpj4) - offset ) + abs( tmpj2.DeltaR(tmpj3) - offset ) )
+
+	minDeltaRPairing = min(deltaRPairing, key=deltaRPairing.get)
+
+	if( '1234' in minDeltaRPairing ):
+		j1 = tmpj1
+		j2 = tmpj2
+		j3 = tmpj3
+		j4 = tmpj4
+		Pairing = True
+	elif( '1324' in minDeltaRPairing ):
+		j1 = tmpj1
+		j2 = tmpj3
+		j3 = tmpj2
+		j4 = tmpj4
+		Pairing = True
+	elif( '1423' in minDeltaRPairing ):
+		j1 = tmpj1
+		j2 = tmpj4
+		j3 = tmpj2
+		j4 = tmpj3
+		Pairing = True
+
+	return [ Pairing, j1, j2, j3, j4, deltaRPairing[ minDeltaRPairing ] ]
+
+
 ######################################
-def myAnalyzer( sample, couts, grooming):
+def myAnalyzer( sample, couts ):
 
 
 	inputFile = TFile( sample, 'read' )
-	outputFileName = sample.replace('RUNAnalysis','RUNMiniAnalysis')
+	outputFileName = sample.replace('RUNAnalysis','RUNMiniResolvedAnalysis')
 	outputFile = TFile( outputFileName, 'RECREATE' )
 	#outputFile = TFile( 'test.root', 'RECREATE' )
 
 	###################################### output Tree
-	#tree = TTree('RUNAFinTree'+grooming, 'RUNAFinTree'+grooming)
 	#AvgMass = array( 'f', [ 0. ] )
 	#tree.Branch( 'AvgMass', AvgMass, 'AvgMass/F' )
 	#Scale = array( 'f', [ 0. ] )
@@ -35,48 +71,76 @@ def myAnalyzer( sample, couts, grooming):
 
 
 	################################################################################################## Trigger Histos
-	nBinsMass	= 60
-	maxMass		= 600
+	nBinsMass	= 100
+	maxMass		= 1000
 	nBinsHT		= 150
 	maxHT		= 1500
 
-	trimmedMassVsHT 	= TH2D('trimmedMassVsHT', 'trimmedMassVsHT', nBinsMass, 0, maxMass, nBinsHT, 0, maxHT )
-	massAve_Standard 	= TH1F('massAve_Standard', 'massAve_Standard', nBinsMass, 0, maxMass )
-	massAve_DeltaEtaSubjet 	= TH1F('massAve_DeltaEtaSubjet', 'massAve_DeltaEtaSubjet', nBinsMass, 0, maxMass )
-	massAve_DeltaEtaTau21 	= TH1F('massAve_DeltaEtaTau21', 'massAve_DeltaEtaTau21', nBinsMass, 0, maxMass )
-	massAve_DeltaEtaTau31 	= TH1F('massAve_DeltaEtaTau31', 'massAve_DeltaEtaTau31', nBinsMass, 0, maxMass )
-	massAve_MassAsym 	= TH1F('massAve_MassAsym', 'massAve_MassAsym', nBinsMass, 0, maxMass )
-	massAve_Tau21 	= TH1F('massAve_Tau21', 'massAve_Tau21', nBinsMass, 0, maxMass )
-	massAve_Tau21CosTheta 	= TH1F('massAve_Tau21CosTheta', 'massAve_Tau21CosTheta', nBinsMass, 0, maxMass )
-	massAve_Tau21Tau31 	= TH1F('massAve_Tau21Tau31', 'massAve_Tau21Tau31', nBinsMass, 0, maxMass )
-	massAve_Tau21Tau31CosTheta 	= TH1F('massAve_Tau21Tau31CosTheta', 'massAve_Tau21Tau31CosTheta', nBinsMass, 0, maxMass )
-	massAve_Tau21CosThetaDEta 	= TH1F('massAve_Tau21CosThetaDEta', 'massAve_Tau21CosThetaDEta', nBinsMass, 0, maxMass )
-	massAve_EffStandard 	= TH1F('massAve_EffStandard', 'massAve_EffStandard', nBinsMass, 0, maxMass )
-	massAve_Tau21NOCosTheta 	= TH1F('massAve_Tau21NOCosTheta', 'massAve_Tau21NOCosTheta', nBinsMass, 0, maxMass )
-	massAve_MassAsymNOTau21 	= TH1F('massAve_MassAsymNOTau21', 'massAve_MassAsymNOTau21', nBinsMass, 0, maxMass )
-	massAve_CosThetaNOTau21 	= TH1F('massAve_CosThetaNOTau21', 'massAve_CosThetaNOTau21', nBinsMass, 0, maxMass )
-	
-	AK4HT_PFHT800 	= TH1F('AK4HT_PFHT800', 'AK4HT_PFHT800', nBinsHT, 0, maxHT )
-	massAve_PFHT800 	= TH1F('massAve_PFHT800', 'massAve_PFHT800', nBinsMass, 0, maxMass )
-	AK4HT_EffPFHT800 	= TH1F('AK4HT_EffPFHT800', 'AK4HT_EffPFHT800', nBinsHT, 0, maxHT )
-	massAve_EffPFHT800 	= TH1F('massAve_EffPFHT800', 'massAve_EffPFHT800', nBinsMass, 0, maxMass )
+	deltaR_Pairing08 	= TH1F('deltaR_Pairing08', 'deltaR_Pairing08', 100, 0, 5. )
+	deltaR_Pairing09 	= TH1F('deltaR_Pairing09', 'deltaR_Pairing09', 100, 0, 5. )
+	deltaR_Pairing10 	= TH1F('deltaR_Pairing10', 'deltaR_Pairing10', 100, 0, 5. )
+	deltaR_Pairing11 	= TH1F('deltaR_Pairing11', 'deltaR_Pairing11', 100, 0, 5. )
+	deltaR_Pairing12 	= TH1F('deltaR_Pairing12', 'deltaR_Pairing12', 100, 0, 5. )
+	massAve_Pairing 	= TH1F('massAve_Pairing', 'massAve_Pairing', nBinsMass, 0, maxMass )
+	massAve_DeltaRBest 	= TH1F('massAve_DeltaRBest', 'massAve_DeltaRBest', nBinsMass, 0, maxMass )
+	massAve_DeltaR 	= TH1F('massAve_DeltaR', 'massAve_DeltaR', nBinsMass, 0, maxMass )
+	massAve_DeltaEta 	= TH1F('massAve_DeltaEta', 'massAve_DeltaEta', nBinsMass, 0, maxMass )
+	massAve_MassPar 	= TH1F('massAve_MassPar', 'massAve_MassPar', nBinsMass, 0, maxMass )
+	massAve_EtaMassParDeltaR 	= TH1F('massAve_EtaMassParDeltaR', 'massAve_EtaMassParDeltaR', nBinsMass, 0, maxMass )
+	massAve_Delta 	= TH1F('massAve_Delta', 'massAve_Delta', nBinsMass, 0, maxMass )
+	massAve_DeltaDeltaR 	= TH1F('massAve_DeltaDeltaR', 'massAve_DeltaDeltaR', nBinsMass, 0, maxMass )
+	massAve_DeltaDeltaEta 	= TH1F('massAve_DeltaDeltaEta', 'massAve_DeltaDeltaEta', nBinsMass, 0, maxMass )
+	massAve_DeltaMassPar 	= TH1F('massAve_DeltaMassPar', 'massAve_DeltaMassPar', nBinsMass, 0, maxMass )
+	massAve_DeltaEtaMassParDeltaR 	= TH1F('massAve_DeltaEtaMassParDeltaR', 'massAve_DeltaEtaMassParDeltaR', nBinsMass, 0, maxMass )
+	massAve_CosTheta 	= TH1F('massAve_CosTheta', 'massAve_CosTheta', nBinsMass, 0, maxMass )
+	massAve_CosThetaDeltaR 	= TH1F('massAve_CosThetaDeltaR', 'massAve_CosThetaDeltaR', nBinsMass, 0, maxMass )
+	massAve_CosThetaDeltaEta 	= TH1F('massAve_CosThetaDeltaEta', 'massAve_CosThetaDeltaEta', nBinsMass, 0, maxMass )
+	massAve_CosThetaMassPar 	= TH1F('massAve_CosThetaMassPar', 'massAve_CosThetaMassPar', nBinsMass, 0, maxMass )
+	massAve_CosThetaEtaMassParDeltaR 	= TH1F('massAve_CosThetaEtaMassParDeltaR', 'massAve_CosThetaEtaMassParDeltaR', nBinsMass, 0, maxMass )
+	deltaR_Pairing 	= TH1F('deltaR_Pairing', 'deltaR_Pairing', 100, 0, 5. )
+	deltaEtaDijet_Pairing 	= TH1F('deltaEtaDijet_Pairing', 'deltaEtaDijet_Pairing', 100, 0, 5. )
+	massPairing_Pairing 	= TH1F('massPairing_Pairing', 'massPairing_Pairing', 20, 0, 1. )
+	deltaEtaDijet1_Pairing 	= TH1F('deltaEtaDijet1_Pairing', 'deltaEtaDijet1_Pairing', 100, 0, 5. )
+	deltaEtaDijet2_Pairing 	= TH1F('deltaEtaDijet2_Pairing', 'deltaEtaDijet2_Pairing', 100, 0, 5. )
+	deltaEtaBest_Pairing 	= TH1F('deltaEtaBest_Pairing', 'deltaEtaBest_Pairing', 100, 0, 5. )
+	deltaPhiDijet_Pairing 	= TH1F('deltaPhiDijet_Pairing', 'deltaPhiDijet_Pairing', 100, 0, 5. )
+	deltaPhiBest_Pairing 	= TH1F('deltaPhiBest_Pairing', 'deltaPhiBest_Pairing', 100, 0, 5. )
+	deltaRDijet_Pairing 	= TH1F('deltaRDijet_Pairing', 'deltaRDijet_Pairing', 100, 0, 5. )
+	deltaRBest_Pairing 	= TH1F('deltaRBest_Pairing', 'deltaRBest_Pairing', 100, 0, 5. )
+	cosThetaStar1_Pairing 	= TH1F('cosThetaStar1_Pairing', 'cosThetaStar1_Pairing', 20, 0, 1. )
+	cosThetaStar2_Pairing 	= TH1F('cosThetaStar2_Pairing', 'cosThetaStar2_Pairing', 20, 0, 1. )
 
-	AK4HT_Brock 	= TH1F('AK4HT_Brock', 'AK4HT_Brock', 200, 0, 2000 )
-	massAve_Brock 	= TH1F('massAve_Brock', 'massAve_Brock', nBinsMass, 0, maxMass )
 
-	#### Optimization
-	h_deltaEtaDijet 	= TH1F('deltaEtaDijet', 'deltaEtaDijet', 100, 0, 5. )
-	h_jet2Tau21 	= TH1F('jet2Tau21', 'jet2Tau21', 10, 0, 1. )
-	h_jet2Tau31 	= TH1F('jet2Tau31', 'jet2Tau31', 10, 0, 1. )
-	jet1Pt_cutHT 	= TH1F('jet1Pt_cutHT', 'jet1Pt_cutHT', 100, 0, 1000. )
-	jet2Pt_cutHT 	= TH1F('jet2Pt_cutHT', 'jet2Pt_cutHT', 100, 0, 1000. )
-	jet1Pt_Tau21CosTheta 	= TH1F('jet1Pt_Tau21CosTheta', 'jet1Pt_Tau21CosTheta', 100, 0, 1000. )
-	jet2Pt_Tau21CosTheta 	= TH1F('jet2Pt_Tau21CosTheta', 'jet2Pt_Tau21CosTheta', 100, 0, 1000. )
-
-
+	massAve_Pairing09 	= TH1F('massAve_Pairing09', 'massAve_Pairing09', nBinsMass, 0, maxMass )
+	massAve_DeltaRBest09	= TH1F('massAve_DeltaRBest09', 'massAve_DeltaRBest09', nBinsMass, 0, maxMass )
+	massAve_DeltaR09	= TH1F('massAve_DeltaR09', 'massAve_DeltaR09', nBinsMass, 0, maxMass )
+	massAve_DeltaEta09	= TH1F('massAve_DeltaEta09', 'massAve_DeltaEta09', nBinsMass, 0, maxMass )
+	massAve_MassPar09	= TH1F('massAve_MassPar09', 'massAve_MassPar09', nBinsMass, 0, maxMass )
+	massAve_EtaMassParDeltaR09	= TH1F('massAve_EtaMassParDeltaR09', 'massAve_EtaMassParDeltaR09', nBinsMass, 0, maxMass )
+	massAve_Delta09	= TH1F('massAve_Delta09', 'massAve_Delta09', nBinsMass, 0, maxMass )
+	massAve_DeltaDeltaR09	= TH1F('massAve_DeltaDeltaR09', 'massAve_DeltaDeltaR09', nBinsMass, 0, maxMass )
+	massAve_DeltaDeltaEta09	= TH1F('massAve_DeltaDeltaEta09', 'massAve_DeltaDeltaEta09', nBinsMass, 0, maxMass )
+	massAve_DeltaMassPar09	= TH1F('massAve_DeltaMassPar09', 'massAve_DeltaMassPar09', nBinsMass, 0, maxMass )
+	massAve_DeltaEtaMassParDeltaR09	= TH1F('massAve_DeltaEtaMassParDeltaR09', 'massAve_DeltaEtaMassParDeltaR09', nBinsMass, 0, maxMass )
+	massAve_CosTheta09	= TH1F('massAve_CosTheta09', 'massAve_CosTheta09', nBinsMass, 0, maxMass )
+	massAve_CosThetaDeltaR09	= TH1F('massAve_CosThetaDeltaR09', 'massAve_CosThetaDeltaR09', nBinsMass, 0, maxMass )
+	massAve_CosThetaDeltaEta09	= TH1F('massAve_CosThetaDeltaEta09', 'massAve_CosThetaDeltaEta09', nBinsMass, 0, maxMass )
+	massAve_CosThetaMassPar09	= TH1F('massAve_CosThetaMassPar09', 'massAve_CosThetaMassPar09', nBinsMass, 0, maxMass )
+	massAve_CosThetaEtaMassParDeltaR09	= TH1F('massAve_CosThetaEtaMassParDeltaR09', 'massAve_CosThetaEtaMassParDeltaR09', nBinsMass, 0, maxMass )
+	deltaEtaDijet_Pairing09 	= TH1F('deltaEtaDijet_Pairing09', 'deltaEtaDijet_Pairing09', 100, 0, 5. )
+	massPairing_Pairing09 	= TH1F('massPairing_Pairing09', 'massPairing_Pairing09', 20, 0, 1. )
+	deltaEtaDijet1_Pairing09 	= TH1F('deltaEtaDijet1_Pairing09', 'deltaEtaDijet1_Pairing09', 100, 0, 5. )
+	deltaEtaDijet2_Pairing09 	= TH1F('deltaEtaDijet2_Pairing09', 'deltaEtaDijet2_Pairing09', 100, 0, 5. )
+	deltaEtaBest_Pairing09 	= TH1F('deltaEtaBest_Pairing09', 'deltaEtaBest_Pairing09', 100, 0, 5. )
+	deltaPhiDijet_Pairing09 	= TH1F('deltaPhiDijet_Pairing09', 'deltaPhiDijet_Pairing09', 100, 0, 5. )
+	deltaPhiBest_Pairing09 	= TH1F('deltaPhiBest_Pairing09', 'deltaPhiBest_Pairing09', 100, 0, 5. )
+	deltaRDijet_Pairing09 	= TH1F('deltaRDijet_Pairing09', 'deltaRDijet_Pairing09', 100, 0, 5. )
+	deltaRBest_Pairing09 	= TH1F('deltaRBest_Pairing09', 'deltaRBest_Pairing09', 100, 0, 5. )
+	cosThetaStar1_Pairing09 	= TH1F('cosThetaStar1_Pairing09', 'cosThetaStar1_Pairing09', 20, 0, 1. )
+	cosThetaStar2_Pairing09 	= TH1F('cosThetaStar2_Pairing09', 'cosThetaStar2_Pairing09', 20, 0, 1. )
 
 	###################################### Get GenTree 
-	events = inputFile.Get( 'RUNATree'+grooming+'/RUNATree' )
+	events = inputFile.Get( 'RUNATree/RUNATree' )
 	numEntries = events.GetEntriesFast()
 
 	print '------> Number of events: '+str(numEntries)
@@ -84,7 +148,6 @@ def myAnalyzer( sample, couts, grooming):
 	newLumi = 0
 	tmpLumi = 0
 	eventsRaw = eventsHT = eventsPassed = eventsDijet = eventsMassAsym = eventsDEta = eventsDEtaSubjet = eventsDEtaTau21 = eventsDEtaTau31 = eventsCosTheta = eventsTau21 = eventsTau21CosTheta = eventsTau21CosThetaDEta = 0
-	scale = SF(sample)*149.9
 	for i in xrange(numEntries):
 		events.GetEntry(i)
 		eventsRaw += 1
@@ -98,184 +161,139 @@ def myAnalyzer( sample, couts, grooming):
 		Run      = events.run
 		Lumi     = events.lumi
 		NumEvent = events.event
-		if couts: print 'Entry ', Run, ':', Lumi, ':', NumEvent
+		#print 'Entry ', Run, ':', Lumi, ':', NumEvent
 
 		HT		= events.HT
-		trimmedMass	= events.trimmedMass
 		numJets		= events.numJets
-		massAve		= events.massAve
-		massAsym	= events.massAsym
-		J1CosThetaStar	= events.jet1CosThetaStar
-		J2CosThetaStar	= events.jet2CosThetaStar
-		jet1SubjetPtRatio	= events.jet1SubjetPtRatio
-		jet2SubjetPtRatio	= events.jet2SubjetPtRatio
 		numPV           = events.numPV
-		AK4HT           = events.AK4HT
-		jet1Pt          = events.jet1Pt
-		jet1Eta         = events.jet1Eta
-		jet1Phi         = events.jet1Phi
-		jet1E           = events.jet1E
-		jet1Mass        = events.jet1Mass
-		jet2Pt          = events.jet2Pt
-		jet2Eta         = events.jet2Eta
-		jet2Phi         = events.jet2Phi
-		jet2E           = events.jet2E
-		jet2Mass        = events.jet2Mass
-		subjet11Pt      = events.subjet11Pt
-		subjet11Eta     = events.subjet11Eta
-		subjet11Phi     = events.subjet11Phi
-		subjet11E       = events.subjet11E
-		subjet12Pt      = events.subjet12Pt
-		subjet12Eta     = events.subjet12Eta
-		subjet12Phi     = events.subjet12Phi
-		subjet12E       = events.subjet12E
-		subjet21Pt      = events.subjet21Pt
-		subjet21Eta     = events.subjet21Eta
-		subjet21Phi     = events.subjet21Phi
-		subjet21E       = events.subjet21E
-		subjet22Pt      = events.subjet22Pt
-		subjet22Eta     = events.subjet22Eta
-		subjet22Phi     = events.subjet22Phi
-		subjet22E       = events.subjet22E
-		jet1Tau21       = events.jet1Tau21
-		jet1Tau31       = events.jet1Tau31
-		jet1Tau32       = events.jet1Tau32
-		jet2Tau21       = events.jet2Tau21
-		jet2Tau31       = events.jet2Tau31
-		jet2Tau32       = events.jet2Tau32
-		cosPhi13412     = events.cosPhi13412
-		cosPhi31234     = events.cosPhi31234
+		puWeight	 = events.puWeight
+		lumiWeight	 = events.lumiWeight
+		HT		 = events.HT
+		mass1		 = events.mass1
+		mass2		 = events.mass2
+		avgMass		 = events.avgMass
+		delta1		 = events.delta1
+		delta2		 = events.delta2
+		massRes		 = events.massRes
+		eta1		 = events.eta1
+		eta2		 = events.eta2
+		deltaEta	 = events.deltaEta
+		jetsPt		 = events.jetsPt
+		jetsEta		 = events.jetsEta
+		jetsPhi		 = events.jetsPhi
+		jetsE		 = events.jetsE
 
-		#if ( jet1Mass > 400 ) or ( jet2Mass > 400 ): print 'Entry ', Run, ':', Lumi, ':', NumEvent
-		#if ( Lumi != tmpLumi ):
-		#	newLumi += Lumi
-		#	tmpLumi == Lumi
-		#print Run/float(Lumi), Run, Lumi, Run/float(newLumi)
-		
-		#### Optimization
-		deltaEtaDijet = abs( jet1Eta - jet2Eta )
-		h_deltaEtaDijet.Fill( deltaEtaDijet, scale )
-		
-		h_jet2Tau21.Fill( jet2Tau21, scale )
-		h_jet2Tau31.Fill( jet2Tau31, scale )
-		
-		'''
-		h_massAveVsHT.Fill( massAve, HT, scale )
-		h_massAveVsnumJets.Fill( massAve, numJets, scale )
-		h_massAveVsmassAsym.Fill( massAve, massAsym, scale )
-		h_massAveVscosThetaStar.Fill( massAve, cosThetaStar, scale )
-		h_massAveVsjet1SubjetPtRatio.Fill( massAve, jet1SubjetPtRatio, scale )
-		h_massAveVsjet2SubjetPtRatio.Fill( massAve, jet2SubjetPtRatio, scale )
-		h_massAveVsTau21.Fill( massAve, jet1Tau21, scale )
-		h_massAveVsTau31.Fill( massAve, jet1Tau31, scale )
-		h_massAveVsdeltaEtaDijet.Fill( massAve, deltaEtaDijet, scale )
+		scale = 1265* puWeight * lumiWeight
+		j1 = TLorentzVector()
+		j2 = TLorentzVector()
+		j3 = TLorentzVector()
+		j4 = TLorentzVector()
+		massPairing = {}
+		if (len(jetsPt) == 4 ):
 
-		h_massAsymVscosThetaStar.Fill( massAsym, cosThetaStar, scale )
-		h_massAsymVsjet1SubjetPtRatio.Fill( massAsym, jet1SubjetPtRatio, scale )
-		h_massAsymVsjet2SubjetPtRatio.Fill( massAsym, jet2SubjetPtRatio, scale )
-		h_massAsymVsTau21.Fill( massAsym, jet1Tau21, scale )
-		h_massAsymVsTau31.Fill( massAsym, jet1Tau31, scale )
-		h_massAsymVsdeltaEtaDijet.Fill( massAsym, deltaEtaDijet, scale )
+			tmpj1 = TLorentzVector()
+			tmpj2 = TLorentzVector()
+			tmpj3 = TLorentzVector()
+			tmpj4 = TLorentzVector()
+			tmpj1.SetPtEtaPhiE( jetsPt[0], jetsEta[0], jetsPhi[0], jetsE[0] )
+			tmpj2.SetPtEtaPhiE( jetsPt[1], jetsEta[1], jetsPhi[1], jetsE[1] )
+			tmpj3.SetPtEtaPhiE( jetsPt[2], jetsEta[2], jetsPhi[2], jetsE[2] )
+			tmpj4.SetPtEtaPhiE( jetsPt[3], jetsEta[3], jetsPhi[3], jetsE[3] )
 
-		h_cosThetaStarVsjet1SubjetPtRatio.Fill( cosThetaStar, jet1SubjetPtRatio, scale )
-		h_cosThetaStarVsjet2SubjetPtRatio.Fill( cosThetaStar, jet2SubjetPtRatio, scale )
-		h_cosThetaStarVsTau21.Fill( cosThetaStar, jet1Tau21, scale )
-		h_cosThetaStarVsTau31.Fill( cosThetaStar, jet1Tau31, scale )
-		h_cosThetaStarVsdeltaEtaDijet.Fill( cosThetaStar, deltaEtaDijet, scale )
+			pairoff08 = Pairing( tmpj1, tmpj2, tmpj3, tmpj4, 0.8 )
+			pairoff09 = Pairing( tmpj1, tmpj2, tmpj3, tmpj4, 0.9 )
+			pairoff10 = Pairing( tmpj1, tmpj2, tmpj3, tmpj4, 1.0 )
+			pairoff11 = Pairing( tmpj1, tmpj2, tmpj3, tmpj4, 1.1 )
+			pairoff12 = Pairing( tmpj1, tmpj2, tmpj3, tmpj4, 1.2 )
+			
+		if pairoff08[0]: deltaR_Pairing08.Fill( pairoff08[5] )
+		if pairoff09[0]: deltaR_Pairing09.Fill( pairoff09[5] )
+		if pairoff10[0]: deltaR_Pairing10.Fill( pairoff10[5] )
+		if pairoff11[0]: deltaR_Pairing11.Fill( pairoff11[5] )
+		if pairoff12[0]: deltaR_Pairing12.Fill( pairoff12[5] )
 
-		h_jet1SubjetPtRatioVsjet2SubjetPtRatio.Fill( jet1SubjetPtRatio, jet2SubjetPtRatio, scale )
-		h_jet1SubjetPtRatioVsTau21.Fill( jet1SubjetPtRatio, jet1Tau21, scale )
-		h_jet1SubjetPtRatioVsTau31.Fill( jet1SubjetPtRatio, jet1Tau31, scale )
-		h_jet1SubjetPtRatioVsdeltaEtaDijet.Fill( jet1SubjetPtRatio, deltaEtaDijet, scale )
+		if pairoff08[0]:
 
-		h_jet2SubjetPtRatioVsTau21.Fill( jet2SubjetPtRatio, jet1Tau21, scale )
-		h_jet2SubjetPtRatioVsTau31.Fill( jet2SubjetPtRatio, jet1Tau31, scale )
-		h_jet2SubjetPtRatioVsdeltaEtaDijet.Fill( jet2SubjetPtRatio, deltaEtaDijet, scale )
+			deltaR = pairoff08[5] 
+			deltaR_Pairing.Fill( deltaR )
+			dijet1 = pairoff08[1] + pairoff08[2]
+			dijet2 = pairoff08[3] + pairoff08[4]
+			massPairing = ( dijet1.M() - dijet2.M() ) / ( dijet1.M() + dijet2.M() )
+			massPairing_Pairing.Fill( massPairing )
+			deltaEta = abs( dijet1.Eta() - dijet2.Eta() )
+			deltaEtaDijet_Pairing.Fill( deltaEta )
+			massAve = ( dijet1.M() + dijet2.M() ) / 2
+			massAve_Pairing.Fill( massAve, scale )
 
-		h_jet1Tau21VsdeltaEtaDijet.Fill( jet1Tau21, deltaEtaDijet, scale )
-		h_jet1Tau31VsdeltaEtaDijet.Fill( jet1Tau31, deltaEtaDijet, scale )
-		'''
+			deltaEtaDijet1_Pairing.Fill( abs( pairoff08[1].Eta() - pairoff08[2].Eta() ) )	
+			deltaEtaDijet2_Pairing.Fill( abs( pairoff08[3].Eta() - pairoff08[4].Eta() ) )	
+			deltaEtaBest = ( abs( pairoff08[1].Eta() - pairoff08[2].Eta() ) + abs( pairoff08[3].Eta() - pairoff08[4].Eta()  ) ) / 2
+			deltaEtaBest_Pairing.Fill( deltaEtaBest, scale )
 
-		#### TEST
-		trimmedMassVsHT.Fill( trimmedMass, HT )
+			deltaPhiDijet_Pairing.Fill( pairoff08[1].DeltaPhi( pairoff08[2] ) )	
+			deltaPhiDijet_Pairing.Fill( pairoff08[3].DeltaPhi( pairoff08[4] ) )	
+			deltaPhiBest = ( pairoff08[1].DeltaPhi( pairoff08[2] ) + pairoff08[3].DeltaPhi( pairoff08[4] ) ) / 2
+			deltaPhiBest_Pairing.Fill( deltaPhiBest, scale )
 
-		#### Apply standard selection
-		triggerCut = ( ( HT > 700 ) and ( trimmedMass > 50 ) )  
-		HTCut = ( HT > 800 )
-		dijetCut =  ( numJets > 1 )
-		subjetPtRatioCut = ( ( jet1SubjetPtRatio > 0.3 ) and ( jet2SubjetPtRatio > 0.3 )  )
-		tau21Cut = ( ( jet1Tau21 < 0.5 ) and ( jet2Tau21 < 0.5 ) )
-		tau31Cut = ( ( jet1Tau31 < 0.3 ) and ( jet2Tau31 < 0.3 ) )
-		massAsymCut = ( massAsym < 0.1 ) 
-		deltaEtaDijetCut = ( deltaEtaDijet < 1. ) 
-		#cosThetaStarCut = ( abs( cosThetaStar ) < 0.3 ) 
-		cosThetaStarCut = ( abs( J1CosThetaStar ) < 0.3 )  and ( abs( J2CosThetaStar ) < 0.3 )
-		jetPtCut =  ( jet1Pt > 400 ) and ( jet2Pt > 400 )
+			deltaRDijet_Pairing.Fill( pairoff08[1].DeltaR( pairoff08[2] ) )	
+			deltaRDijet_Pairing.Fill( pairoff08[3].DeltaR( pairoff08[4] ) )	
+			deltaRBest = ( pairoff08[1].DeltaR( pairoff08[2] ) + pairoff08[3].DeltaR( pairoff08[4] ) ) / 2
+			deltaRBest_Pairing.Fill( deltaRBest, scale )
 
-		#if HTCut and jetPtCut:
-		if jetPtCut:
-			eventsHT += 1
-			jet1Pt_cutHT.Fill( jet1Pt, scale )
-			jet2Pt_cutHT.Fill( jet2Pt, scale )
-			if dijetCut:
-				eventsDijet += 1
-				if massAsymCut:
-					eventsMassAsym += 1
-					massAve_MassAsym.Fill( massAve, scale )
-					if tau21Cut: 
-						eventsTau21 += 1
-						massAve_Tau21.Fill( massAve, scale )
-						if cosThetaStarCut:
-							eventsTau21CosTheta += 1
-							massAve_Tau21CosTheta.Fill( massAve, scale )
-							jet1Pt_Tau21CosTheta.Fill( jet1Pt, scale )
-							jet2Pt_Tau21CosTheta.Fill( jet2Pt, scale )
-							if deltaEtaDijetCut:
-								eventsTau21CosThetaDEta += 1
-								massAve_Tau21CosThetaDEta.Fill( massAve, scale )
-						else:
-							massAve_Tau21NOCosTheta.Fill( massAve, scale )
+			tmpCM1 = pairoff08[1] + pairoff08[2]
+			tmpJ1 = pairoff08[1]
+			tmpJ2 = pairoff08[2]
+			tmpJ1.Boost( -tmpCM1.BoostVector() )
+			tmpJ2.Boost( -tmpCM1.BoostVector() )
+			tmpV1 = TVector3( tmpJ1.X(), tmpJ1.Y(), tmpJ1.Z() )
+			tmpV2 = TVector3( tmpJ2.X(), tmpJ2.Y(), tmpJ2.Z() )
+			#cosThetaStar1 = abs( ( ( pairoff08[1].Px() * pairoff08[2].Px() ) + ( pairoff08[1].Py() * pairoff08[2].Py() ) + ( pairoff08[1].Pz() * pairoff08[2].Pz() ) )  / ( pairoff08[1].E() * pairoff08[2].E() ) )
+			cosThetaStar1 = abs( tmpV1.CosTheta() )
+			cosThetaStar1_Pairing.Fill( cosThetaStar1, scale )
 
-					else: 
-						massAve_MassAsymNOTau21.Fill( massAve, scale )
-						if cosThetaStarCut:
-							massAve_CosThetaNOTau21.Fill( massAve, scale )
+			tmpCM2 = pairoff08[3] + pairoff08[4]
+			tmpJ3 = pairoff08[3]
+			tmpJ4 = pairoff08[4]
+			tmpJ3.Boost( -tmpCM2.BoostVector() )
+			tmpJ4.Boost( -tmpCM2.BoostVector() )
+			tmpV3 = TVector3( tmpJ3.X(), tmpJ3.Y(), tmpJ3.Z() )
+			tmpV4 = TVector3( tmpJ4.X(), tmpJ4.Y(), tmpJ4.Z() )
+			cosThetaStar2 = abs( tmpV3.CosTheta() )
+			#cosThetaStar2 = abs( ( ( pairoff08[3].Px() * pairoff08[4].Px() ) + ( pairoff08[3].Py() * pairoff08[4].Py() ) + ( pairoff08[3].Pz() * pairoff08[4].Pz() ) )  / ( pairoff08[3].E() * pairoff08[4].E() ) )
+			cosThetaStar2_Pairing.Fill( cosThetaStar2, scale )
 
+			if ( deltaRBest < 2 ):
+				massAve_DeltaRBest.Fill( massAve, scale )
+			if ( deltaR < 1.5 ):
+				massAve_DeltaR.Fill( massAve, scale )
+				if ( deltaEta < 1 ):
+					massAve_DeltaEta.Fill( massAve, scale )
+					if ( massPairing < 0.1 ):
+						massAve_MassPar.Fill( massAve, scale )
+						if ( deltaRBest < 2 ):
+							massAve_EtaMassParDeltaR.Fill( massAve, scale )
+			if ( ( delta1 < 300 ) and ( delta2 < 300 ) ):
+				massAve_Delta.Fill( massAve, scale )
+				if ( deltaR < 1.5 ):
+					massAve_DeltaDeltaR.Fill( massAve, scale )
+					if ( deltaEta < 1 ):
+						massAve_DeltaDeltaEta.Fill( massAve, scale )
+						if ( massPairing < 0.1 ):
+							massAve_DeltaMassPar.Fill( massAve, scale )
+							if ( deltaRBest < 2 ):
+								massAve_DeltaEtaMassParDeltaR.Fill( massAve, scale )
 
-	cutFlowStandard = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsCosTheta, eventsPassed ]
-	cutFlowDEtaSubjet = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsDEta, eventsDEtaSubjet ]
-	cutFlowDEtaTau21 = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsDEta, eventsDEtaTau21 ]
-	cutFlowDEtaTau31 = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsDEta, eventsDEtaTau31 ]
-	cutFlowMassAsymTau21CosThetaDEta = [ eventsRaw, eventsHT, eventsDijet, eventsMassAsym, eventsTau21, eventsTau21CosTheta, eventsTau21CosThetaDEta ]
+			if ( ( cosThetaStar1 < 0.4 ) and ( cosThetaStar2 < 0.4 ) ):
+				massAve_CosTheta.Fill( massAve, scale )
+				if ( deltaR < 1.5 ):
+					massAve_CosThetaDeltaR.Fill( massAve, scale )
+					if ( deltaEta < 1 ):
+						massAve_CosThetaDeltaEta.Fill( massAve, scale )
+						if ( massPairing < 0.1 ):
+							massAve_CosThetaMassPar.Fill( massAve, scale )
+							if ( deltaRBest < 2 ):
+								massAve_CosThetaEtaMassParDeltaR.Fill( massAve, scale )
 
-	print eventsPassed
-	
-	hcutFlowmassStandard 	= TH1F('cutFlowStandard', 'cutFlowStandard', len(cutFlowStandard), 0, len(cutFlowStandard) )
-	for i in range( len(cutFlowStandard) ): hcutFlowmassStandard.SetBinContent(i, cutFlowStandard[i])
-	hcutFlowmassDEtaSubjet 	= TH1F('cutFlowDEtaSubjet', 'cutFlowDEtaSubjet', len(cutFlowDEtaSubjet), 0, len(cutFlowDEtaSubjet) )
-	for i in range( len(cutFlowDEtaSubjet) ): hcutFlowmassDEtaSubjet.SetBinContent(i, cutFlowDEtaSubjet[i])
-	hcutFlowmassDEtaTau21 	= TH1F('cutFlowDEtaTau21', 'cutFlowDEtaTau21', len(cutFlowDEtaTau21), 0, len(cutFlowDEtaTau21) )
-	for i in range( len(cutFlowDEtaTau21) ): hcutFlowmassDEtaTau21.SetBinContent(i, cutFlowDEtaTau21[i])
-	hcutFlowmassDEtaTau31 	= TH1F('cutFlowDEtaTau31', 'cutFlowDEtaTau31', len(cutFlowDEtaTau31), 0, len(cutFlowDEtaTau31) )
-	for i in range( len(cutFlowDEtaTau31) ): hcutFlowmassDEtaTau31.SetBinContent(i, cutFlowDEtaTau31[i])
-	hcutFlowmassMassAsymTau21CosThetaDEta 	= TH1F('cutFlowMassAsymTau21CosThetaDEta', 'cutFlowMassAsymTau21CosThetaDEta', len(cutFlowMassAsymTau21CosThetaDEta), 0, len(cutFlowMassAsymTau21CosThetaDEta) )
-	for i in range( len(cutFlowMassAsymTau21CosThetaDEta) ): hcutFlowmassMassAsymTau21CosThetaDEta.SetBinContent(i, cutFlowMassAsymTau21CosThetaDEta[i])
-
-
-	##### write output file 
-	#outputFile.cd()
-	#for key in inputFile.GetListOfKeys():
-	#	print key
-	#	saveDir = TDirectory()
-		#adir = saveDir.mkdir( key.GetName() )
-		#adir.cd()
-		#if key.GetClassName() == 'TDirectoryFile':
-		#	if not 'Tree' in key.GetName():
-		#		newDir = outputFile.mkdir( key.GetName() )
-		#		newDir.cd()
-		#for q in key.GetList():
-		#	print q
-				#	print key.GetName(), q
 
 
 	outputFile.Write()
@@ -297,8 +315,7 @@ if __name__ == '__main__':
 	usage = 'usage: %prog [options]'
 	
 	parser = argparse.ArgumentParser()
-	parser.add_argument( '-m', '--mass', action='store', type=int, dest='mass', default=100, help='Mass of the Stop' )
-	parser.add_argument( '-g', '--grooming', action='store',  dest='grooming', default='Pruned', help='Jet Algorithm' )
+	parser.add_argument( '-m', '--mass', action='store', type=int, dest='mass', default=350, help='Mass of the Stop' )
 	parser.add_argument( '-p', '--pileup', action='store',  dest='pileup', default='Asympt25ns', help='Pileup' )
 	parser.add_argument( '-d', '--debug', action='store_true', dest='couts', default=False, help='True print couts in screen, False print in a file' )
 	parser.add_argument( '-s', '--sample', action='store',   dest='samples', default='RPV', help='Type of sample' )
@@ -312,26 +329,25 @@ if __name__ == '__main__':
 	mass = args.mass
 	PU = args.pileup
 	couts = args.couts
-	grooming = args.grooming
 	samples = args.samples
 
 	if 'RPV' in samples: 
-		inputFileName = 'Rootfiles/RUNAnalysis_RPVSt'+str(mass)+'tojj_RunIISpring15DR74_'+PU+'_v06_v01.root'
-		myAnalyzer( inputFileName, couts, grooming )
+		inputFileName = 'Rootfiles/RUNAnalysis_RPVSt'+str(mass)+'tojj_RunIISpring15MiniAODv2-74X_'+PU+'_v08_v02.root'
+		myAnalyzer( inputFileName, couts)
 	elif 'Data' in samples: 
-		inputFileName = 'Rootfiles/RUNAnalysis_JetHTRun2015D-PromptReco-v3_v06_v00p2.root'
-		myAnalyzer( inputFileName, couts, grooming )
+		inputFileName = 'Rootfiles/RUNAnalysis_JetHTRun2015D-PromptReco-v4_v08_v01.root'
+		myAnalyzer( inputFileName, couts)
 	elif 'Bkg' in samples: 
 		inputFileName = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01.root'
-		myAnalyzer( inputFileName, couts, grooming )
+		myAnalyzer( inputFileName, couts)
 		inputFileName = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01.root'
-		myAnalyzer( inputFileName, couts, grooming )
+		myAnalyzer( inputFileName, couts)
 		inputFileName = 'Rootfiles/RUNAnalysis_TTJets_RunIISpring15DR74_Asympt25ns_v03_v01.root'
-		myAnalyzer( inputFileName, couts, grooming )
+		myAnalyzer( inputFileName, couts)
 	else: 
-		for qcdBin in [ '170to300', '300to470', '470to600', '600to800', '800to1000', '1000to1400', '1400to1800', '1800to2400', '2400to3200', '3200toInf' ]: 
-			inputFileName = 'Rootfiles//RUNAnalysis_QCD_Pt_'+qcdBin+'_RunIISpring15DR74_'+PU+'_v06p1_v01.root'
-			myAnalyzer( inputFileName, couts, grooming )
-		#inputFileName = 'Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15DR74_Asympt25ns_v06_v00p2.root'
-		#myAnalyzer( inputFileName, couts, grooming )
+		#for qcdBin in [ '170to300', '300to470', '470to600', '600to800', '800to1000', '1000to1400', '1400to1800', '1800to2400', '2400to3200', '3200toInf' ]: 
+		#	inputFileName = 'Rootfiles//RUNAnalysis_QCD_Pt_'+qcdBin+'_RunIISpring15MiniAODv2-74X_'+PU+'_v08_v02.root'
+		#	myAnalyzer( inputFileName, couts )
+		inputFileName = 'Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15MiniAODv2-74X_Asympt25ns_v08_v02.root'
+		myAnalyzer( inputFileName, couts )
 
