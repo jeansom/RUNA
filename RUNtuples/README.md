@@ -18,6 +18,7 @@ cmsRun RUNtuples_cfg.py maxEvents=1000 DataProcessing='Data25ns'
 ```
 * Running on 25 ns data (Run2015 D and MiniAODv2):
 ```
+cmsRun RUNtuples_cfg.py maxEvents=1000 DataProcessing='Data25nsv2' (for any MC MiniAODv2)
 cmsRun RUNtuples_cfg.py maxEvents=1000 DataProcessing='Data25nsv2' DataReco='PromptReco' (for Run2015D-PromptReco-v4)
 cmsRun RUNtuples_cfg.py maxEvents=1000 DataProcessing='Data25nsv2' DataReco='05Oct2015' (for Run2015D-05Oct2015-v1)
 ```

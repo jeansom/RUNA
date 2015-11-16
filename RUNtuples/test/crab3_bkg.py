@@ -75,7 +75,7 @@ if __name__ == '__main__':
 		#if 'Asympt50ns' in dataset: config.JobType.pyCfgParams = [ 'DataProcessing=MC50ns' ]  
 		#elif 'Asympt25ns' in dataset: config.JobType.pyCfgParams = [ 'DataProcessing=MC25ns' ]  
 		config.JobType.pyCfgParams = [ 'DataProcessing=MC25ns' ]  
-		config.JobType.inputFiles = [ 'Summer15_25nsV5_MC.db' ]
+		config.JobType.inputFiles = [ 'Summer15_25nsV6_MC.db' ]
 		config.General.requestName = dataset.split('/')[1]+"_"+dataset.split('/')[2]+'_'+name+'_'+version
 		config.Data.outputDatasetTag = name+'_'+version
 		p = Process(target=submit, args=(config,))
