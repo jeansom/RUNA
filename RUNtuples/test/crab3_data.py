@@ -19,7 +19,7 @@ config.JobType.allowUndistributedCMSSW = True
 
 config.Data.inputDataset = ''
 config.Data.splitting = 'LumiBased'
-config.Data.unitsPerJob = 2
+config.Data.unitsPerJob = 5
 config.Data.publication = True
 config.Data.ignoreLocality = True
 
@@ -42,7 +42,7 @@ if __name__ == '__main__':
 			#'/JetHT/Run2015B-PromptReco-v1/MINIAOD',
 			#'/JetHT/Run2015C-PromptReco-v1/MINIAOD',
 			'/JetHT/Run2015D-PromptReco-v4/MINIAOD',
-			'/JetHT/Run2015D-05Oct2015-v1/MINIAOD',
+			#'/JetHT/Run2015D-05Oct2015-v1/MINIAOD',
 			#'/MET/Run2015B-PromptReco-v1/MINIAOD',
 			##'/SingleMu/Run2015B-PromptReco-v1/MINIAOD',
 			]

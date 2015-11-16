@@ -8,7 +8,7 @@ from httplib import HTTPException
 config = config()
 
 name = 'RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns'
-version = 'v08'
+version = 'v09'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
@@ -16,7 +16,7 @@ config.General.workArea = 'crab_projects'
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'RUNtuples_cfg.py'
 config.JobType.pyCfgParams = [ 'DataProcessing=MC25ns' ]
-config.JobType.inputFiles = [ 'Summer15_25nsV5_MC.db' ]
+config.JobType.inputFiles = [ 'Summer15_25nsV6_MC.db' ]
 config.JobType.allowUndistributedCMSSW = True
 
 config.Data.inputDataset = ''
@@ -46,8 +46,8 @@ if __name__ == '__main__':
 
 	Samples = [ 
 			'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15DR74_newMiniAOD_Asympt25ns-612faf0bd9dc3ce1d1b2e0252700e0a7/USER',
-			'/RPVSt200tobj_13TeV_pythia8/algomez-RunIISpring15DR74_newMiniAOD_Asympt25ns-612faf0bd9dc3ce1d1b2e0252700e0a7/USER',
-			'/RPVSt350tobj_13TeV_pythia8/algomez-RunIISpring15DR74_newMiniAOD_Asympt25ns-612faf0bd9dc3ce1d1b2e0252700e0a7/USER',
+			#'/RPVSt200tobj_13TeV_pythia8/algomez-RunIISpring15DR74_newMiniAOD_Asympt25ns-612faf0bd9dc3ce1d1b2e0252700e0a7/USER',
+			#'/RPVSt350tobj_13TeV_pythia8/algomez-RunIISpring15DR74_newMiniAOD_Asympt25ns-612faf0bd9dc3ce1d1b2e0252700e0a7/USER',
 			]
 	
 	for dataset in Samples:
