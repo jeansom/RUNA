@@ -6,13 +6,36 @@ This is a modify version of the B2GEDMNtuples. The main change is that here, to 
 
 To run this go to RUNtuples/test. There you have a file called `RUNtuples_cfg.py`. You should not change anything there unless you want to modify something specific for your analysis. To check if everything is working you can run a test job:
 
+## Usage:
+The globalTag is automatically chosen according to the input 'DataProcessing' value. 
+However it can be explictily specified to override the default option.
+Remember that the value of 'DataProcessing' is not set by default. The user has the choice of MC50ns, MC25ns, Data50ns, Data25ns. 
+For DATA, it is important to add the option 'DataReco' to differentiate between PromptReco and 05Oct2015 versions of MiniAODv2. 
+
+* Running on 25 ns data (Run2015 A, B, and C):
 ```
-cmsRun RUNtuples_cfi.py
+cmsRun RUNtuples_cfg.py maxEvents=1000 DataProcessing='Data25ns'
+```
+* Running on 25 ns data (Run2015 D and MiniAODv2):
+```
+cmsRun RUNtuples_cfg.py maxEvents=1000 DataProcessing='Data25nsv2'
+```
+* Running on 50 ns MC:
+```
+cmsRun RUNtuples_cfg.py maxEvents=1000 DataProcessing='MC50ns'
+```
+* Running on 50 ns data:
+```
+cmsRun RUNtuples_cfg.py maxEvents=1000 DataProcessing='Data50ns'
 ```
 
-Remember to change the *GlobalTag* in RUNtuples_cfi according to your sample.
+There are 3 crab3 files for signal, backgrounds and data. They are very straightforward, just change with what you need. To run those python script:
 
-Then you have a `crab3.py` file to send your jobs to CRAB3. There you should only change the requestName, inputDataset, outLFN and publishDataName. Remember to set your CRAB3 environment before you send your crab job:
+```
+python crab3.py
+```
+
+Remember to set your CRAB3 environment before you send your crab job:
 
 ```
 source /cvmfs/cms.cern.ch/crab3/crab.sh
