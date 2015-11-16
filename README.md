@@ -17,6 +17,7 @@ cd CMSSW_7_4_14/src/
 cmsenv 
 git cms-addpkg CommonTools/PileupAlgos
 git cms-merge-topic ikrav:egm_id_7.4.12_v1
+git cms-merge-topic alefisico:myCMSSW_7_4_14
 git clone https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b v7.4.x_v7.1_25ns
 git clone https://github.com/cms-jet/JetToolbox JMEAnalysis/JetToolbox -b jetToolbox_74X
 git clone git@github.com:alefisico/RUNA.git -b v7414
