@@ -28,16 +28,16 @@ tdrstyle.setTDRStyle()
 gStyle.SetOptStat(0)
 
 
-def plotTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name, cut, xmin, xmax, rebin, labX, labY, log, boosted, PU ):
+def plotTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name, cut, xmin, xmax, rebin, labX, labY, log, version, PU ):
 	"""docstring for plot"""
 
-	outputFileName = name+'_'+cut+'_'+triggerDenom+"_"+triggerPass+'_'+sample+'_'+boosted+'_TriggerEfficiency.'+ext
+	outputFileName = name+'_'+cut+'_'+triggerDenom+"_"+triggerPass+'_'+sample+'_'+version+'_TriggerEfficiency.'+ext
 	print 'Processing.......', outputFileName
 
-	DenomOnly = inFileSample.Get( boosted+'TriggerEfficiency'+triggerPass.replace(tmpTrig,'')+'/'+name+'Denom_'+cut )
+	DenomOnly = inFileSample.Get( version+'TriggerEfficiency'+triggerPass.replace(tmpTrig,'')+'/'+name+'Denom_'+cut )
 	DenomOnly.Rebin(rebin)
 	Denom = DenomOnly.Clone()
-	PassingOnly = inFileSample.Get( boosted+'TriggerEfficiency'+triggerPass.replace(tmpTrig,'')+'/'+name+'Passing_'+cut )
+	PassingOnly = inFileSample.Get( version+'TriggerEfficiency'+triggerPass.replace(tmpTrig,'')+'/'+name+'Passing_'+cut )
 	PassingOnly.Rebin(rebin)
 	Passing = PassingOnly.Clone()
 	Efficiency = TGraphAsymmErrors( Passing, Denom, 'cp'  )
@@ -62,7 +62,7 @@ def plotTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name
 	pad1.cd()
 	if log: pad1.SetLogy()
 
-	legend.AddEntry( DenomOnly, triggerDenom+' (basedline trigger)', 'l' )
+	legend.AddEntry( DenomOnly, triggerDenom+' (baseline trigger)', 'l' )
 	legend.AddEntry( PassingOnly, triggerPass, 'l' )
 	#DenomOnly.SetMinimum(10)
 	DenomOnly.GetXaxis().SetRangeUser( xmin, xmax )
@@ -96,8 +96,8 @@ def plotTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name
 	Efficiency.GetXaxis().SetLimits( xmin, xmax )
 	labelAxis( name, Efficiency, 'Pruned')
 	Efficiency.Draw()
-	if not (labX and labY): labels( cut, '', '', '')
-	else: labels( cut, '', '', '', labX, labY, 'left' ) #, sel1='AK8PFHT700TrimMass50' )
+	if not (labX and labY): labels( '', '', '')
+	else: labels( '', '', '', labX, labY, 'left' ) #, sel1='AK8PFHT700TrimMass50' )
 
 	can.SaveAs( 'Plots/'+outputFileName.replace('.','Extended.') )
 	del can
@@ -146,14 +146,14 @@ def plotTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name
 	del can1
 
 
-def plot2DTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name, cut, Xmin, Xmax, rebinx, Ymin, Ymax, rebiny, labX, labY, boosted, PU ):
+def plot2DTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name, cut, Xmin, Xmax, rebinx, Ymin, Ymax, rebiny, labX, labY, version, PU ):
 	"""docstring for plot"""
 
-	outputFileName = name+'_'+cut+'_'+triggerDenom+"_"+triggerPass+'_'+sample+'_'+boosted+'_TriggerEfficiency.'+ext
+	outputFileName = name+'_'+cut+'_'+triggerDenom+"_"+triggerPass+'_'+sample+'_'+version+'_TriggerEfficiency.'+ext
 	print 'Processing.......', outputFileName
 
-	Denom = inFileSample.Get( boosted+'TriggerEfficiency'+triggerPass.replace(tmpTrig,'')+'/'+name+'Denom_'+cut )
-	Passing = inFileSample.Get( boosted+'TriggerEfficiency'+triggerPass.replace(tmpTrig,'')+'/'+name+'Passing_'+cut )
+	Denom = inFileSample.Get( version+'TriggerEfficiency'+triggerPass.replace(tmpTrig,'')+'/'+name+'Denom_'+cut )
+	Passing = inFileSample.Get( version+'TriggerEfficiency'+triggerPass.replace(tmpTrig,'')+'/'+name+'Passing_'+cut )
 	tmpDenom = Denom.Clone()
 	tmpPassing = Passing.Clone()
 	
@@ -208,7 +208,8 @@ def plot2DTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, na
 	Efficiency.GetYaxis().SetTitleOffset(1.0)
 	Efficiency.SetMarkerSize(2)
 	Efficiency.GetXaxis().SetRange( int(Xmin/(10.*rebinx)), int(Xmax/(10.*rebinx)) )
-	#Efficiency.GetXaxis().SetTitle( 'Leading Trimmed Jet Mass [GeV]' )
+	#Efficiency.GetXaxis().SetTitle( 'Leading Pruned Jet Mass [GeV]' )
+	Efficiency.GetXaxis().SetTitle( '4th leading jet p_{T} [GeV]' )
 	Efficiency.GetYaxis().SetTitle( 'H_{T} [GeV]' )
 	Efficiency.GetYaxis().SetRange( int(Ymin/(10.*rebiny)), int(Ymax/(10.*rebiny)) )
 
@@ -228,7 +229,7 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-p', '--proc', action='store', default='1D', help='Process to draw, example: 1D, 2D, MC.' )
 	parser.add_argument('-d', '--decay', action='store', default='jj', help='Decay, example: jj, bj.' )
-	parser.add_argument('-b', '--boosted', action='store', default='Boosted', help='Boosted or non boosted, example: Boosted' )
+	parser.add_argument('-v', '--version', action='store', default='Boosted', help='Boosted or non version, example: Boosted' )
 	parser.add_argument('-g', '--grom', action='store', default='Pruned', help='Grooming Algorithm, example: Pruned, Filtered.' )
 	parser.add_argument('-m', '--mass', action='store', default='100', help='Mass of Stop, example: 100' )
 	parser.add_argument('-C', '--cut', action='store', default='_cutDEta', help='cut, example: cutDEta' )
@@ -255,14 +256,14 @@ if __name__ == '__main__':
 	cut = args.cut
 	grom = args.grom
 	single = args.single
-	boosted = args.boosted
+	version = args.version
 	triggerUsed = args.trigger
 	ext = args.extension
 	
 	bkgFiles = {}
 	signalFiles = {}
 	CMS_lumi.extraText = "Preliminary"
-	if 'Boosted' in boosted: tmpTrig = 'AK8PFHT700TrimMass50'
+	if 'Boosted' in version: tmpTrig = 'AK8PFHT700TrimMass50'
 	else: tmpTrig = 'PFHT800'
 
 	if '50ns' in PU:
@@ -272,19 +273,18 @@ if __name__ == '__main__':
 			SAMPLE = 'MET'
 			BASEDTrigger = 'PFMET170'
 		else:
-			inputTrigger = TFile.Open('Rootfiles/RUNTriggerEfficiency_JetHT_Run2015B-PromptReco-v1_v06_v05.root')
+			inputTrigger = TFile.Open('Rootfiles/RUNTriggerEfficiency_JetHT_Run2015D-PromptReco-v4.root')
 			SAMPLE = 'JetHT_Run2015B'
 			BASEDTrigger = 'PFHT475'
 	else:
-		#CMS_lumi.lumi_13TeV = "166.37 pb^{-1}"
-		CMS_lumi.lumi_13TeV = "15.4 pb^{-1}"
+		CMS_lumi.lumi_13TeV = "1.26 fb^{-1}"
 		if 'MET' in process:
 			inputTrigger = TFile.Open('Rootfiles/RUNTriggerEfficiency_MET_Run2015C-PromptReco-v1.root')
 			SAMPLE = 'MET'
 			BASEDTrigger = 'PFMET170'
 		else:
-			inputTrigger = TFile.Open('Rootfiles/RUNTriggerEfficiency_JetHT_Run2015C-PromptReco-v1.root')
-			SAMPLE = 'JetHT_Run2015C'
+			inputTrigger = TFile.Open('Rootfiles/RUNTriggerEfficiency_JetHT_Run2015D-All_v02.root')
+			SAMPLE = 'JetHT_Run2015D'
 			BASEDTrigger = 'PFHT475'
 
 	triggerlabX = 0.15
@@ -302,17 +302,17 @@ if __name__ == '__main__':
 
 	plotList = [ 
 
-		[ '1D', 'jetTrimmedMass', 0, massMaxX, 1, triggerlabX, triggerlabY, True],
-		[ '1D', 'jetLeadMass', 0, massMaxX, 1, triggerlabX, triggerlabY, True],
-		[ '1D', 'massAve', 0, massMaxX, 2, triggerlabX, triggerlabY, True],
 		[ '1D', 'HT', HTMinX, HTMaxX, 5, triggerlabX, triggerlabY, True],
+		[ '1D', 'jet1Mass', 0, massMaxX, 1, triggerlabX, triggerlabY, True],
+		[ '1D', 'massAve', 0, massMaxX, 2, triggerlabX, triggerlabY, True],
 		[ '1D', 'trimmedMass', massMinX, massMaxX, 2, triggerlabX, triggerlabY, True],
 		[ '1D', 'ak4HT', HTMinX, HTMaxX, 5, triggerlabX, triggerlabY, True],
 		[ '1D', 'jet1Pt', ptMinX, ptMaxX, 2, triggerlabX, triggerlabY, True],
 		[ '1D', 'jet2Pt', ptMinX, ptMaxX, 2, triggerlabX, triggerlabY, True],
-		[ '1D', 'jet3Pt', 0, 200, 1, triggerlabX, triggerlabY, True],
-		[ '1D', 'jet4Pt', 0, 200, 1, triggerlabX, triggerlabY, True],
-		[ '1D', 'jet1Mass', 0, massMaxX, 1, triggerlabX, triggerlabY, True],
+		[ '1D', 'jetTrimmedMass', 0, massMaxX, 1, triggerlabX, triggerlabY, True],
+		[ '1D', 'jetLeadMass', 0, massMaxX, 1, triggerlabX, triggerlabY, True],
+		#[ '1D', 'jet3Pt', 0, 200, 1, triggerlabX, triggerlabY, True],
+		#[ '1D', 'jet4Pt', 0, 200, 1, triggerlabX, triggerlabY, True],
 
 		#[ '2D', 'jetMassHTDenom_noTrigger', 'Leading Trimmed Jet Mass [GeV]', 'H_{T} [GeV]', 0, 200, 2, 100, HTMaxX, 5, 0.85, 0.2],
 		#[ '2D', 'jetTrimmedMassHTDenom_noTrigger', 'Leading Trimmed Jet Mass [GeV]', 'H_{T} [GeV]', 0, 200, 2, 100, HTMaxX, 5, 0.85, 0.2],
@@ -321,6 +321,8 @@ if __name__ == '__main__':
 		#[ '2D', 'jetMassHTDenom_triggerOneAndTwo', 'Leading Trimmed Jet Mass [GeV]', 'H_{T} [GeV]', 0, 200, 2, 100, HTMaxX, 5, 0.85, 0.25],
 		[ '2D', 'jetMassHT', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
 		[ '2D', 'jet4PtHT', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'jet1PtHT', 100, 1000, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'jet2PtHT', 100, 1000, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
 		[ '2D', 'jetTrimmedMassHT', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
 		[ '2D', 'massAveHT', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
 		]
@@ -333,11 +335,10 @@ if __name__ == '__main__':
 
 
 	for i in Plots:
-		for optGrom in Grommers:
-			if '1D' in process:
-				plotTriggerEfficiency( inputTrigger, SAMPLE, BASEDTrigger, triggerUsed, i[0], cut, i[1], i[2], i[3], i[4], i[5], i[6], boosted, PU )
-			elif '2D' in process:
-				plot2DTriggerEfficiency( inputTrigger, SAMPLE, BASEDTrigger, triggerUsed, i[0], cut, i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], boosted, PU )
+		if '1D' in process:
+			plotTriggerEfficiency( inputTrigger, SAMPLE, BASEDTrigger, triggerUsed, i[0], cut, i[1], i[2], i[3], i[4], i[5], i[6], version, PU )
+		elif '2D' in process:
+			plot2DTriggerEfficiency( inputTrigger, SAMPLE, BASEDTrigger, triggerUsed, i[0], cut, i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], version, PU )
 
 
 

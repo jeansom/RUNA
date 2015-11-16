@@ -10,7 +10,7 @@ from httplib import HTTPException
 
 config = config()
 
-version = 'v04'
+version = 'v02'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
@@ -40,16 +40,16 @@ if __name__ == '__main__':
 
 
 	Samples = [ 
-			'/JetHT/algomez-Run2015B-PromptReco-v1_RUNA_v06-0cc1d310cda5930bd3b3a68493077b41/USER'
-			#'/MET/algomez-Run2015B-PromptReco-v1_RunIISpring15DR74_RUNA_Asympt25ns_v03p2-0cc1d310cda5930bd3b3a68493077b41/USER',
+			#'/MET/alkahn-Run2015D-PromptReco-v4_RUNA_v08-f62a3527966d74334302f3a003049cf4/USER',
+			'/JetHT/algomez-Run2015D-PromptReco-v4_RUNA_v08p1-01c9541dbd18d802f04a5e2e96c52a4d/USER',
+			'/JetHT/algomez-Run2015D-05Oct2015-v1_RUNA_v08-ca239eceb4b414f3c0d6d2e09621d4e9/USER',
 			]
 
 	
 	for dataset in Samples:
 		#procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-RUNA', '').split('-')[0]+'_'+version
 		procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-','').replace('RUNA','TriggerEfficiency').replace('-0cc1d310cda5930bd3b3a68493077b41','')+'_'+version
-		if 'Run2015B' in dataset: config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON.txt'
-		else: config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-256869_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
+		config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258750_13TeV_PromptReco_Collisions15_25ns_JSON.txt'
 
 		config.Data.inputDataset = dataset
 		config.General.requestName = procName

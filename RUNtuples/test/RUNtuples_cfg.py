@@ -32,6 +32,7 @@ options.register('sample',
                  #'/store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/00000/0014DC94-DC5C-E511-82FB-7845C4FC39F5.root',
 		# '/store/mc/RunIISpring15MiniAODv2/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/50000/009A4754-EA70-E511-B389-0025905938AA.root',
 		 '/store/data/Run2015D/JetHT/MINIAOD/PromptReco-v4/000/258/159/00000/36DC8060-3B6C-E511-BC73-02163E0143DD.root',
+		 #'/store/data/Run2015D/JetHT/MINIAOD/05Oct2015-v1/50000/00EE27AF-B16F-E511-A5F4-00259073E382.root',
 		 #'/store/user/algomez/RPVSt350tobj_13TeV_pythia8/RunIISpring15DR74_newMiniAOD_Asympt25ns/151019_202818/0000/EXO-RunIISpring15MiniAODv2-00903_103.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
@@ -48,6 +49,12 @@ options.register('DataProcessing',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Data processing types. Options are: MC50ns, MC25ns, Data50ns, Data25ns Data25nsv2')
+
+options.register('DataReco',
+                 "",
+                 opts.VarParsing.multiplicity.singleton,
+                 opts.VarParsing.varType.string,
+                 'Data Reco period (for data only). Options are: PromptReco-v4, 05Oct2015-v1')
 
 options.register('lheLabel',
                  "",
@@ -212,15 +219,15 @@ if options.usePrivateSQLite:
     from CondCore.DBCommon.CondDBSetup_cfi import *
     import os
     if options.DataProcessing=="Data50ns":
-      era="Summer15_50nsV5_DATA" 
+      era="Summer15_50nsV6_DATA" 
     elif options.DataProcessing=="Data25ns":
-      era="Summer15_25nsV5_DATA" 
+      era="Summer15_25nsV6_DATA" 
     elif options.DataProcessing=="Data25nsv2":
-      era="Summer15_25nsV5_DATA" 
+      era="Summer15_25nsV6_DATA" 
     elif options.DataProcessing=="MC50ns":
-      era="Summer15_50nsV5_DATA" 
+      era="Summer15_50nsV6_DATA" 
     elif options.DataProcessing=="MC25ns":
-      era="Summer15_25nsV5_MC" 
+      era="Summer15_25nsV6_MC" 
     dBFile = era+".db"
     print "\nUsing private SQLite file", dBFile, "\n"
     process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
@@ -375,13 +382,15 @@ process.skimmedPatElectrons = cms.EDFilter(
 
 process.skimmedPatMET = cms.EDFilter(
     "PATMETSelector",
-    src = cms.InputTag(metLabel, "", "RECO" if 'Data' in options.DataProcessing else "PAT" ),
+    #src = cms.InputTag(metLabel, "", "RECO" if ( 'PromptReco' in options.DataReco ) else "PAT" ),
+    src = cms.InputTag(metLabel, "", "RECO" if (options.DataReco=='PromptReco-v4') else "PAT" ),
     cut = cms.string("")
     )
 
 process.skimmedPatMETNoHF = cms.EDFilter(
     "PATMETSelector",
-    src = cms.InputTag(metNoHFLabel, "", "RECO" if 'Data' in options.DataProcessing else "PAT"),
+    #src = cms.InputTag(metNoHFLabel, "", "RECO" if ( 'PromptReco' in options.DataReco ) else "PAT" ),
+    src = cms.InputTag(metNoHFLabel, "", "RECO" if (options.DataReco=='PromptReco-v4') else "PAT" ), 
     cut = cms.string("")
     )
 

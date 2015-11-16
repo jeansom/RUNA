@@ -27,7 +27,7 @@ config.Data.unitsPerJob = 1
 config.Data.totalUnits = 2000
 config.Data.publication = True
 config.Data.ignoreLocality = True
-config.Data.publishDataName = name+'_'+version
+config.Data.outputDatasetTag = name+'_'+version
 
 config.Site.storageSite = 'T3_US_FNALLPC'
 

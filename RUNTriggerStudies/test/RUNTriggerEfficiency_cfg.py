@@ -33,8 +33,14 @@ options.register('ak4Jet4Pt',
 		VarParsing.varType.float,
 		"jetPt cut"
 		)
-options.register('jetPt', 
-		150.0,
+options.register('jet1Pt', 
+		500.0,
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.float,
+		"jetPt cut"
+		)
+options.register('jet2Pt', 
+		450.0,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
 		"jetPt cut"
@@ -84,27 +90,7 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
-		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_1.root',
-		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_10.root',
-		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_100.root',
-		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_101.root',
-		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_102.root',
-		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_103.root',
-		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_104.root',
-		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_105.root',
-		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_106.root',
-		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v3_RUNA_v06/150930_081518/0000/RUNtuples_107.root',
-
-		   #'/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_1.root',
-		   #'/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_10.root',
-		   #'/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_100.root',
-		   #'/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_101.root',
-		   #'/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_102.root',
-		   #'/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_103.root',
-		   #'/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_104.root',
-		   #'/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_105.root',
-		   #'/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_106.root',
-		   #'/store/user/algomez/JetHT/Run2015B-PromptReco-v1_RUNA_v06/150930_081418/0000/RUNtuples_107.root',
+		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v08p1/151028_103522/0000/RUNtuple_100.root',
 	    )
 	)
 
@@ -134,7 +120,8 @@ process.ResolvedTriggerEfficiencyPFHT800PFHT7504Jet = process.ResolvedTriggerEff
 		triggerPass = cms.vstring( ['HLT_PFHT800', 'HLT_PFHT750_4JetPt'] ) )
 
 process.BoostedTriggerEfficiency = cms.EDAnalyzer('RUNBoostedTriggerEfficiency',
-		cutjetPtvalue 		= cms.double( options.jetPt ),
+		cutjet1Ptvalue 		= cms.double( options.jet1Pt ),
+		cutjet2Ptvalue 		= cms.double( options.jet2Pt ),
 		cutAsymvalue 		= cms.double( options.Asym ),
 		cutCosThetavalue 	= cms.double( options.CosTheta ),
 		cutTau31value 		= cms.double( options.Tau31 ),
