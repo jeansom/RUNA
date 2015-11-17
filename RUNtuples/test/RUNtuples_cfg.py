@@ -383,14 +383,14 @@ process.skimmedPatElectrons = cms.EDFilter(
 process.skimmedPatMET = cms.EDFilter(
     "PATMETSelector",
     #src = cms.InputTag(metLabel, "", "RECO" if ( 'PromptReco' in options.DataReco ) else "PAT" ),
-    src = cms.InputTag(metLabel, "", "RECO" if (options.DataReco=='PromptReco-v4') else "PAT" ),
+    src = cms.InputTag(metLabel, "", "RECO" if (options.DataReco=='PromptReco') else "PAT" ),
     cut = cms.string("")
     )
 
 process.skimmedPatMETNoHF = cms.EDFilter(
     "PATMETSelector",
     #src = cms.InputTag(metNoHFLabel, "", "RECO" if ( 'PromptReco' in options.DataReco ) else "PAT" ),
-    src = cms.InputTag(metNoHFLabel, "", "RECO" if (options.DataReco=='PromptReco-v4') else "PAT" ), 
+    src = cms.InputTag(metNoHFLabel, "", "RECO" if (options.DataReco=='PromptReco') else "PAT" ), 
     cut = cms.string("")
     )
 
