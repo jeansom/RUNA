@@ -11,9 +11,9 @@ import sys,os,time
 #import optparse
 import argparse
 #from collections import defaultdict
-from ROOT import TFile, TTree, TDirectory, gDirectory, gROOT, TH1F, TH2D, TMath, TLorentzVector
+from ROOT import TFile, TTree, TDirectory, gDirectory, gROOT, TH1F, TH2D, TMath
 from array import array
-from RUNA.RUNAnalysis.scaleFactors import scaleFactor as SF
+from scaleFactors import scaleFactor as SF
 
 gROOT.SetBatch()
 
@@ -39,6 +39,11 @@ def myAnalyzer( sample, couts, grooming):
 	maxMass		= 600
 	nBinsHT		= 150
 	maxHT		= 1500
+
+	massAvevsJet1Tau21_NOMasscut 	= TH2D('massAvevsJet1Tau21_NOMasscut', 'massAvevsJet1Tau21_NOMasscut', nBinsMass, 0, maxMass, 20, 0, 1 )
+	massAvevsJet2Tau21_NOMasscut 	= TH2D('massAvevsJet2Tau21_NOMasscut', 'massAvevsJet2Tau21_NOMasscut', nBinsMass, 0, maxMass, 20, 0, 1 )
+	massAvevsJet1Tau31_NOMasscut 	= TH2D('massAvevsJet1Tau31_NOMasscut', 'massAvevsJet1Tau31_NOMasscut', nBinsMass, 0, maxMass, 20, 0, 1 )
+	massAvevsJet2Tau31_NOMasscut 	= TH2D('massAvevsJet2Tau31_NOMasscut', 'massAvevsJet2Tau31_NOMasscut', nBinsMass, 0, maxMass, 20, 0, 1 )
 
 	trimmedMassVsHT 	= TH2D('trimmedMassVsHT', 'trimmedMassVsHT', nBinsMass, 0, maxMass, nBinsHT, 0, maxHT )
 	massAve_Tau21 	= TH1F('massAve_Tau21', 'massAve_Tau21', nBinsMass, 0, maxMass )
@@ -129,6 +134,8 @@ def myAnalyzer( sample, couts, grooming):
 		puWeight	= events.puWeight
 		lumiWeight	= events.lumiWeight
 		numPV           = events.numPV
+		lumiWeight           = events.lumiWeight
+		puWeight           = events.puWeight
 		AK4HT           = events.AK4HT
 		jet1Pt          = events.jet1Pt
 		jet1Eta         = events.jet1Eta
@@ -173,6 +180,7 @@ def myAnalyzer( sample, couts, grooming):
 		#print Run/float(Lumi), Run, Lumi, Run/float(newLumi)
 		
 		#### Optimization
+		scale = lumiWeight*puWeight*1260
 		deltaEtaDijet = abs( jet1Eta - jet2Eta )
 		h_deltaEtaDijet.Fill( deltaEtaDijet, scale )
 		
@@ -197,7 +205,35 @@ def myAnalyzer( sample, couts, grooming):
 		
 		if ( ( jet1Tau21 < 0.6 ) and ( jet2Tau21 < 0.6 ) ): massAve_Tau2106.Fill( massAve, scale )
 
+		if not massAsymCut:
+			massAvevsJet1Tau21_NOMasscut.Fill( massAve, jet1Tau21, scale )	
+			massAvevsJet2Tau21_NOMasscut.Fill( massAve, jet2Tau21, scale )	
+			massAvevsJet1Tau31_NOMasscut.Fill( massAve, jet1Tau31, scale )	
+			massAvevsJet2Tau31_NOMasscut.Fill( massAve, jet2Tau31, scale )	
 		#if HTCut and jetPtCut:
+<<<<<<< HEAD
+		'''
+		if jetPtCut:
+			eventsHT += 1
+			jet1Pt_cutHT.Fill( jet1Pt, scale )
+			jet2Pt_cutHT.Fill( jet2Pt, scale )
+			if dijetCut:
+				eventsDijet += 1
+				if massAsymCut:
+					eventsMassAsym += 1
+					massAve_MassAsym.Fill( massAve, scale )
+					if tau21Cut: 
+						eventsTau21 += 1
+						massAve_Tau21.Fill( massAve, scale )
+						if cosThetaStarCut:
+							eventsTau21CosTheta += 1
+							massAve_Tau21CosTheta.Fill( massAve, scale )
+							jet1Pt_Tau21CosTheta.Fill( jet1Pt, scale )
+							jet2Pt_Tau21CosTheta.Fill( jet2Pt, scale )
+							if deltaEtaDijetCut:
+								eventsTau21CosThetaDEta += 1
+								massAve_Tau21CosThetaDEta.Fill( massAve, scale )
+=======
 		if HTCut and dijetCut:
 			if massAsymCut:
 				if ( ( jet1Tau21 < 0.4 ) and ( jet2Tau21 < 0.4 ) ): massAve_Tau2104.Fill( massAve, scale )
@@ -225,6 +261,7 @@ def myAnalyzer( sample, couts, grooming):
 						massAve_Tau21CosTheta.Fill( massAve, scale )
 						if deltaEtaDijetCut:
 							massAve_Tau21CosThetaDEta.Fill( massAve, scale )
+>>>>>>> 1ed1f13e9a39e2d9412a067d05462ef0c0cedbeb
 						else:
 							massAve_Tau21CosThetaNODEta.Fill( massAve, scale )
 
@@ -239,6 +276,10 @@ def myAnalyzer( sample, couts, grooming):
 					if tau31Cut:
 						massAve_NOTau21Tau31.Fill( massAve, scale )
 						if cosThetaStarCut:
+<<<<<<< HEAD
+							massAve_CosThetaNOTau21.Fill( massAve, scale )
+		'''
+=======
 							massAve_NOTau21Tau31CosTheta.Fill( massAve, scale )
 					if cosThetaStarCut:
 						massAve_NOTau21CosTheta.Fill( massAve, scale )
@@ -260,6 +301,7 @@ def myAnalyzer( sample, couts, grooming):
 							massAve_NOMassAsymTau31CosThetaDEta.Fill( massAve, scale )
 		'''
 
+>>>>>>> 1ed1f13e9a39e2d9412a067d05462ef0c0cedbeb
 
 
 	outputFile.Write()
@@ -313,9 +355,13 @@ if __name__ == '__main__':
 		inputFileName = 'Rootfiles/RUNAnalysis_TTJets_RunIISpring15MiniAODv2-74X_Asympt25ns_v03_v01.root'
 		myAnalyzer( inputFileName, couts, grooming )
 	else: 
+<<<<<<< HEAD
+		inputFileName = 'Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15MiniAODv2-74X_Asympt25ns_v08_v04.root'
+=======
 		#for qcdBin in [ '170to300', '300to470', '470to600', '600to800', '800to1000', '1000to1400', '1400to1800', '1800to2400', '2400to3200', '3200toInf' ]: 
 		#nputFileName = 'Rootfiles//RUNAnalysis_QCD_Pt_'+qcdBin+'_RunIISpring15MiniAODv2-74X_'+PU+'_v08_v01.root'
 		#myAnalyzer( inputFileName, couts, grooming )
 		inputFileName = 'Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15MiniAODv2-74X_Asympt25ns_v08_v02.root'
+>>>>>>> 1ed1f13e9a39e2d9412a067d05462ef0c0cedbeb
 		myAnalyzer( inputFileName, couts, grooming )
 
