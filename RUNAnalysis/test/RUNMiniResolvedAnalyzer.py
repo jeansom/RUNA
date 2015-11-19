@@ -11,10 +11,7 @@ import sys,os,time
 #import optparse
 import argparse
 #from collections import defaultdict
-<<<<<<< HEAD
 from multiprocessing import Process
-=======
->>>>>>> 1ed1f13e9a39e2d9412a067d05462ef0c0cedbeb
 from ROOT import TFile, TTree, TDirectory, gDirectory, gROOT, TH1F, TH2D, TMath, TLorentzVector, TVector3
 from array import array
 from scaleFactors import scaleFactor as SF
@@ -80,7 +77,6 @@ def myAnalyzer( sample, couts ):
 	nBinsHT		= 150
 	maxHT		= 1500
 
-<<<<<<< HEAD
 	deltaR_Pairing03 	= TH1F('deltaR_Pairing03', 'deltaR_Pairing03', 100, 0, 5. )
 	massAve_Pairing03 	= TH1F('massAve_Pairing03', 'massAve_Pairing03', nBinsMass, 0, maxMass )
 	deltaR_Pairing03_Pt50 	= TH1F('deltaR_Pairing03_Pt50', 'deltaR_Pairing03_Pt50', 100, 0, 5. )
@@ -234,35 +230,13 @@ def myAnalyzer( sample, couts ):
 	massAve_DeltaEta 	= TH1F('massAve_DeltaEta', 'massAve_DeltaEta', nBinsMass, 0, maxMass )
 	massAve_MassPar 	= TH1F('massAve_MassPar', 'massAve_MassPar', nBinsMass, 0, maxMass )
 	massAve_CosTheta 	= TH1F('massAve_CosTheta', 'massAve_CosTheta', nBinsMass, 0, maxMass )
-=======
-	deltaR_Pairing08 	= TH1F('deltaR_Pairing08', 'deltaR_Pairing08', 100, 0, 5. )
-	deltaR_Pairing09 	= TH1F('deltaR_Pairing09', 'deltaR_Pairing09', 100, 0, 5. )
-	deltaR_Pairing10 	= TH1F('deltaR_Pairing10', 'deltaR_Pairing10', 100, 0, 5. )
-	deltaR_Pairing11 	= TH1F('deltaR_Pairing11', 'deltaR_Pairing11', 100, 0, 5. )
-	deltaR_Pairing12 	= TH1F('deltaR_Pairing12', 'deltaR_Pairing12', 100, 0, 5. )
-	massAve_Pairing 	= TH1F('massAve_Pairing', 'massAve_Pairing', nBinsMass, 0, maxMass )
-	massAve_DeltaRBest 	= TH1F('massAve_DeltaRBest', 'massAve_DeltaRBest', nBinsMass, 0, maxMass )
-	massAve_DeltaR 	= TH1F('massAve_DeltaR', 'massAve_DeltaR', nBinsMass, 0, maxMass )
-	massAve_DeltaEta 	= TH1F('massAve_DeltaEta', 'massAve_DeltaEta', nBinsMass, 0, maxMass )
-	massAve_MassPar 	= TH1F('massAve_MassPar', 'massAve_MassPar', nBinsMass, 0, maxMass )
-	massAve_EtaMassParDeltaR 	= TH1F('massAve_EtaMassParDeltaR', 'massAve_EtaMassParDeltaR', nBinsMass, 0, maxMass )
->>>>>>> 1ed1f13e9a39e2d9412a067d05462ef0c0cedbeb
 	massAve_Delta 	= TH1F('massAve_Delta', 'massAve_Delta', nBinsMass, 0, maxMass )
 	massAve_DeltaDeltaR 	= TH1F('massAve_DeltaDeltaR', 'massAve_DeltaDeltaR', nBinsMass, 0, maxMass )
 	massAve_DeltaDeltaEta 	= TH1F('massAve_DeltaDeltaEta', 'massAve_DeltaDeltaEta', nBinsMass, 0, maxMass )
 	massAve_DeltaMassPar 	= TH1F('massAve_DeltaMassPar', 'massAve_DeltaMassPar', nBinsMass, 0, maxMass )
-<<<<<<< HEAD
 	massAve_Delta_cutJetPt 	= TH1F('massAve_Delta_cutJetPt', 'massAve_Delta_cutJetPt', nBinsMass, 0, maxMass )
 	massAve_DeltaDeltaEta_cutJetPt 	= TH1F('massAve_DeltaDeltaEta_cutJetPt', 'massAve_DeltaDeltaEta_cutJetPt', nBinsMass, 0, maxMass )
 	massAve_DeltaMassPar_cutJetPt 	= TH1F('massAve_DeltaMassPar_cutJetPt', 'massAve_DeltaMassPar_cutJetPt', nBinsMass, 0, maxMass )
-=======
-	massAve_DeltaEtaMassParDeltaR 	= TH1F('massAve_DeltaEtaMassParDeltaR', 'massAve_DeltaEtaMassParDeltaR', nBinsMass, 0, maxMass )
-	massAve_CosTheta 	= TH1F('massAve_CosTheta', 'massAve_CosTheta', nBinsMass, 0, maxMass )
-	massAve_CosThetaDeltaR 	= TH1F('massAve_CosThetaDeltaR', 'massAve_CosThetaDeltaR', nBinsMass, 0, maxMass )
-	massAve_CosThetaDeltaEta 	= TH1F('massAve_CosThetaDeltaEta', 'massAve_CosThetaDeltaEta', nBinsMass, 0, maxMass )
-	massAve_CosThetaMassPar 	= TH1F('massAve_CosThetaMassPar', 'massAve_CosThetaMassPar', nBinsMass, 0, maxMass )
-	massAve_CosThetaEtaMassParDeltaR 	= TH1F('massAve_CosThetaEtaMassParDeltaR', 'massAve_CosThetaEtaMassParDeltaR', nBinsMass, 0, maxMass )
->>>>>>> 1ed1f13e9a39e2d9412a067d05462ef0c0cedbeb
 	deltaR_Pairing 	= TH1F('deltaR_Pairing', 'deltaR_Pairing', 100, 0, 5. )
 	deltaEtaDijet_Pairing 	= TH1F('deltaEtaDijet_Pairing', 'deltaEtaDijet_Pairing', 100, 0, 5. )
 	massPairing_Pairing 	= TH1F('massPairing_Pairing', 'massPairing_Pairing', 20, 0, 1. )
@@ -275,39 +249,8 @@ def myAnalyzer( sample, couts ):
 	deltaRBest_Pairing 	= TH1F('deltaRBest_Pairing', 'deltaRBest_Pairing', 100, 0, 5. )
 	cosThetaStar1_Pairing 	= TH1F('cosThetaStar1_Pairing', 'cosThetaStar1_Pairing', 20, 0, 1. )
 	cosThetaStar2_Pairing 	= TH1F('cosThetaStar2_Pairing', 'cosThetaStar2_Pairing', 20, 0, 1. )
-<<<<<<< HEAD
 	'''
-=======
 
-
-	massAve_Pairing09 	= TH1F('massAve_Pairing09', 'massAve_Pairing09', nBinsMass, 0, maxMass )
-	massAve_DeltaRBest09	= TH1F('massAve_DeltaRBest09', 'massAve_DeltaRBest09', nBinsMass, 0, maxMass )
-	massAve_DeltaR09	= TH1F('massAve_DeltaR09', 'massAve_DeltaR09', nBinsMass, 0, maxMass )
-	massAve_DeltaEta09	= TH1F('massAve_DeltaEta09', 'massAve_DeltaEta09', nBinsMass, 0, maxMass )
-	massAve_MassPar09	= TH1F('massAve_MassPar09', 'massAve_MassPar09', nBinsMass, 0, maxMass )
-	massAve_EtaMassParDeltaR09	= TH1F('massAve_EtaMassParDeltaR09', 'massAve_EtaMassParDeltaR09', nBinsMass, 0, maxMass )
-	massAve_Delta09	= TH1F('massAve_Delta09', 'massAve_Delta09', nBinsMass, 0, maxMass )
-	massAve_DeltaDeltaR09	= TH1F('massAve_DeltaDeltaR09', 'massAve_DeltaDeltaR09', nBinsMass, 0, maxMass )
-	massAve_DeltaDeltaEta09	= TH1F('massAve_DeltaDeltaEta09', 'massAve_DeltaDeltaEta09', nBinsMass, 0, maxMass )
-	massAve_DeltaMassPar09	= TH1F('massAve_DeltaMassPar09', 'massAve_DeltaMassPar09', nBinsMass, 0, maxMass )
-	massAve_DeltaEtaMassParDeltaR09	= TH1F('massAve_DeltaEtaMassParDeltaR09', 'massAve_DeltaEtaMassParDeltaR09', nBinsMass, 0, maxMass )
-	massAve_CosTheta09	= TH1F('massAve_CosTheta09', 'massAve_CosTheta09', nBinsMass, 0, maxMass )
-	massAve_CosThetaDeltaR09	= TH1F('massAve_CosThetaDeltaR09', 'massAve_CosThetaDeltaR09', nBinsMass, 0, maxMass )
-	massAve_CosThetaDeltaEta09	= TH1F('massAve_CosThetaDeltaEta09', 'massAve_CosThetaDeltaEta09', nBinsMass, 0, maxMass )
-	massAve_CosThetaMassPar09	= TH1F('massAve_CosThetaMassPar09', 'massAve_CosThetaMassPar09', nBinsMass, 0, maxMass )
-	massAve_CosThetaEtaMassParDeltaR09	= TH1F('massAve_CosThetaEtaMassParDeltaR09', 'massAve_CosThetaEtaMassParDeltaR09', nBinsMass, 0, maxMass )
-	deltaEtaDijet_Pairing09 	= TH1F('deltaEtaDijet_Pairing09', 'deltaEtaDijet_Pairing09', 100, 0, 5. )
-	massPairing_Pairing09 	= TH1F('massPairing_Pairing09', 'massPairing_Pairing09', 20, 0, 1. )
-	deltaEtaDijet1_Pairing09 	= TH1F('deltaEtaDijet1_Pairing09', 'deltaEtaDijet1_Pairing09', 100, 0, 5. )
-	deltaEtaDijet2_Pairing09 	= TH1F('deltaEtaDijet2_Pairing09', 'deltaEtaDijet2_Pairing09', 100, 0, 5. )
-	deltaEtaBest_Pairing09 	= TH1F('deltaEtaBest_Pairing09', 'deltaEtaBest_Pairing09', 100, 0, 5. )
-	deltaPhiDijet_Pairing09 	= TH1F('deltaPhiDijet_Pairing09', 'deltaPhiDijet_Pairing09', 100, 0, 5. )
-	deltaPhiBest_Pairing09 	= TH1F('deltaPhiBest_Pairing09', 'deltaPhiBest_Pairing09', 100, 0, 5. )
-	deltaRDijet_Pairing09 	= TH1F('deltaRDijet_Pairing09', 'deltaRDijet_Pairing09', 100, 0, 5. )
-	deltaRBest_Pairing09 	= TH1F('deltaRBest_Pairing09', 'deltaRBest_Pairing09', 100, 0, 5. )
-	cosThetaStar1_Pairing09 	= TH1F('cosThetaStar1_Pairing09', 'cosThetaStar1_Pairing09', 20, 0, 1. )
-	cosThetaStar2_Pairing09 	= TH1F('cosThetaStar2_Pairing09', 'cosThetaStar2_Pairing09', 20, 0, 1. )
->>>>>>> 1ed1f13e9a39e2d9412a067d05462ef0c0cedbeb
 
 	###################################### Get GenTree 
 	events = inputFile.Get( 'RUNATree/RUNATree' )
@@ -353,20 +296,13 @@ def myAnalyzer( sample, couts ):
 		jetsPhi		 = events.jetsPhi
 		jetsE		 = events.jetsE
 
-<<<<<<< HEAD
-		scale = 1265* puWeight * lumiWeight * 4.64
-=======
 		scale = 1265* puWeight * lumiWeight
->>>>>>> 1ed1f13e9a39e2d9412a067d05462ef0c0cedbeb
 		j1 = TLorentzVector()
 		j2 = TLorentzVector()
 		j3 = TLorentzVector()
 		j4 = TLorentzVector()
 		massPairing = {}
-<<<<<<< HEAD
-		#if ( (len(jetsPt) == 4 ) and ( jetsPt[3] > 60 ) ):
-=======
->>>>>>> 1ed1f13e9a39e2d9412a067d05462ef0c0cedbeb
+		
 		if (len(jetsPt) == 4 ):
 
 			tmpj1 = TLorentzVector()
@@ -378,20 +314,16 @@ def myAnalyzer( sample, couts ):
 			tmpj3.SetPtEtaPhiE( jetsPt[2], jetsEta[2], jetsPhi[2], jetsE[2] )
 			tmpj4.SetPtEtaPhiE( jetsPt[3], jetsEta[3], jetsPhi[3], jetsE[3] )
 
-<<<<<<< HEAD
 			pairoff03 = Pairing( tmpj1, tmpj2, tmpj3, tmpj4, 0.3 )
 			pairoff04 = Pairing( tmpj1, tmpj2, tmpj3, tmpj4, 0.4 )
 			pairoff05 = Pairing( tmpj1, tmpj2, tmpj3, tmpj4, 0.5 )
 			pairoff06 = Pairing( tmpj1, tmpj2, tmpj3, tmpj4, 0.6 )
 			pairoff07 = Pairing( tmpj1, tmpj2, tmpj3, tmpj4, 0.7 )
-=======
->>>>>>> 1ed1f13e9a39e2d9412a067d05462ef0c0cedbeb
 			pairoff08 = Pairing( tmpj1, tmpj2, tmpj3, tmpj4, 0.8 )
 			pairoff09 = Pairing( tmpj1, tmpj2, tmpj3, tmpj4, 0.9 )
 			pairoff10 = Pairing( tmpj1, tmpj2, tmpj3, tmpj4, 1.0 )
 			pairoff11 = Pairing( tmpj1, tmpj2, tmpj3, tmpj4, 1.1 )
 			pairoff12 = Pairing( tmpj1, tmpj2, tmpj3, tmpj4, 1.2 )
-<<<<<<< HEAD
 			pairoff13 = Pairing( tmpj1, tmpj2, tmpj3, tmpj4, 1.3 )
 			
 			if pairoff03[0]: 
@@ -594,15 +526,6 @@ def myAnalyzer( sample, couts ):
 					massAve_Pairing13_Pt100.Fill( ( ( ( pairoff13[1] + pairoff13[2] ).M() + ( pairoff13[3] + pairoff13[4] ).M() ) / 2 ), scale )
 
 		'''
-=======
-			
-		if pairoff08[0]: deltaR_Pairing08.Fill( pairoff08[5] )
-		if pairoff09[0]: deltaR_Pairing09.Fill( pairoff09[5] )
-		if pairoff10[0]: deltaR_Pairing10.Fill( pairoff10[5] )
-		if pairoff11[0]: deltaR_Pairing11.Fill( pairoff11[5] )
-		if pairoff12[0]: deltaR_Pairing12.Fill( pairoff12[5] )
-
->>>>>>> 1ed1f13e9a39e2d9412a067d05462ef0c0cedbeb
 		if pairoff08[0]:
 
 			deltaR = pairoff08[5] 
@@ -657,7 +580,6 @@ def myAnalyzer( sample, couts ):
 				massAve_DeltaRBest.Fill( massAve, scale )
 			if ( deltaR < 1.5 ):
 				massAve_DeltaR.Fill( massAve, scale )
-<<<<<<< HEAD
 				if ( ( cosThetaStar1 < 0.7 ) and ( cosThetaStar2 < 0.7 ) ):
 					massAve_DeltaRCosTheta.Fill( massAve, scale )
 					if ( deltaEta < 1 ):
@@ -686,8 +608,6 @@ def myAnalyzer( sample, couts ):
 						massAve_DeltaDeltaEta.Fill( massAve, scale )
 						if ( massPairing < 0.1 ):
 							massAve_DeltaMassPar.Fill( massAve, scale )
-		'''
-=======
 				if ( deltaEta < 1 ):
 					massAve_DeltaEta.Fill( massAve, scale )
 					if ( massPairing < 0.1 ):
@@ -715,7 +635,7 @@ def myAnalyzer( sample, couts ):
 							massAve_CosThetaMassPar.Fill( massAve, scale )
 							if ( deltaRBest < 2 ):
 								massAve_CosThetaEtaMassParDeltaR.Fill( massAve, scale )
->>>>>>> 1ed1f13e9a39e2d9412a067d05462ef0c0cedbeb
+		'''
 
 
 
@@ -755,7 +675,6 @@ if __name__ == '__main__':
 	samples = args.samples
 
 	if 'RPV' in samples: 
-<<<<<<< HEAD
 		inputFileName = 'Rootfiles/RUNAnalysis_RPVSt'+str(mass)+'tojj_RunIISpring15MiniAODv2-74X_'+PU+'_v08_v04.root'
 	elif 'Data' in samples: 
 		inputFileName = 'Rootfiles/RUNAnalysis_JetHTRun2015D-All_v08_v04.root'
@@ -763,31 +682,12 @@ if __name__ == '__main__':
 		inputFileName = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01.root'
 		inputFileName = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01.root'
 		inputFileName = 'Rootfiles/RUNAnalysis_TTJets_RunIISpring15DR74_Asympt25ns_v03_v01.root'
-=======
-		inputFileName = 'Rootfiles/RUNAnalysis_RPVSt'+str(mass)+'tojj_RunIISpring15MiniAODv2-74X_'+PU+'_v08_v02.root'
-		myAnalyzer( inputFileName, couts)
-	elif 'Data' in samples: 
-		inputFileName = 'Rootfiles/RUNAnalysis_JetHTRun2015D-PromptReco-v4_v08_v01.root'
-		myAnalyzer( inputFileName, couts)
-	elif 'Bkg' in samples: 
-		inputFileName = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01.root'
-		myAnalyzer( inputFileName, couts)
-		inputFileName = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01.root'
-		myAnalyzer( inputFileName, couts)
-		inputFileName = 'Rootfiles/RUNAnalysis_TTJets_RunIISpring15DR74_Asympt25ns_v03_v01.root'
-		myAnalyzer( inputFileName, couts)
->>>>>>> 1ed1f13e9a39e2d9412a067d05462ef0c0cedbeb
 	else: 
 		#for qcdBin in [ '170to300', '300to470', '470to600', '600to800', '800to1000', '1000to1400', '1400to1800', '1800to2400', '2400to3200', '3200toInf' ]: 
 		#	inputFileName = 'Rootfiles//RUNAnalysis_QCD_Pt_'+qcdBin+'_RunIISpring15MiniAODv2-74X_'+PU+'_v08_v02.root'
 		#	myAnalyzer( inputFileName, couts )
-<<<<<<< HEAD
 		inputFileName = 'Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15MiniAODv2-74X_Asympt25ns_v08_v04.root'
 	p = Process( target=myAnalyzer, args=( inputFileName, couts ) )
 	p.start()
 	p.join()
-=======
-		inputFileName = 'Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15MiniAODv2-74X_Asympt25ns_v08_v02.root'
-		myAnalyzer( inputFileName, couts )
->>>>>>> 1ed1f13e9a39e2d9412a067d05462ef0c0cedbeb
 
