@@ -2,6 +2,7 @@
 #include <memory>
 #include <vector>
 #include <TLorentzVector.h>
+#include <TVector3.h>
 #include <TH2.h>
 #include <TTree.h>
 
@@ -33,16 +34,40 @@ typedef struct Jet_struc {
 	double tau2;
 	double tau3;
 	double btagCSV;
+	double nhf;
+	double nEMf;
+	double chf;
+	double cEMf;
+	int numConst;
+	double chm;
 } JETtype;
 
+class myJet {
+	public:
+		TLorentzVector p4;
+		TLorentzVector subjet0;
+		TLorentzVector subjet1;
+		double mass;
+		double qgl;
+		double tau1;
+		double tau2;
+		double tau3;
+		double btagCSV;
+		double nhf;
+		double nEMf;
+		double chf;
+		double cEMf;
+		int numConst;
+		double chm;
+};
 
-static float massAverage( float m1, float m2 ){ return ( (m1 + m2)/2 ); }
+inline float massAverage( float m1, float m2 ){ return ( (m1 + m2)/2 ); }
 
-static float massAsymmetry( float m1, float m2 ){ return abs( ( m1 - m2 )/( m1 + m2 ) ); }
+inline float massAsymmetry( float m1, float m2 ){ return abs( ( m1 - m2 )/( m1 + m2 ) ); }
 
-static float deltaValue( float p1, float p2 ){ return abs( p1 - p2 ); }
+inline float deltaValue( float p1, float p2 ){ return abs( p1 - p2 ); }
 
-static float calculateCosThetaStar( TLorentzVector jet1, TLorentzVector jet2 ){
+inline float calculateCosThetaStar( TLorentzVector jet1, TLorentzVector jet2 ){
 
 	TLorentzVector tmpCM = jet1 + jet2;
 	jet1.Boost( -tmpCM.BoostVector() );
@@ -52,7 +77,19 @@ static float calculateCosThetaStar( TLorentzVector jet1, TLorentzVector jet2 ){
 	return valueCosThetaStar;
 }
 
-static bool loosejetID( double jetE, double jecFactor, double neutralHadronEnergy, double neutralEmEnergy, double chargedHadronEnergy, double chargedEmEnergy, int chargedHadronMultiplicity, int neutralHadronMultiplicity, double chargedMultiplicity ){ 
+inline float cosThetaStar( TLorentzVector jet1, TLorentzVector jet2 ){
+
+	TLorentzVector tmpCM = jet1 + jet2;
+	jet1.Boost( -tmpCM.BoostVector() );
+	jet2.Boost( -tmpCM.BoostVector() );
+	TVector3 tmpV1( jet1.X(), jet1.Y(), jet1.Z() );
+	TVector3 tmpV2( jet2.X(), jet2.Y(), jet2.Z() );
+	float valueCosThetaStar = TMath::Abs( tmpV1.CosTheta() ) ;
+
+	return valueCosThetaStar;
+}
+
+inline bool loosejetID( double jetE, double jecFactor, double neutralHadronEnergy, double neutralEmEnergy, double chargedHadronEnergy, double chargedEmEnergy, int chargedHadronMultiplicity, int neutralHadronMultiplicity, double chargedMultiplicity ){ 
 
 	double jec = 1. / ( jecFactor * jetE );
 	double nhf = neutralHadronEnergy * jec;
@@ -69,7 +106,7 @@ static bool loosejetID( double jetE, double jecFactor, double neutralHadronEnerg
 	return idL;
 }
 
-static bool checkTriggerBits( Handle<vector<string>> triggerNames, Handle<vector<float>> triggerBits, TString HLTtrigger  ){
+inline bool checkTriggerBits( Handle<vector<string>> triggerNames, Handle<vector<float>> triggerBits, TString HLTtrigger  ){
 
 	float triggerFired = 0;
 	for (size_t t = 0; t < triggerNames->size(); t++) {
@@ -83,7 +120,7 @@ static bool checkTriggerBits( Handle<vector<string>> triggerNames, Handle<vector
 	return triggerFired;
 }	
 
-static bool checkORListOfTriggerBits( Handle<vector<string>> triggerNames, Handle<vector<float>> triggerBits, vector<string>  triggerPass  ){
+inline bool checkORListOfTriggerBits( Handle<vector<string>> triggerNames, Handle<vector<float>> triggerBits, vector<string>  triggerPass  ){
 
 	vector<bool> triggersFired;
 	for (size_t t = 0; t < triggerPass.size(); t++) {

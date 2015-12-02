@@ -16,6 +16,7 @@ dictXS = {
 		#'1000ToInf' : 769.7 ,			
 
 		# QCD_Pt_*_TuneCUETP8M1_13TeV_pythia8
+		'120to170' : 471100.,
 		'170to300' : 117276.,
 		'300to470' : 7823. , 
 		'470to600' : 648.2 ,
@@ -33,7 +34,11 @@ dictXS = {
 		'1500to2000' : 121.5 ,
 		'2000toInf' : 25.42 ,
 		#### TTJets
-		'TTJets' : 670.3, #  831.0 this is from twiki, 670.3 is from MCM
+		'TTJets_TuneCUETP8M1' : 831.76,
+		'TTJets_HT-600to800' : 1.61, 
+		'TTJets_HT-80to1200' : 0.663, 
+		'TTJets_HT-1200to2500' : 0.12, 
+		'TTJets_HT-2500toInf' : 0.00143, 
 		'WJetsToQQ' : 95.14,
 		'WWTo4Q' : 45.20,
 		'ZJetsToQQ' : 5.67,
@@ -50,6 +55,7 @@ dictEvents = {
 
 		#### QCD in Pt (TuneCUETP8M1)
 		#	        (Asympt50ns)   (Asympt25ns)	
+		'120to170' :	[ 1., 	3452896. ],
 		'170to300' :	[ 3438066., 	3364368. ],
 		'300to470' :	[ 2930578.,	2933611. ], 
 		'470to600' :	[ 1939229.,	1936832. ],
@@ -67,7 +73,11 @@ dictEvents = {
 		'1500to2000' :  [ 0., 		3848411.	],
 		'2000toInf' : 	[ 0., 		1961774.	],
 
-		'TTJets' :	[ 4994250., 	42730273. 	 ],
+		'TTJets_TuneCUETP8M1' : [ 0., 42784971 ],
+		'TTJets_HT-600to800' :	[ 0., 	5119009. 	 ],
+		'TTJets_HT-800to1200' :	[ 0., 	3510897. 	 ],
+		'TTJets_HT-1200to2500' :	[ 0., 	1014678. 	 ],
+		'TTJets_HT-2500toInf' :	[ 0., 	507842. 	 ],
 		'WJetsToQQ' : 	[ 0., 		1006060. 	 ],
 		'WWTo4Q' : 	[ 0., 		1995200. 	 ],
 		'ZJetsToQQ' : 	[ 0., 		982095. 	 ],
