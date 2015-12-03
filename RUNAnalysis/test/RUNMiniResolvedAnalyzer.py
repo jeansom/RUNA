@@ -168,19 +168,19 @@ def myAnalyzer( sample, couts ):
 	maxHT		= 1500
 
 
-	deltaR 		= TH1F('deltaR', 'deltaR', 100, 0, 5. )
-	massAve 	= TH1F('massAve', 'massAve', nBinsMass, 0, maxMass )
-	deltaEtaDijet1 	= TH1F('deltaEtaDijet1', 'deltaEtaDijet1', 100, 0, 5. )
-	deltaEtaDijet2 	= TH1F('deltaEtaDijet2', 'deltaEtaDijet2', 100, 0, 5. )
-	deltaEtaAveDijets 	= TH1F('deltaEtaAveDijets', 'deltaEtaAveDijets', 100, 0, 5. )
-	deltaEtaDijets 	= TH1F('deltaEtaDijets', 'deltaEtaDijets', 100, 0, 5. )
-	massPairing 	= TH1F('massPairing', 'massPairing', 20, 0, 1. )
-	cosThetaStarDijet1 	= TH1F('cosThetaStarDijet1', 'cosThetaStarDijet1', 20, 0, 1. )
-	cosThetaStarDijet2 	= TH1F('cosThetaStarDijet2', 'cosThetaStarDijet2', 20, 0, 1. )
-	deltaDijet1 	= TH1F('deltaDijet1', 'deltaDijet1', 1000, -1000, 1000. )
-	deltaDijet2 	= TH1F('deltaDijet2', 'deltaDijet2', 1000, -1000, 1000. )
-	xi1 		= TH1F('xi1', 'xi1', 50, 0, 5. )
-	xi2 		= TH1F('xi2', 'xi2', 50, 0, 5. )
+	hdeltaR 		= TH1F('deltaR', 'deltaR', 100, 0, 5. )
+	hmassAve 	= TH1F('massAve', 'massAve', nBinsMass, 0, maxMass )
+	hdeltaEtaDijet1 	= TH1F('deltaEtaDijet1', 'deltaEtaDijet1', 100, 0, 5. )
+	hdeltaEtaDijet2 	= TH1F('deltaEtaDijet2', 'deltaEtaDijet2', 100, 0, 5. )
+	hdeltaEtaAveDijets 	= TH1F('deltaEtaAveDijets', 'deltaEtaAveDijets', 100, 0, 5. )
+	hdeltaEtaDijets 	= TH1F('deltaEtaDijets', 'deltaEtaDijets', 100, 0, 5. )
+	hmassPairing 	= TH1F('massPairing', 'massPairing', 20, 0, 1. )
+	hcosThetaStarDijet1 	= TH1F('cosThetaStarDijet1', 'cosThetaStarDijet1', 20, 0, 1. )
+	hcosThetaStarDijet2 	= TH1F('cosThetaStarDijet2', 'cosThetaStarDijet2', 20, 0, 1. )
+	hdeltaDijet1 	= TH1F('deltaDijet1', 'deltaDijet1', 1000, -1000, 1000. )
+	hdeltaDijet2 	= TH1F('deltaDijet2', 'deltaDijet2', 1000, -1000, 1000. )
+	hxi1 		= TH1F('xi1', 'xi1', 50, 0, 5. )
+	hxi2 		= TH1F('xi2', 'xi2', 50, 0, 5. )
 	massAveVsDijet1sPt 	= TH2F('massAveVsDijet1sPt', 'massAveVsDijet1sPt', nBinsMass, 0, maxMass, 100, 0, 1000 )
 	massAveVsDijet2sPt 	= TH2F('massAveVsDijet2sPt', 'massAveVsDijet2sPt', nBinsMass, 0, maxMass, 100, 0, 1000 )
 	massAveVsdeltaDijet1 	= TH2F('massAveVsdeltaDijet1', 'massAveVsdeltaDijet1', nBinsMass, 0, maxMass, 1000, -1000, 1000 )
@@ -1036,7 +1036,7 @@ def myAnalyzer( sample, couts ):
 	for i in xrange(numEntries):
 		events.GetEntry(i)
 		eventsRaw += 1
-		#if eventsRaw > 1000: break
+		#if eventsRaw > 2000: break
 
 		#---- progress of the reading --------
 		fraction = 10.*i/(1.*numEntries)
@@ -1069,7 +1069,7 @@ def myAnalyzer( sample, couts ):
 		jetsPhi		 = events.jetsPhi
 		jetsE		 = events.jetsE
 
-		scale = 2450* puWeight * lumiWeight
+		scale = 2476* puWeight * lumiWeight
 		j1 = TLorentzVector()
 		j2 = TLorentzVector()
 		j3 = TLorentzVector()
@@ -1109,19 +1109,19 @@ def myAnalyzer( sample, couts ):
 				xi1[0] = xi1pair08 = variables[10]
 				xi2[0] = xi2pair08 = variables[11]
 
-				deltaR.Fill( deltaRpair08 )
-				massAve.Fill( massAvepair08, scale )
-				deltaEtaDijet1.Fill( deltaEtaDijet1pair08, scale )
-				deltaEtaDijet2.Fill( deltaEtaDijet2pair08, scale )
-				deltaEtaDijets.Fill( deltaEtaDijetspair08, scale )
-				deltaEtaAveDijets.Fill( deltaEtaAveDijetspair08, scale )
-				massPairing.Fill( massPairingpair08, scale )
-				cosThetaStarDijet1.Fill( cosThetaStarDijet1pair08, scale )
-				cosThetaStarDijet2.Fill( cosThetaStarDijet2pair08, scale )
-				deltaDijet1.Fill( deltaDijet1pair08, scale )
-				deltaDijet2.Fill( deltaDijet2pair08, scale )
-				xi1.Fill( xi1pair08, scale )
-				xi2.Fill( xi2pair08, scale )
+				hdeltaR.Fill( deltaRpair08 )
+				hmassAve.Fill( massAvepair08, scale )
+				hdeltaEtaDijet1.Fill( deltaEtaDijet1pair08, scale )
+				hdeltaEtaDijet2.Fill( deltaEtaDijet2pair08, scale )
+				hdeltaEtaDijets.Fill( deltaEtaDijetspair08, scale )
+				hdeltaEtaAveDijets.Fill( deltaEtaAveDijetspair08, scale )
+				hmassPairing.Fill( massPairingpair08, scale )
+				hcosThetaStarDijet1.Fill( cosThetaStarDijet1pair08, scale )
+				hcosThetaStarDijet2.Fill( cosThetaStarDijet2pair08, scale )
+				hdeltaDijet1.Fill( deltaDijet1pair08, scale )
+				hdeltaDijet2.Fill( deltaDijet2pair08, scale )
+				hxi1.Fill( xi1pair08, scale )
+				hxi2.Fill( xi2pair08, scale )
 
 				massAveVsDijet1sPt.Fill( massAvepair08, dijet1sPtpair08, scale )
 				massAveVsDijet2sPt.Fill( massAvepair08, dijet2sPtpair08, scale )
@@ -1185,6 +1185,7 @@ def myAnalyzer( sample, couts ):
 						deltaRVsdeltaDijet2_cutDeltaMassPair.Fill( deltaRpair08, deltaDijet2pair08, scale )
 
 						if ( deltaEtaDijetspair08 < 1 ):
+							if couts and (massAvepair08 > 900): print 'DeltaMassPairDEta Entry ', Run, ':', Lumi, ':', NumEvent
 							deltaR_cutDeltaMassPairDEta.Fill( deltaRpair08 )
 							massAve_cutDeltaMassPairDEta.Fill( massAvepair08, scale )
 							deltaEtaDijet1_cutDeltaMassPairDEta.Fill( deltaEtaDijet1pair08, scale )
@@ -1262,6 +1263,7 @@ def myAnalyzer( sample, couts ):
 						deltaRVsdeltaDijet2_cutDeltaRMassPair.Fill( deltaRpair08, deltaDijet2pair08, scale )
 
 						if ( deltaEtaDijetspair08 < 1 ):
+							if couts and (massAvepair08 > 900): print 'DeltaRMassPairDEta Entry ', Run, ':', Lumi, ':', NumEvent
 							deltaR_cutDeltaRMassPairDEta.Fill( deltaRpair08 )
 							massAve_cutDeltaRMassPairDEta.Fill( massAvepair08, scale )
 							deltaEtaDijet1_cutDeltaRMassPairDEta.Fill( deltaEtaDijet1pair08, scale )
@@ -1338,6 +1340,7 @@ def myAnalyzer( sample, couts ):
 							deltaRVsdeltaDijet2_cutDeltaRDelta200MassPair.Fill( deltaRpair08, deltaDijet2pair08, scale )
 
 							if ( deltaEtaDijetspair08 < 1 ):
+								if couts and (massAvepair08 > 900): print 'DeltaRDelta200MassPairDEta Entry ', Run, ':', Lumi, ':', NumEvent
 								deltaR_cutDeltaRDelta200MassPairDEta.Fill( deltaRpair08 )
 								massAve_cutDeltaRDelta200MassPairDEta.Fill( massAvepair08, scale )
 								deltaEtaDijet1_cutDeltaRDelta200MassPairDEta.Fill( deltaEtaDijet1pair08, scale )
@@ -1490,6 +1493,7 @@ def myAnalyzer( sample, couts ):
 							deltaRVsdeltaDijet2_cutPt80_cutDeltaMassPair.Fill( deltaRpair08, deltaDijet2pair08, scale )
 
 							if ( deltaEtaDijetspair08 < 1 ):
+								if couts and (massAvepair08 > 900): print 'cutPt80_DeltaMassPairDEta Entry ', Run, ':', Lumi, ':', NumEvent
 								deltaR_cutPt80_cutDeltaMassPairDEta.Fill( deltaRpair08 )
 								massAve_cutPt80_cutDeltaMassPairDEta.Fill( massAvepair08, scale )
 								deltaEtaDijet1_cutPt80_cutDeltaMassPairDEta.Fill( deltaEtaDijet1pair08, scale )
@@ -1567,6 +1571,7 @@ def myAnalyzer( sample, couts ):
 							deltaRVsdeltaDijet2_cutPt80_cutDeltaRMassPair.Fill( deltaRpair08, deltaDijet2pair08, scale )
 
 							if ( deltaEtaDijetspair08 < 1 ):
+								if couts and (massAvepair08 > 900): print 'cutPt80_DeltaRMassPairDEta Entry ', Run, ':', Lumi, ':', NumEvent
 								deltaR_cutPt80_cutDeltaRMassPairDEta.Fill( deltaRpair08 )
 								massAve_cutPt80_cutDeltaRMassPairDEta.Fill( massAvepair08, scale )
 								deltaEtaDijet1_cutPt80_cutDeltaRMassPairDEta.Fill( deltaEtaDijet1pair08, scale )
@@ -1643,6 +1648,7 @@ def myAnalyzer( sample, couts ):
 								deltaRVsdeltaDijet2_cutPt80_cutDeltaRDelta200MassPair.Fill( deltaRpair08, deltaDijet2pair08, scale )
 
 								if ( deltaEtaDijetspair08 < 1 ):
+									if couts and (massAvepair08 > 900): print 'cutPt80_DeltaRDelta200MassPairDEta Entry ', Run, ':', Lumi, ':', NumEvent
 									deltaR_cutPt80_cutDeltaRDelta200MassPairDEta.Fill( deltaRpair08 )
 									massAve_cutPt80_cutDeltaRDelta200MassPairDEta.Fill( massAvepair08, scale )
 									deltaEtaDijet1_cutPt80_cutDeltaRDelta200MassPairDEta.Fill( deltaEtaDijet1pair08, scale )
@@ -1795,6 +1801,7 @@ def myAnalyzer( sample, couts ):
 							deltaRVsdeltaDijet2_cutPt120_cutDeltaMassPair.Fill( deltaRpair08, deltaDijet2pair08, scale )
 
 							if ( deltaEtaDijetspair08 < 1 ):
+								if couts and (massAvepair08 > 900): print 'cutPt120_DeltaMassPairDEta Entry ', Run, ':', Lumi, ':', NumEvent
 								deltaR_cutPt120_cutDeltaMassPairDEta.Fill( deltaRpair08 )
 								massAve_cutPt120_cutDeltaMassPairDEta.Fill( massAvepair08, scale )
 								deltaEtaDijet1_cutPt120_cutDeltaMassPairDEta.Fill( deltaEtaDijet1pair08, scale )
@@ -1873,6 +1880,7 @@ def myAnalyzer( sample, couts ):
 							deltaRVsdeltaDijet2_cutPt120_cutDeltaRMassPair.Fill( deltaRpair08, deltaDijet2pair08, scale )
 
 							if ( deltaEtaDijetspair08 < 1 ):
+								if couts and (massAvepair08 > 900): print 'cutPt120_DeltaRMassPairDEta Entry ', Run, ':', Lumi, ':', NumEvent
 								deltaR_cutPt120_cutDeltaRMassPairDEta.Fill( deltaRpair08 )
 								massAve_cutPt120_cutDeltaRMassPairDEta.Fill( massAvepair08, scale )
 								deltaEtaDijet1_cutPt120_cutDeltaRMassPairDEta.Fill( deltaEtaDijet1pair08, scale )
@@ -1949,6 +1957,7 @@ def myAnalyzer( sample, couts ):
 								deltaRVsdeltaDijet2_cutPt120_cutDeltaRDelta200MassPair.Fill( deltaRpair08, deltaDijet2pair08, scale )
 
 								if ( deltaEtaDijetspair08 < 1 ):
+									if couts and (massAvepair08 > 900): print 'cutPt120_DeltaRDelta200MassPairDEta Entry ', Run, ':', Lumi, ':', NumEvent
 									deltaR_cutPt120_cutDeltaRDelta200MassPairDEta.Fill( deltaRpair08 )
 									massAve_cutPt120_cutDeltaRDelta200MassPairDEta.Fill( massAvepair08, scale )
 									deltaEtaDijet1_cutPt120_cutDeltaRDelta200MassPairDEta.Fill( deltaEtaDijet1pair08, scale )
@@ -2059,7 +2068,7 @@ if __name__ == '__main__':
 	if 'RPV' in samples: 
 		inputFileName = 'Rootfiles/RUNAnalysis_RPVSt'+str(mass)+'tojj_RunIISpring15MiniAODv2-74X_'+PU+'_v09_v01.root'
 	elif 'Data' in samples: 
-		inputFileName = 'Rootfiles/RUNAnalysis_JetHTRun2015D-All_v08_v04.root'
+		inputFileName = 'Rootfiles/RUNAnalysis_JetHTRun2015D-All_v09_v01.root'
 	elif 'Bkg' in samples: 
 		inputFileName = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01.root'
 		inputFileName = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01.root'
