@@ -324,7 +324,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 		rawHT += (*jetPt)[i];
 		histos1D_[ "rawJetPt" ]->Fill( (*jetPt)[i] , puWeight );
 
-		bool idL = loosejetID( (*jetE)[i], (*jecFactor)[i], (*neutralHadronEnergy)[i], (*neutralEmEnergy)[i], (*chargedHadronEnergy)[i], (*chargedEmEnergy)[i], (*chargedHadronMultiplicity)[i], (*neutralHadronMultiplicity)[i], (*chargedMultiplicity)[i] ); 
+		bool idL = jetID( (*jetEta)[i], (*jetE)[i], (*jecFactor)[i], (*neutralHadronEnergy)[i], (*neutralEmEnergy)[i], (*chargedHadronEnergy)[i], (*muonEnergy)[i], (*chargedEmEnergy)[i], (*chargedHadronMultiplicity)[i], (*neutralHadronMultiplicity)[i], (*chargedMultiplicity)[i] ); 
 
 		if( ( (*jetPt)[i] > 40. ) && idL ) { 
 
@@ -404,16 +404,19 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 				vector<double> tmpDijetR;
 				double dR12 = JETS[0].p4.DeltaR( JETS[1].p4 );
 				double dR34 = JETS[2].p4.DeltaR( JETS[3].p4 );
+				bool maxdR1234 = (dR12 > dR34);
 				double deltaR1234 = abs( dR12 - 0.8 )  + abs( dR34 - 0.8 );
 				tmpDijetR.push_back( deltaR1234 );
 
 				double dR13 = JETS[0].p4.DeltaR( JETS[2].p4 );
 				double dR24 = JETS[1].p4.DeltaR( JETS[3].p4 );
+				bool maxdR1324 = (dR13 > dR24);
 				double deltaR1324 = abs( dR13 - 0.8 )  + abs( dR24 - 0.8 );
 				tmpDijetR.push_back( deltaR1324 );
 
 				double dR14 = JETS[0].p4.DeltaR( JETS[3].p4 );
 				double dR23 = JETS[1].p4.DeltaR( JETS[2].p4 );
+				bool maxdR1423 = (dR14 > dR23);
 				double deltaR1423 = abs( dR14 - 0.8 )  + abs( dR23 - 0.8 );
 				tmpDijetR.push_back( deltaR1423 );
 
@@ -423,32 +426,65 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 				double qgl1 = -9999, qgl2 = -9999, qgl3 = -9999, qgl4 = -9999;
 
 				if( minDeltaR == 0 ){
-					j1 = JETS[0].p4;
-					j2 = JETS[1].p4;
-					j3 = JETS[2].p4;
-					j4 = JETS[3].p4;
-					qgl1 = JETS[0].qgl;
-					qgl2 = JETS[1].qgl;
-					qgl3 = JETS[2].qgl;
-					qgl4 = JETS[3].qgl;
+					if ( maxdR1234 ){
+						j1 = JETS[0].p4;
+						j2 = JETS[1].p4;
+						j3 = JETS[2].p4;
+						j4 = JETS[3].p4;
+						qgl1 = JETS[0].qgl;
+						qgl2 = JETS[1].qgl;
+						qgl3 = JETS[2].qgl;
+						qgl4 = JETS[3].qgl;
+					} else{
+						j1 = JETS[2].p4;
+						j2 = JETS[3].p4;
+						j3 = JETS[0].p4;
+						j4 = JETS[1].p4;
+						qgl1 = JETS[2].qgl;
+						qgl2 = JETS[3].qgl;
+						qgl3 = JETS[0].qgl;
+						qgl4 = JETS[1].qgl;
+					}
 				} else if ( minDeltaR == 1 ) {
-					j1 = JETS[0].p4;
-					j2 = JETS[2].p4;
-					j3 = JETS[1].p4;
-					j4 = JETS[3].p4;
-					qgl1 = JETS[0].qgl;
-					qgl2 = JETS[2].qgl;
-					qgl3 = JETS[1].qgl;
-					qgl4 = JETS[3].qgl;
+					if ( maxdR1324 ){
+						j1 = JETS[0].p4;
+						j2 = JETS[2].p4;
+						j3 = JETS[1].p4;
+						j4 = JETS[3].p4;
+						qgl1 = JETS[0].qgl;
+						qgl2 = JETS[2].qgl;
+						qgl3 = JETS[1].qgl;
+						qgl4 = JETS[3].qgl;
+					} else {
+						j1 = JETS[1].p4;
+						j2 = JETS[3].p4;
+						j3 = JETS[0].p4;
+						j4 = JETS[2].p4;
+						qgl1 = JETS[1].qgl;
+						qgl2 = JETS[3].qgl;
+						qgl3 = JETS[0].qgl;
+						qgl4 = JETS[2].qgl;
+					}
 				} else if ( minDeltaR == 2 ) {
-					j1 = JETS[0].p4;
-					j2 = JETS[3].p4;
-					j3 = JETS[1].p4;
-					j4 = JETS[2].p4;
-					qgl1 = JETS[0].qgl;
-					qgl2 = JETS[3].qgl;
-					qgl3 = JETS[1].qgl;
-					qgl4 = JETS[2].qgl;
+					if ( maxdR1423 ){
+						j1 = JETS[0].p4;
+						j2 = JETS[3].p4;
+						j3 = JETS[1].p4;
+						j4 = JETS[2].p4;
+						qgl1 = JETS[0].qgl;
+						qgl2 = JETS[3].qgl;
+						qgl3 = JETS[1].qgl;
+						qgl4 = JETS[2].qgl;
+					} else {
+						j1 = JETS[1].p4;
+						j2 = JETS[2].p4;
+						j3 = JETS[0].p4;
+						j4 = JETS[3].p4;
+						qgl1 = JETS[1].qgl;
+						qgl2 = JETS[2].qgl;
+						qgl3 = JETS[0].qgl;
+						qgl4 = JETS[3].qgl;
+					}
 				}
 
 				jetsPt->push_back( j1.Pt() );
@@ -497,6 +533,10 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 					histos1D_[ "jet2Pt_cutBestPair" ]->Fill( JETS[1].p4.Pt(), totalWeight );
 					histos1D_[ "jet3Pt_cutBestPair" ]->Fill( JETS[2].p4.Pt(), totalWeight );
 					histos1D_[ "jet4Pt_cutBestPair" ]->Fill( JETS[3].p4.Pt(), totalWeight );
+					histos1D_[ "jet1QGL_cutBestPair" ]->Fill( qgl1, totalWeight );
+					histos1D_[ "jet2QGL_cutBestPair" ]->Fill( qgl2, totalWeight );
+					histos1D_[ "jet3QGL_cutBestPair" ]->Fill( qgl3, totalWeight );
+					histos1D_[ "jet4QGL_cutBestPair" ]->Fill( qgl4, totalWeight );
 					histos1D_[ "NPV_cutBestPair" ]->Fill( numPV, totalWeight );
 					for (int i = 0; i < numJets; i++) {
 						histos1D_[ "neutralHadronEnergy_cutBestPair" ]->Fill( JETS[i].nhf, totalWeight );
@@ -577,6 +617,10 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 						histos1D_[ "jet2Pt_cutDeltaR" ]->Fill( JETS[1].p4.Pt(), totalWeight );
 						histos1D_[ "jet3Pt_cutDeltaR" ]->Fill( JETS[2].p4.Pt(), totalWeight );
 						histos1D_[ "jet4Pt_cutDeltaR" ]->Fill( JETS[3].p4.Pt(), totalWeight );
+						histos1D_[ "jet1QGL_cutDeltaR" ]->Fill( qgl1, totalWeight );
+						histos1D_[ "jet2QGL_cutDeltaR" ]->Fill( qgl2, totalWeight );
+						histos1D_[ "jet3QGL_cutDeltaR" ]->Fill( qgl3, totalWeight );
+						histos1D_[ "jet4QGL_cutDeltaR" ]->Fill( qgl4, totalWeight );
 						histos1D_[ "massAve_cutDeltaR" ]->Fill( avgMass, totalWeight );
 						histos1D_[ "massRes_cutDeltaR" ]->Fill( massRes, totalWeight );
 						histos1D_[ "deltaEta_cutDeltaR" ]->Fill( deltaEta, totalWeight );
@@ -586,58 +630,71 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 						histos1D_[ "cosThetaStar1_cutDeltaR" ]->Fill( cosThetaStar1 , totalWeight );
 						histos1D_[ "cosThetaStar2_cutDeltaR" ]->Fill( cosThetaStar2 , totalWeight );
 
-						if ( ( cosThetaStar1 < cutCosThetaStar ) && ( cosThetaStar2 < cutCosThetaStar )){
-							cutmap["CosTheta"] += totalWeight;
-							histos1D_[ "HT_cutCosTheta" ]->Fill( HT, totalWeight );
-							histos1D_[ "jetNum_cutCosTheta" ]->Fill( numJets, totalWeight );
-							histos1D_[ "jet1Pt_cutCosTheta" ]->Fill( JETS[0].p4.Pt(), totalWeight );
-							histos1D_[ "jet2Pt_cutCosTheta" ]->Fill( JETS[1].p4.Pt(), totalWeight );
-							histos1D_[ "jet3Pt_cutCosTheta" ]->Fill( JETS[2].p4.Pt(), totalWeight );
-							histos1D_[ "jet4Pt_cutCosTheta" ]->Fill( JETS[3].p4.Pt(), totalWeight );
-							histos1D_[ "massAve_cutCosTheta" ]->Fill( avgMass, totalWeight );
-							histos1D_[ "massRes_cutCosTheta" ]->Fill( massRes, totalWeight );
-							histos1D_[ "deltaEta_cutCosTheta" ]->Fill( deltaEta, totalWeight );
-							histos1D_[ "minDeltaR_cutCosTheta" ]->Fill( minDeltaR, totalWeight );
-							histos2D_[ "dijetsEta_cutCosTheta" ]->Fill( eta1, eta2, totalWeight );
-							histos1D_[ "deltaR_cutCosTheta" ]->Fill( deltaR , totalWeight );
-							histos1D_[ "cosThetaStar1_cutCosTheta" ]->Fill( cosThetaStar1 , totalWeight );
-							histos1D_[ "cosThetaStar2_cutCosTheta" ]->Fill( cosThetaStar2 , totalWeight );
-							
-							if ( TMath::Abs(eta1 - eta2) <  cutEtaBand ) {
-								cutmap["DEta"] += totalWeight;
-								histos1D_[ "HT_cutDEta" ]->Fill( HT, totalWeight );
-								histos1D_[ "jetNum_cutDEta" ]->Fill( numJets, totalWeight );
-								histos1D_[ "jet1Pt_cutDEta" ]->Fill( JETS[0].p4.Pt(), totalWeight );
-								histos1D_[ "jet2Pt_cutDEta" ]->Fill( JETS[1].p4.Pt(), totalWeight );
-								histos1D_[ "jet3Pt_cutDEta" ]->Fill( JETS[2].p4.Pt(), totalWeight );
-								histos1D_[ "jet4Pt_cutDEta" ]->Fill( JETS[3].p4.Pt(), totalWeight );
-								histos1D_[ "massAve_cutDEta" ]->Fill( avgMass, totalWeight );
-								histos1D_[ "massRes_cutDEta" ]->Fill( massRes, totalWeight );
-								histos1D_[ "deltaEta_cutDEta" ]->Fill( deltaEta, totalWeight );
-								histos1D_[ "minDeltaR_cutDEta" ]->Fill( minDeltaR , totalWeight );
-								histos2D_[ "dijetsEta_cutDEta" ]->Fill( eta1, eta2, totalWeight );
-								histos1D_[ "deltaR_cutDEta" ]->Fill( deltaR , totalWeight );
-								histos1D_[ "cosThetaStar1_cutDEta" ]->Fill( cosThetaStar1 , totalWeight );
-								histos1D_[ "cosThetaStar2_cutDEta" ]->Fill( cosThetaStar2 , totalWeight );
+						if ( TMath::Abs(eta1 - eta2) <  cutEtaBand ) {
+							cutmap["DEta"] += totalWeight;
+							histos1D_[ "HT_cutDEta" ]->Fill( HT, totalWeight );
+							histos1D_[ "jetNum_cutDEta" ]->Fill( numJets, totalWeight );
+							histos1D_[ "jet1Pt_cutDEta" ]->Fill( JETS[0].p4.Pt(), totalWeight );
+							histos1D_[ "jet2Pt_cutDEta" ]->Fill( JETS[1].p4.Pt(), totalWeight );
+							histos1D_[ "jet3Pt_cutDEta" ]->Fill( JETS[2].p4.Pt(), totalWeight );
+							histos1D_[ "jet4Pt_cutDEta" ]->Fill( JETS[3].p4.Pt(), totalWeight );
+							histos1D_[ "jet1QGL_cutDEta" ]->Fill( qgl1, totalWeight );
+							histos1D_[ "jet2QGL_cutDEta" ]->Fill( qgl2, totalWeight );
+							histos1D_[ "jet3QGL_cutDEta" ]->Fill( qgl3, totalWeight );
+							histos1D_[ "jet4QGL_cutDEta" ]->Fill( qgl4, totalWeight );
+							histos1D_[ "massAve_cutDEta" ]->Fill( avgMass, totalWeight );
+							histos1D_[ "massRes_cutDEta" ]->Fill( massRes, totalWeight );
+							histos1D_[ "deltaEta_cutDEta" ]->Fill( deltaEta, totalWeight );
+							histos1D_[ "minDeltaR_cutDEta" ]->Fill( minDeltaR , totalWeight );
+							histos2D_[ "dijetsEta_cutDEta" ]->Fill( eta1, eta2, totalWeight );
+							histos1D_[ "deltaR_cutDEta" ]->Fill( deltaR , totalWeight );
+							histos1D_[ "cosThetaStar1_cutDEta" ]->Fill( cosThetaStar1 , totalWeight );
+							histos1D_[ "cosThetaStar2_cutDEta" ]->Fill( cosThetaStar2 , totalWeight );
 
-								if ( massRes < cutMassRes ) { 
-									cutmap["MassPairing"] += totalWeight;
-									histos1D_[ "HT_cutMassPairing" ]->Fill( HT, totalWeight );
-									histos1D_[ "jetNum_cutMassPairing" ]->Fill( numJets, totalWeight );
-									histos1D_[ "jet1Pt_cutMassPairing" ]->Fill( JETS[0].p4.Pt(), totalWeight );
-									histos1D_[ "jet2Pt_cutMassPairing" ]->Fill( JETS[1].p4.Pt(), totalWeight );
-									histos1D_[ "jet3Pt_cutMassPairing" ]->Fill( JETS[2].p4.Pt(), totalWeight );
-									histos1D_[ "jet4Pt_cutMassPairing" ]->Fill( JETS[3].p4.Pt(), totalWeight );
-									histos1D_[ "massAve_cutMassPairing" ]->Fill( avgMass, totalWeight );
-									histos1D_[ "massRes_cutMassPairing" ]->Fill( massRes, totalWeight );
-									histos1D_[ "deltaEta_cutMassPairing" ]->Fill( deltaEta, totalWeight );
-									histos1D_[ "minDeltaR_cutMassPairing" ]->Fill( minDeltaR , totalWeight );
-									histos2D_[ "dijetsEta_cutMassPairing" ]->Fill( eta1, eta2, totalWeight );
-									histos1D_[ "deltaR_cutMassPairing" ]->Fill( deltaR , totalWeight );
-									histos1D_[ "cosThetaStar1_cutMassPairing" ]->Fill( cosThetaStar1 , totalWeight );
-									histos1D_[ "cosThetaStar2_cutMassPairing" ]->Fill( cosThetaStar2 , totalWeight );
-								}
+							if ( massRes < cutMassRes ) { 
+								cutmap["MassPairing"] += totalWeight;
+								histos1D_[ "HT_cutMassPairing" ]->Fill( HT, totalWeight );
+								histos1D_[ "jetNum_cutMassPairing" ]->Fill( numJets, totalWeight );
+								histos1D_[ "jet1Pt_cutMassPairing" ]->Fill( JETS[0].p4.Pt(), totalWeight );
+								histos1D_[ "jet2Pt_cutMassPairing" ]->Fill( JETS[1].p4.Pt(), totalWeight );
+								histos1D_[ "jet3Pt_cutMassPairing" ]->Fill( JETS[2].p4.Pt(), totalWeight );
+								histos1D_[ "jet4Pt_cutMassPairing" ]->Fill( JETS[3].p4.Pt(), totalWeight );
+								histos1D_[ "jet1QGL_cutMassPairing" ]->Fill( qgl1, totalWeight );
+								histos1D_[ "jet2QGL_cutMassPairing" ]->Fill( qgl2, totalWeight );
+								histos1D_[ "jet3QGL_cutMassPairing" ]->Fill( qgl3, totalWeight );
+								histos1D_[ "jet4QGL_cutMassPairing" ]->Fill( qgl4, totalWeight );
+								histos1D_[ "massAve_cutMassPairing" ]->Fill( avgMass, totalWeight );
+								histos1D_[ "massRes_cutMassPairing" ]->Fill( massRes, totalWeight );
+								histos1D_[ "deltaEta_cutMassPairing" ]->Fill( deltaEta, totalWeight );
+								histos1D_[ "minDeltaR_cutMassPairing" ]->Fill( minDeltaR , totalWeight );
+								histos2D_[ "dijetsEta_cutMassPairing" ]->Fill( eta1, eta2, totalWeight );
+								histos1D_[ "deltaR_cutMassPairing" ]->Fill( deltaR , totalWeight );
+								histos1D_[ "cosThetaStar1_cutMassPairing" ]->Fill( cosThetaStar1 , totalWeight );
+								histos1D_[ "cosThetaStar2_cutMassPairing" ]->Fill( cosThetaStar2 , totalWeight );
+
 							}
+								if ( ( cosThetaStar1 < cutCosThetaStar ) && ( cosThetaStar2 < cutCosThetaStar )){
+									cutmap["CosTheta"] += totalWeight;
+									histos1D_[ "HT_cutCosTheta" ]->Fill( HT, totalWeight );
+									histos1D_[ "jetNum_cutCosTheta" ]->Fill( numJets, totalWeight );
+									histos1D_[ "jet1Pt_cutCosTheta" ]->Fill( JETS[0].p4.Pt(), totalWeight );
+									histos1D_[ "jet2Pt_cutCosTheta" ]->Fill( JETS[1].p4.Pt(), totalWeight );
+									histos1D_[ "jet3Pt_cutCosTheta" ]->Fill( JETS[2].p4.Pt(), totalWeight );
+									histos1D_[ "jet4Pt_cutCosTheta" ]->Fill( JETS[3].p4.Pt(), totalWeight );
+									histos1D_[ "jet1QGL_cutCosTheta" ]->Fill( qgl1, totalWeight );
+									histos1D_[ "jet2QGL_cutCosTheta" ]->Fill( qgl2, totalWeight );
+									histos1D_[ "jet3QGL_cutCosTheta" ]->Fill( qgl3, totalWeight );
+									histos1D_[ "jet4QGL_cutCosTheta" ]->Fill( qgl4, totalWeight );
+									histos1D_[ "massAve_cutCosTheta" ]->Fill( avgMass, totalWeight );
+									histos1D_[ "massRes_cutCosTheta" ]->Fill( massRes, totalWeight );
+									histos1D_[ "deltaEta_cutCosTheta" ]->Fill( deltaEta, totalWeight );
+									histos1D_[ "minDeltaR_cutCosTheta" ]->Fill( minDeltaR, totalWeight );
+									histos2D_[ "dijetsEta_cutCosTheta" ]->Fill( eta1, eta2, totalWeight );
+									histos1D_[ "deltaR_cutCosTheta" ]->Fill( deltaR , totalWeight );
+									histos1D_[ "cosThetaStar1_cutCosTheta" ]->Fill( cosThetaStar1 , totalWeight );
+									histos1D_[ "cosThetaStar2_cutCosTheta" ]->Fill( cosThetaStar2 , totalWeight );
+									
+									}
 						}
 					}
 				}
@@ -769,6 +826,14 @@ void RUNAnalysis::beginJob() {
 		histos1D_[ "chargedMultiplicity_cutBestPair" ]->Sumw2();
 		histos1D_[ "numConst_cutBestPair" ] = fs_->make< TH1D >( "numConst_cutBestPair", "numConst", 100, 0., 100. );
 		histos1D_[ "numConst_cutBestPair" ]->Sumw2();
+		histos1D_[ "jet1QGL_cutBestPair" ] = fs_->make< TH1D >( "jet1QGL_cutBestPair", "jet1QGL_cutBestPair", 10, 0., 1. );
+		histos1D_[ "jet1QGL_cutBestPair" ]->Sumw2();
+		histos1D_[ "jet2QGL_cutBestPair" ] = fs_->make< TH1D >( "jet2QGL_cutBestPair", "jet2QGL_cutBestPair", 10, 0., 1. );
+		histos1D_[ "jet2QGL_cutBestPair" ]->Sumw2();
+		histos1D_[ "jet3QGL_cutBestPair" ] = fs_->make< TH1D >( "jet3QGL_cutBestPair", "jet3QGL_cutBestPair", 10, 0., 1. );
+		histos1D_[ "jet3QGL_cutBestPair" ]->Sumw2();
+		histos1D_[ "jet4QGL_cutBestPair" ] = fs_->make< TH1D >( "jet4QGL_cutBestPair", "jet4QGL_cutBestPair", 10, 0., 1. );
+		histos1D_[ "jet4QGL_cutBestPair" ]->Sumw2();
 		histos1D_[ "massAve_cutBestPair" ] = fs_->make< TH1D >( "massAve_cutBestPair", "massAve_cutBestPair", 200, 0., 2000. );
 		histos1D_[ "massAve_cutBestPair" ]->Sumw2();
 		histos1D_[ "massRes_cutBestPair" ] = fs_->make< TH1D >( "massRes_cutBestPair", "massRes_cutBestPair", 50, 0., 2. );
@@ -876,6 +941,14 @@ void RUNAnalysis::beginJob() {
 		histos1D_[ "jetNum_cutDeltaR" ]->Sumw2();
 		histos1D_[ "HT_cutDeltaR" ] = fs_->make< TH1D >( "HT_cutDeltaR", "HT_cutDeltaR", 300, 0., 3000. );
 		histos1D_[ "HT_cutDeltaR" ]->Sumw2();
+		histos1D_[ "jet1QGL_cutDeltaR" ] = fs_->make< TH1D >( "jet1QGL_cutDeltaR", "jet1QGL_cutDeltaR", 10, 0., 1. );
+		histos1D_[ "jet1QGL_cutDeltaR" ]->Sumw2();
+		histos1D_[ "jet2QGL_cutDeltaR" ] = fs_->make< TH1D >( "jet2QGL_cutDeltaR", "jet2QGL_cutDeltaR", 10, 0., 1. );
+		histos1D_[ "jet2QGL_cutDeltaR" ]->Sumw2();
+		histos1D_[ "jet3QGL_cutDeltaR" ] = fs_->make< TH1D >( "jet3QGL_cutDeltaR", "jet3QGL_cutDeltaR", 10, 0., 1. );
+		histos1D_[ "jet3QGL_cutDeltaR" ]->Sumw2();
+		histos1D_[ "jet4QGL_cutDeltaR" ] = fs_->make< TH1D >( "jet4QGL_cutDeltaR", "jet4QGL_cutDeltaR", 10, 0., 1. );
+		histos1D_[ "jet4QGL_cutDeltaR" ]->Sumw2();
 		histos1D_[ "massAve_cutDeltaR" ] = fs_->make< TH1D >( "massAve_cutDeltaR", "massAve_cutDeltaR", 200, 0., 2000. );
 		histos1D_[ "massAve_cutDeltaR" ]->Sumw2();
 		histos1D_[ "massRes_cutDeltaR" ] = fs_->make< TH1D >( "massRes_cutDeltaR", "massRes_cutDeltaR", 50, 0., 2. );
@@ -893,35 +966,6 @@ void RUNAnalysis::beginJob() {
 		histos1D_[ "cosThetaStar2_cutDeltaR" ] = fs_->make< TH1D >( "cosThetaStar2_cutDeltaR", "cosThetaStar2_cutDeltaR", 10, 0., 1. );
 		histos1D_[ "cosThetaStar2_cutDeltaR" ]->Sumw2();
 
-		histos1D_[ "jet1Pt_cutCosTheta" ] = fs_->make< TH1D >( "jet1Pt_cutCosTheta", "jet1Pt_cutCosTheta", 100, 0., 1000. );
-		histos1D_[ "jet1Pt_cutCosTheta" ]->Sumw2();
-		histos1D_[ "jet2Pt_cutCosTheta" ] = fs_->make< TH1D >( "jet2Pt_cutCosTheta", "jet2Pt_cutCosTheta", 100, 0., 1000. );
-		histos1D_[ "jet2Pt_cutCosTheta" ]->Sumw2();
-		histos1D_[ "jet3Pt_cutCosTheta" ] = fs_->make< TH1D >( "jet3Pt_cutCosTheta", "jet3Pt_cutCosTheta", 100, 0., 1000. );
-		histos1D_[ "jet3Pt_cutCosTheta" ]->Sumw2();
-		histos1D_[ "jet4Pt_cutCosTheta" ] = fs_->make< TH1D >( "jet4Pt_cutCosTheta", "jet4Pt_cutCosTheta", 100, 0., 1000. );
-		histos1D_[ "jet4Pt_cutCosTheta" ]->Sumw2();
-		histos1D_[ "jetNum_cutCosTheta" ] = fs_->make< TH1D >( "jetNum_cutCosTheta", "jetNum_cutCosTheta", 10, 0., 10. );
-		histos1D_[ "jetNum_cutCosTheta" ]->Sumw2();
-		histos1D_[ "HT_cutCosTheta" ] = fs_->make< TH1D >( "HT_cutCosTheta", "HT_cutCosTheta", 300, 0., 3000. );
-		histos1D_[ "HT_cutCosTheta" ]->Sumw2();
-		histos1D_[ "massAve_cutCosTheta" ] = fs_->make< TH1D >( "massAve_cutCosTheta", "massAve_cutCosTheta", 200, 0., 2000. );
-		histos1D_[ "massAve_cutCosTheta" ]->Sumw2();
-		histos1D_[ "massRes_cutCosTheta" ] = fs_->make< TH1D >( "massRes_cutCosTheta", "massRes_cutCosTheta", 50, 0., 2. );
-		histos1D_[ "massRes_cutCosTheta" ]->Sumw2();
-		histos1D_[ "deltaEta_cutCosTheta" ] = fs_->make< TH1D >( "deltaEta_cutCosTheta", "deltaEta_cutCosTheta", 50, 0., 10. );
-		histos1D_[ "deltaEta_cutCosTheta" ]->Sumw2();
-		histos1D_[ "minDeltaR_cutCosTheta" ] = fs_->make< TH1D >( "minDeltaR_cutCosTheta", "minDeltaR_cutCosTheta", 50, 0., 5. );
-		histos1D_[ "minDeltaR_cutCosTheta" ]->Sumw2();
-		histos2D_[ "dijetsEta_cutCosTheta" ] = fs_->make< TH2D >( "dijetsEta_cutCosTheta", "dijetsEta_cutCosTheta", 48, -3., 3., 48, -3., 3. );
-		histos2D_[ "dijetsEta_cutCosTheta" ]->Sumw2();
-		histos1D_[ "deltaR_cutCosTheta" ] = fs_->make< TH1D >( "deltaR_cutCosTheta", "deltaR_cutCosTheta", 50, 0., 5. );
-		histos1D_[ "deltaR_cutCosTheta" ]->Sumw2();
-		histos1D_[ "cosThetaStar1_cutCosTheta" ] = fs_->make< TH1D >( "cosThetaStar1_cutCosTheta", "cosThetaStar1_cutCosTheta", 10, 0., 1. );
-		histos1D_[ "cosThetaStar1_cutCosTheta" ]->Sumw2();
-		histos1D_[ "cosThetaStar2_cutCosTheta" ] = fs_->make< TH1D >( "cosThetaStar2_cutCosTheta", "cosThetaStar2_cutCosTheta", 10, 0., 1. );
-		histos1D_[ "cosThetaStar2_cutCosTheta" ]->Sumw2();
-
 		histos1D_[ "jet1Pt_cutDEta" ] = fs_->make< TH1D >( "jet1Pt_cutDEta", "jet1Pt_cutDEta", 100, 0., 1000. );
 		histos1D_[ "jet1Pt_cutDEta" ]->Sumw2();
 		histos1D_[ "jet2Pt_cutDEta" ] = fs_->make< TH1D >( "jet2Pt_cutDEta", "jet2Pt_cutDEta", 100, 0., 1000. );
@@ -934,6 +978,14 @@ void RUNAnalysis::beginJob() {
 		histos1D_[ "jetNum_cutDEta" ]->Sumw2();
 		histos1D_[ "HT_cutDEta" ] = fs_->make< TH1D >( "HT_cutDEta", "HT_cutDEta", 300, 0., 3000. );
 		histos1D_[ "HT_cutDEta" ]->Sumw2();
+		histos1D_[ "jet1QGL_cutDEta" ] = fs_->make< TH1D >( "jet1QGL_cutDEta", "jet1QGL_cutDEta", 10, 0., 1. );
+		histos1D_[ "jet1QGL_cutDEta" ]->Sumw2();
+		histos1D_[ "jet2QGL_cutDEta" ] = fs_->make< TH1D >( "jet2QGL_cutDEta", "jet2QGL_cutDEta", 10, 0., 1. );
+		histos1D_[ "jet2QGL_cutDEta" ]->Sumw2();
+		histos1D_[ "jet3QGL_cutDEta" ] = fs_->make< TH1D >( "jet3QGL_cutDEta", "jet3QGL_cutDEta", 10, 0., 1. );
+		histos1D_[ "jet3QGL_cutDEta" ]->Sumw2();
+		histos1D_[ "jet4QGL_cutDEta" ] = fs_->make< TH1D >( "jet4QGL_cutDEta", "jet4QGL_cutDEta", 10, 0., 1. );
+		histos1D_[ "jet4QGL_cutDEta" ]->Sumw2();
 		histos1D_[ "massAve_cutDEta" ] = fs_->make< TH1D >( "massAve_cutDEta", "massAve_cutDEta", 200, 0., 2000. );
 		histos1D_[ "massAve_cutDEta" ]->Sumw2();
 		histos1D_[ "massRes_cutDEta" ] = fs_->make< TH1D >( "massRes_cutDEta", "massRes_cutDEta", 50, 0., 2. );
@@ -963,6 +1015,14 @@ void RUNAnalysis::beginJob() {
 		histos1D_[ "jetNum_cutMassPairing" ]->Sumw2();
 		histos1D_[ "HT_cutMassPairing" ] = fs_->make< TH1D >( "HT_cutMassPairing", "HT_cutMassPairing", 300, 0., 3000. );
 		histos1D_[ "HT_cutMassPairing" ]->Sumw2();
+		histos1D_[ "jet1QGL_cutMassPairing" ] = fs_->make< TH1D >( "jet1QGL_cutMassPairing", "jet1QGL_cutMassPairing", 10, 0., 1. );
+		histos1D_[ "jet1QGL_cutMassPairing" ]->Sumw2();
+		histos1D_[ "jet2QGL_cutMassPairing" ] = fs_->make< TH1D >( "jet2QGL_cutMassPairing", "jet2QGL_cutMassPairing", 10, 0., 1. );
+		histos1D_[ "jet2QGL_cutMassPairing" ]->Sumw2();
+		histos1D_[ "jet3QGL_cutMassPairing" ] = fs_->make< TH1D >( "jet3QGL_cutMassPairing", "jet3QGL_cutMassPairing", 10, 0., 1. );
+		histos1D_[ "jet3QGL_cutMassPairing" ]->Sumw2();
+		histos1D_[ "jet4QGL_cutMassPairing" ] = fs_->make< TH1D >( "jet4QGL_cutMassPairing", "jet4QGL_cutMassPairing", 10, 0., 1. );
+		histos1D_[ "jet4QGL_cutMassPairing" ]->Sumw2();
 		histos1D_[ "massAve_cutMassPairing" ] = fs_->make< TH1D >( "massAve_cutMassPairing", "massAve_cutMassPairing", 200, 0., 2000. );
 		histos1D_[ "massAve_cutMassPairing" ]->Sumw2();
 		histos1D_[ "massRes_cutMassPairing" ] = fs_->make< TH1D >( "massRes_cutMassPairing", "massRes_cutMassPairing", 50, 0., 2. );
@@ -980,6 +1040,43 @@ void RUNAnalysis::beginJob() {
 		histos1D_[ "cosThetaStar2_cutMassPairing" ] = fs_->make< TH1D >( "cosThetaStar2_cutMassPairing", "cosThetaStar2_cutMassPairing", 10, 0., 1. );
 		histos1D_[ "cosThetaStar2_cutMassPairing" ]->Sumw2();
 
+
+		histos1D_[ "jet1Pt_cutCosTheta" ] = fs_->make< TH1D >( "jet1Pt_cutCosTheta", "jet1Pt_cutCosTheta", 100, 0., 1000. );
+		histos1D_[ "jet1Pt_cutCosTheta" ]->Sumw2();
+		histos1D_[ "jet2Pt_cutCosTheta" ] = fs_->make< TH1D >( "jet2Pt_cutCosTheta", "jet2Pt_cutCosTheta", 100, 0., 1000. );
+		histos1D_[ "jet2Pt_cutCosTheta" ]->Sumw2();
+		histos1D_[ "jet3Pt_cutCosTheta" ] = fs_->make< TH1D >( "jet3Pt_cutCosTheta", "jet3Pt_cutCosTheta", 100, 0., 1000. );
+		histos1D_[ "jet3Pt_cutCosTheta" ]->Sumw2();
+		histos1D_[ "jet4Pt_cutCosTheta" ] = fs_->make< TH1D >( "jet4Pt_cutCosTheta", "jet4Pt_cutCosTheta", 100, 0., 1000. );
+		histos1D_[ "jet4Pt_cutCosTheta" ]->Sumw2();
+		histos1D_[ "jetNum_cutCosTheta" ] = fs_->make< TH1D >( "jetNum_cutCosTheta", "jetNum_cutCosTheta", 10, 0., 10. );
+		histos1D_[ "jetNum_cutCosTheta" ]->Sumw2();
+		histos1D_[ "HT_cutCosTheta" ] = fs_->make< TH1D >( "HT_cutCosTheta", "HT_cutCosTheta", 300, 0., 3000. );
+		histos1D_[ "HT_cutCosTheta" ]->Sumw2();
+		histos1D_[ "jet1QGL_cutCosTheta" ] = fs_->make< TH1D >( "jet1QGL_cutCosTheta", "jet1QGL_cutCosTheta", 10, 0., 1. );
+		histos1D_[ "jet1QGL_cutCosTheta" ]->Sumw2();
+		histos1D_[ "jet2QGL_cutCosTheta" ] = fs_->make< TH1D >( "jet2QGL_cutCosTheta", "jet2QGL_cutCosTheta", 10, 0., 1. );
+		histos1D_[ "jet2QGL_cutCosTheta" ]->Sumw2();
+		histos1D_[ "jet3QGL_cutCosTheta" ] = fs_->make< TH1D >( "jet3QGL_cutCosTheta", "jet3QGL_cutCosTheta", 10, 0., 1. );
+		histos1D_[ "jet3QGL_cutCosTheta" ]->Sumw2();
+		histos1D_[ "jet4QGL_cutCosTheta" ] = fs_->make< TH1D >( "jet4QGL_cutCosTheta", "jet4QGL_cutCosTheta", 10, 0., 1. );
+		histos1D_[ "jet4QGL_cutCosTheta" ]->Sumw2();
+		histos1D_[ "massAve_cutCosTheta" ] = fs_->make< TH1D >( "massAve_cutCosTheta", "massAve_cutCosTheta", 200, 0., 2000. );
+		histos1D_[ "massAve_cutCosTheta" ]->Sumw2();
+		histos1D_[ "massRes_cutCosTheta" ] = fs_->make< TH1D >( "massRes_cutCosTheta", "massRes_cutCosTheta", 50, 0., 2. );
+		histos1D_[ "massRes_cutCosTheta" ]->Sumw2();
+		histos1D_[ "deltaEta_cutCosTheta" ] = fs_->make< TH1D >( "deltaEta_cutCosTheta", "deltaEta_cutCosTheta", 50, 0., 10. );
+		histos1D_[ "deltaEta_cutCosTheta" ]->Sumw2();
+		histos1D_[ "minDeltaR_cutCosTheta" ] = fs_->make< TH1D >( "minDeltaR_cutCosTheta", "minDeltaR_cutCosTheta", 50, 0., 5. );
+		histos1D_[ "minDeltaR_cutCosTheta" ]->Sumw2();
+		histos2D_[ "dijetsEta_cutCosTheta" ] = fs_->make< TH2D >( "dijetsEta_cutCosTheta", "dijetsEta_cutCosTheta", 48, -3., 3., 48, -3., 3. );
+		histos2D_[ "dijetsEta_cutCosTheta" ]->Sumw2();
+		histos1D_[ "deltaR_cutCosTheta" ] = fs_->make< TH1D >( "deltaR_cutCosTheta", "deltaR_cutCosTheta", 50, 0., 5. );
+		histos1D_[ "deltaR_cutCosTheta" ]->Sumw2();
+		histos1D_[ "cosThetaStar1_cutCosTheta" ] = fs_->make< TH1D >( "cosThetaStar1_cutCosTheta", "cosThetaStar1_cutCosTheta", 10, 0., 1. );
+		histos1D_[ "cosThetaStar1_cutCosTheta" ]->Sumw2();
+		histos1D_[ "cosThetaStar2_cutCosTheta" ] = fs_->make< TH1D >( "cosThetaStar2_cutCosTheta", "cosThetaStar2_cutCosTheta", 10, 0., 1. );
+		histos1D_[ "cosThetaStar2_cutCosTheta" ]->Sumw2();
 	}
 
 	cutLabels.push_back("Processed");

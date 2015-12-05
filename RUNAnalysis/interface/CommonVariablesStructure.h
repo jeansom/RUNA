@@ -80,30 +80,35 @@ inline float calculateCosThetaStar( TLorentzVector jet1, TLorentzVector jet2 ){
 inline float cosThetaStar( TLorentzVector jet1, TLorentzVector jet2 ){
 
 	TLorentzVector tmpCM = jet1 + jet2;
-	jet1.Boost( -tmpCM.BoostVector() );
-	jet2.Boost( -tmpCM.BoostVector() );
-	TVector3 tmpV1( jet1.X(), jet1.Y(), jet1.Z() );
-	TVector3 tmpV2( jet2.X(), jet2.Y(), jet2.Z() );
+	TLorentzVector tmpJ1, tmpJ2;
+	tmpJ1.SetPtEtaPhiE( jet1.Pt(), jet1.Eta(), jet1.Phi(), jet1.E() );
+	tmpJ2.SetPtEtaPhiE( jet2.Pt(), jet2.Eta(), jet2.Phi(), jet2.E() );
+	tmpJ1.Boost( -tmpCM.BoostVector() );
+	tmpJ2.Boost( -tmpCM.BoostVector() );
+	TVector3 tmpV1( tmpJ1.X(), tmpJ1.Y(), tmpJ1.Z() );
+	TVector3 tmpV2( tmpJ2.X(), tmpJ2.Y(), tmpJ2.Z() );
 	float valueCosThetaStar = TMath::Abs( tmpV1.CosTheta() ) ;
 
 	return valueCosThetaStar;
 }
 
-inline bool loosejetID( double jetE, double jecFactor, double neutralHadronEnergy, double neutralEmEnergy, double chargedHadronEnergy, double chargedEmEnergy, int chargedHadronMultiplicity, int neutralHadronMultiplicity, double chargedMultiplicity ){ 
+inline bool jetID( double jetEta, double jetE, double jecFactor, double neutralHadronEnergy, double neutralEmEnergy, double chargedHadronEnergy, double muonEnergy, double chargedEmEnergy, int chargedHadronMultiplicity, int neutralHadronMultiplicity, double chargedMultiplicity ){ 
 
 	double jec = 1. / ( jecFactor * jetE );
 	double nhf = neutralHadronEnergy * jec;
 	double nEMf = neutralEmEnergy * jec;
 	double chf = chargedHadronEnergy * jec;
-	//double muf = muonEnergy * jec;
+	double muf = muonEnergy * jec;
 	double cEMf = chargedEmEnergy * jec;
 	int numConst = chargedHadronMultiplicity + neutralHadronMultiplicity ; 
 	double chm = chargedMultiplicity * jec;
 
 	//bool idL = ( (nhf<0.99) && (nEMf<0.99) && (muf<0.8) && (cEMf<0.9) );  /// 8TeV recommendation
-	bool idL = ( (nhf<0.99) && (nEMf<0.99) && (numConst>1) && (chf>0) && (chm>0) && (cEMf<0.99) );
+	//bool id = (nhf<0.99 && nEMf<0.99 && numConst>1) && ((abs(jetEta)<=2.4 && chf>0 && chm>0 && cEMf<0.99) || abs(jetEta)>2.4) && abs(jetEta)<=3.0; // looseJetID 
+	//bool id = (nhf<0.90 && nEMf<0.90 && numConst>1) && ((abs(jetEta)<=2.4 && chf>0 && chm>0 && cEMf<0.99) || abs(jetEta)>2.4) && abs(jetEta)<=3.0; // tightJetID 
+	bool id = ( nhf<0.90 && nEMf<0.90 && numConst>1 && muf<0.8) && ((abs(jetEta)<=2.4 && chf>0 && chm>0 && cEMf<0.90) || abs(jetEta)>2.4) && abs(jetEta)<=3.0; //tightLepVetoJetID
 
-	return idL;
+	return id;
 }
 
 inline bool checkTriggerBits( Handle<vector<string>> triggerNames, Handle<vector<float>> triggerBits, TString HLTtrigger  ){
