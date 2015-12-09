@@ -39,13 +39,17 @@ dictXS = {
 		'TTJets_HT-80to1200' : 0.663, 
 		'TTJets_HT-1200to2500' : 0.12, 
 		'TTJets_HT-2500toInf' : 0.00143, 
+		#### W
 		'WJetsToQQ' : 95.14,
-		'WWTo4Q' : 45.20,
+		'WWTo4Q' : 51.723,
+		#### Z
 		'ZJetsToQQ' : 5.67,
+		'ZZTo4Q' : 6.842,
 		#### RPV
-		'RPVSt100' : 1521.11,
-		'RPVSt200' : 64.5085,
-		'RPVSt350' : 3.78661
+		'RPVStopStopToJets_UDD312_M-100' : 1521.11,
+		'RPVStopStopToJets_UDD312_M-200' : 64.5085,
+		'RPVStopStopToJets_UDD312_M-350' : 3.78661,
+		'RPVStopStopToJets_UDD312_M-800' : 0.0283338 
 		}
 
 dictEvents = {
@@ -81,11 +85,13 @@ dictEvents = {
 		'WJetsToQQ' : 	[ 0., 		1006060. 	 ],
 		'WWTo4Q' : 	[ 0., 		1995200. 	 ],
 		'ZJetsToQQ' : 	[ 0., 		982095. 	 ],
+		'ZZTo4Q' : 	[ 0., 		35917388. 	 ],
 
 		#### RPV Stop
-		'RPVSt100' :  	[ 200000., 	200000. 	],	
-		'RPVSt200' :  	[ 200000., 	200000. 	],	
-		'RPVSt350' :  	[ 200000., 	200000. 	],	
+		'RPVStopStopToJets_UDD312_M-100' :  	[ 0., 	166722. 	],	
+		'RPVStopStopToJets_UDD312_M-200' :  	[ 0., 	138907. 	],	
+		'RPVStopStopToJets_UDD312_M-350' :  	[ 0., 	11293. 	],	
+		'RPVStopStopToJets_UDD312_M-800' :  	[ 0., 	4784. 	],	
 		}
 
 def search(DICT, searchFor):
@@ -99,10 +105,10 @@ def scaleFactor( NAME ):
 
 	try:
 		XS = search( dictXS, NAME )
-		#events = search( dictEvents, NAME )[0]
-		if '50ns' in NAME: events = search( dictEvents, NAME )[0]
-		elif '25ns' in NAME: events = search( dictEvents, NAME )[1]
-		else: events = 1.
+		events = search( dictEvents, NAME )[1]
+		#if '50ns' in NAME: events = search( dictEvents, NAME )[0]
+		#elif '25ns' in NAME: events = search( dictEvents, NAME )[1]
+		#else: events = 1.
 
 		SF = XS / events
 		print 'For sample '+NAME+': XS = '+str(XS)+', nEvents = '+str(events)+' and SF = '+str(SF)
