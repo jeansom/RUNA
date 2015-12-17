@@ -9,7 +9,7 @@ options = VarParsing ('python')
 
 ### General Options
 options.register('PROC', 
-		'RPVSt350tojj_pythia8_13TeV_PU20bx25',
+		'RPVStopStopToJets_UDD312_M-100',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
 		"name"
@@ -35,13 +35,13 @@ options.register('HT',
 		"HT cut"
 		)
 options.register('MassRes', 
-		0.10,
+		0.20,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
 		"MassRes cut"
 		)
 options.register('Delta', 
-		300.0,
+		180.0,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
 		"Delta cut"
@@ -53,7 +53,7 @@ options.register('DeltaR',
 		"DeltaR cut"
 		)
 options.register('EtaBand', 
-		1.0,
+		0.75,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
 		"EtaBand cut"
@@ -167,11 +167,11 @@ else:
 
 process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 		cutHT	 		= cms.double( options.HT ),
-		cutMassRes 		= cms.double( options.MassRes ),
+		cutMassAsym 		= cms.double( options.MassRes ),
 		cutDelta 		= cms.double( options.Delta ),
 		cutDeltaR 		= cms.double( options.DeltaR ),
 		cutCosThetaStar 	= cms.double( options.ResolvedCosThetaStar ),
-		cutEtaBand 		= cms.double( options.EtaBand ),
+		cutDEta    		= cms.double( options.EtaBand ),
 		triggerPass 		= cms.vstring( [ HTtrigger, 'HLT_PFHT750_4JetPt' ] ),
 		scale 			= cms.double( SF ),
 		bjSample		= cms.bool( bjsample ),

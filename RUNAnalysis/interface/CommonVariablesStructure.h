@@ -98,15 +98,15 @@ inline bool jetID( double jetEta, double jetE, double jecFactor, double neutralH
 	double nhf = neutralHadronEnergy * jec;
 	double nEMf = neutralEmEnergy * jec;
 	double chf = chargedHadronEnergy * jec;
-	double muf = muonEnergy * jec;
+	//double muf = muonEnergy * jec;
 	double cEMf = chargedEmEnergy * jec;
 	int numConst = chargedHadronMultiplicity + neutralHadronMultiplicity ; 
 	double chm = chargedMultiplicity * jec;
 
 	//bool idL = ( (nhf<0.99) && (nEMf<0.99) && (muf<0.8) && (cEMf<0.9) );  /// 8TeV recommendation
-	//bool id = (nhf<0.99 && nEMf<0.99 && numConst>1) && ((abs(jetEta)<=2.4 && chf>0 && chm>0 && cEMf<0.99) || abs(jetEta)>2.4) && abs(jetEta)<=3.0; // looseJetID 
+	bool id = (nhf<0.99 && nEMf<0.99 && numConst>1) && ((abs(jetEta)<=2.4 && chf>0 && chm>0 && cEMf<0.99) || abs(jetEta)>2.4) && abs(jetEta)<=3.0; // looseJetID 
 	//bool id = (nhf<0.90 && nEMf<0.90 && numConst>1) && ((abs(jetEta)<=2.4 && chf>0 && chm>0 && cEMf<0.99) || abs(jetEta)>2.4) && abs(jetEta)<=3.0; // tightJetID 
-	bool id = ( nhf<0.90 && nEMf<0.90 && numConst>1 && muf<0.8) && ((abs(jetEta)<=2.4 && chf>0 && chm>0 && cEMf<0.90) || abs(jetEta)>2.4) && abs(jetEta)<=3.0; //tightLepVetoJetID
+	//bool id = ( nhf<0.90 && nEMf<0.90 && numConst>1 && muf<0.8) && ((abs(jetEta)<=2.4 && chf>0 && chm>0 && cEMf<0.90) || abs(jetEta)>2.4) && abs(jetEta)<=3.0; //tightLepVetoJetID
 
 	return id;
 }

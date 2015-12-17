@@ -8,14 +8,20 @@ Description: My Analyzer
 '''
 
 import sys,os,time
-#import optparse
 import argparse
-#from collections import defaultdict
-from ROOT import TFile, TTree, TDirectory, gDirectory, gROOT, TH1F, TH2D, TMath, TLorentzVector
+from ROOT import * 
 import numpy as np
-from RUNA.RUNAnalysis.scaleFactors import scaleFactor as SF
+from scaleFactors import scaleFactor as SF
+import tdrstyle as tdrstyle
 
+
+gROOT.Reset()
 gROOT.SetBatch()
+gROOT.ForceStyle()
+tdrstyle.setTDRStyle()
+
+gStyle.SetOptStat(0)
+
 range01 = np.arange(0,1.1,0.1)
 
 def checkLumi( Run, Lumi, NumEvent):
@@ -29,6 +35,10 @@ def checkLumi( Run, Lumi, NumEvent):
 
 	return result
 
+def find_nearest(array,value):
+	idx = (np.abs(array-value)).argmin()
+	return idx
+
 ######################################
 def calcOpt( sample, grooming):
 
@@ -41,6 +51,7 @@ def calcOpt( sample, grooming):
 	numEntries = events.GetEntriesFast()
 
 	print '------> Number of events: '+str(numEntries)
+	SCALE = SF(sample)
 	d = 0
 	eventsPassed = 0
 	eventsAfterTrigger = 0
@@ -137,10 +148,11 @@ def calcOpt( sample, grooming):
 		numJets		= events.numJets
 		massAve		= events.massAve
 		massAsym	= events.massAsym
-		cosThetaStar	= abs( events.cosThetaStar )
+		jet1CosThetaStar	= abs( events.jet1CosThetaStar )
+		jet2CosThetaStar	= abs( events.jet2CosThetaStar )
 		jet1SubjetPtRatio	= events.jet1SubjetPtRatio
 		jet2SubjetPtRatio	= events.jet2SubjetPtRatio
-		scale		= events.Scale
+		puWeight		= events.puWeight
 #		numPV           = events.numPV
 #		AK4HT           = events.AK4HT
 		jet1Pt          = events.jet1Pt
@@ -179,22 +191,16 @@ def calcOpt( sample, grooming):
 
 		#### TEST
 		deltaEtaDijet = abs( jet1Eta - jet2Eta )
-		J1 = TLorentzVector()
-		J1.SetPtEtaPhiE( jet1Pt, jet1Eta, jet1Phi, jet1E )
-		J2 = TLorentzVector()
-		J2.SetPtEtaPhiE( jet2Pt, jet2Eta, jet2Phi, jet2E )
-		tmpCM = J1 + J2
-		J2.Boost( -tmpCM.BoostVector() )
-		J2CosThetaStar = abs( ( J2.Px() * tmpCM.Px() +  J2.Py() * tmpCM.Py() + J2.Pz() * tmpCM.Pz() ) / (J2.E() * tmpCM.E() ) ) 
 
 		#### Apply standard selection
+		scale = SCALE*puWeight
 		triggerCut = ( ( HT > 700 ) and ( trimmedMass > 50 ) )
 		dijetCut = ( numJets > 1 )   
 		subjetPtRatio = ( ( jet1SubjetPtRatio > 0.3 ) and ( jet2SubjetPtRatio > 0.3 )  )
 		tau21Cut = ( ( jet1Tau21 < 0.4 ) and ( jet2Tau21 < 0.4 )  )
 		tau31Cut = ( ( jet1Tau31 < 0.3 ) and ( jet2Tau31 < 0.3 )  )
 		massAsymCut = ( massAsym < 0.1 ) 
-		cosThetaStarCut = ( abs( cosThetaStar ) < 0.3 ) and ( J2CosThetaStar < 0.3 )
+		jet1CosThetaStarCut = ( abs( jet1CosThetaStar ) < 0.3 ) and ( jet2CosThetaStar < 0.3 )
 		subjetPtRatioCut = ( subjetPtRatio ) 
 		deltaEtaCut = ( deltaEtaDijet > 1.0 )
 
@@ -202,385 +208,387 @@ def calcOpt( sample, grooming):
 		##### For Optimization:
 		eventsAfterTrigger +=1
 
-		if dijetCut:
+		if ( ( massAve > 60 ) and ( massAve < 140 ) ) :
 
-			if ( massAsym <= 0.0 ): dictMassAsym[ 0 ] += scale
-			if ( massAsym <= 0.1 ): dictMassAsym[ 1 ] += scale
-			if ( massAsym <= 0.2 ): dictMassAsym[ 2 ] += scale
-			if ( massAsym <= 0.3 ): dictMassAsym[ 3 ] += scale
-			if ( massAsym <= 0.4 ): dictMassAsym[ 4 ] += scale
-			if ( massAsym <= 0.5 ): dictMassAsym[ 5 ] += scale
-			if ( massAsym <= 0.6 ): dictMassAsym[ 6 ] += scale
-			if ( massAsym <= 0.7 ): dictMassAsym[ 7 ] += scale
-			if ( massAsym <= 0.8 ): dictMassAsym[ 8 ] += scale
-			if ( massAsym <= 0.9 ): dictMassAsym[ 9 ] += scale
-			if ( massAsym <= 1.0 ): dictMassAsym[ 10 ] += scale
-		
-			if ( deltaEtaDijet >= 0.0 ): dictDeltaEta[ 0 ] += scale
-			if ( deltaEtaDijet >= 0.5 ): dictDeltaEta[ 1 ] += scale
-			if ( deltaEtaDijet >= 1.0 ): dictDeltaEta[ 2 ] += scale
-			if ( deltaEtaDijet >= 1.5 ): dictDeltaEta[ 3 ] += scale
-			if ( deltaEtaDijet >= 2.0 ): dictDeltaEta[ 4 ] += scale
-			if ( deltaEtaDijet >= 2.5 ): dictDeltaEta[ 5 ] += scale
-			if ( deltaEtaDijet >= 3.0 ): dictDeltaEta[ 6 ] += scale
-			if ( deltaEtaDijet >= 3.5 ): dictDeltaEta[ 7 ] += scale
-			if ( deltaEtaDijet >= 4.0 ): dictDeltaEta[ 8 ] += scale
-			if ( deltaEtaDijet >= 4.5 ): dictDeltaEta[ 9 ] += scale
-			if ( deltaEtaDijet >= 5.0 ): dictDeltaEta[ 10 ] += scale
-		
-			if ( cosThetaStar <= 0.0 ): dictJ1CosTheta[ 0 ] += scale
-			if ( cosThetaStar <= 0.1 ): dictJ1CosTheta[ 1 ] += scale
-			if ( cosThetaStar <= 0.2 ): dictJ1CosTheta[ 2 ] += scale
-			if ( cosThetaStar <= 0.3 ): dictJ1CosTheta[ 3 ] += scale
-			if ( cosThetaStar <= 0.4 ): dictJ1CosTheta[ 4 ] += scale
-			if ( cosThetaStar <= 0.5 ): dictJ1CosTheta[ 5 ] += scale
-			if ( cosThetaStar <= 0.6 ): dictJ1CosTheta[ 6 ] += scale
-			if ( cosThetaStar <= 0.7 ): dictJ1CosTheta[ 7 ] += scale
-			if ( cosThetaStar <= 0.8 ): dictJ1CosTheta[ 8 ] += scale
-			if ( cosThetaStar <= 0.9 ): dictJ1CosTheta[ 9 ] += scale
-			if ( cosThetaStar <= 1.0 ): dictJ1CosTheta[ 10 ] += scale
-		
-			if ( J2CosThetaStar <= 0.0 ): dictJ2CosTheta[ 0 ] += scale
-			if ( J2CosThetaStar <= 0.1 ): dictJ2CosTheta[ 1 ] += scale
-			if ( J2CosThetaStar <= 0.2 ): dictJ2CosTheta[ 2 ] += scale
-			if ( J2CosThetaStar <= 0.3 ): dictJ2CosTheta[ 3 ] += scale
-			if ( J2CosThetaStar <= 0.4 ): dictJ2CosTheta[ 4 ] += scale
-			if ( J2CosThetaStar <= 0.5 ): dictJ2CosTheta[ 5 ] += scale
-			if ( J2CosThetaStar <= 0.6 ): dictJ2CosTheta[ 6 ] += scale
-			if ( J2CosThetaStar <= 0.7 ): dictJ2CosTheta[ 7 ] += scale
-			if ( J2CosThetaStar <= 0.8 ): dictJ2CosTheta[ 8 ] += scale
-			if ( J2CosThetaStar <= 0.9 ): dictJ2CosTheta[ 9 ] += scale
-			if ( J2CosThetaStar <= 1.0 ): dictJ2CosTheta[ 10 ] += scale
-		
-			if ( jet1Tau21 <= 0.0 ): dictJ1Tau21[ 0 ] += scale
-			if ( jet1Tau21 <= 0.1 ): dictJ1Tau21[ 1 ] += scale
-			if ( jet1Tau21 <= 0.2 ): dictJ1Tau21[ 2 ] += scale
-			if ( jet1Tau21 <= 0.3 ): dictJ1Tau21[ 3 ] += scale
-			if ( jet1Tau21 <= 0.4 ): dictJ1Tau21[ 4 ] += scale
-			if ( jet1Tau21 <= 0.5 ): dictJ1Tau21[ 5 ] += scale
-			if ( jet1Tau21 <= 0.6 ): dictJ1Tau21[ 6 ] += scale
-			if ( jet1Tau21 <= 0.7 ): dictJ1Tau21[ 7 ] += scale
-			if ( jet1Tau21 <= 0.8 ): dictJ1Tau21[ 8 ] += scale
-			if ( jet1Tau21 <= 0.9 ): dictJ1Tau21[ 9 ] += scale
-			if ( jet1Tau21 <= 1.0 ): dictJ1Tau21[ 10 ] += scale
-		
-			if ( jet2Tau21 <= 0.0 ): dictJ2Tau21[ 0 ] += scale
-			if ( jet2Tau21 <= 0.1 ): dictJ2Tau21[ 1 ] += scale
-			if ( jet2Tau21 <= 0.2 ): dictJ2Tau21[ 2 ] += scale
-			if ( jet2Tau21 <= 0.3 ): dictJ2Tau21[ 3 ] += scale
-			if ( jet2Tau21 <= 0.4 ): dictJ2Tau21[ 4 ] += scale
-			if ( jet2Tau21 <= 0.5 ): dictJ2Tau21[ 5 ] += scale
-			if ( jet2Tau21 <= 0.6 ): dictJ2Tau21[ 6 ] += scale
-			if ( jet2Tau21 <= 0.7 ): dictJ2Tau21[ 7 ] += scale
-			if ( jet2Tau21 <= 0.8 ): dictJ2Tau21[ 8 ] += scale
-			if ( jet2Tau21 <= 0.9 ): dictJ2Tau21[ 9 ] += scale
-			if ( jet2Tau21 <= 1.0 ): dictJ2Tau21[ 10 ] += scale
+			if dijetCut:
 
-			if ( jet1Tau31 <= 0.0 ): dictJ1Tau31[ 0 ] += scale
-			if ( jet1Tau31 <= 0.1 ): dictJ1Tau31[ 1 ] += scale
-			if ( jet1Tau31 <= 0.2 ): dictJ1Tau31[ 2 ] += scale
-			if ( jet1Tau31 <= 0.3 ): dictJ1Tau31[ 3 ] += scale
-			if ( jet1Tau31 <= 0.4 ): dictJ1Tau31[ 4 ] += scale
-			if ( jet1Tau31 <= 0.5 ): dictJ1Tau31[ 5 ] += scale
-			if ( jet1Tau31 <= 0.6 ): dictJ1Tau31[ 6 ] += scale
-			if ( jet1Tau31 <= 0.7 ): dictJ1Tau31[ 7 ] += scale
-			if ( jet1Tau31 <= 0.8 ): dictJ1Tau31[ 8 ] += scale
-			if ( jet1Tau31 <= 0.9 ): dictJ1Tau31[ 9 ] += scale
-			if ( jet1Tau31 <= 1.0 ): dictJ1Tau31[ 10 ] += scale
-		
-			if ( jet2Tau31 <= 0.0 ): dictJ2Tau31[ 0 ] += scale
-			if ( jet2Tau31 <= 0.1 ): dictJ2Tau31[ 1 ] += scale
-			if ( jet2Tau31 <= 0.2 ): dictJ2Tau31[ 2 ] += scale
-			if ( jet2Tau31 <= 0.3 ): dictJ2Tau31[ 3 ] += scale
-			if ( jet2Tau31 <= 0.4 ): dictJ2Tau31[ 4 ] += scale
-			if ( jet2Tau31 <= 0.5 ): dictJ2Tau31[ 5 ] += scale
-			if ( jet2Tau31 <= 0.6 ): dictJ2Tau31[ 6 ] += scale
-			if ( jet2Tau31 <= 0.7 ): dictJ2Tau31[ 7 ] += scale
-			if ( jet2Tau31 <= 0.8 ): dictJ2Tau31[ 8 ] += scale
-			if ( jet2Tau31 <= 0.9 ): dictJ2Tau31[ 9 ] += scale
-			if ( jet2Tau31 <= 1.0 ): dictJ2Tau31[ 10 ] += scale
+				if ( massAsym <= 0.0 ): dictMassAsym[ 0 ] += scale
+				if ( massAsym <= 0.1 ): dictMassAsym[ 1 ] += scale
+				if ( massAsym <= 0.2 ): dictMassAsym[ 2 ] += scale
+				if ( massAsym <= 0.3 ): dictMassAsym[ 3 ] += scale
+				if ( massAsym <= 0.4 ): dictMassAsym[ 4 ] += scale
+				if ( massAsym <= 0.5 ): dictMassAsym[ 5 ] += scale
+				if ( massAsym <= 0.6 ): dictMassAsym[ 6 ] += scale
+				if ( massAsym <= 0.7 ): dictMassAsym[ 7 ] += scale
+				if ( massAsym <= 0.8 ): dictMassAsym[ 8 ] += scale
+				if ( massAsym <= 0.9 ): dictMassAsym[ 9 ] += scale
+				if ( massAsym <= 1.0 ): dictMassAsym[ 10 ] += scale
+			
+				if ( deltaEtaDijet >= 0.0 ): dictDeltaEta[ 0 ] += scale
+				if ( deltaEtaDijet >= 0.5 ): dictDeltaEta[ 1 ] += scale
+				if ( deltaEtaDijet >= 1.0 ): dictDeltaEta[ 2 ] += scale
+				if ( deltaEtaDijet >= 1.5 ): dictDeltaEta[ 3 ] += scale
+				if ( deltaEtaDijet >= 2.0 ): dictDeltaEta[ 4 ] += scale
+				if ( deltaEtaDijet >= 2.5 ): dictDeltaEta[ 5 ] += scale
+				if ( deltaEtaDijet >= 3.0 ): dictDeltaEta[ 6 ] += scale
+				if ( deltaEtaDijet >= 3.5 ): dictDeltaEta[ 7 ] += scale
+				if ( deltaEtaDijet >= 4.0 ): dictDeltaEta[ 8 ] += scale
+				if ( deltaEtaDijet >= 4.5 ): dictDeltaEta[ 9 ] += scale
+				if ( deltaEtaDijet >= 5.0 ): dictDeltaEta[ 10 ] += scale
+			
+				if ( jet1CosThetaStar <= 0.0 ): dictJ1CosTheta[ 0 ] += scale
+				if ( jet1CosThetaStar <= 0.1 ): dictJ1CosTheta[ 1 ] += scale
+				if ( jet1CosThetaStar <= 0.2 ): dictJ1CosTheta[ 2 ] += scale
+				if ( jet1CosThetaStar <= 0.3 ): dictJ1CosTheta[ 3 ] += scale
+				if ( jet1CosThetaStar <= 0.4 ): dictJ1CosTheta[ 4 ] += scale
+				if ( jet1CosThetaStar <= 0.5 ): dictJ1CosTheta[ 5 ] += scale
+				if ( jet1CosThetaStar <= 0.6 ): dictJ1CosTheta[ 6 ] += scale
+				if ( jet1CosThetaStar <= 0.7 ): dictJ1CosTheta[ 7 ] += scale
+				if ( jet1CosThetaStar <= 0.8 ): dictJ1CosTheta[ 8 ] += scale
+				if ( jet1CosThetaStar <= 0.9 ): dictJ1CosTheta[ 9 ] += scale
+				if ( jet1CosThetaStar <= 1.0 ): dictJ1CosTheta[ 10 ] += scale
+			
+				if ( jet2CosThetaStar <= 0.0 ): dictJ2CosTheta[ 0 ] += scale
+				if ( jet2CosThetaStar <= 0.1 ): dictJ2CosTheta[ 1 ] += scale
+				if ( jet2CosThetaStar <= 0.2 ): dictJ2CosTheta[ 2 ] += scale
+				if ( jet2CosThetaStar <= 0.3 ): dictJ2CosTheta[ 3 ] += scale
+				if ( jet2CosThetaStar <= 0.4 ): dictJ2CosTheta[ 4 ] += scale
+				if ( jet2CosThetaStar <= 0.5 ): dictJ2CosTheta[ 5 ] += scale
+				if ( jet2CosThetaStar <= 0.6 ): dictJ2CosTheta[ 6 ] += scale
+				if ( jet2CosThetaStar <= 0.7 ): dictJ2CosTheta[ 7 ] += scale
+				if ( jet2CosThetaStar <= 0.8 ): dictJ2CosTheta[ 8 ] += scale
+				if ( jet2CosThetaStar <= 0.9 ): dictJ2CosTheta[ 9 ] += scale
+				if ( jet2CosThetaStar <= 1.0 ): dictJ2CosTheta[ 10 ] += scale
+			
+				if ( jet1Tau21 <= 0.0 ): dictJ1Tau21[ 0 ] += scale
+				if ( jet1Tau21 <= 0.1 ): dictJ1Tau21[ 1 ] += scale
+				if ( jet1Tau21 <= 0.2 ): dictJ1Tau21[ 2 ] += scale
+				if ( jet1Tau21 <= 0.3 ): dictJ1Tau21[ 3 ] += scale
+				if ( jet1Tau21 <= 0.4 ): dictJ1Tau21[ 4 ] += scale
+				if ( jet1Tau21 <= 0.5 ): dictJ1Tau21[ 5 ] += scale
+				if ( jet1Tau21 <= 0.6 ): dictJ1Tau21[ 6 ] += scale
+				if ( jet1Tau21 <= 0.7 ): dictJ1Tau21[ 7 ] += scale
+				if ( jet1Tau21 <= 0.8 ): dictJ1Tau21[ 8 ] += scale
+				if ( jet1Tau21 <= 0.9 ): dictJ1Tau21[ 9 ] += scale
+				if ( jet1Tau21 <= 1.0 ): dictJ1Tau21[ 10 ] += scale
+			
+				if ( jet2Tau21 <= 0.0 ): dictJ2Tau21[ 0 ] += scale
+				if ( jet2Tau21 <= 0.1 ): dictJ2Tau21[ 1 ] += scale
+				if ( jet2Tau21 <= 0.2 ): dictJ2Tau21[ 2 ] += scale
+				if ( jet2Tau21 <= 0.3 ): dictJ2Tau21[ 3 ] += scale
+				if ( jet2Tau21 <= 0.4 ): dictJ2Tau21[ 4 ] += scale
+				if ( jet2Tau21 <= 0.5 ): dictJ2Tau21[ 5 ] += scale
+				if ( jet2Tau21 <= 0.6 ): dictJ2Tau21[ 6 ] += scale
+				if ( jet2Tau21 <= 0.7 ): dictJ2Tau21[ 7 ] += scale
+				if ( jet2Tau21 <= 0.8 ): dictJ2Tau21[ 8 ] += scale
+				if ( jet2Tau21 <= 0.9 ): dictJ2Tau21[ 9 ] += scale
+				if ( jet2Tau21 <= 1.0 ): dictJ2Tau21[ 10 ] += scale
 
-			if ( jet1SubjetPtRatio <= 0.0 ): dictJ1SubjetPtRatio[ 0 ] += scale
-			if ( jet1SubjetPtRatio <= 0.1 ): dictJ1SubjetPtRatio[ 1 ] += scale
-			if ( jet1SubjetPtRatio <= 0.2 ): dictJ1SubjetPtRatio[ 2 ] += scale
-			if ( jet1SubjetPtRatio <= 0.3 ): dictJ1SubjetPtRatio[ 3 ] += scale
-			if ( jet1SubjetPtRatio <= 0.4 ): dictJ1SubjetPtRatio[ 4 ] += scale
-			if ( jet1SubjetPtRatio <= 0.5 ): dictJ1SubjetPtRatio[ 5 ] += scale
-			if ( jet1SubjetPtRatio <= 0.6 ): dictJ1SubjetPtRatio[ 6 ] += scale
-			if ( jet1SubjetPtRatio <= 0.7 ): dictJ1SubjetPtRatio[ 7 ] += scale
-			if ( jet1SubjetPtRatio <= 0.8 ): dictJ1SubjetPtRatio[ 8 ] += scale
-			if ( jet1SubjetPtRatio <= 0.9 ): dictJ1SubjetPtRatio[ 9 ] += scale
-			if ( jet1SubjetPtRatio <= 1.0 ): dictJ1SubjetPtRatio[ 10 ] += scale
-		
-			if ( jet2SubjetPtRatio <= 0.0 ): dictJ2SubjetPtRatio[ 0 ] += scale
-			if ( jet2SubjetPtRatio <= 0.1 ): dictJ2SubjetPtRatio[ 1 ] += scale
-			if ( jet2SubjetPtRatio <= 0.2 ): dictJ2SubjetPtRatio[ 2 ] += scale
-			if ( jet2SubjetPtRatio <= 0.3 ): dictJ2SubjetPtRatio[ 3 ] += scale
-			if ( jet2SubjetPtRatio <= 0.4 ): dictJ2SubjetPtRatio[ 4 ] += scale
-			if ( jet2SubjetPtRatio <= 0.5 ): dictJ2SubjetPtRatio[ 5 ] += scale
-			if ( jet2SubjetPtRatio <= 0.6 ): dictJ2SubjetPtRatio[ 6 ] += scale
-			if ( jet2SubjetPtRatio <= 0.7 ): dictJ2SubjetPtRatio[ 7 ] += scale
-			if ( jet2SubjetPtRatio <= 0.8 ): dictJ2SubjetPtRatio[ 8 ] += scale
-			if ( jet2SubjetPtRatio <= 0.9 ): dictJ2SubjetPtRatio[ 9 ] += scale
-			if ( jet2SubjetPtRatio <= 1.0 ): dictJ2SubjetPtRatio[ 10 ] += scale
+				if ( jet1Tau31 <= 0.0 ): dictJ1Tau31[ 0 ] += scale
+				if ( jet1Tau31 <= 0.1 ): dictJ1Tau31[ 1 ] += scale
+				if ( jet1Tau31 <= 0.2 ): dictJ1Tau31[ 2 ] += scale
+				if ( jet1Tau31 <= 0.3 ): dictJ1Tau31[ 3 ] += scale
+				if ( jet1Tau31 <= 0.4 ): dictJ1Tau31[ 4 ] += scale
+				if ( jet1Tau31 <= 0.5 ): dictJ1Tau31[ 5 ] += scale
+				if ( jet1Tau31 <= 0.6 ): dictJ1Tau31[ 6 ] += scale
+				if ( jet1Tau31 <= 0.7 ): dictJ1Tau31[ 7 ] += scale
+				if ( jet1Tau31 <= 0.8 ): dictJ1Tau31[ 8 ] += scale
+				if ( jet1Tau31 <= 0.9 ): dictJ1Tau31[ 9 ] += scale
+				if ( jet1Tau31 <= 1.0 ): dictJ1Tau31[ 10 ] += scale
+			
+				if ( jet2Tau31 <= 0.0 ): dictJ2Tau31[ 0 ] += scale
+				if ( jet2Tau31 <= 0.1 ): dictJ2Tau31[ 1 ] += scale
+				if ( jet2Tau31 <= 0.2 ): dictJ2Tau31[ 2 ] += scale
+				if ( jet2Tau31 <= 0.3 ): dictJ2Tau31[ 3 ] += scale
+				if ( jet2Tau31 <= 0.4 ): dictJ2Tau31[ 4 ] += scale
+				if ( jet2Tau31 <= 0.5 ): dictJ2Tau31[ 5 ] += scale
+				if ( jet2Tau31 <= 0.6 ): dictJ2Tau31[ 6 ] += scale
+				if ( jet2Tau31 <= 0.7 ): dictJ2Tau31[ 7 ] += scale
+				if ( jet2Tau31 <= 0.8 ): dictJ2Tau31[ 8 ] += scale
+				if ( jet2Tau31 <= 0.9 ): dictJ2Tau31[ 9 ] += scale
+				if ( jet2Tau31 <= 1.0 ): dictJ2Tau31[ 10 ] += scale
 
-			if massAsymCut :
+				if ( jet1SubjetPtRatio <= 0.0 ): dictJ1SubjetPtRatio[ 0 ] += scale
+				if ( jet1SubjetPtRatio <= 0.1 ): dictJ1SubjetPtRatio[ 1 ] += scale
+				if ( jet1SubjetPtRatio <= 0.2 ): dictJ1SubjetPtRatio[ 2 ] += scale
+				if ( jet1SubjetPtRatio <= 0.3 ): dictJ1SubjetPtRatio[ 3 ] += scale
+				if ( jet1SubjetPtRatio <= 0.4 ): dictJ1SubjetPtRatio[ 4 ] += scale
+				if ( jet1SubjetPtRatio <= 0.5 ): dictJ1SubjetPtRatio[ 5 ] += scale
+				if ( jet1SubjetPtRatio <= 0.6 ): dictJ1SubjetPtRatio[ 6 ] += scale
+				if ( jet1SubjetPtRatio <= 0.7 ): dictJ1SubjetPtRatio[ 7 ] += scale
+				if ( jet1SubjetPtRatio <= 0.8 ): dictJ1SubjetPtRatio[ 8 ] += scale
+				if ( jet1SubjetPtRatio <= 0.9 ): dictJ1SubjetPtRatio[ 9 ] += scale
+				if ( jet1SubjetPtRatio <= 1.0 ): dictJ1SubjetPtRatio[ 10 ] += scale
 			
-				if ( deltaEtaDijet >= 0.0 ): dictMA_DeltaEta[ 0 ] += scale
-				if ( deltaEtaDijet >= 0.5 ): dictMA_DeltaEta[ 1 ] += scale
-				if ( deltaEtaDijet >= 1.0 ): dictMA_DeltaEta[ 2 ] += scale
-				if ( deltaEtaDijet >= 1.5 ): dictMA_DeltaEta[ 3 ] += scale
-				if ( deltaEtaDijet >= 2.0 ): dictMA_DeltaEta[ 4 ] += scale
-				if ( deltaEtaDijet >= 2.5 ): dictMA_DeltaEta[ 5 ] += scale
-				if ( deltaEtaDijet >= 3.0 ): dictMA_DeltaEta[ 6 ] += scale
-				if ( deltaEtaDijet >= 3.5 ): dictMA_DeltaEta[ 7 ] += scale
-				if ( deltaEtaDijet >= 4.0 ): dictMA_DeltaEta[ 8 ] += scale
-				if ( deltaEtaDijet >= 4.5 ): dictMA_DeltaEta[ 9 ] += scale
-				if ( deltaEtaDijet >= 5.0 ): dictMA_DeltaEta[ 10 ] += scale
-			
-				if ( cosThetaStar <= 0.0 ): dictMA_J1CosTheta[ 0 ] += scale
-				if ( cosThetaStar <= 0.1 ): dictMA_J1CosTheta[ 1 ] += scale
-				if ( cosThetaStar <= 0.2 ): dictMA_J1CosTheta[ 2 ] += scale
-				if ( cosThetaStar <= 0.3 ): dictMA_J1CosTheta[ 3 ] += scale
-				if ( cosThetaStar <= 0.4 ): dictMA_J1CosTheta[ 4 ] += scale
-				if ( cosThetaStar <= 0.5 ): dictMA_J1CosTheta[ 5 ] += scale
-				if ( cosThetaStar <= 0.6 ): dictMA_J1CosTheta[ 6 ] += scale
-				if ( cosThetaStar <= 0.7 ): dictMA_J1CosTheta[ 7 ] += scale
-				if ( cosThetaStar <= 0.8 ): dictMA_J1CosTheta[ 8 ] += scale
-				if ( cosThetaStar <= 0.9 ): dictMA_J1CosTheta[ 9 ] += scale
-				if ( cosThetaStar <= 1.0 ): dictMA_J1CosTheta[ 10 ] += scale
-			
-				if ( J2CosThetaStar <= 0.0 ): dictMA_J2CosTheta[ 0 ] += scale
-				if ( J2CosThetaStar <= 0.1 ): dictMA_J2CosTheta[ 1 ] += scale
-				if ( J2CosThetaStar <= 0.2 ): dictMA_J2CosTheta[ 2 ] += scale
-				if ( J2CosThetaStar <= 0.3 ): dictMA_J2CosTheta[ 3 ] += scale
-				if ( J2CosThetaStar <= 0.4 ): dictMA_J2CosTheta[ 4 ] += scale
-				if ( J2CosThetaStar <= 0.5 ): dictMA_J2CosTheta[ 5 ] += scale
-				if ( J2CosThetaStar <= 0.6 ): dictMA_J2CosTheta[ 6 ] += scale
-				if ( J2CosThetaStar <= 0.7 ): dictMA_J2CosTheta[ 7 ] += scale
-				if ( J2CosThetaStar <= 0.8 ): dictMA_J2CosTheta[ 8 ] += scale
-				if ( J2CosThetaStar <= 0.9 ): dictMA_J2CosTheta[ 9 ] += scale
-				if ( J2CosThetaStar <= 1.0 ): dictMA_J2CosTheta[ 10 ] += scale
-			
-				if ( jet1Tau21 <= 0.0 ): dictMA_J1Tau21[ 0 ] += scale
-				if ( jet1Tau21 <= 0.1 ): dictMA_J1Tau21[ 1 ] += scale
-				if ( jet1Tau21 <= 0.2 ): dictMA_J1Tau21[ 2 ] += scale
-				if ( jet1Tau21 <= 0.3 ): dictMA_J1Tau21[ 3 ] += scale
-				if ( jet1Tau21 <= 0.4 ): dictMA_J1Tau21[ 4 ] += scale
-				if ( jet1Tau21 <= 0.5 ): dictMA_J1Tau21[ 5 ] += scale
-				if ( jet1Tau21 <= 0.6 ): dictMA_J1Tau21[ 6 ] += scale
-				if ( jet1Tau21 <= 0.7 ): dictMA_J1Tau21[ 7 ] += scale
-				if ( jet1Tau21 <= 0.8 ): dictMA_J1Tau21[ 8 ] += scale
-				if ( jet1Tau21 <= 0.9 ): dictMA_J1Tau21[ 9 ] += scale
-				if ( jet1Tau21 <= 1.0 ): dictMA_J1Tau21[ 10 ] += scale
-			
-				if ( jet2Tau21 <= 0.0 ): dictMA_J2Tau21[ 0 ] += scale
-				if ( jet2Tau21 <= 0.1 ): dictMA_J2Tau21[ 1 ] += scale
-				if ( jet2Tau21 <= 0.2 ): dictMA_J2Tau21[ 2 ] += scale
-				if ( jet2Tau21 <= 0.3 ): dictMA_J2Tau21[ 3 ] += scale
-				if ( jet2Tau21 <= 0.4 ): dictMA_J2Tau21[ 4 ] += scale
-				if ( jet2Tau21 <= 0.5 ): dictMA_J2Tau21[ 5 ] += scale
-				if ( jet2Tau21 <= 0.6 ): dictMA_J2Tau21[ 6 ] += scale
-				if ( jet2Tau21 <= 0.7 ): dictMA_J2Tau21[ 7 ] += scale
-				if ( jet2Tau21 <= 0.8 ): dictMA_J2Tau21[ 8 ] += scale
-				if ( jet2Tau21 <= 0.9 ): dictMA_J2Tau21[ 9 ] += scale
-				if ( jet2Tau21 <= 1.0 ): dictMA_J2Tau21[ 10 ] += scale
+				if ( jet2SubjetPtRatio <= 0.0 ): dictJ2SubjetPtRatio[ 0 ] += scale
+				if ( jet2SubjetPtRatio <= 0.1 ): dictJ2SubjetPtRatio[ 1 ] += scale
+				if ( jet2SubjetPtRatio <= 0.2 ): dictJ2SubjetPtRatio[ 2 ] += scale
+				if ( jet2SubjetPtRatio <= 0.3 ): dictJ2SubjetPtRatio[ 3 ] += scale
+				if ( jet2SubjetPtRatio <= 0.4 ): dictJ2SubjetPtRatio[ 4 ] += scale
+				if ( jet2SubjetPtRatio <= 0.5 ): dictJ2SubjetPtRatio[ 5 ] += scale
+				if ( jet2SubjetPtRatio <= 0.6 ): dictJ2SubjetPtRatio[ 6 ] += scale
+				if ( jet2SubjetPtRatio <= 0.7 ): dictJ2SubjetPtRatio[ 7 ] += scale
+				if ( jet2SubjetPtRatio <= 0.8 ): dictJ2SubjetPtRatio[ 8 ] += scale
+				if ( jet2SubjetPtRatio <= 0.9 ): dictJ2SubjetPtRatio[ 9 ] += scale
+				if ( jet2SubjetPtRatio <= 1.0 ): dictJ2SubjetPtRatio[ 10 ] += scale
 
-				if ( jet1Tau31 <= 0.0 ): dictMA_J1Tau31[ 0 ] += scale
-				if ( jet1Tau31 <= 0.1 ): dictMA_J1Tau31[ 1 ] += scale
-				if ( jet1Tau31 <= 0.2 ): dictMA_J1Tau31[ 2 ] += scale
-				if ( jet1Tau31 <= 0.3 ): dictMA_J1Tau31[ 3 ] += scale
-				if ( jet1Tau31 <= 0.4 ): dictMA_J1Tau31[ 4 ] += scale
-				if ( jet1Tau31 <= 0.5 ): dictMA_J1Tau31[ 5 ] += scale
-				if ( jet1Tau31 <= 0.6 ): dictMA_J1Tau31[ 6 ] += scale
-				if ( jet1Tau31 <= 0.7 ): dictMA_J1Tau31[ 7 ] += scale
-				if ( jet1Tau31 <= 0.8 ): dictMA_J1Tau31[ 8 ] += scale
-				if ( jet1Tau31 <= 0.9 ): dictMA_J1Tau31[ 9 ] += scale
-				if ( jet1Tau31 <= 1.0 ): dictMA_J1Tau31[ 10 ] += scale
-			
-				if ( jet2Tau31 <= 0.0 ): dictMA_J2Tau31[ 0 ] += scale
-				if ( jet2Tau31 <= 0.1 ): dictMA_J2Tau31[ 1 ] += scale
-				if ( jet2Tau31 <= 0.2 ): dictMA_J2Tau31[ 2 ] += scale
-				if ( jet2Tau31 <= 0.3 ): dictMA_J2Tau31[ 3 ] += scale
-				if ( jet2Tau31 <= 0.4 ): dictMA_J2Tau31[ 4 ] += scale
-				if ( jet2Tau31 <= 0.5 ): dictMA_J2Tau31[ 5 ] += scale
-				if ( jet2Tau31 <= 0.6 ): dictMA_J2Tau31[ 6 ] += scale
-				if ( jet2Tau31 <= 0.7 ): dictMA_J2Tau31[ 7 ] += scale
-				if ( jet2Tau31 <= 0.8 ): dictMA_J2Tau31[ 8 ] += scale
-				if ( jet2Tau31 <= 0.9 ): dictMA_J2Tau31[ 9 ] += scale
-				if ( jet2Tau31 <= 1.0 ): dictMA_J2Tau31[ 10 ] += scale
-
-				if ( jet1SubjetPtRatio <= 0.0 ): dictMA_J1SubjetPtRatio[ 0 ] += scale
-				if ( jet1SubjetPtRatio <= 0.1 ): dictMA_J1SubjetPtRatio[ 1 ] += scale
-				if ( jet1SubjetPtRatio <= 0.2 ): dictMA_J1SubjetPtRatio[ 2 ] += scale
-				if ( jet1SubjetPtRatio <= 0.3 ): dictMA_J1SubjetPtRatio[ 3 ] += scale
-				if ( jet1SubjetPtRatio <= 0.4 ): dictMA_J1SubjetPtRatio[ 4 ] += scale
-				if ( jet1SubjetPtRatio <= 0.5 ): dictMA_J1SubjetPtRatio[ 5 ] += scale
-				if ( jet1SubjetPtRatio <= 0.6 ): dictMA_J1SubjetPtRatio[ 6 ] += scale
-				if ( jet1SubjetPtRatio <= 0.7 ): dictMA_J1SubjetPtRatio[ 7 ] += scale
-				if ( jet1SubjetPtRatio <= 0.8 ): dictMA_J1SubjetPtRatio[ 8 ] += scale
-				if ( jet1SubjetPtRatio <= 0.9 ): dictMA_J1SubjetPtRatio[ 9 ] += scale
-				if ( jet1SubjetPtRatio <= 1.0 ): dictMA_J1SubjetPtRatio[ 10 ] += scale
-			
-				if ( jet2SubjetPtRatio <= 0.0 ): dictMA_J2SubjetPtRatio[ 0 ] += scale
-				if ( jet2SubjetPtRatio <= 0.1 ): dictMA_J2SubjetPtRatio[ 1 ] += scale
-				if ( jet2SubjetPtRatio <= 0.2 ): dictMA_J2SubjetPtRatio[ 2 ] += scale
-				if ( jet2SubjetPtRatio <= 0.3 ): dictMA_J2SubjetPtRatio[ 3 ] += scale
-				if ( jet2SubjetPtRatio <= 0.4 ): dictMA_J2SubjetPtRatio[ 4 ] += scale
-				if ( jet2SubjetPtRatio <= 0.5 ): dictMA_J2SubjetPtRatio[ 5 ] += scale
-				if ( jet2SubjetPtRatio <= 0.6 ): dictMA_J2SubjetPtRatio[ 6 ] += scale
-				if ( jet2SubjetPtRatio <= 0.7 ): dictMA_J2SubjetPtRatio[ 7 ] += scale
-				if ( jet2SubjetPtRatio <= 0.8 ): dictMA_J2SubjetPtRatio[ 8 ] += scale
-				if ( jet2SubjetPtRatio <= 0.9 ): dictMA_J2SubjetPtRatio[ 9 ] += scale
-				if ( jet2SubjetPtRatio <= 1.0 ): dictMA_J2SubjetPtRatio[ 10 ] += scale
-
-				if tau21Cut:
-			
-					if ( deltaEtaDijet >= 0.0 ): dictMAT21_DeltaEta[ 0 ] += scale
-					if ( deltaEtaDijet >= 0.5 ): dictMAT21_DeltaEta[ 1 ] += scale
-					if ( deltaEtaDijet >= 1.0 ): dictMAT21_DeltaEta[ 2 ] += scale
-					if ( deltaEtaDijet >= 1.5 ): dictMAT21_DeltaEta[ 3 ] += scale
-					if ( deltaEtaDijet >= 2.0 ): dictMAT21_DeltaEta[ 4 ] += scale
-					if ( deltaEtaDijet >= 2.5 ): dictMAT21_DeltaEta[ 5 ] += scale
-					if ( deltaEtaDijet >= 3.0 ): dictMAT21_DeltaEta[ 6 ] += scale
-					if ( deltaEtaDijet >= 3.5 ): dictMAT21_DeltaEta[ 7 ] += scale
-					if ( deltaEtaDijet >= 4.0 ): dictMAT21_DeltaEta[ 8 ] += scale
-					if ( deltaEtaDijet >= 4.5 ): dictMAT21_DeltaEta[ 9 ] += scale
-					if ( deltaEtaDijet >= 5.0 ): dictMAT21_DeltaEta[ 10 ] += scale
+				if massAsymCut :
 				
-					if ( cosThetaStar <= 0.0 ): dictMAT21_J1CosTheta[ 0 ] += scale
-					if ( cosThetaStar <= 0.1 ): dictMAT21_J1CosTheta[ 1 ] += scale
-					if ( cosThetaStar <= 0.2 ): dictMAT21_J1CosTheta[ 2 ] += scale
-					if ( cosThetaStar <= 0.3 ): dictMAT21_J1CosTheta[ 3 ] += scale
-					if ( cosThetaStar <= 0.4 ): dictMAT21_J1CosTheta[ 4 ] += scale
-					if ( cosThetaStar <= 0.5 ): dictMAT21_J1CosTheta[ 5 ] += scale
-					if ( cosThetaStar <= 0.6 ): dictMAT21_J1CosTheta[ 6 ] += scale
-					if ( cosThetaStar <= 0.7 ): dictMAT21_J1CosTheta[ 7 ] += scale
-					if ( cosThetaStar <= 0.8 ): dictMAT21_J1CosTheta[ 8 ] += scale
-					if ( cosThetaStar <= 0.9 ): dictMAT21_J1CosTheta[ 9 ] += scale
-					if ( cosThetaStar <= 1.0 ): dictMAT21_J1CosTheta[ 10 ] += scale
+					if ( deltaEtaDijet >= 0.0 ): dictMA_DeltaEta[ 0 ] += scale
+					if ( deltaEtaDijet >= 0.5 ): dictMA_DeltaEta[ 1 ] += scale
+					if ( deltaEtaDijet >= 1.0 ): dictMA_DeltaEta[ 2 ] += scale
+					if ( deltaEtaDijet >= 1.5 ): dictMA_DeltaEta[ 3 ] += scale
+					if ( deltaEtaDijet >= 2.0 ): dictMA_DeltaEta[ 4 ] += scale
+					if ( deltaEtaDijet >= 2.5 ): dictMA_DeltaEta[ 5 ] += scale
+					if ( deltaEtaDijet >= 3.0 ): dictMA_DeltaEta[ 6 ] += scale
+					if ( deltaEtaDijet >= 3.5 ): dictMA_DeltaEta[ 7 ] += scale
+					if ( deltaEtaDijet >= 4.0 ): dictMA_DeltaEta[ 8 ] += scale
+					if ( deltaEtaDijet >= 4.5 ): dictMA_DeltaEta[ 9 ] += scale
+					if ( deltaEtaDijet >= 5.0 ): dictMA_DeltaEta[ 10 ] += scale
 				
-					if ( J2CosThetaStar <= 0.0 ): dictMAT21_J2CosTheta[ 0 ] += scale
-					if ( J2CosThetaStar <= 0.1 ): dictMAT21_J2CosTheta[ 1 ] += scale
-					if ( J2CosThetaStar <= 0.2 ): dictMAT21_J2CosTheta[ 2 ] += scale
-					if ( J2CosThetaStar <= 0.3 ): dictMAT21_J2CosTheta[ 3 ] += scale
-					if ( J2CosThetaStar <= 0.4 ): dictMAT21_J2CosTheta[ 4 ] += scale
-					if ( J2CosThetaStar <= 0.5 ): dictMAT21_J2CosTheta[ 5 ] += scale
-					if ( J2CosThetaStar <= 0.6 ): dictMAT21_J2CosTheta[ 6 ] += scale
-					if ( J2CosThetaStar <= 0.7 ): dictMAT21_J2CosTheta[ 7 ] += scale
-					if ( J2CosThetaStar <= 0.8 ): dictMAT21_J2CosTheta[ 8 ] += scale
-					if ( J2CosThetaStar <= 0.9 ): dictMAT21_J2CosTheta[ 9 ] += scale
-					if ( J2CosThetaStar <= 1.0 ): dictMAT21_J2CosTheta[ 10 ] += scale
+					if ( jet1CosThetaStar <= 0.0 ): dictMA_J1CosTheta[ 0 ] += scale
+					if ( jet1CosThetaStar <= 0.1 ): dictMA_J1CosTheta[ 1 ] += scale
+					if ( jet1CosThetaStar <= 0.2 ): dictMA_J1CosTheta[ 2 ] += scale
+					if ( jet1CosThetaStar <= 0.3 ): dictMA_J1CosTheta[ 3 ] += scale
+					if ( jet1CosThetaStar <= 0.4 ): dictMA_J1CosTheta[ 4 ] += scale
+					if ( jet1CosThetaStar <= 0.5 ): dictMA_J1CosTheta[ 5 ] += scale
+					if ( jet1CosThetaStar <= 0.6 ): dictMA_J1CosTheta[ 6 ] += scale
+					if ( jet1CosThetaStar <= 0.7 ): dictMA_J1CosTheta[ 7 ] += scale
+					if ( jet1CosThetaStar <= 0.8 ): dictMA_J1CosTheta[ 8 ] += scale
+					if ( jet1CosThetaStar <= 0.9 ): dictMA_J1CosTheta[ 9 ] += scale
+					if ( jet1CosThetaStar <= 1.0 ): dictMA_J1CosTheta[ 10 ] += scale
 				
-					if ( jet1Tau31 <= 0.0 ): dictMAT21_J1Tau31[ 0 ] += scale
-					if ( jet1Tau31 <= 0.1 ): dictMAT21_J1Tau31[ 1 ] += scale
-					if ( jet1Tau31 <= 0.2 ): dictMAT21_J1Tau31[ 2 ] += scale
-					if ( jet1Tau31 <= 0.3 ): dictMAT21_J1Tau31[ 3 ] += scale
-					if ( jet1Tau31 <= 0.4 ): dictMAT21_J1Tau31[ 4 ] += scale
-					if ( jet1Tau31 <= 0.5 ): dictMAT21_J1Tau31[ 5 ] += scale
-					if ( jet1Tau31 <= 0.6 ): dictMAT21_J1Tau31[ 6 ] += scale
-					if ( jet1Tau31 <= 0.7 ): dictMAT21_J1Tau31[ 7 ] += scale
-					if ( jet1Tau31 <= 0.8 ): dictMAT21_J1Tau31[ 8 ] += scale
-					if ( jet1Tau31 <= 0.9 ): dictMAT21_J1Tau31[ 9 ] += scale
-					if ( jet1Tau31 <= 1.0 ): dictMAT21_J1Tau31[ 10 ] += scale
+					if ( jet2CosThetaStar <= 0.0 ): dictMA_J2CosTheta[ 0 ] += scale
+					if ( jet2CosThetaStar <= 0.1 ): dictMA_J2CosTheta[ 1 ] += scale
+					if ( jet2CosThetaStar <= 0.2 ): dictMA_J2CosTheta[ 2 ] += scale
+					if ( jet2CosThetaStar <= 0.3 ): dictMA_J2CosTheta[ 3 ] += scale
+					if ( jet2CosThetaStar <= 0.4 ): dictMA_J2CosTheta[ 4 ] += scale
+					if ( jet2CosThetaStar <= 0.5 ): dictMA_J2CosTheta[ 5 ] += scale
+					if ( jet2CosThetaStar <= 0.6 ): dictMA_J2CosTheta[ 6 ] += scale
+					if ( jet2CosThetaStar <= 0.7 ): dictMA_J2CosTheta[ 7 ] += scale
+					if ( jet2CosThetaStar <= 0.8 ): dictMA_J2CosTheta[ 8 ] += scale
+					if ( jet2CosThetaStar <= 0.9 ): dictMA_J2CosTheta[ 9 ] += scale
+					if ( jet2CosThetaStar <= 1.0 ): dictMA_J2CosTheta[ 10 ] += scale
 				
-					if ( jet2Tau31 <= 0.0 ): dictMAT21_J2Tau31[ 0 ] += scale
-					if ( jet2Tau31 <= 0.1 ): dictMAT21_J2Tau31[ 1 ] += scale
-					if ( jet2Tau31 <= 0.2 ): dictMAT21_J2Tau31[ 2 ] += scale
-					if ( jet2Tau31 <= 0.3 ): dictMAT21_J2Tau31[ 3 ] += scale
-					if ( jet2Tau31 <= 0.4 ): dictMAT21_J2Tau31[ 4 ] += scale
-					if ( jet2Tau31 <= 0.5 ): dictMAT21_J2Tau31[ 5 ] += scale
-					if ( jet2Tau31 <= 0.6 ): dictMAT21_J2Tau31[ 6 ] += scale
-					if ( jet2Tau31 <= 0.7 ): dictMAT21_J2Tau31[ 7 ] += scale
-					if ( jet2Tau31 <= 0.8 ): dictMAT21_J2Tau31[ 8 ] += scale
-					if ( jet2Tau31 <= 0.9 ): dictMAT21_J2Tau31[ 9 ] += scale
-					if ( jet2Tau31 <= 1.0 ): dictMAT21_J2Tau31[ 10 ] += scale
+					if ( jet1Tau21 <= 0.0 ): dictMA_J1Tau21[ 0 ] += scale
+					if ( jet1Tau21 <= 0.1 ): dictMA_J1Tau21[ 1 ] += scale
+					if ( jet1Tau21 <= 0.2 ): dictMA_J1Tau21[ 2 ] += scale
+					if ( jet1Tau21 <= 0.3 ): dictMA_J1Tau21[ 3 ] += scale
+					if ( jet1Tau21 <= 0.4 ): dictMA_J1Tau21[ 4 ] += scale
+					if ( jet1Tau21 <= 0.5 ): dictMA_J1Tau21[ 5 ] += scale
+					if ( jet1Tau21 <= 0.6 ): dictMA_J1Tau21[ 6 ] += scale
+					if ( jet1Tau21 <= 0.7 ): dictMA_J1Tau21[ 7 ] += scale
+					if ( jet1Tau21 <= 0.8 ): dictMA_J1Tau21[ 8 ] += scale
+					if ( jet1Tau21 <= 0.9 ): dictMA_J1Tau21[ 9 ] += scale
+					if ( jet1Tau21 <= 1.0 ): dictMA_J1Tau21[ 10 ] += scale
+				
+					if ( jet2Tau21 <= 0.0 ): dictMA_J2Tau21[ 0 ] += scale
+					if ( jet2Tau21 <= 0.1 ): dictMA_J2Tau21[ 1 ] += scale
+					if ( jet2Tau21 <= 0.2 ): dictMA_J2Tau21[ 2 ] += scale
+					if ( jet2Tau21 <= 0.3 ): dictMA_J2Tau21[ 3 ] += scale
+					if ( jet2Tau21 <= 0.4 ): dictMA_J2Tau21[ 4 ] += scale
+					if ( jet2Tau21 <= 0.5 ): dictMA_J2Tau21[ 5 ] += scale
+					if ( jet2Tau21 <= 0.6 ): dictMA_J2Tau21[ 6 ] += scale
+					if ( jet2Tau21 <= 0.7 ): dictMA_J2Tau21[ 7 ] += scale
+					if ( jet2Tau21 <= 0.8 ): dictMA_J2Tau21[ 8 ] += scale
+					if ( jet2Tau21 <= 0.9 ): dictMA_J2Tau21[ 9 ] += scale
+					if ( jet2Tau21 <= 1.0 ): dictMA_J2Tau21[ 10 ] += scale
 
-					if ( jet1SubjetPtRatio <= 0.0 ): dictMAT21_J1SubjetPtRatio[ 0 ] += scale
-					if ( jet1SubjetPtRatio <= 0.1 ): dictMAT21_J1SubjetPtRatio[ 1 ] += scale
-					if ( jet1SubjetPtRatio <= 0.2 ): dictMAT21_J1SubjetPtRatio[ 2 ] += scale
-					if ( jet1SubjetPtRatio <= 0.3 ): dictMAT21_J1SubjetPtRatio[ 3 ] += scale
-					if ( jet1SubjetPtRatio <= 0.4 ): dictMAT21_J1SubjetPtRatio[ 4 ] += scale
-					if ( jet1SubjetPtRatio <= 0.5 ): dictMAT21_J1SubjetPtRatio[ 5 ] += scale
-					if ( jet1SubjetPtRatio <= 0.6 ): dictMAT21_J1SubjetPtRatio[ 6 ] += scale
-					if ( jet1SubjetPtRatio <= 0.7 ): dictMAT21_J1SubjetPtRatio[ 7 ] += scale
-					if ( jet1SubjetPtRatio <= 0.8 ): dictMAT21_J1SubjetPtRatio[ 8 ] += scale
-					if ( jet1SubjetPtRatio <= 0.9 ): dictMAT21_J1SubjetPtRatio[ 9 ] += scale
-					if ( jet1SubjetPtRatio <= 1.0 ): dictMAT21_J1SubjetPtRatio[ 10 ] += scale
+					if ( jet1Tau31 <= 0.0 ): dictMA_J1Tau31[ 0 ] += scale
+					if ( jet1Tau31 <= 0.1 ): dictMA_J1Tau31[ 1 ] += scale
+					if ( jet1Tau31 <= 0.2 ): dictMA_J1Tau31[ 2 ] += scale
+					if ( jet1Tau31 <= 0.3 ): dictMA_J1Tau31[ 3 ] += scale
+					if ( jet1Tau31 <= 0.4 ): dictMA_J1Tau31[ 4 ] += scale
+					if ( jet1Tau31 <= 0.5 ): dictMA_J1Tau31[ 5 ] += scale
+					if ( jet1Tau31 <= 0.6 ): dictMA_J1Tau31[ 6 ] += scale
+					if ( jet1Tau31 <= 0.7 ): dictMA_J1Tau31[ 7 ] += scale
+					if ( jet1Tau31 <= 0.8 ): dictMA_J1Tau31[ 8 ] += scale
+					if ( jet1Tau31 <= 0.9 ): dictMA_J1Tau31[ 9 ] += scale
+					if ( jet1Tau31 <= 1.0 ): dictMA_J1Tau31[ 10 ] += scale
 				
-					if ( jet2SubjetPtRatio <= 0.0 ): dictMAT21_J2SubjetPtRatio[ 0 ] += scale
-					if ( jet2SubjetPtRatio <= 0.1 ): dictMAT21_J2SubjetPtRatio[ 1 ] += scale
-					if ( jet2SubjetPtRatio <= 0.2 ): dictMAT21_J2SubjetPtRatio[ 2 ] += scale
-					if ( jet2SubjetPtRatio <= 0.3 ): dictMAT21_J2SubjetPtRatio[ 3 ] += scale
-					if ( jet2SubjetPtRatio <= 0.4 ): dictMAT21_J2SubjetPtRatio[ 4 ] += scale
-					if ( jet2SubjetPtRatio <= 0.5 ): dictMAT21_J2SubjetPtRatio[ 5 ] += scale
-					if ( jet2SubjetPtRatio <= 0.6 ): dictMAT21_J2SubjetPtRatio[ 6 ] += scale
-					if ( jet2SubjetPtRatio <= 0.7 ): dictMAT21_J2SubjetPtRatio[ 7 ] += scale
-					if ( jet2SubjetPtRatio <= 0.8 ): dictMAT21_J2SubjetPtRatio[ 8 ] += scale
-					if ( jet2SubjetPtRatio <= 0.9 ): dictMAT21_J2SubjetPtRatio[ 9 ] += scale
-					if ( jet2SubjetPtRatio <= 1.0 ): dictMAT21_J2SubjetPtRatio[ 10 ] += scale
+					if ( jet2Tau31 <= 0.0 ): dictMA_J2Tau31[ 0 ] += scale
+					if ( jet2Tau31 <= 0.1 ): dictMA_J2Tau31[ 1 ] += scale
+					if ( jet2Tau31 <= 0.2 ): dictMA_J2Tau31[ 2 ] += scale
+					if ( jet2Tau31 <= 0.3 ): dictMA_J2Tau31[ 3 ] += scale
+					if ( jet2Tau31 <= 0.4 ): dictMA_J2Tau31[ 4 ] += scale
+					if ( jet2Tau31 <= 0.5 ): dictMA_J2Tau31[ 5 ] += scale
+					if ( jet2Tau31 <= 0.6 ): dictMA_J2Tau31[ 6 ] += scale
+					if ( jet2Tau31 <= 0.7 ): dictMA_J2Tau31[ 7 ] += scale
+					if ( jet2Tau31 <= 0.8 ): dictMA_J2Tau31[ 8 ] += scale
+					if ( jet2Tau31 <= 0.9 ): dictMA_J2Tau31[ 9 ] += scale
+					if ( jet2Tau31 <= 1.0 ): dictMA_J2Tau31[ 10 ] += scale
 
-					if cosThetaStarCut:
+					if ( jet1SubjetPtRatio <= 0.0 ): dictMA_J1SubjetPtRatio[ 0 ] += scale
+					if ( jet1SubjetPtRatio <= 0.1 ): dictMA_J1SubjetPtRatio[ 1 ] += scale
+					if ( jet1SubjetPtRatio <= 0.2 ): dictMA_J1SubjetPtRatio[ 2 ] += scale
+					if ( jet1SubjetPtRatio <= 0.3 ): dictMA_J1SubjetPtRatio[ 3 ] += scale
+					if ( jet1SubjetPtRatio <= 0.4 ): dictMA_J1SubjetPtRatio[ 4 ] += scale
+					if ( jet1SubjetPtRatio <= 0.5 ): dictMA_J1SubjetPtRatio[ 5 ] += scale
+					if ( jet1SubjetPtRatio <= 0.6 ): dictMA_J1SubjetPtRatio[ 6 ] += scale
+					if ( jet1SubjetPtRatio <= 0.7 ): dictMA_J1SubjetPtRatio[ 7 ] += scale
+					if ( jet1SubjetPtRatio <= 0.8 ): dictMA_J1SubjetPtRatio[ 8 ] += scale
+					if ( jet1SubjetPtRatio <= 0.9 ): dictMA_J1SubjetPtRatio[ 9 ] += scale
+					if ( jet1SubjetPtRatio <= 1.0 ): dictMA_J1SubjetPtRatio[ 10 ] += scale
 				
-						if ( deltaEtaDijet >= 0.0 ): dictMAT21CTS_DeltaEta[ 0 ] += scale
-						if ( deltaEtaDijet >= 0.5 ): dictMAT21CTS_DeltaEta[ 1 ] += scale
-						if ( deltaEtaDijet >= 1.0 ): dictMAT21CTS_DeltaEta[ 2 ] += scale
-						if ( deltaEtaDijet >= 1.5 ): dictMAT21CTS_DeltaEta[ 3 ] += scale
-						if ( deltaEtaDijet >= 2.0 ): dictMAT21CTS_DeltaEta[ 4 ] += scale
-						if ( deltaEtaDijet >= 2.5 ): dictMAT21CTS_DeltaEta[ 5 ] += scale
-						if ( deltaEtaDijet >= 3.0 ): dictMAT21CTS_DeltaEta[ 6 ] += scale
-						if ( deltaEtaDijet >= 3.5 ): dictMAT21CTS_DeltaEta[ 7 ] += scale
-						if ( deltaEtaDijet >= 4.0 ): dictMAT21CTS_DeltaEta[ 8 ] += scale
-						if ( deltaEtaDijet >= 4.5 ): dictMAT21CTS_DeltaEta[ 9 ] += scale
-						if ( deltaEtaDijet >= 5.0 ): dictMAT21CTS_DeltaEta[ 10 ] += scale
+					if ( jet2SubjetPtRatio <= 0.0 ): dictMA_J2SubjetPtRatio[ 0 ] += scale
+					if ( jet2SubjetPtRatio <= 0.1 ): dictMA_J2SubjetPtRatio[ 1 ] += scale
+					if ( jet2SubjetPtRatio <= 0.2 ): dictMA_J2SubjetPtRatio[ 2 ] += scale
+					if ( jet2SubjetPtRatio <= 0.3 ): dictMA_J2SubjetPtRatio[ 3 ] += scale
+					if ( jet2SubjetPtRatio <= 0.4 ): dictMA_J2SubjetPtRatio[ 4 ] += scale
+					if ( jet2SubjetPtRatio <= 0.5 ): dictMA_J2SubjetPtRatio[ 5 ] += scale
+					if ( jet2SubjetPtRatio <= 0.6 ): dictMA_J2SubjetPtRatio[ 6 ] += scale
+					if ( jet2SubjetPtRatio <= 0.7 ): dictMA_J2SubjetPtRatio[ 7 ] += scale
+					if ( jet2SubjetPtRatio <= 0.8 ): dictMA_J2SubjetPtRatio[ 8 ] += scale
+					if ( jet2SubjetPtRatio <= 0.9 ): dictMA_J2SubjetPtRatio[ 9 ] += scale
+					if ( jet2SubjetPtRatio <= 1.0 ): dictMA_J2SubjetPtRatio[ 10 ] += scale
+
+					if tau21Cut:
+				
+						if ( deltaEtaDijet >= 0.0 ): dictMAT21_DeltaEta[ 0 ] += scale
+						if ( deltaEtaDijet >= 0.5 ): dictMAT21_DeltaEta[ 1 ] += scale
+						if ( deltaEtaDijet >= 1.0 ): dictMAT21_DeltaEta[ 2 ] += scale
+						if ( deltaEtaDijet >= 1.5 ): dictMAT21_DeltaEta[ 3 ] += scale
+						if ( deltaEtaDijet >= 2.0 ): dictMAT21_DeltaEta[ 4 ] += scale
+						if ( deltaEtaDijet >= 2.5 ): dictMAT21_DeltaEta[ 5 ] += scale
+						if ( deltaEtaDijet >= 3.0 ): dictMAT21_DeltaEta[ 6 ] += scale
+						if ( deltaEtaDijet >= 3.5 ): dictMAT21_DeltaEta[ 7 ] += scale
+						if ( deltaEtaDijet >= 4.0 ): dictMAT21_DeltaEta[ 8 ] += scale
+						if ( deltaEtaDijet >= 4.5 ): dictMAT21_DeltaEta[ 9 ] += scale
+						if ( deltaEtaDijet >= 5.0 ): dictMAT21_DeltaEta[ 10 ] += scale
 					
-						if ( jet1Tau31 <= 0.0 ): dictMAT21CTS_J1Tau31[ 0 ] += scale
-						if ( jet1Tau31 <= 0.1 ): dictMAT21CTS_J1Tau31[ 1 ] += scale
-						if ( jet1Tau31 <= 0.2 ): dictMAT21CTS_J1Tau31[ 2 ] += scale
-						if ( jet1Tau31 <= 0.3 ): dictMAT21CTS_J1Tau31[ 3 ] += scale
-						if ( jet1Tau31 <= 0.4 ): dictMAT21CTS_J1Tau31[ 4 ] += scale
-						if ( jet1Tau31 <= 0.5 ): dictMAT21CTS_J1Tau31[ 5 ] += scale
-						if ( jet1Tau31 <= 0.6 ): dictMAT21CTS_J1Tau31[ 6 ] += scale
-						if ( jet1Tau31 <= 0.7 ): dictMAT21CTS_J1Tau31[ 7 ] += scale
-						if ( jet1Tau31 <= 0.8 ): dictMAT21CTS_J1Tau31[ 8 ] += scale
-						if ( jet1Tau31 <= 0.9 ): dictMAT21CTS_J1Tau31[ 9 ] += scale
-						if ( jet1Tau31 <= 1.0 ): dictMAT21CTS_J1Tau31[ 10 ] += scale
+						if ( jet1CosThetaStar <= 0.0 ): dictMAT21_J1CosTheta[ 0 ] += scale
+						if ( jet1CosThetaStar <= 0.1 ): dictMAT21_J1CosTheta[ 1 ] += scale
+						if ( jet1CosThetaStar <= 0.2 ): dictMAT21_J1CosTheta[ 2 ] += scale
+						if ( jet1CosThetaStar <= 0.3 ): dictMAT21_J1CosTheta[ 3 ] += scale
+						if ( jet1CosThetaStar <= 0.4 ): dictMAT21_J1CosTheta[ 4 ] += scale
+						if ( jet1CosThetaStar <= 0.5 ): dictMAT21_J1CosTheta[ 5 ] += scale
+						if ( jet1CosThetaStar <= 0.6 ): dictMAT21_J1CosTheta[ 6 ] += scale
+						if ( jet1CosThetaStar <= 0.7 ): dictMAT21_J1CosTheta[ 7 ] += scale
+						if ( jet1CosThetaStar <= 0.8 ): dictMAT21_J1CosTheta[ 8 ] += scale
+						if ( jet1CosThetaStar <= 0.9 ): dictMAT21_J1CosTheta[ 9 ] += scale
+						if ( jet1CosThetaStar <= 1.0 ): dictMAT21_J1CosTheta[ 10 ] += scale
 					
-						if ( jet2Tau31 <= 0.0 ): dictMAT21CTS_J2Tau31[ 0 ] += scale
-						if ( jet2Tau31 <= 0.1 ): dictMAT21CTS_J2Tau31[ 1 ] += scale
-						if ( jet2Tau31 <= 0.2 ): dictMAT21CTS_J2Tau31[ 2 ] += scale
-						if ( jet2Tau31 <= 0.3 ): dictMAT21CTS_J2Tau31[ 3 ] += scale
-						if ( jet2Tau31 <= 0.4 ): dictMAT21CTS_J2Tau31[ 4 ] += scale
-						if ( jet2Tau31 <= 0.5 ): dictMAT21CTS_J2Tau31[ 5 ] += scale
-						if ( jet2Tau31 <= 0.6 ): dictMAT21CTS_J2Tau31[ 6 ] += scale
-						if ( jet2Tau31 <= 0.7 ): dictMAT21CTS_J2Tau31[ 7 ] += scale
-						if ( jet2Tau31 <= 0.8 ): dictMAT21CTS_J2Tau31[ 8 ] += scale
-						if ( jet2Tau31 <= 0.9 ): dictMAT21CTS_J2Tau31[ 9 ] += scale
-						if ( jet2Tau31 <= 1.0 ): dictMAT21CTS_J2Tau31[ 10 ] += scale
+						if ( jet2CosThetaStar <= 0.0 ): dictMAT21_J2CosTheta[ 0 ] += scale
+						if ( jet2CosThetaStar <= 0.1 ): dictMAT21_J2CosTheta[ 1 ] += scale
+						if ( jet2CosThetaStar <= 0.2 ): dictMAT21_J2CosTheta[ 2 ] += scale
+						if ( jet2CosThetaStar <= 0.3 ): dictMAT21_J2CosTheta[ 3 ] += scale
+						if ( jet2CosThetaStar <= 0.4 ): dictMAT21_J2CosTheta[ 4 ] += scale
+						if ( jet2CosThetaStar <= 0.5 ): dictMAT21_J2CosTheta[ 5 ] += scale
+						if ( jet2CosThetaStar <= 0.6 ): dictMAT21_J2CosTheta[ 6 ] += scale
+						if ( jet2CosThetaStar <= 0.7 ): dictMAT21_J2CosTheta[ 7 ] += scale
+						if ( jet2CosThetaStar <= 0.8 ): dictMAT21_J2CosTheta[ 8 ] += scale
+						if ( jet2CosThetaStar <= 0.9 ): dictMAT21_J2CosTheta[ 9 ] += scale
+						if ( jet2CosThetaStar <= 1.0 ): dictMAT21_J2CosTheta[ 10 ] += scale
+					
+						if ( jet1Tau31 <= 0.0 ): dictMAT21_J1Tau31[ 0 ] += scale
+						if ( jet1Tau31 <= 0.1 ): dictMAT21_J1Tau31[ 1 ] += scale
+						if ( jet1Tau31 <= 0.2 ): dictMAT21_J1Tau31[ 2 ] += scale
+						if ( jet1Tau31 <= 0.3 ): dictMAT21_J1Tau31[ 3 ] += scale
+						if ( jet1Tau31 <= 0.4 ): dictMAT21_J1Tau31[ 4 ] += scale
+						if ( jet1Tau31 <= 0.5 ): dictMAT21_J1Tau31[ 5 ] += scale
+						if ( jet1Tau31 <= 0.6 ): dictMAT21_J1Tau31[ 6 ] += scale
+						if ( jet1Tau31 <= 0.7 ): dictMAT21_J1Tau31[ 7 ] += scale
+						if ( jet1Tau31 <= 0.8 ): dictMAT21_J1Tau31[ 8 ] += scale
+						if ( jet1Tau31 <= 0.9 ): dictMAT21_J1Tau31[ 9 ] += scale
+						if ( jet1Tau31 <= 1.0 ): dictMAT21_J1Tau31[ 10 ] += scale
+					
+						if ( jet2Tau31 <= 0.0 ): dictMAT21_J2Tau31[ 0 ] += scale
+						if ( jet2Tau31 <= 0.1 ): dictMAT21_J2Tau31[ 1 ] += scale
+						if ( jet2Tau31 <= 0.2 ): dictMAT21_J2Tau31[ 2 ] += scale
+						if ( jet2Tau31 <= 0.3 ): dictMAT21_J2Tau31[ 3 ] += scale
+						if ( jet2Tau31 <= 0.4 ): dictMAT21_J2Tau31[ 4 ] += scale
+						if ( jet2Tau31 <= 0.5 ): dictMAT21_J2Tau31[ 5 ] += scale
+						if ( jet2Tau31 <= 0.6 ): dictMAT21_J2Tau31[ 6 ] += scale
+						if ( jet2Tau31 <= 0.7 ): dictMAT21_J2Tau31[ 7 ] += scale
+						if ( jet2Tau31 <= 0.8 ): dictMAT21_J2Tau31[ 8 ] += scale
+						if ( jet2Tau31 <= 0.9 ): dictMAT21_J2Tau31[ 9 ] += scale
+						if ( jet2Tau31 <= 1.0 ): dictMAT21_J2Tau31[ 10 ] += scale
 
-						if ( jet1SubjetPtRatio <= 0.0 ): dictMAT21CTS_J1SubjetPtRatio[ 0 ] += scale
-						if ( jet1SubjetPtRatio <= 0.1 ): dictMAT21CTS_J1SubjetPtRatio[ 1 ] += scale
-						if ( jet1SubjetPtRatio <= 0.2 ): dictMAT21CTS_J1SubjetPtRatio[ 2 ] += scale
-						if ( jet1SubjetPtRatio <= 0.3 ): dictMAT21CTS_J1SubjetPtRatio[ 3 ] += scale
-						if ( jet1SubjetPtRatio <= 0.4 ): dictMAT21CTS_J1SubjetPtRatio[ 4 ] += scale
-						if ( jet1SubjetPtRatio <= 0.5 ): dictMAT21CTS_J1SubjetPtRatio[ 5 ] += scale
-						if ( jet1SubjetPtRatio <= 0.6 ): dictMAT21CTS_J1SubjetPtRatio[ 6 ] += scale
-						if ( jet1SubjetPtRatio <= 0.7 ): dictMAT21CTS_J1SubjetPtRatio[ 7 ] += scale
-						if ( jet1SubjetPtRatio <= 0.8 ): dictMAT21CTS_J1SubjetPtRatio[ 8 ] += scale
-						if ( jet1SubjetPtRatio <= 0.9 ): dictMAT21CTS_J1SubjetPtRatio[ 9 ] += scale
-						if ( jet1SubjetPtRatio <= 1.0 ): dictMAT21CTS_J1SubjetPtRatio[ 10 ] += scale
+						if ( jet1SubjetPtRatio <= 0.0 ): dictMAT21_J1SubjetPtRatio[ 0 ] += scale
+						if ( jet1SubjetPtRatio <= 0.1 ): dictMAT21_J1SubjetPtRatio[ 1 ] += scale
+						if ( jet1SubjetPtRatio <= 0.2 ): dictMAT21_J1SubjetPtRatio[ 2 ] += scale
+						if ( jet1SubjetPtRatio <= 0.3 ): dictMAT21_J1SubjetPtRatio[ 3 ] += scale
+						if ( jet1SubjetPtRatio <= 0.4 ): dictMAT21_J1SubjetPtRatio[ 4 ] += scale
+						if ( jet1SubjetPtRatio <= 0.5 ): dictMAT21_J1SubjetPtRatio[ 5 ] += scale
+						if ( jet1SubjetPtRatio <= 0.6 ): dictMAT21_J1SubjetPtRatio[ 6 ] += scale
+						if ( jet1SubjetPtRatio <= 0.7 ): dictMAT21_J1SubjetPtRatio[ 7 ] += scale
+						if ( jet1SubjetPtRatio <= 0.8 ): dictMAT21_J1SubjetPtRatio[ 8 ] += scale
+						if ( jet1SubjetPtRatio <= 0.9 ): dictMAT21_J1SubjetPtRatio[ 9 ] += scale
+						if ( jet1SubjetPtRatio <= 1.0 ): dictMAT21_J1SubjetPtRatio[ 10 ] += scale
 					
-						if ( jet2SubjetPtRatio <= 0.0 ): dictMAT21CTS_J2SubjetPtRatio[ 0 ] += scale
-						if ( jet2SubjetPtRatio <= 0.1 ): dictMAT21CTS_J2SubjetPtRatio[ 1 ] += scale
-						if ( jet2SubjetPtRatio <= 0.2 ): dictMAT21CTS_J2SubjetPtRatio[ 2 ] += scale
-						if ( jet2SubjetPtRatio <= 0.3 ): dictMAT21CTS_J2SubjetPtRatio[ 3 ] += scale
-						if ( jet2SubjetPtRatio <= 0.4 ): dictMAT21CTS_J2SubjetPtRatio[ 4 ] += scale
-						if ( jet2SubjetPtRatio <= 0.5 ): dictMAT21CTS_J2SubjetPtRatio[ 5 ] += scale
-						if ( jet2SubjetPtRatio <= 0.6 ): dictMAT21CTS_J2SubjetPtRatio[ 6 ] += scale
-						if ( jet2SubjetPtRatio <= 0.7 ): dictMAT21CTS_J2SubjetPtRatio[ 7 ] += scale
-						if ( jet2SubjetPtRatio <= 0.8 ): dictMAT21CTS_J2SubjetPtRatio[ 8 ] += scale
-						if ( jet2SubjetPtRatio <= 0.9 ): dictMAT21CTS_J2SubjetPtRatio[ 9 ] += scale
-						if ( jet2SubjetPtRatio <= 1.0 ): dictMAT21CTS_J2SubjetPtRatio[ 10 ] += scale
+						if ( jet2SubjetPtRatio <= 0.0 ): dictMAT21_J2SubjetPtRatio[ 0 ] += scale
+						if ( jet2SubjetPtRatio <= 0.1 ): dictMAT21_J2SubjetPtRatio[ 1 ] += scale
+						if ( jet2SubjetPtRatio <= 0.2 ): dictMAT21_J2SubjetPtRatio[ 2 ] += scale
+						if ( jet2SubjetPtRatio <= 0.3 ): dictMAT21_J2SubjetPtRatio[ 3 ] += scale
+						if ( jet2SubjetPtRatio <= 0.4 ): dictMAT21_J2SubjetPtRatio[ 4 ] += scale
+						if ( jet2SubjetPtRatio <= 0.5 ): dictMAT21_J2SubjetPtRatio[ 5 ] += scale
+						if ( jet2SubjetPtRatio <= 0.6 ): dictMAT21_J2SubjetPtRatio[ 6 ] += scale
+						if ( jet2SubjetPtRatio <= 0.7 ): dictMAT21_J2SubjetPtRatio[ 7 ] += scale
+						if ( jet2SubjetPtRatio <= 0.8 ): dictMAT21_J2SubjetPtRatio[ 8 ] += scale
+						if ( jet2SubjetPtRatio <= 0.9 ): dictMAT21_J2SubjetPtRatio[ 9 ] += scale
+						if ( jet2SubjetPtRatio <= 1.0 ): dictMAT21_J2SubjetPtRatio[ 10 ] += scale
+
+						if jet1CosThetaStarCut:
+					
+							if ( deltaEtaDijet >= 0.0 ): dictMAT21CTS_DeltaEta[ 0 ] += scale
+							if ( deltaEtaDijet >= 0.5 ): dictMAT21CTS_DeltaEta[ 1 ] += scale
+							if ( deltaEtaDijet >= 1.0 ): dictMAT21CTS_DeltaEta[ 2 ] += scale
+							if ( deltaEtaDijet >= 1.5 ): dictMAT21CTS_DeltaEta[ 3 ] += scale
+							if ( deltaEtaDijet >= 2.0 ): dictMAT21CTS_DeltaEta[ 4 ] += scale
+							if ( deltaEtaDijet >= 2.5 ): dictMAT21CTS_DeltaEta[ 5 ] += scale
+							if ( deltaEtaDijet >= 3.0 ): dictMAT21CTS_DeltaEta[ 6 ] += scale
+							if ( deltaEtaDijet >= 3.5 ): dictMAT21CTS_DeltaEta[ 7 ] += scale
+							if ( deltaEtaDijet >= 4.0 ): dictMAT21CTS_DeltaEta[ 8 ] += scale
+							if ( deltaEtaDijet >= 4.5 ): dictMAT21CTS_DeltaEta[ 9 ] += scale
+							if ( deltaEtaDijet >= 5.0 ): dictMAT21CTS_DeltaEta[ 10 ] += scale
+						
+							if ( jet1Tau31 <= 0.0 ): dictMAT21CTS_J1Tau31[ 0 ] += scale
+							if ( jet1Tau31 <= 0.1 ): dictMAT21CTS_J1Tau31[ 1 ] += scale
+							if ( jet1Tau31 <= 0.2 ): dictMAT21CTS_J1Tau31[ 2 ] += scale
+							if ( jet1Tau31 <= 0.3 ): dictMAT21CTS_J1Tau31[ 3 ] += scale
+							if ( jet1Tau31 <= 0.4 ): dictMAT21CTS_J1Tau31[ 4 ] += scale
+							if ( jet1Tau31 <= 0.5 ): dictMAT21CTS_J1Tau31[ 5 ] += scale
+							if ( jet1Tau31 <= 0.6 ): dictMAT21CTS_J1Tau31[ 6 ] += scale
+							if ( jet1Tau31 <= 0.7 ): dictMAT21CTS_J1Tau31[ 7 ] += scale
+							if ( jet1Tau31 <= 0.8 ): dictMAT21CTS_J1Tau31[ 8 ] += scale
+							if ( jet1Tau31 <= 0.9 ): dictMAT21CTS_J1Tau31[ 9 ] += scale
+							if ( jet1Tau31 <= 1.0 ): dictMAT21CTS_J1Tau31[ 10 ] += scale
+						
+							if ( jet2Tau31 <= 0.0 ): dictMAT21CTS_J2Tau31[ 0 ] += scale
+							if ( jet2Tau31 <= 0.1 ): dictMAT21CTS_J2Tau31[ 1 ] += scale
+							if ( jet2Tau31 <= 0.2 ): dictMAT21CTS_J2Tau31[ 2 ] += scale
+							if ( jet2Tau31 <= 0.3 ): dictMAT21CTS_J2Tau31[ 3 ] += scale
+							if ( jet2Tau31 <= 0.4 ): dictMAT21CTS_J2Tau31[ 4 ] += scale
+							if ( jet2Tau31 <= 0.5 ): dictMAT21CTS_J2Tau31[ 5 ] += scale
+							if ( jet2Tau31 <= 0.6 ): dictMAT21CTS_J2Tau31[ 6 ] += scale
+							if ( jet2Tau31 <= 0.7 ): dictMAT21CTS_J2Tau31[ 7 ] += scale
+							if ( jet2Tau31 <= 0.8 ): dictMAT21CTS_J2Tau31[ 8 ] += scale
+							if ( jet2Tau31 <= 0.9 ): dictMAT21CTS_J2Tau31[ 9 ] += scale
+							if ( jet2Tau31 <= 1.0 ): dictMAT21CTS_J2Tau31[ 10 ] += scale
+
+							if ( jet1SubjetPtRatio <= 0.0 ): dictMAT21CTS_J1SubjetPtRatio[ 0 ] += scale
+							if ( jet1SubjetPtRatio <= 0.1 ): dictMAT21CTS_J1SubjetPtRatio[ 1 ] += scale
+							if ( jet1SubjetPtRatio <= 0.2 ): dictMAT21CTS_J1SubjetPtRatio[ 2 ] += scale
+							if ( jet1SubjetPtRatio <= 0.3 ): dictMAT21CTS_J1SubjetPtRatio[ 3 ] += scale
+							if ( jet1SubjetPtRatio <= 0.4 ): dictMAT21CTS_J1SubjetPtRatio[ 4 ] += scale
+							if ( jet1SubjetPtRatio <= 0.5 ): dictMAT21CTS_J1SubjetPtRatio[ 5 ] += scale
+							if ( jet1SubjetPtRatio <= 0.6 ): dictMAT21CTS_J1SubjetPtRatio[ 6 ] += scale
+							if ( jet1SubjetPtRatio <= 0.7 ): dictMAT21CTS_J1SubjetPtRatio[ 7 ] += scale
+							if ( jet1SubjetPtRatio <= 0.8 ): dictMAT21CTS_J1SubjetPtRatio[ 8 ] += scale
+							if ( jet1SubjetPtRatio <= 0.9 ): dictMAT21CTS_J1SubjetPtRatio[ 9 ] += scale
+							if ( jet1SubjetPtRatio <= 1.0 ): dictMAT21CTS_J1SubjetPtRatio[ 10 ] += scale
+						
+							if ( jet2SubjetPtRatio <= 0.0 ): dictMAT21CTS_J2SubjetPtRatio[ 0 ] += scale
+							if ( jet2SubjetPtRatio <= 0.1 ): dictMAT21CTS_J2SubjetPtRatio[ 1 ] += scale
+							if ( jet2SubjetPtRatio <= 0.2 ): dictMAT21CTS_J2SubjetPtRatio[ 2 ] += scale
+							if ( jet2SubjetPtRatio <= 0.3 ): dictMAT21CTS_J2SubjetPtRatio[ 3 ] += scale
+							if ( jet2SubjetPtRatio <= 0.4 ): dictMAT21CTS_J2SubjetPtRatio[ 4 ] += scale
+							if ( jet2SubjetPtRatio <= 0.5 ): dictMAT21CTS_J2SubjetPtRatio[ 5 ] += scale
+							if ( jet2SubjetPtRatio <= 0.6 ): dictMAT21CTS_J2SubjetPtRatio[ 6 ] += scale
+							if ( jet2SubjetPtRatio <= 0.7 ): dictMAT21CTS_J2SubjetPtRatio[ 7 ] += scale
+							if ( jet2SubjetPtRatio <= 0.8 ): dictMAT21CTS_J2SubjetPtRatio[ 8 ] += scale
+							if ( jet2SubjetPtRatio <= 0.9 ): dictMAT21CTS_J2SubjetPtRatio[ 9 ] += scale
+							if ( jet2SubjetPtRatio <= 1.0 ): dictMAT21CTS_J2SubjetPtRatio[ 10 ] += scale
 
 	cutDijet = [ dictMassAsym, dictDeltaEta, dictJ1CosTheta, dictJ2CosTheta, dictJ1Tau21, dictJ2Tau21, dictJ1Tau31, dictJ2Tau31, dictJ1SubjetPtRatio, dictJ2SubjetPtRatio ]
 	cutMassAsym = [ dictMA_DeltaEta, dictMA_J1CosTheta, dictMA_J2CosTheta, dictMA_J1Tau21, dictMA_J2Tau21, dictMA_J1Tau31, dictMA_J2Tau31, dictMA_J1SubjetPtRatio, dictMA_J2SubjetPtRatio ]
@@ -596,7 +604,7 @@ def calcOpt( sample, grooming):
 def optimization( mass, PU, grooming, outputFileName ):
 	"""docstring for optimization"""
 
-	inputFileName = 'Rootfiles/RUNAnalysis_RPVSt'+str(mass)+'tojj_RunIISpring15DR74_'+PU+'_v03_v01p3.root'
+	inputFileName = 'Rootfiles/RUNAnalysis_RPVSt100tojj_RunIISpring15MiniAODv2-74X_Asympt25ns_v08_v01.root'
 	signalTotal = calcOpt( inputFileName, grooming )
 	signalMassAsym 		= signalTotal[0][0]
 	signalDeltaEta 		= signalTotal[0][1]
@@ -633,15 +641,14 @@ def optimization( mass, PU, grooming, outputFileName ):
 	signalMAT21CTS_J1SubjetPtRatio 	= signalTotal[0][3]
 	signalMAT21CTS_J2SubjetPtRatio 	= signalTotal[0][4]
 
-	'''
 	qcdDict = {}
 	for qcdBin in [ '170to300', '300to470', '470to600', '600to800', '800to1000', '1000to1400', '1400to1800' ]: 
-		inputFileName = 'Rootfiles//RUNAnalysis_QCD_Pt_'+qcdBin+'_RunIISpring15DR74_'+PU+'_v01_v06.root'
+		inputFileName = 'Rootfiles/RUNAnalysis_QCD_Pt_'+qcdBin+'_RunIISpring15MiniAODv2-74X_'+PU+'_v08_v01.root'
 		qcdDict[ qcdBin ] = calcOpt( inputFileName, grooming )
 
 	tmpQCDMassAsym = []
-	tmpQCDCosTheta = []
-	tmpQCDSubjetPtRatio = []
+	tmpQCDJet1CosTheta = []
+	tmpQCDJet2CosTheta = []
 	tmpQCDDeltaEta = []
 	tmpQCDJet1SubjetPtRatio = []
 	tmpQCDJet2SubjetPtRatio = []
@@ -653,26 +660,26 @@ def optimization( mass, PU, grooming, outputFileName ):
 
 	for qcdBin, qcdValues in qcdDict.iteritems():
 		tmpQCDMassAsym.append( qcdValues[0] )
-		tmpQCDCosTheta.append( qcdValues[1] )
-		tmpQCDSubjetPtRatio.append( qcdValues[2] )
-		tmpQCDDeltaEta.append( qcdValues[3] )
-		tmpQCDJet1SubjetPtRatio.append( qcdValues[4] )
-		tmpQCDJet2SubjetPtRatio.append( qcdValues[5] )
-		tmpQCDJet1Tau21.append( qcdValues[6] )
-		tmpQCDJet1Tau31.append( qcdValues[7] )
-		tmpQCDJet2Tau21.append( qcdValues[8] )
-		tmpQCDJet2Tau31.append( qcdValues[9] )
+		tmpQCDDeltaEta.append( qcdValues[1] )
+		tmpQCDJet1CosTheta.append( qcdValues[2] )
+		tmpQCDJet2CosTheta.append( qcdValues[3] )
+		tmpQCDJet1Tau21.append( qcdValues[4] )
+		tmpQCDJet2Tau21.append( qcdValues[5] )
+		tmpQCDJet1Tau31.append( qcdValues[6] )
+		tmpQCDJet2Tau31.append( qcdValues[7] )
+		tmpQCDJet1SubjetPtRatio.append( qcdValues[8] )
+		tmpQCDJet2SubjetPtRatio.append( qcdValues[9] )
 		
 	qcdMassAsym = [sum(i) for i in zip(*tmpQCDMassAsym)]
-	qcdCosTheta = [sum(i) for i in zip(*tmpQCDCosTheta)]
-	qcdSubjetPtRatio = [sum(i) for i in zip(*tmpQCDSubjetPtRatio)]
+	qcdJ1CosTheta = [sum(i) for i in zip(*tmpQCDJet1CosTheta)]
+	qcdJ2CosTheta = [sum(i) for i in zip(*tmpQCDJet2CosTheta)]
 	qcdDeltaEta = [sum(i) for i in zip(*tmpQCDDeltaEta)]
-	qcdJet1SubjetPtRatio = [sum(i) for i in zip(*tmpQCDJet1SubjetPtRatio)]
-	qcdJet2SubjetPtRatio = [sum(i) for i in zip(*tmpQCDJet2SubjetPtRatio)]
-	qcdJet1Tau21 = [sum(i) for i in zip(*tmpQCDJet1Tau21)]
-	qcdJet1Tau31 = [sum(i) for i in zip(*tmpQCDJet1Tau31)]
-	qcdJet2Tau21 = [sum(i) for i in zip(*tmpQCDJet2Tau21)]
-	qcdJet2Tau31 = [sum(i) for i in zip(*tmpQCDJet2Tau31)]
+	qcdJ1SubjetPtRatio = [sum(i) for i in zip(*tmpQCDJet1SubjetPtRatio)]
+	qcdJ2SubjetPtRatio = [sum(i) for i in zip(*tmpQCDJet2SubjetPtRatio)]
+	qcdJ1Tau21 = [sum(i) for i in zip(*tmpQCDJet1Tau21)]
+	qcdJ1Tau31 = [sum(i) for i in zip(*tmpQCDJet1Tau31)]
+	qcdJ2Tau21 = [sum(i) for i in zip(*tmpQCDJet2Tau21)]
+	qcdJ2Tau31 = [sum(i) for i in zip(*tmpQCDJet2Tau31)]
 	'''
 	inputQCDFileName = 'Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15DR74_Asympt25ns_v03_v01p3.root'
 	qcdTotal = calcOpt( inputQCDFileName, grooming )
@@ -711,7 +718,6 @@ def optimization( mass, PU, grooming, outputFileName ):
 	qcdMAT21CTS_J1SubjetPtRatio 	= qcdTotal[0][3]
 	qcdMAT21CTS_J2SubjetPtRatio 	= qcdTotal[0][4]
 
-	'''
 	inputFileNameTTJets = 'Rootfiles/RUNAnalysis_TTJets_RunIISpring15DR74_Asympt25ns_v01_v06.root'
 	TTJetsTotal = calcOpt( inputFileNameTTJets, grooming )
 	TTJetsMassAsym = TTJetsTotal[0]
@@ -724,7 +730,6 @@ def optimization( mass, PU, grooming, outputFileName ):
 	TTJetsJet1Tau31 = TTJetsTotal[7]
 	TTJetsJet2Tau21 = TTJetsTotal[8]
 	TTJetsJet2Tau31 = TTJetsTotal[9]
-	'''
 
 	inputFileNameWJets = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01p3.root'
 	WJetsTotal = calcOpt( inputFileNameWJets, grooming )
@@ -799,6 +804,7 @@ def optimization( mass, PU, grooming, outputFileName ):
 	ZJetsMAT21CTS_J2Tau31 		= ZJetsTotal[0][2]
 	ZJetsMAT21CTS_J1SubjetPtRatio 	= ZJetsTotal[0][3]
 	ZJetsMAT21CTS_J2SubjetPtRatio 	= ZJetsTotal[0][4]
+	'''
 	
 	outputFile = TFile( outputFileName, 'RECREATE' )
 
@@ -841,158 +847,158 @@ def optimization( mass, PU, grooming, outputFileName ):
 
 	for i in range( len( signalMassAsym ) ): 
 		#try: valueMassAsym = signalMassAsym[i]/ TMath.Sqrt( qcdMassAsym[i] + TTJetsMassAsym[i] + WJetsMassAsym[i] + ZJetsMassAsym[i] + signalMassAsym[i] )
-		try: valueMassAsym = signalMassAsym[i]/ TMath.Sqrt( qcdMassAsym[i] + WJetsMassAsym[i] + ZJetsMassAsym[i] + signalMassAsym[i] )
+		try: valueMassAsym = signalMassAsym[i]/ TMath.Sqrt( qcdMassAsym[i] )
 		except ZeroDivisionError: valueMassAsym = 0
 		massAsymOpt.SetBinContent( i, valueMassAsym )
 
 		#try: valueDeltaEta = signalDeltaEta[i]/ TMath.Sqrt( qcdDeltaEta[i] + TTJetsDeltaEta[i] + WJetsDeltaEta[i] + ZJetsDeltaEta[i] + signalDeltaEta[i] )
-		try: valueDeltaEta = signalDeltaEta[i]/ TMath.Sqrt( qcdDeltaEta[i] + WJetsDeltaEta[i] + ZJetsDeltaEta[i] + signalDeltaEta[i] )
+		try: valueDeltaEta = signalDeltaEta[i]/ TMath.Sqrt( qcdDeltaEta[i] )
 		except ZeroDivisionError: valueDeltaEta = 0
 		deltaEtaOpt.SetBinContent( i, valueDeltaEta )
 
 		#try: value = signalJ1CosTheta[i]/ TMath.Sqrt( qcdJ1CosTheta[i] + TTJetsJ1CosTheta[i] + WJetsJ1CosTheta[i] + ZJetsJ1CosTheta[i] + signalJ1CosTheta[i] )
-		try: valueJ1CosTheta = signalJ1CosTheta[i]/ TMath.Sqrt( qcdJ1CosTheta[i] + WJetsJ1CosTheta[i] + ZJetsJ1CosTheta[i] + signalJ1CosTheta[i] )
+		try: valueJ1CosTheta = signalJ1CosTheta[i]/ TMath.Sqrt( qcdJ1CosTheta[i]  )
 		except ZeroDivisionError: valueJ1CosTheta = 0
 		J1CosThetaOpt.SetBinContent( i, valueJ1CosTheta )
 
 		#try: value = signalJ2CosTheta[i]/ TMath.Sqrt( qcdJ2CosTheta[i] + TTJetsJ2CosTheta[i] + WJetsJ2CosTheta[i] + ZJetsJ2CosTheta[i] + signalJ2CosTheta[i] )
-		try: valueJ2CosTheta = signalJ2CosTheta[i]/ TMath.Sqrt( qcdJ2CosTheta[i] + WJetsJ2CosTheta[i] + ZJetsJ2CosTheta[i] + signalJ2CosTheta[i] )
+		try: valueJ2CosTheta = signalJ2CosTheta[i]/ TMath.Sqrt( qcdJ2CosTheta[i]  )
 		except ZeroDivisionError: valueJ2CosTheta = 0
 		J2CosThetaOpt.SetBinContent( i, valueJ2CosTheta )
 
 		#try: valueJ1Tau21 = signalJ1Tau21[i]/ TMath.Sqrt( qcdJ1Tau21[i] + TTJetsJ1Tau21[i] + WJetsJ1Tau21[i] + ZJetsJ1Tau21[i] + signalJ1Tau21[i] )
-		try: valueJ1Tau21 = signalJ1Tau21[i]/ TMath.Sqrt( qcdJ1Tau21[i] + WJetsJ1Tau21[i] + ZJetsJ1Tau21[i] + signalJ1Tau21[i] )
+		try: valueJ1Tau21 = signalJ1Tau21[i]/ TMath.Sqrt( qcdJ1Tau21[i]  )
 		except ZeroDivisionError: valueJ1Tau21 = 0
 		J1Tau21Opt.SetBinContent( i, valueJ1Tau21 )
 
 		#try: valueJ2Tau21 = signalJ2Tau21[i]/ TMath.Sqrt( qcdJ2Tau21[i] + TTJetsJ2Tau21[i] + WJetsJ2Tau21[i] + ZJetsJ2Tau21[i] + signalJ2Tau21[i] )
-		try: valueJ2Tau21 = signalJ2Tau21[i]/ TMath.Sqrt( qcdJ2Tau21[i] + WJetsJ2Tau21[i] + ZJetsJ2Tau21[i] + signalJ2Tau21[i] )
+		try: valueJ2Tau21 = signalJ2Tau21[i]/ TMath.Sqrt( qcdJ2Tau21[i]  )
 		except ZeroDivisionError: valueJ2Tau21 = 0
 		J2Tau21Opt.SetBinContent( i, valueJ2Tau21 )
 
 		#try: valueJ1Tau31 = signalJ1Tau31[i]/ TMath.Sqrt( qcdJ1Tau31[i] + TTJetsJ1Tau31[i] + WJetsJ1Tau31[i] + ZJetsJ1Tau31[i] + signalJ1Tau31[i] )
-		try: valueJ1Tau31 = signalJ1Tau31[i]/ TMath.Sqrt( qcdJ1Tau31[i] + WJetsJ1Tau31[i] + ZJetsJ1Tau31[i] + signalJ1Tau31[i] )
+		try: valueJ1Tau31 = signalJ1Tau31[i]/ TMath.Sqrt( qcdJ1Tau31[i] )
 		except ZeroDivisionError: valueJ1Tau31 = 0
 		J1Tau31Opt.SetBinContent( i, valueJ1Tau31 )
 
 		#try: valueJ2Tau31 = signalJ2Tau31[i]/ TMath.Sqrt( qcdJ2Tau31[i] + TTJetsJ2Tau31[i] + WJetsJ2Tau31[i] + ZJetsJ2Tau31[i] + signalJ2Tau31[i] )
-		try: valueJ2Tau31 = signalJ2Tau31[i]/ TMath.Sqrt( qcdJ2Tau31[i] + WJetsJ2Tau31[i] + ZJetsJ2Tau31[i] + signalJ2Tau31[i] )
+		try: valueJ2Tau31 = signalJ2Tau31[i]/ TMath.Sqrt( qcdJ2Tau31[i] )
 		except ZeroDivisionError: valueJ2Tau31 = 0
 		J2Tau31Opt.SetBinContent( i, valueJ2Tau31 )
 
 		#try: valueJ1SubjetPtRatio = signalJ1SubjetPtRatio[i]/ TMath.Sqrt( qcdJ1SubjetPtRatio[i] + TTJetsJ1SubjetPtRatio[i] + WJetsJ1SubjetPtRatio[i] + ZJetsJ1SubjetPtRatio[i] + signalJ1SubjetPtRatio[i] )
-		try: valueJ1SubjetPtRatio = signalJ1SubjetPtRatio[i]/ TMath.Sqrt( qcdJ1SubjetPtRatio[i] + WJetsJ1SubjetPtRatio[i] + ZJetsJ1SubjetPtRatio[i] + signalJ1SubjetPtRatio[i] )
+		try: valueJ1SubjetPtRatio = signalJ1SubjetPtRatio[i]/ TMath.Sqrt( qcdJ1SubjetPtRatio[i]  )
 		except ZeroDivisionError: valueJ1SubjetPtRatio = 0
 		J1SubjetPtRatioOpt.SetBinContent( i, valueJ1SubjetPtRatio )
 	
 		#try: valueJ2SubjetPtRatio = signalJ2SubjetPtRatio[i]/ TMath.Sqrt( qcdJ2SubjetPtRatio[i] + TTJetsJ2SubjetPtRatio[i] + WJetsJ2SubjetPtRatio[i] + ZJetsJ2SubjetPtRatio[i] + signalJ2SubjetPtRatio[i] )
-		try: valueJ2SubjetPtRatio = signalJ2SubjetPtRatio[i]/ TMath.Sqrt( qcdJ2SubjetPtRatio[i] + WJetsJ2SubjetPtRatio[i] + ZJetsJ2SubjetPtRatio[i] + signalJ2SubjetPtRatio[i] )
+		try: valueJ2SubjetPtRatio = signalJ2SubjetPtRatio[i]/ TMath.Sqrt( qcdJ2SubjetPtRatio[i]  )
 		except ZeroDivisionError: valueJ2SubjetPtRatio = 0
 		J2SubjetPtRatioOpt.SetBinContent( i, valueJ2SubjetPtRatio )
 
 		#try: valueMA_DeltaEta = signalMA_DeltaEta[i]/ TMath.Sqrt( qcdMA_DeltaEta[i] + TTJetsMA_DeltaEta[i] + WJetsMA_DeltaEta[i] + ZJetsMA_DeltaEta[i] + signalMA_DeltaEta[i] )
-		try: valueMA_DeltaEta = signalMA_DeltaEta[i]/ TMath.Sqrt( qcdMA_DeltaEta[i] + WJetsMA_DeltaEta[i] + ZJetsMA_DeltaEta[i] + signalMA_DeltaEta[i] )
+		try: valueMA_DeltaEta = signalMA_DeltaEta[i]/ TMath.Sqrt( qcdMA_DeltaEta[i] )
 		except ZeroDivisionError: valueMA_DeltaEta = 0
 		MA_deltaEtaOpt.SetBinContent( i, valueMA_DeltaEta )
 
 		#try: value = signalMA_J1CosTheta[i]/ TMath.Sqrt( qcdMA_J1CosTheta[i] + TTMA_JetsMA_J1CosTheta[i] + WJetsMA_J1CosTheta[i] + ZJetsMA_J1CosTheta[i] + signalMA_J1CosTheta[i] )
-		try: valueMA_J1CosTheta = signalMA_J1CosTheta[i]/ TMath.Sqrt( qcdMA_J1CosTheta[i] + WJetsMA_J1CosTheta[i] + ZJetsMA_J1CosTheta[i] + signalMA_J1CosTheta[i] )
+		try: valueMA_J1CosTheta = signalMA_J1CosTheta[i]/ TMath.Sqrt( qcdMA_J1CosTheta[i] )
 		except ZeroDivisionError: valueMA_J1CosTheta = 0
 		MA_J1CosThetaOpt.SetBinContent( i, valueMA_J1CosTheta )
 
 		#try: value = signalMA_J2CosTheta[i]/ TMath.Sqrt( qcdMA_J2CosTheta[i] + TTMA_JetsMA_J2CosTheta[i] + WJetsMA_J2CosTheta[i] + ZJetsMA_J2CosTheta[i] + signalMA_J2CosTheta[i] )
-		try: valueMA_J2CosTheta = signalMA_J2CosTheta[i]/ TMath.Sqrt( qcdMA_J2CosTheta[i] + WJetsMA_J2CosTheta[i] + ZJetsMA_J2CosTheta[i] + signalMA_J2CosTheta[i] )
+		try: valueMA_J2CosTheta = signalMA_J2CosTheta[i]/ TMath.Sqrt( qcdMA_J2CosTheta[i] )
 		except ZeroDivisionError: valueMA_J2CosTheta = 0
 		MA_J2CosThetaOpt.SetBinContent( i, valueMA_J2CosTheta )
 
 		#try: valueMA_J1Tau21 = signalMA_J1Tau21[i]/ TMath.Sqrt( qcdMA_J1Tau21[i] + TTMA_JetsMA_J1Tau21[i] + WJetsMA_J1Tau21[i] + ZJetsMA_J1Tau21[i] + signalMA_J1Tau21[i] )
-		try: valueMA_J1Tau21 = signalMA_J1Tau21[i]/ TMath.Sqrt( qcdMA_J1Tau21[i] + WJetsMA_J1Tau21[i] + ZJetsMA_J1Tau21[i] + signalMA_J1Tau21[i] )
+		try: valueMA_J1Tau21 = signalMA_J1Tau21[i]/ TMath.Sqrt( qcdMA_J1Tau21[i] )
 		except ZeroDivisionError: valueMA_J1Tau21 = 0
 		MA_J1Tau21Opt.SetBinContent( i, valueMA_J1Tau21 )
 
 		#try: valueMA_J2Tau21 = signalMA_J2Tau21[i]/ TMath.Sqrt( qcdMA_J2Tau21[i] + TTMA_JetsMA_J2Tau21[i] + WJetsMA_J2Tau21[i] + ZJetsMA_J2Tau21[i] + signalMA_J2Tau21[i] )
-		try: valueMA_J2Tau21 = signalMA_J2Tau21[i]/ TMath.Sqrt( qcdMA_J2Tau21[i] + WJetsMA_J2Tau21[i] + ZJetsMA_J2Tau21[i] + signalMA_J2Tau21[i] )
+		try: valueMA_J2Tau21 = signalMA_J2Tau21[i]/ TMath.Sqrt( qcdMA_J2Tau21[i] )
 		except ZeroDivisionError: valueMA_J2Tau21 = 0
 		MA_J2Tau21Opt.SetBinContent( i, valueMA_J2Tau21 )
 
 		#try: valueMA_J1Tau31 = signalMA_J1Tau31[i]/ TMath.Sqrt( qcdMA_J1Tau31[i] + TTMA_JetsMA_J1Tau31[i] + WJetsMA_J1Tau31[i] + ZJetsMA_J1Tau31[i] + signalMA_J1Tau31[i] )
-		try: valueMA_J1Tau31 = signalMA_J1Tau31[i]/ TMath.Sqrt( qcdMA_J1Tau31[i] + WJetsMA_J1Tau31[i] + ZJetsMA_J1Tau31[i] + signalMA_J1Tau31[i] )
+		try: valueMA_J1Tau31 = signalMA_J1Tau31[i]/ TMath.Sqrt( qcdMA_J1Tau31[i] )
 		except ZeroDivisionError: valueMA_J1Tau31 = 0
 		MA_J1Tau31Opt.SetBinContent( i, valueMA_J1Tau31 )
 
 		#try: valueMA_J2Tau31 = signalMA_J2Tau31[i]/ TMath.Sqrt( qcdMA_J2Tau31[i] + TTMA_JetsMA_J2Tau31[i] + WJetsMA_J2Tau31[i] + ZJetsMA_J2Tau31[i] + signalMA_J2Tau31[i] )
-		try: valueMA_J2Tau31 = signalMA_J2Tau31[i]/ TMath.Sqrt( qcdMA_J2Tau31[i] + WJetsMA_J2Tau31[i] + ZJetsMA_J2Tau31[i] + signalMA_J2Tau31[i] )
+		try: valueMA_J2Tau31 = signalMA_J2Tau31[i]/ TMath.Sqrt( qcdMA_J2Tau31[i] )
 		except ZeroDivisionError: valueMA_J2Tau31 = 0
 		MA_J2Tau31Opt.SetBinContent( i, valueMA_J2Tau31 )
 
 		#try: valueMA_J1SubjetPtRatio = signalMA_J1SubjetPtRatio[i]/ TMath.Sqrt( qcdMA_J1SubjetPtRatio[i] + TTMA_JetsMA_J1SubjetPtRatio[i] + WJetsMA_J1SubjetPtRatio[i] + ZJetsMA_J1SubjetPtRatio[i] + signalMA_J1SubjetPtRatio[i] )
-		try: valueMA_J1SubjetPtRatio = signalMA_J1SubjetPtRatio[i]/ TMath.Sqrt( qcdMA_J1SubjetPtRatio[i] + WJetsMA_J1SubjetPtRatio[i] + ZJetsMA_J1SubjetPtRatio[i] + signalMA_J1SubjetPtRatio[i] )
+		try: valueMA_J1SubjetPtRatio = signalMA_J1SubjetPtRatio[i]/ TMath.Sqrt( qcdMA_J1SubjetPtRatio[i] )
 		except ZeroDivisionError: valueMA_J1SubjetPtRatio = 0
 		MA_J1SubjetPtRatioOpt.SetBinContent( i, valueMA_J1SubjetPtRatio )
 	
 		#try: valueMA_J2SubjetPtRatio = signalMA_J2SubjetPtRatio[i]/ TMath.Sqrt( qcdMA_J2SubjetPtRatio[i] + TTMA_JetsMA_J2SubjetPtRatio[i] + WJetsMA_J2SubjetPtRatio[i] + ZJetsMA_J2SubjetPtRatio[i] + signalMA_J2SubjetPtRatio[i] )
-		try: valueMA_J2SubjetPtRatio = signalMA_J2SubjetPtRatio[i]/ TMath.Sqrt( qcdMA_J2SubjetPtRatio[i] + WJetsMA_J2SubjetPtRatio[i] + ZJetsMA_J2SubjetPtRatio[i] + signalMA_J2SubjetPtRatio[i] )
+		try: valueMA_J2SubjetPtRatio = signalMA_J2SubjetPtRatio[i]/ TMath.Sqrt( qcdMA_J2SubjetPtRatio[i] )
 		except ZeroDivisionError: valueMA_J2SubjetPtRatio = 0
 		MA_J2SubjetPtRatioOpt.SetBinContent( i, valueMA_J2SubjetPtRatio )
 	
 
 		#try: valueMAT21_DeltaEta = signalMAT21_DeltaEta[i]/ TMath.Sqrt( qcdMAT21_DeltaEta[i] + TTJetsMAT21_DeltaEta[i] + WJetsMAT21_DeltaEta[i] + ZJetsMAT21_DeltaEta[i] + signalMAT21_DeltaEta[i] )
-		try: valueMAT21_DeltaEta = signalMAT21_DeltaEta[i]/ TMath.Sqrt( qcdMAT21_DeltaEta[i] + WJetsMAT21_DeltaEta[i] + ZJetsMAT21_DeltaEta[i] + signalMAT21_DeltaEta[i] )
+		try: valueMAT21_DeltaEta = signalMAT21_DeltaEta[i]/ TMath.Sqrt( qcdMAT21_DeltaEta[i] )
 		except ZeroDivisionError: valueMAT21_DeltaEta = 0
 		MAT21_deltaEtaOpt.SetBinContent( i, valueMAT21_DeltaEta )
 
 		#try: value = signalMAT21_J1CosTheta[i]/ TMath.Sqrt( qcdMAT21_J1CosTheta[i] + TTMAT21_JetsMAT21_J1CosTheta[i] + WJetsMAT21_J1CosTheta[i] + ZJetsMAT21_J1CosTheta[i] + signalMAT21_J1CosTheta[i] )
-		try: valueMAT21_J1CosTheta = signalMAT21_J1CosTheta[i]/ TMath.Sqrt( qcdMAT21_J1CosTheta[i] + WJetsMAT21_J1CosTheta[i] + ZJetsMAT21_J1CosTheta[i] + signalMAT21_J1CosTheta[i] )
+		try: valueMAT21_J1CosTheta = signalMAT21_J1CosTheta[i]/ TMath.Sqrt( qcdMAT21_J1CosTheta[i] )
 		except ZeroDivisionError: valueMAT21_J1CosTheta = 0
 		MAT21_J1CosThetaOpt.SetBinContent( i, valueMAT21_J1CosTheta )
 
 		#try: value = signalMAT21_J2CosTheta[i]/ TMath.Sqrt( qcdMAT21_J2CosTheta[i] + TTMAT21_JetsMAT21_J2CosTheta[i] + WJetsMAT21_J2CosTheta[i] + ZJetsMAT21_J2CosTheta[i] + signalMAT21_J2CosTheta[i] )
-		try: valueMAT21_J2CosTheta = signalMAT21_J2CosTheta[i]/ TMath.Sqrt( qcdMAT21_J2CosTheta[i] + WJetsMAT21_J2CosTheta[i] + ZJetsMAT21_J2CosTheta[i] + signalMAT21_J2CosTheta[i] )
+		try: valueMAT21_J2CosTheta = signalMAT21_J2CosTheta[i]/ TMath.Sqrt( qcdMAT21_J2CosTheta[i] )
 		except ZeroDivisionError: valueMAT21_J2CosTheta = 0
 		MAT21_J2CosThetaOpt.SetBinContent( i, valueMAT21_J2CosTheta )
 
 		#try: valueMAT21_J1Tau31 = signalMAT21_J1Tau31[i]/ TMath.Sqrt( qcdMAT21_J1Tau31[i] + TTMAT21_JetsMAT21_J1Tau31[i] + WJetsMAT21_J1Tau31[i] + ZJetsMAT21_J1Tau31[i] + signalMAT21_J1Tau31[i] )
-		try: valueMAT21_J1Tau31 = signalMAT21_J1Tau31[i]/ TMath.Sqrt( qcdMAT21_J1Tau31[i] + WJetsMAT21_J1Tau31[i] + ZJetsMAT21_J1Tau31[i] + signalMAT21_J1Tau31[i] )
+		try: valueMAT21_J1Tau31 = signalMAT21_J1Tau31[i]/ TMath.Sqrt( qcdMAT21_J1Tau31[i] )
 		except ZeroDivisionError: valueMAT21_J1Tau31 = 0
 		MAT21_J1Tau31Opt.SetBinContent( i, valueMAT21_J1Tau31 )
 
 		#try: valueMAT21_J2Tau31 = signalMAT21_J2Tau31[i]/ TMath.Sqrt( qcdMAT21_J2Tau31[i] + TTMAT21_JetsMAT21_J2Tau31[i] + WJetsMAT21_J2Tau31[i] + ZJetsMAT21_J2Tau31[i] + signalMAT21_J2Tau31[i] )
-		try: valueMAT21_J2Tau31 = signalMAT21_J2Tau31[i]/ TMath.Sqrt( qcdMAT21_J2Tau31[i] + WJetsMAT21_J2Tau31[i] + ZJetsMAT21_J2Tau31[i] + signalMAT21_J2Tau31[i] )
+		try: valueMAT21_J2Tau31 = signalMAT21_J2Tau31[i]/ TMath.Sqrt( qcdMAT21_J2Tau31[i] )
 		except ZeroDivisionError: valueMAT21_J2Tau31 = 0
 		MAT21_J2Tau31Opt.SetBinContent( i, valueMAT21_J2Tau31 )
 
 		#try: valueMAT21_J1SubjetPtRatio = signalMAT21_J1SubjetPtRatio[i]/ TMath.Sqrt( qcdMAT21_J1SubjetPtRatio[i] + TTMAT21_JetsMAT21_J1SubjetPtRatio[i] + WJetsMAT21_J1SubjetPtRatio[i] + ZJetsMAT21_J1SubjetPtRatio[i] + signalMAT21_J1SubjetPtRatio[i] )
-		try: valueMAT21_J1SubjetPtRatio = signalMAT21_J1SubjetPtRatio[i]/ TMath.Sqrt( qcdMAT21_J1SubjetPtRatio[i] + WJetsMAT21_J1SubjetPtRatio[i] + ZJetsMAT21_J1SubjetPtRatio[i] + signalMAT21_J1SubjetPtRatio[i] )
+		try: valueMAT21_J1SubjetPtRatio = signalMAT21_J1SubjetPtRatio[i]/ TMath.Sqrt( qcdMAT21_J1SubjetPtRatio[i] )
 		except ZeroDivisionError: valueMAT21_J1SubjetPtRatio = 0
 		MAT21_J1SubjetPtRatioOpt.SetBinContent( i, valueMAT21_J1SubjetPtRatio )
 	
 		#try: valueMAT21_J2SubjetPtRatio = signalMAT21_J2SubjetPtRatio[i]/ TMath.Sqrt( qcdMAT21_J2SubjetPtRatio[i] + TTMAT21_JetsMAT21_J2SubjetPtRatio[i] + WJetsMAT21_J2SubjetPtRatio[i] + ZJetsMAT21_J2SubjetPtRatio[i] + signalMAT21_J2SubjetPtRatio[i] )
-		try: valueMAT21_J2SubjetPtRatio = signalMAT21_J2SubjetPtRatio[i]/ TMath.Sqrt( qcdMAT21_J2SubjetPtRatio[i] + WJetsMAT21_J2SubjetPtRatio[i] + ZJetsMAT21_J2SubjetPtRatio[i] + signalMAT21_J2SubjetPtRatio[i] )
+		try: valueMAT21_J2SubjetPtRatio = signalMAT21_J2SubjetPtRatio[i]/ TMath.Sqrt( qcdMAT21_J2SubjetPtRatio[i] )
 		except ZeroDivisionError: valueMAT21_J2SubjetPtRatio = 0
 		MAT21_J2SubjetPtRatioOpt.SetBinContent( i, valueMAT21_J2SubjetPtRatio )
 
 		#try: valueMAT21CTS_DeltaEta = signalMAT21CTS_DeltaEta[i]/ TMath.Sqrt( qcdMAT21CTS_DeltaEta[i] + TTJetsMAT21CTS_DeltaEta[i] + WJetsMAT21CTS_DeltaEta[i] + ZJetsMAT21CTS_DeltaEta[i] + signalMAT21CTS_DeltaEta[i] )
-		try: valueMAT21CTS_DeltaEta = signalMAT21CTS_DeltaEta[i]/ TMath.Sqrt( qcdMAT21CTS_DeltaEta[i] + WJetsMAT21CTS_DeltaEta[i] + ZJetsMAT21CTS_DeltaEta[i] + signalMAT21CTS_DeltaEta[i] )
+		try: valueMAT21CTS_DeltaEta = signalMAT21CTS_DeltaEta[i]/ TMath.Sqrt( qcdMAT21CTS_DeltaEta[i] )
 		except ZeroDivisionError: valueMAT21CTS_DeltaEta = 0
 		MAT21CTS_deltaEtaOpt.SetBinContent( i, valueMAT21CTS_DeltaEta )
 
 		#try: valueMAT21CTS_J1Tau31 = signalMAT21CTS_J1Tau31[i]/ TMath.Sqrt( qcdMAT21CTS_J1Tau31[i] + TTMAT21CTS_JetsMAT21CTS_J1Tau31[i] + WJetsMAT21CTS_J1Tau31[i] + ZJetsMAT21CTS_J1Tau31[i] + signalMAT21CTS_J1Tau31[i] )
-		try: valueMAT21CTS_J1Tau31 = signalMAT21CTS_J1Tau31[i]/ TMath.Sqrt( qcdMAT21CTS_J1Tau31[i] + WJetsMAT21CTS_J1Tau31[i] + ZJetsMAT21CTS_J1Tau31[i] + signalMAT21CTS_J1Tau31[i] )
+		try: valueMAT21CTS_J1Tau31 = signalMAT21CTS_J1Tau31[i]/ TMath.Sqrt( qcdMAT21CTS_J1Tau31[i] )
 		except ZeroDivisionError: valueMAT21CTS_J1Tau31 = 0
 		MAT21CTS_J1Tau31Opt.SetBinContent( i, valueMAT21CTS_J1Tau31 )
 
 		#try: valueMAT21CTS_J2Tau31 = signalMAT21CTS_J2Tau31[i]/ TMath.Sqrt( qcdMAT21CTS_J2Tau31[i] + TTMAT21CTS_JetsMAT21CTS_J2Tau31[i] + WJetsMAT21CTS_J2Tau31[i] + ZJetsMAT21CTS_J2Tau31[i] + signalMAT21CTS_J2Tau31[i] )
-		try: valueMAT21CTS_J2Tau31 = signalMAT21CTS_J2Tau31[i]/ TMath.Sqrt( qcdMAT21CTS_J2Tau31[i] + WJetsMAT21CTS_J2Tau31[i] + ZJetsMAT21CTS_J2Tau31[i] + signalMAT21CTS_J2Tau31[i] )
+		try: valueMAT21CTS_J2Tau31 = signalMAT21CTS_J2Tau31[i]/ TMath.Sqrt( qcdMAT21CTS_J2Tau31[i] )
 		except ZeroDivisionError: valueMAT21CTS_J2Tau31 = 0
 		MAT21CTS_J2Tau31Opt.SetBinContent( i, valueMAT21CTS_J2Tau31 )
 
 		#try: valueMAT21CTS_J1SubjetPtRatio = signalMAT21CTS_J1SubjetPtRatio[i]/ TMath.Sqrt( qcdMAT21CTS_J1SubjetPtRatio[i] + TTMAT21CTS_JetsMAT21CTS_J1SubjetPtRatio[i] + WJetsMAT21CTS_J1SubjetPtRatio[i] + ZJetsMAT21CTS_J1SubjetPtRatio[i] + signalMAT21CTS_J1SubjetPtRatio[i] )
-		try: valueMAT21CTS_J1SubjetPtRatio = signalMAT21CTS_J1SubjetPtRatio[i]/ TMath.Sqrt( qcdMAT21CTS_J1SubjetPtRatio[i] + WJetsMAT21CTS_J1SubjetPtRatio[i] + ZJetsMAT21CTS_J1SubjetPtRatio[i] + signalMAT21CTS_J1SubjetPtRatio[i] )
+		try: valueMAT21CTS_J1SubjetPtRatio = signalMAT21CTS_J1SubjetPtRatio[i]/ TMath.Sqrt( qcdMAT21CTS_J1SubjetPtRatio[i] )
 		except ZeroDivisionError: valueMAT21CTS_J1SubjetPtRatio = 0
 		MAT21CTS_J1SubjetPtRatioOpt.SetBinContent( i, valueMAT21CTS_J1SubjetPtRatio )
 	
 		#try: valueMAT21CTS_J2SubjetPtRatio = signalMAT21CTS_J2SubjetPtRatio[i]/ TMath.Sqrt( qcdMAT21CTS_J2SubjetPtRatio[i] + TTMAT21CTS_JetsMAT21CTS_J2SubjetPtRatio[i] + WJetsMAT21CTS_J2SubjetPtRatio[i] + ZJetsMAT21CTS_J2SubjetPtRatio[i] + signalMAT21CTS_J2SubjetPtRatio[i] )
-		try: valueMAT21CTS_J2SubjetPtRatio = signalMAT21CTS_J2SubjetPtRatio[i]/ TMath.Sqrt( qcdMAT21CTS_J2SubjetPtRatio[i] + WJetsMAT21CTS_J2SubjetPtRatio[i] + ZJetsMAT21CTS_J2SubjetPtRatio[i] + signalMAT21CTS_J2SubjetPtRatio[i] )
+		try: valueMAT21CTS_J2SubjetPtRatio = signalMAT21CTS_J2SubjetPtRatio[i]/ TMath.Sqrt( qcdMAT21CTS_J2SubjetPtRatio[i] )
 		except ZeroDivisionError: valueMAT21CTS_J2SubjetPtRatio = 0
 		MAT21CTS_J2SubjetPtRatioOpt.SetBinContent( i, valueMAT21CTS_J2SubjetPtRatio )
 
@@ -1004,6 +1010,110 @@ def optimization( mass, PU, grooming, outputFileName ):
 	outputFile.Close()
 
 
+def RUNOptimization( QCDSample, SigSample, folder, listOfHist, cuts, mass ):
+	"""docstring for RUNOptimization"""
+	
+
+	QCDFile = TFile( QCDSample, 'read' )
+	SigFile = TFile( SigSample, 'read' )
+
+	for cut in cuts:
+		dictROC = {}
+		f1 = TF1("f1","x",0,1)
+		f1.SetLineColor(1)
+		f1.SetLineStyle(3)
+		for hist in listOfHist:
+			QCDHisto = QCDFile.Get( folder+hist[0]+cut )
+			QCDTotal = QCDHisto.Integral() 
+
+			SigHisto = SigFile.Get( folder+hist[0]+cut )
+			SigTotal = SigHisto.Integral() 
+
+			ibinCut = 0
+			if ( len( hist ) > 2 ): ibinCut = SigHisto.GetXaxis().FindBin( hist[2] )
+
+			numBins = QCDHisto.GetNbinsX()
+			minBin = QCDHisto.GetXaxis().GetXmin()
+			maxBin = QCDHisto.GetXaxis().GetXmax()
+			QCDEffHisto = TH1F(hist[0]+cut+"_QCDROC", hist[0]+cut+"_QCDROC; "+hist[0]+cut, numBins, minBin, maxBin )
+			SigEffHisto = TH1F(hist[0]+cut+"_SigROC", hist[0]+cut+"_SigROC; "+hist[0]+cut, numBins, minBin, maxBin )
+			SigAxis = TGaxis(0, 1.1, 1, 1.1, minBin, maxBin, 510,"-")
+			QCDAxis = TGaxis(1.1, 1, 1.099, 0, minBin, maxBin, 510,"-")
+
+			QCDROCValues = []	
+			SigROCValues = []	
+			SigROCBins = []	
+			SigROCLowEdge = []	
+			firstBin =  SigHisto.FindFirstBinAbove( 0, 1 )
+			lastBin =  SigHisto.FindLastBinAbove( 0, 1 )+1 
+			for ibin in range( firstBin, lastBin ):
+				if hist[1]:
+					#print ibin, SigHisto.GetXaxis().GetBinLowEdge(ibin), SigHisto.Integral( 0, ibin ), SigHisto.Integral( firstBin, ibin ) #, SigTotal, SigHisto.Integral( 0, ibin+1 ) / SigTotal,  QCDHisto.GetXaxis().GetBinLowEdge(ibin), QCDHisto.Integral( 0, ibin+1 ) , QCDTotal, QCDHisto.Integral( 0, ibin+1 ) / QCDTotal
+					effQCD = 1 - QCDHisto.Integral( firstBin, ibin ) / QCDTotal 
+					QCDEffHisto.SetBinContent( ibin, effQCD )
+					QCDROCValues.append( effQCD )
+
+					effSig = SigHisto.Integral( firstBin, ibin ) / SigTotal 
+					SigEffHisto.SetBinContent( ibin, effSig )
+					SigROCValues.append( effSig )
+					SigROCBins.append( ibin )
+					SigROCLowEdge.append( SigHisto.GetXaxis().GetBinLowEdge(ibin+1) )
+					SigAxis = TGaxis(0, 1.1, 1, 1.1, minBin, maxBin, 510,"-")
+					QCDAxis = TGaxis(1.1, 1, 1.099, 0, minBin, maxBin, 510,"-")
+
+				else:
+					effQCD = 1 - QCDHisto.Integral( ibin, lastBin ) / QCDTotal 
+					QCDEffHisto.SetBinContent( ibin, effQCD )
+					QCDROCValues.append( effQCD )
+
+					effSig = SigHisto.Integral( ibin, lastBin ) / SigTotal 
+					SigEffHisto.SetBinContent( ibin, effSig )
+					SigROCValues.append( effSig )
+					SigROCBins.append( ibin )
+					SigROCLowEdge.append( SigHisto.GetXaxis().GetBinLowEdge(ibin+1) )
+					SigAxis = TGaxis(1, 1.099, 0, 1.1, minBin, maxBin, 510,"")
+					QCDAxis = TGaxis(1.1, 0, 1.1, 1, minBin, maxBin, 510,"+L")
+
+			QCDROCArray = np.asarray( QCDROCValues )
+			SigROCArray = np.asarray( SigROCValues )
+			SigROCBinsArray = np.asarray( SigROCBins )
+			SigROCLowEdgeArray = np.asarray( SigROCLowEdge )
+			if ( len(hist) > 2 ): 
+				x = find_nearest(SigROCLowEdgeArray, hist[2])
+				print 'For cut', hist[2], 'in', hist[0]+cut, 'effSig: ', SigROCArray[x], ', effQCD: ', QCDROCArray[x]
+			if ( len(hist) > 3 ): 
+				y = find_nearest( SigROCArray, hist[3] )
+				print 'Optimal value for ', hist[0]+cut, SigROCLowEdge[y], 'is', SigROCArray[y]
+			
+			ROC = TGraph( len( QCDROCArray ), SigROCArray, QCDROCArray )		
+			dictROC[ hist[0] ] = ROC
+
+		can = TCanvas('c1', 'c1',  10, 10, 750, 500 )
+		can.SetGrid()
+		multiGraph = TMultiGraph()
+		legend=TLegend(0.70,0.60,0.90,0.90)
+		legend.SetFillStyle(0)
+		legend.SetTextSize(0.03)
+		dummyColor = 0
+		for h in dictROC:
+			dummyColor += 1
+			if (dummyColor == 10): dummyColor = 40
+			legend.AddEntry( dictROC[ h ], h, 'l' )
+			dictROC[h].SetLineColor( dummyColor )
+			dictROC[h].SetLineWidth( 2 )
+			dictROC[h].SetMarkerStyle(4)
+			multiGraph.Add( dictROC[h] )
+		multiGraph.Draw("ALP")
+		multiGraph.GetXaxis().SetRangeUser(-0.05,1.05)
+		multiGraph.GetYaxis().SetRangeUser(-0.05,1.05)
+		multiGraph.GetXaxis().SetTitle('Signal efficiency')
+		multiGraph.GetYaxis().SetTitle('Bkg rejection')
+		multiGraph.GetYaxis().SetTitleOffset(0.95)
+		multiGraph.SetTitle('')
+		f1.Draw("same")
+		legend.Draw()
+		can.SaveAs('Plots/'+version+'RPVSt'+mass+'_ROC'+cut+'.pdf')
+		del can
 
 
 #################################################################################
@@ -1012,9 +1122,11 @@ if __name__ == '__main__':
 	usage = 'usage: %prog [options]'
 	
 	parser = argparse.ArgumentParser()
-	parser.add_argument( '-m', '--mass', action='store', type=int, dest='mass', default=100, help='Mass of the Stop' )
+	parser.add_argument( '-m', '--mass', action='store', dest='mass', default=100, help='Mass of the Stop' )
 	parser.add_argument( '-g', '--grooming', action='store',  dest='grooming', default='Pruned', help='Jet Algorithm' )
-	parser.add_argument( '-p', '--pileup', action='store',  dest='pileup', default='Asympt25ns', help='Pileup' )
+	parser.add_argument( '-s', '--selection', action='store',  dest='selection', default='', help='Selection, like _cutDEta' )
+	parser.add_argument( '-p', '--process', action='store',  dest='process', default='Opt', help='Process: calculate Optimization or Plot Histrograms' )
+	parser.add_argument( '-v', '--version', action='store',  dest='version', default='Boosted', help='Variable to optimize, as histogram in rootfile.' )
 
 	try:
 		args = parser.parse_args()
@@ -1023,10 +1135,73 @@ if __name__ == '__main__':
 		sys.exit(0)
 
 	mass = args.mass
-	PU = args.pileup
+	selection = args.selection
+	process = args.process
 	grooming = args.grooming
+	version = args.version
 
-	outputFileName = 'Rootfiles/RUNOptimizationStudies.root'
-	optimization( mass, PU, grooming, outputFileName )
+	variables = [
+		[ 'Resolved', 'mindR', True, 1.5, 0.8 ],
+		##[ 'Resolved', 'massAve', True ],
+		#[ 'Resolved', 'deltaEtaDijet1', True,  ],
+		#[ 'Resolved', 'deltaEtaDijet2', True,  ],
+		#[ 'Resolved', 'deltaEtaAveDijets', True ],
+		[ 'Resolved', 'deltaEtaDijets', True, .75, 0.65 ],
+		[ 'Resolved', 'massAsymmetry', True, 0.2, 0.64 ],
+		[ 'Resolved', 'cosThetaStarDijet1', True, 0.6, 0.70 ],
+		[ 'Resolved', 'cosThetaStarDijet2', True, 0.6, 0.70 ],
+		[ 'Resolved', 'deltaDijet1', False, 300, 0.6 ],
+		[ 'Resolved', 'deltaDijet2', False, 300, 0.6 ],
+		[ 'Resolved', 'xi1', True, 1, 0.6 ],
+		[ 'Resolved', 'xi2', True , 1, 0.6],
+		#[ 'Boosted', "HT", True ],
+		#[ 'Boosted', "jet1Pt", True ],
+		#[ 'Boosted', "jet2Pt", True ],
+		[ 'Boosted', "massAsymmetry", True, 0.1, 0.40 ],
+		#[ 'Boosted', "massAve", True ],
+		[ 'Boosted', "jet1CosThetaStar", True, 0.3, 0.8 ],
+		[ 'Boosted', "jet2CosThetaStar", True, 0.3, 0.8 ],
+		#[ 'Boosted', "jet1Tau1", True ],
+		#[ 'Boosted', "jet1Tau2", True ],
+		#[ 'Boosted', "jet1Tau3", True ],
+		[ 'Boosted', "jet1Tau21", True, 1.0, 0.7 ],
+		[ 'Boosted', "jet1Tau31", True, 0.5, 0.8 ],
+		[ 'Boosted', "jet1Tau32", True ],
+		#[ 'Boosted', "jet2Tau1", True ],
+		#[ 'Boosted', "jet2Tau2", True ],
+		#[ 'Boosted', "jet2Tau3", True ],
+		[ 'Boosted', "jet2Tau21", True, 0.5, 0.7 ],
+		[ 'Boosted', "jet2Tau31", True, 0.5, 0.6 ],
+		[ 'Boosted', "jet2Tau32", True ],
+		[ 'Boosted', "deltaEtaDijet", True, 1, 0.80 ],
+		[ 'Boosted', "jet1SubjetPtRatio", True ],
+		[ 'Boosted', "jet2SubjetPtRatio", True ],
+	]
 
+
+	outputFileName = 'Rootfiles/RUN'+version+'OptimizationStudies.root'
+
+	if 'all' in selection: 
+		if 'Boosted' in version: cuts = [ '_cutDijet', '_cutMassAsym', '_cutTau21', '_cutCosTheta' ]
+		elif 'Resolved' in version: cuts = [ '', '_cutMassPair', '_cutDEta' ]
+	else:
+		cuts = [ selection ]
+
+	if 'Opt' in process: 
+		if 'Resolved' in version: 
+			folder = ''
+			hist = [ x[1:] for x in variables if ( 'Resolved' in x[0] ) ]
+			QCDSample = 'Rootfiles/RUNMiniResolvedAnalysis_QCDPtAll_TuneCUETP8M1_13TeV_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
+			SigSample = 'Rootfiles/RUNMiniResolvedAnalysis_RPVStopStopToJets_UDD312_M-'+mass+'-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
+		else: 
+			folder = '' #version+'AnalysisPlotsPruned/'
+			hist = [ x[1:] for x in variables if ( 'Boosted' in x[0] ) ]
+			#QCDSample = 'Rootfiles/RUNAnalysis_QCDPtAll_TuneCUETP8M1_13TeV_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
+			QCDSample = 'Rootfiles/RUNMiniBoostedAnalysis_QCDPtAll_TuneCUETP8M1_13TeV_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
+			#SigSample = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+mass+'-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
+			SigSample = 'Rootfiles/RUNMiniBoostedAnalysis_RPVStopStopToJets_UDD312_M-'+mass+'-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
+
+		RUNOptimization( QCDSample, SigSample, folder, hist, cuts, mass )
+	elif 'old' in process:
+		optimization( mass, PU, grooming, outputFileName )
 
