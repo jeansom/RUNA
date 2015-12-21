@@ -186,8 +186,8 @@ def myAnalyzer( sample, couts ):
 
 
 	################################################################################################## Trigger Histos
-	nBinsMass	= 100
-	maxMass		= 1000
+	nBinsMass	= 200
+	maxMass		= 2000
 	nBinsHT		= 150
 	maxHT		= 1500
 
@@ -362,7 +362,8 @@ def myAnalyzer( sample, couts ):
 		jetsPhi		 = events.jetsPhi
 		jetsE		 = events.jetsE
 
-		scale = 2476* puWeight * lumiWeight
+		if 'Data' in samples: scale = 1
+		else: scale = 2476* puWeight * lumiWeight
 		j1 = TLorentzVector()
 		j2 = TLorentzVector()
 		j3 = TLorentzVector()
@@ -537,7 +538,7 @@ def myAnalyzer( sample, couts ):
 						if ( (cosThetaStarDijet1pair08 < .55 ) and ( cosThetaStarDijet2pair08 < .55 ) ): massAve_cutCosTheta55.Fill( massAvepair08, scale )
 
 
-		#tree.Fill()
+		tree.Fill()
 	outputFile.Write()
 
 	##### Closing
@@ -571,11 +572,13 @@ if __name__ == '__main__':
 	if 'RPV' in samples: 
 		inputFileName = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+mass+'-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
 	elif 'Data' in samples: 
-		inputFileName = 'Rootfiles/RUNAnalysis_JetHTRun2015D-All_v09_v01.root'
+		inputFileName = 'Rootfiles/RUNAnalysis_JetHTRun2015D-All_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
+		'''
 	elif 'Bkg' in samples: 
 		inputFileName = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01.root'
 		inputFileName = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01.root'
 		inputFileName = 'Rootfiles/RUNAnalysis_TTJets_RunIISpring15DR74_Asympt25ns_v03_v01.root'
+		'''
 	else: 
 		#for qcdBin in [ '170to300', '300to470', '470to600', '600to800', '800to1000', '1000to1400', '1400to1800', '1800to2400', '2400to3200', '3200toInf' ]: 
 		#	inputFileName = 'Rootfiles//RUNAnalysis_QCD_cutPt_'+qcdBin+'_RunIISpring15MiniAODv2-74X_'+PU+'_v08_v02.root'

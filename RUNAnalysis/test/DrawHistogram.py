@@ -10,10 +10,17 @@ Description: My Draw histograms. Check for options at the end.
 from ROOT import *
 import time, os, math, sys
 import argparse
-from RUNA.RUNAnalysis.histoLabels import labels, labelAxis 
-from RUNA.RUNAnalysis.scaleFactors import scaleFactor as SF
-import RUNA.RUNAnalysis.CMS_lumi as CMS_lumi 
-import RUNA.RUNAnalysis.tdrstyle as tdrstyle
+try:
+	from RUNA.RUNAnalysis.histoLabels import labels, labelAxis 
+	from RUNA.RUNAnalysis.scaleFactors import scaleFactor as SF
+	import RUNA.RUNAnalysis.CMS_lumi as CMS_lumi 
+	import RUNA.RUNAnalysis.tdrstyle as tdrstyle
+except ImportError:
+	sys.path.append('../python')
+	from histoLabels import labels, labelAxis 
+	from scaleFactors import scaleFactor as SF
+	import CMS_lumi as CMS_lumi 
+	import tdrstyle as tdrstyle
 
 
 gROOT.Reset()
@@ -26,7 +33,7 @@ gStyle.SetOptStat(0)
 def plotSignalBkg( signalFiles, bkgFiles, Grom, nameInRoot, name, xmin, xmax, rebinX, labX, labY, log, PU, version, Norm=False ):
 	"""docstring for plot"""
 
-	outputFileName = name+'_'+Grom+'_RPVSt'+jj+'_'+PU+'_PlusBkg_'+version+'AnalysisPlots.'+ext 
+	outputFileName = name+'_'+Grom+'_RPVSt'+jj+mass+'_'+PU+'_PlusBkg_'+version+'AnalysisPlots.'+ext 
 	print 'Processing.......', outputFileName
 
 	legend=TLegend(0.60,0.60,0.90,0.87)
@@ -179,8 +186,8 @@ def plotSignalBkg( signalFiles, bkgFiles, Grom, nameInRoot, name, xmin, xmax, re
 		signalHistos['Signal'].SetMaximum( 1.1 * max( maxList ) )
 
 		CMS_lumi.lumi_13TeV = ''
-		CMS_lumi.CMS_lumi(can, 4, 0)
 		CMS_lumi.relPosX = 0.14
+		CMS_lumi.CMS_lumi(can, 4, 0)
 		legend.Draw()
 		if not (labX and labY): labels( name, PU, camp )
 		else: labels( name, PU, camp, labX, labY )
@@ -189,13 +196,13 @@ def plotSignalBkg( signalFiles, bkgFiles, Grom, nameInRoot, name, xmin, xmax, re
 		del can
 
 
-def plot2D( inFiles, sample, Grom, name, titleXAxis, titleXAxis2, Xmin, Xmax, rebinx, Ymin, Ymax, rebiny, legX, legY, PU, version ):
+def plot2D( inFiles, sample, Grom, nameInRoot, name, titleXAxis, titleXAxis2, Xmin, Xmax, rebinx, Ymin, Ymax, rebiny, legX, legY, PU, version ):
 	"""docstring for plot"""
 
 	outputFileName = name+'_'+Grom+'_'+sample+'_'+camp+'_'+PU+'_'+version+'AnalysisPlots.'+ext 
 	print 'Processing.......', outputFileName
 	for samples in inFiles:
-		h1 = inFiles[ samples ][0].Get( version+'AnalysisPlots'+Grom+'/'+name )
+		h1 = inFiles[ samples ][0].Get( nameInRoot )
 	#h1 = inFile.Get( 'AnalysisPlots'+Grom+'/'+name )
 	#h1 = inFile.Get( 'TriggerEfficiency'+Grom+'/'+name )
 	tmph1 = h1.Clone()
@@ -227,6 +234,7 @@ def plot2D( inFiles, sample, Grom, name, titleXAxis, titleXAxis2, Xmin, Xmax, re
 			cu  = tmph1.GetBinContent(bin)
 			h1.AddBinContent(ibin,cu)
 
+	h1.Scale( inFiles[ samples ][1] )
 	h1.GetXaxis().SetTitle( titleXAxis )
 	h1.GetYaxis().SetTitleOffset( 1.0 )
 	h1.GetYaxis().SetTitle( titleXAxis2 )
@@ -241,6 +249,7 @@ def plot2D( inFiles, sample, Grom, name, titleXAxis, titleXAxis2, Xmin, Xmax, re
 	if 'Boosted' in version: h1.SetMaximum(5000)
 	h1.Draw('colz')
 
+	CMS_lumi.extraText = "Preliminary Simulation"
 	CMS_lumi.relPosX = 0.13
 	CMS_lumi.CMS_lumi(can, 4, 0)
 	if not (legX and legY): labels( name, PU, camp )
@@ -273,61 +282,89 @@ def plotCutFlow( signalFiles, bkgFiles, Grom, name, xmax, log, PU, Norm=False ):
 
 	hSignal = histos[ 'Signal' ].Clone()
 	hQCD = histos[ 'QCD' ].Clone()
-	#hTTJets = histos[ 'TTJets' ].Clone()
+	hTTJets = histos[ 'TTJets' ].Clone()
 	hWJets = histos[ 'WJets' ].Clone()
+	hWWTo4Q = histos[ 'WWTo4Q' ].Clone()
 	hZJets = histos[ 'ZJets' ].Clone()
+	hZZTo4Q = histos[ 'ZZTo4Q' ].Clone()
+	hWZ = histos[ 'WZ' ].Clone()
 
 	for bin in range(0,  hSignal.GetNbinsX()):
 		hSignal.SetBinContent(bin, 0.)
 		hSignal.SetBinError(bin, 0.)
 		hQCD.SetBinContent(bin, 0.)
 		hQCD.SetBinError(bin, 0.)
-		#hTTJets.SetBinContent(bin, 0.)
-		#hTTJets.SetBinError(bin, 0.)
+		hTTJets.SetBinContent(bin, 0.)
+		hTTJets.SetBinError(bin, 0.)
 		hWJets.SetBinContent(bin, 0.)
 		hWJets.SetBinError(bin, 0.)
+		hWWTo4Q.SetBinContent(bin, 0.)
+		hWWTo4Q.SetBinError(bin, 0.)
 		hZJets.SetBinContent(bin, 0.)
 		hZJets.SetBinError(bin, 0.)
+		hZZTo4Q.SetBinContent(bin, 0.)
+		hZZTo4Q.SetBinError(bin, 0.)
+		hWZ.SetBinContent(bin, 0.)
+		hWZ.SetBinError(bin, 0.)
 	
 	totalEventsSignal = histos[ 'Signal' ].GetBinContent(1)
 	totalEventsQCD = histos[ 'QCD' ].GetBinContent(1)
-	#totalEventsTTJets = histos[ 'TTJets' ].GetBinContent(1)
+	totalEventsTTJets = histos[ 'TTJets' ].GetBinContent(1)
 	totalEventsWJets = histos[ 'WJets' ].GetBinContent(1)
+	totalEventsWWTo4Q = histos[ 'WWTo4Q' ].GetBinContent(1)
 	totalEventsZJets = histos[ 'ZJets' ].GetBinContent(1)
+	totalEventsZZTo4Q = histos[ 'ZZTo4Q' ].GetBinContent(1)
+	totalEventsWZ = histos[ 'WZ' ].GetBinContent(1)
 	#print totalEventsSignal, totalEventsQCD
 
 	cutFlowSignalList = []
 	cutFlowQCDList = []
-	#cutFlowTTJetsList = []
+	cutFlowTTJetsList = []
 	cutFlowWJetsList = []
+	cutFlowWWTo4QList = []
 	cutFlowZJetsList = []
+	cutFlowZZTo4QList = []
+	cutFlowWZList = []
 
 	for ibin in range(0, hQCD.GetNbinsX()+1):
 	
 		cutFlowSignalList.append( histos[ 'Signal' ].GetBinContent(ibin) )
 		cutFlowQCDList.append( histos[ 'QCD' ].GetBinContent(ibin) )
-		#cutFlowTTJetsList.append( histos[ 'TTJets' ].GetBinContent(ibin) )
+		cutFlowTTJetsList.append( histos[ 'TTJets' ].GetBinContent(ibin) )
 		cutFlowWJetsList.append( histos[ 'WJets' ].GetBinContent(ibin) )
+		cutFlowWWTo4QList.append( histos[ 'WWTo4Q' ].GetBinContent(ibin) )
 		cutFlowZJetsList.append( histos[ 'ZJets' ].GetBinContent(ibin) )
+		cutFlowZZTo4QList.append( histos[ 'ZZTo4Q' ].GetBinContent(ibin) )
+		cutFlowWZList.append( histos[ 'WZ' ].GetBinContent(ibin) )
 
 		hSignal.SetBinContent( ibin , histos[ 'Signal' ].GetBinContent(ibin) / totalEventsSignal )
 		hQCD.SetBinContent( ibin , histos[ 'QCD' ].GetBinContent(ibin) / totalEventsQCD )
-		#hTTJets.SetBinContent( ibin , histos[ 'TTJets' ].GetBinContent(ibin) / totalEventsTTJets )
+		hTTJets.SetBinContent( ibin , histos[ 'TTJets' ].GetBinContent(ibin) / totalEventsTTJets )
 		hWJets.SetBinContent( ibin , histos[ 'WJets' ].GetBinContent(ibin) / totalEventsWJets )
+		hWWTo4Q.SetBinContent( ibin , histos[ 'WWTo4Q' ].GetBinContent(ibin) / totalEventsWWTo4Q )
 		hZJets.SetBinContent( ibin , histos[ 'ZJets' ].GetBinContent(ibin) / totalEventsZJets )
+		hZZTo4Q.SetBinContent( ibin , histos[ 'ZZTo4Q' ].GetBinContent(ibin) / totalEventsZZTo4Q )
+		hWZ.SetBinContent( ibin , histos[ 'WZ' ].GetBinContent(ibin) / totalEventsWZ )
 		
 	hSB = hSignal.Clone()
 	hBkg = hQCD.Clone()
-	#hBkg.Add( hTTJets )
+	hBkg.Add( hTTJets )
 	hBkg.Add( hWJets )
+	hBkg.Add( hWWTo4Q )
 	hBkg.Add( hZJets )
+	hBkg.Add( hZZTo4Q )
+	hBkg.Add( hWZ )
 	hSB.Divide( hBkg )
 	hSB.GetXaxis().SetBinLabel( ibin, '')
 	print "Signal", cutFlowSignalList
 	print "QCD", cutFlowQCDList
-	#print "TTJets", cutFlowTTJetsList
+	print "TTJets", cutFlowTTJetsList
 	print "WJets", cutFlowWJetsList
+	print "WWTo4Q", cutFlowWWTo4QList
 	print "ZJets", cutFlowZJetsList
+	print "ZZTo4Q", cutFlowZZTo4QList
+	print "WZ", cutFlowWZList
+	print 'total', [ cutFlowQCDList[i] + cutFlowTTJetsList[i] +cutFlowWJetsList[i] + cutFlowWWTo4QList[i] + cutFlowZJetsList[i] + cutFlowZZTo4QList[i] + cutFlowWZList[i]  for i in range(len(cutFlowQCDList))]
 
 	#hSB = hSignal.Clone()
 	#hSB.Divide( hQCD )
@@ -342,12 +379,16 @@ def plotCutFlow( signalFiles, bkgFiles, Grom, name, xmax, log, PU, Norm=False ):
 	hSignal.SetLineColor(kRed-4)
 	hQCD.SetLineWidth(2)
 	hQCD.SetLineColor(kBlue-4)
-	#hTTJets.SetLineWidth(2)
-	#hTTJets.SetLineColor(kGreen-4)
+	hTTJets.SetLineWidth(2)
+	hTTJets.SetLineColor(kGreen-4)
 	hWJets.SetLineWidth(2)
 	hWJets.SetLineColor(kMagenta-4)
+	hWWTo4Q.SetLineWidth(2)
+	hWWTo4Q.SetLineColor(kMagenta-6)
 	hZJets.SetLineWidth(2)
 	hZJets.SetLineColor(kOrange-4)
+	hZZTo4Q.SetLineWidth(2)
+	hZZTo4Q.SetLineColor(kMagenta-6)
 
 	can = TCanvas('c1', 'c1',  10, 10, 750, 750 )
 	pad1 = TPad("pad1", "Fit",0,0.20,1.00,1.00,-1)
@@ -366,22 +407,26 @@ def plotCutFlow( signalFiles, bkgFiles, Grom, name, xmax, log, PU, Norm=False ):
 	pad1.SetGridx()
 	legend.AddEntry( hSignal, 'RPV #tilde{t}#rightarrow '+jj+' '+mass+' GeV' , 'l' )
 	legend.AddEntry( hQCD, 'QCD', 'l' )
-	#legend.AddEntry( hTTJets, 't #bar{t} + Jets' , 'l' )
+	legend.AddEntry( hTTJets, 't #bar{t} + Jets' , 'l' )
 	legend.AddEntry( hWJets, 'W + Jets' , 'l' )
+	legend.AddEntry( hWWTo4Q, 'WW (had)' , 'l' )
 	legend.AddEntry( hZJets, 'Z + Jets' , 'l' )
+	legend.AddEntry( hZZTo4Q, 'ZZ (had)' , 'l' )
 	hSignal.GetYaxis().SetTitle( 'Percentage / '+str(binWidth) )
 	hSignal.GetXaxis().SetRangeUser( 1, xmax )
 
 	hSignal.SetMinimum(0.0001)
 	hSignal.Draw()
 	hQCD.Draw('same')
-	#hTTJets.Draw('same')
+	hTTJets.Draw('same')
 	hWJets.Draw('same')
+	hWWTo4Q.Draw('same')
 	hZJets.Draw('same')
+	hZZTo4Q.Draw('same')
 
 	legend.Draw()
-	CMS_lumi.CMS_lumi(pad1, 4, 0)
 	CMS_lumi.relPosX = 0.14
+	CMS_lumi.CMS_lumi(pad1, 4, 0)
 	#labels( name, '', '', '' )
 
 	pad2.cd()
@@ -611,7 +656,7 @@ def plot2DOptimization( inFileSig, inFileBkg, Grom, name, titleXAxis, titleXAxis
 	can.SaveAs( 'Plots/'+outputFileName )
 	del can
 
-def plotQuality( dataFile, bkgFiles, Grom, nameInRoot, name, xmin, xmax, labX, labY, log, PU, version ):
+def plotQuality( dataFile, bkgFiles, Grom, nameInRoot, name, xmin, xmax, rebinX, labX, labY, log, PU, version ):
 	"""docstring for plot"""
 
 	outputFileName = name+'_'+Grom+'_'+PU+'_dataQuality'+version+'Plots.'+ext
@@ -619,12 +664,14 @@ def plotQuality( dataFile, bkgFiles, Grom, nameInRoot, name, xmin, xmax, labX, l
 
 	histos = {}
 	histos[ 'Data' ] = dataFile.Get(nameInRoot)
+	if rebinX > 1: histos[ 'Data' ].Rebin( rebinX )
 
 	dummy = 0
 	for samples in bkgFiles:
 		dummy += 1
 		histos[ samples ] = bkgFiles[ samples ][0].Get(nameInRoot)
 		if bkgFiles[ samples ][1] != 1: histos[ samples ].Scale( bkgFiles[ samples ][1] ) 
+		if rebinX > 1: histos[ samples ].Rebin( rebinX )
 		if (dummy == 1): hBkg = histos[ samples ].Clone()
 		else: hBkg.Add( histos[ samples ].Clone() )
 
@@ -670,7 +717,7 @@ def plotQuality( dataFile, bkgFiles, Grom, nameInRoot, name, xmin, xmax, labX, l
 	pad2.Draw()
 
 	pad1.cd()
-	if log: pad1.SetLogy() 	
+	pad1.SetLogy() 	
 	hData.Draw("E")
 	hBkg.Draw('hist same')
 	#hData.GetYaxis().SetTitleOffset(1.2)
@@ -719,6 +766,75 @@ def plotQuality( dataFile, bkgFiles, Grom, nameInRoot, name, xmin, xmax, labX, l
 	can.SaveAs( 'Plots/'+ outputFileName )
 	del can
 
+def tmpplotDiff( dataFile, name1, name2 ):
+	"""docstring for plot"""
+
+	outputFileName = name1.replace('BoostedAnalysisPlotsPruned/', '')+'_'+name2.replace('BoostedAnalysisPlotsPruned/', '')+'_'+PU+'_bkgShapeDiff'+version+'Plots.'+ext
+	print 'Processing.......', outputFileName
+
+	h1 = dataFile.Get( name1 )
+	h1.Scale( 1/h1.Integral() )
+	h2 = dataFile.Get( name2 )
+	h2.Scale( 1/h2.Integral() )
+
+	tmph1 = h1.Clone()
+	tmph2 = h2.Clone()
+	tmph1.Divide( tmph2 )
+
+	binWidth = h1.GetBinWidth(1)
+
+	legend=TLegend(0.60,0.75,0.90,0.87)
+	legend.SetFillStyle(0)
+	legend.SetTextSize(0.04)
+	legend.AddEntry( h1, 'Signal Region' , 'l' )
+	legend.AddEntry( h2, 'Bkg Region', 'pl' )
+
+	h1.SetLineColor(kRed-4)
+	h1.GetXaxis().SetRangeUser( 0, 350 )
+
+	tdrStyle.SetPadRightMargin(0.05)
+	tdrStyle.SetPadLeftMargin(0.15)
+	can = TCanvas('c1', 'c1',  10, 10, 750, 750 )
+	pad1 = TPad("pad1", "Fit",0,0.207,1.00,1.00,-1)
+	pad2 = TPad("pad2", "Pull",0,0.00,1.00,0.30,-1);
+	pad1.Draw()
+	pad2.Draw()
+
+	pad1.cd()
+	#if log: pad1.SetLogy() 	
+	h1.Draw("hist")
+	h2.Draw('same')
+
+	CMS_lumi.extraText = "Preliminary Simulation"
+	CMS_lumi.relPosX = 0.13
+	CMS_lumi.CMS_lumi(pad1, 4, 0)
+	legend.Draw()
+	#if not (labX and labY): labels( name, '', '' )
+	#labels( name1, '', '' ) #, labX, labY )
+
+	pad2.cd()
+	pad2.SetGrid()
+	pad2.SetTopMargin(0)
+	pad2.SetBottomMargin(0.3)
+	
+	labelAxis( name1, tmph1, 'Pruned' )
+	tmph1.GetXaxis().SetRangeUser( 0, 350 )
+	tmph1.SetMarkerStyle(8)
+	tmph1.GetXaxis().SetTitleOffset(1.1)
+	tmph1.GetXaxis().SetLabelSize(0.12)
+	tmph1.GetXaxis().SetTitleSize(0.12)
+	tmph1.GetYaxis().SetTitle("Ratio")
+	tmph1.GetYaxis().SetLabelSize(0.12)
+	tmph1.GetYaxis().SetTitleSize(0.12)
+	tmph1.GetYaxis().SetTitleOffset(0.55)
+	#if( tmph1.GetMaximum() > 2 ): tmph1.SetMaximum( 2.0 )
+	tmph1.SetMaximum( 1.5 )
+	tmph1.SetMinimum( 0.5 )
+	tmph1.Draw()
+
+	can.SaveAs( 'Plots/'+ outputFileName )
+	del can
+
 
 
 if __name__ == '__main__':
@@ -733,7 +849,7 @@ if __name__ == '__main__':
 	parser.add_argument('-pu', '--PU', action='store', default='Asympt25ns', help='PU, example: PU40bx25.' )
 	parser.add_argument('-s', '--single', action='store', default='all', help='single histogram, example: massAve_cutDijet.' )
 	parser.add_argument('-q', '--QCD', action='store', default='Pt', help='Type of QCD binning, example: HT.' )
-	parser.add_argument('-c', '--campaign', action='store', default='RunIISpring15DR74', help='Campaign, example: PHYS14.' )
+	parser.add_argument('-c', '--campaign', action='store', default='RunIISpring15MiniAODv2-74X', help='Campaign, example: PHYS14.' )
 	parser.add_argument('-l', '--lumi', action='store', type=float, default=149.9, help='Luminosity, example: 1.' )
 	#parser.add_argument('-t', '--trigger', action='store', default='all', help='Trigger used, example PFHT800.' )
 	parser.add_argument('-e', '--extension', action='store', default='png', help='Extension of plots.' )
@@ -762,38 +878,29 @@ if __name__ == '__main__':
 	bkgFiles = {}
 	signalFiles = {}
 	CMS_lumi.extraText = "Preliminary"
-	QCDSF = 1.1 #1.1 #0.78
+	lumi = 2431.937
+	CMS_lumi.lumi_13TeV = "2.43 fb^{-1}"
+	QCDSF = 0.92
 
 	if ( 'mini' in process ) or ( '2dOpt' in process ):
-		inputMiniFileSignal = TFile.Open('Rootfiles/RUNMiniAnalysis_RPVSt'+mass+'to'+jj+'_'+camp+'_'+PU+'_v02p2_v06.root')
-		inputMiniFileQCD = TFile.Open('Rootfiles/RUNMiniAnalysis_QCDPtAll_RunIISpring15DR74_Asympt25ns_v01_v06.root')
-		inputMiniFileSignal200 = TFile.Open('Rootfiles/RUNMiniAnalysis_RPVSt200to'+jj+'_'+camp+'_'+PU+'_v02p2_v06.root')
-		inputMiniFileTTJets = TFile.Open('Rootfiles/RUNMiniAnalysis_TTJets_'+camp+'_'+PU+'_v01_v06.root')
-		inputMiniFileWJetsToQQ = TFile.Open('Rootfiles/RUNMiniAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v01p2_v06.root')
-		inputMiniFileZJetsToQQ = TFile.Open('Rootfiles/RUNMiniAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v01p2_v06.root')
+		signalFiles[ 'Signal' ] = [ TFile.Open('Rootfiles/RUNMini'+version+'Analysis_RPVSt100tojj_RunIISpring15MiniAODv2-74X_Asympt25ns_v08_v03.root'), 1, 'RPV #tilde{t}#rightarrow '+jj+' 100 GeV', kRed-4 ]
+		bkgFiles[ 'QCD' ] = [ TFile.Open('Rootfiles/RUNMini'+version+'Analysis_QCDPtAll_RunIISpring15MiniAODv2-74X_Asympt25ns_v08_v03.root'), QCDSF, 'QCD', kBlue-4 ]
 	else:
-		if '50ns' in PU:
-			dataFile 		= TFile.Open('Rootfiles/RUNAnalysis_JetHTRun2015B-PromptReco-v1_v06_v00p2.root')
-			bkgFiles[ 'QCD' ] 	= [ TFile.Open('Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15DR74_Asympt50ns_v06_v00p2.root'), 	0.50, 'QCD', kBlue ]
-			CMS_lumi.lumi_13TeV = "46.15 pb^{-1}"
-		else:
-			if 'Boosted' in version:
-				lumi = 149.9
-				CMS_lumi.lumi_13TeV = str(lumi)+" pb^{-1}"
-				dataFile = TFile.Open('Rootfiles/RUNAnalysis_JetHTRun2015D-PromptReco-v3_v06_v01.root')
-				signalFiles[ 'Signal' ] = [ TFile.Open('Rootfiles/RUNAnalysis_RPVSt100tojj_'+camp+'_'+PU+'_v06_v01.root'), lumi*SF('RPVSt10025ns'), 'RPV #tilde{t}#rightarrow '+jj+' 100 GeV', kRed-4]
-				#signalFiles[ 'Signal2' ] = [ TFile.Open('Rootfiles/RUNAnalysis_RPVSt200tojj_'+camp+'_'+PU+'_v06_v01.root'), lumi*SF('RPVSt20025ns') , 'RPV #tilde{t}#rightarrow '+jj+' 200 GeV', kRed ]
-				bkgFiles[ 'QCD' ] = [ TFile.Open('Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15DR74_Asympt25ns_v06p1_v01.root'), QCDSF, 'QCD', kBlue-4 ]
-			else: 
-				lumi = 106.5
-				CMS_lumi.lumi_13TeV = str(lumi)+" pb^{-1}"
-				dataFile = TFile.Open('Rootfiles/RUNAnalysis_JetHTRun2015D-PromptReco-v3_B2Gv02.root')
-				signalFiles[ 'Signal' ] 	= [ TFile.Open('Rootfiles/RUNAnalysis_RPVSt350tojj_'+camp+'_'+PU+'_B2Gv02.root'), lumi*SF('RPVSt350_25ns') , 'RPV #tilde{t}#rightarrow '+jj+' 350 GeV', kRed ]
-				bkgFiles[ 'QCD' ] 	= [ TFile.Open('Rootfiles/RUNAnalysis_QCDHTAll_RunIISpring15DR74_Asympt25ns_B2Gv02.root'), QCDSF, 'QCD', kBlue-4 ]
+		#dataFile = TFile.Open('Rootfiles/RUNAnalysis_JetHTRun2015D-All_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root')
+		dataFile = TFile.Open('Rootfiles/RUNAnalysis_JetHTRun2015D-All_v09_v01.root')
+		bkgFiles[ 'QCD' ] = [ TFile.Open('Rootfiles/RUNAnalysis_QCDPtAll_TuneCUETP8M1_13TeV_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'), QCDSF*lumi, 'QCD', kBlue-4 ]
+		bkgFiles[ 'TTJets' ] = [ TFile.Open('Rootfiles/RUNAnalysis_TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'),	lumi, 't #bar{t} + Jets', kGreen ]
+		bkgFiles[ 'WJets' ] = [ TFile.Open('Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'), lumi , 'W + Jets', kMagenta ]
+		bkgFiles[ 'WWTo4Q' ] = [ TFile.Open('Rootfiles/RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'), lumi , 'WW (had)', kMagenta+2 ]
+		bkgFiles[ 'ZJets' ] = [ TFile.Open('Rootfiles/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'), lumi, 'Z + Jets', kOrange ]
+		bkgFiles[ 'ZZTo4Q' ] = [ TFile.Open('Rootfiles/RUNAnalysis_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'), lumi, 'ZZ (had)', kOrange+2 ]
+		bkgFiles[ 'WZ' ] = [ TFile.Open('Rootfiles/RUNAnalysis_WZ_TuneCUETP8M1_13TeV-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'), lumi, 'WZ', kCyan ]
+		if 'Resolved' in version: 
+			signalFiles[ 'Signal' ] = [ TFile.Open('Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-350-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'), lumi, 'RPV #tilde{t}#rightarrow '+jj+' 350 GeV', kRed-4]
+		else: 
+			#signalFiles[ 'Signal' ] = [ TFile.Open('Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-100-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'), lumi, 'RPV #tilde{t}#rightarrow '+jj+' 100 GeV', kRed-4]
+			signalFiles[ 'Signal' ] = [ TFile.Open('Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-200-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'), lumi, 'RPV #tilde{t}#rightarrow '+jj+' 200 GeV', kRed-6]
 			
-			#bkgFiles[ 'TTJets' ] 	= [ TFile.Open('Rootfiles/RUNAnalysis_TTJets_'+camp+'_'+PU+'_v03_v01p3p2.root'),	1, 	't #bar{t} + Jets', kGreen ]
-			#bkgFiles[ 'WJets' ]	 	= [ TFile.Open('Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01p3.root'),	10.75, 'W + Jets', kMagenta ]
-			#bkgFiles[ 'ZJets' ] 		= [ TFile.Open('Rootfiles/RUNAnalysis_ZJetsToQQ_HT600ToInf_RunIISpring15DR74_Asympt25ns_v03_v01p3.root'),	10.75, 'Z + Jets', kOrange ]
 
 	dijetlabX = 0.85
 	dijetlabY = 0.55
@@ -809,7 +916,7 @@ if __name__ == '__main__':
 	cosPhilabY = 0.45
 
 	massMinX = 0
-	massMaxX = 300
+	massMaxX = 400
 	polAngXmin = 0.7
 	polAngXmax = 1.0
 	HTMinX = 300
@@ -862,24 +969,40 @@ if __name__ == '__main__':
 		#[ '2D', 'Boosted', 'dalitz1234_cutCosTheta', 'X', 'Y', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
 		#[ '2D', 'Boosted', 'dalitz3412_cutCosTheta', 'X', 'Y', '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
 		[ '2D', 'Resolved', 'deltavsMassAve_cutBestPair', 'Average dijet mass [GeV]', 'Delta',  '', '', 1, '', '', 1, dijetlabX, dijetlabY ],
-		[ '2D', 'Resolved', 'dijetsEta_cutBestPair', '#Eta dijet1', '#Eta dijet2',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2D', 'Resolved', 'dijetsEta_cutBestPair', '#eta dijet1', '#eta dijet2',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
 
+		[ '2dmini', 'Boosted', 'massAsymVsmassAve_SR', 'Mass Asymmetry', 'Average Pruned Mass [GeV]',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2dmini', 'Boosted', 'massAsymVsHT_SR', 'Mass Asymmetry', 'HT [GeV]',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2dmini', 'Boosted', 'massAsymVsjet1Tau21_SR', 'Mass Asymmetry', 'Leading jet #tau_{21}',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2dmini', 'Boosted', 'massAsymVsjet2Tau21_SR', 'Mass Asymmetry', '2nd Leading jet #tau_{21}',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2dmini', 'Boosted', 'massAsymVsjet1Tau31_SR', 'Mass Asymmetry', 'Leading jet #tau_{31}',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2dmini', 'Boosted', 'massAsymVsjet2Tau31_SR', 'Mass Asymmetry', '2nd Leading jet #tau_{31}',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2dmini', 'Boosted', 'massAsymVsjet1Pt_SR', 'Mass Asymmetry', 'Leading jet p_{T} [GeV]',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2dmini', 'Boosted', 'massAsymVsjet2Pt_SR', 'Mass Asymmetry', '2nd Leading jet p_{T} [GeV]',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2dmini', 'Boosted', 'massAsymVsmassAve_CR', 'Mass Asymmetry', 'Average Pruned Mass [GeV]',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2dmini', 'Boosted', 'massAsymVsHT_CR', 'Mass Asymmetry', 'HT [GeV]',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2dmini', 'Boosted', 'massAsymVsjet1Tau21_CR', 'Mass Asymmetry', 'Leading jet #tau_{21}',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2dmini', 'Boosted', 'massAsymVsjet2Tau21_CR', 'Mass Asymmetry', '2nd Leading jet #tau_{21}',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2dmini', 'Boosted', 'massAsymVsjet1Tau31_CR', 'Mass Asymmetry', 'Leading jet #tau_{31}',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2dmini', 'Boosted', 'massAsymVsjet2Tau31_CR', 'Mass Asymmetry', '2nd Leading jet #tau_{31}',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2dmini', 'Boosted', 'massAsymVsjet1Pt_CR', 'Mass Asymmetry', 'Leading jet p_{T} [GeV]',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
+		[ '2dmini', 'Boosted', 'massAsymVsjet2Pt_CR', 'Mass Asymmetry', '2nd Leading jet p_{T} [GeV]',  '', '', 1, '', '', 1, dijetlabX, dijetlabY  ],
 
 		[ '1D', 'Boosted', 'jet1Pt', 100, 1500, 1, '', '', False],
 		[ '1D', 'Boosted', 'jet1Eta', -3, 3, 1, '', '', False],
 		[ '1D', 'Boosted', 'jet1Mass', 0, massMaxX, 1, '', '', False],
-		[ '1D', 'Boosted', 'HT', 700, 2000, 1, '', '', False],
+		[ '1D', 'Boosted', 'HT', 700, 2000, 5, '', '', False],
 		[ '1D', 'Boosted', 'jet2Pt', 100, 1500, 1, '', '', False],
 		[ '1D', 'Boosted', 'jet2Eta', -3, 3, 1, '', '', False],
 		[ '1D', 'Boosted', 'jet2Mass', 0, massMaxX, 1, '', '', False],
-		[ '1D', 'Boosted', 'massAve', 0, massMaxX, 1, '', '', False],
+		[ '1D', 'Boosted', 'massAve', 0, massMaxX, 1, '', '', True],
 
-		[ '1D', 'Resolved', 'HT', 700, 2000, 1, '', '', False],
-		[ '1D', 'Resolved', 'jet1Pt', 100, 1500, 1, '', '', False],
-		[ '1D', 'Resolved', 'jet2Pt', 0, 1500, 1, '', '', False],
-		[ '1D', 'Resolved', 'jet3Pt', 0, 500, 1, '', '', False],
-		[ '1D', 'Resolved', 'jet4Pt', 0, 300, 1, '', '', False],
-		[ '1D', 'Resolved', 'massAve', 0, 1000, 1, '', '', False],
+		[ '1D', 'Resolved', 'HT', 700, 5000, 2, '', '', True],
+		[ '1D', 'Resolved', 'jet1Pt', 100, 1500, 2, '', '', True],
+		[ '1D', 'Resolved', 'jet2Pt', 0, 1500, 2, '', '', True],
+		[ '1D', 'Resolved', 'jet3Pt', 0, 500, 2, '', '', True],
+		[ '1D', 'Resolved', 'jet4Pt', 0, 300, 2, '', '', True],
+		[ '1D', 'Resolved', 'massAve', 0, 1000, 2, '', '', True],
 
 		[ 'qual', 'Boosted', 'jet1Pt', 100, 1500, 0.92, 0.8, False],
 		[ 'qual', 'Boosted', 'jet1Eta', -3, 3, 0.92, 0.8, False],
@@ -889,6 +1012,7 @@ if __name__ == '__main__':
 		[ 'qual', 'Boosted', 'jet2Mass', 0, 1000, 0.92, 0.8, True],
 		[ 'qual', 'Boosted', 'jetNum', '', '', 0.92, 0.8, True],
 		[ 'qual', 'Boosted', 'HT', 700, 2000, 0.92, 0.8, True],
+		[ 'qual', 'Boosted', 'MET', 0, 100, 0.92, 0.8, False],
 		[ 'qual', 'Boosted', 'massAve', 0, 400, 0.92, 0.8, False],
 		#[ 'qual', 'Boosted', 'subjetPtRatio', '', '', '', '', True],
 		[ 'qual', 'Boosted', 'deltaEtaDijet', '', '', '', '', True],
@@ -897,18 +1021,27 @@ if __name__ == '__main__':
 		[ 'qual', 'Boosted', 'jet2CosThetaStar', '', '', '', '', False],
 		[ 'qual', 'Boosted', 'jet1Tau21', '', '', 0.85, 0.45, False],
 		[ 'qual', 'Boosted', 'jet2Tau21', '', '', 0.85, 0.45, False],
-		[ 'qual', 'Resolved', 'jet1Pt', 100, 1500, 0.85, 0.45, False],
-		[ 'qual', 'Resolved', 'jet2Pt', 0, 1500, 0.85, 0.45, False],
-		[ 'qual', 'Resolved', 'jet3Pt', 0, 500, 0.85, 0.45, False],
-		[ 'qual', 'Resolved', 'jet4Pt', 0, 300, 0.85, 0.45, False],
-		[ 'qual', 'Resolved', 'HT', 700, 2000, 0.85, 0.45, False],
-		[ 'qual', 'Resolved', 'jetNum', '', '', 0.85, 0.45, False],
-		[ 'qual', version, 'neutralHadronEnergy', '', '', 0.85, 0.45, False],
-		[ 'qual', version, 'neutralEmEnergy', '', '', 0.85, 0.45, False],
-		[ 'qual', version, 'chargedHadronEnergy', '', '', 0.85, 0.45, False],
-		[ 'qual', version, 'chargedEmEnergy', '', '', 0.85, 0.45, False],
-		[ 'qual', version, 'chargedMultiplicity', '', '', 0.85, 0.45, False],
-		[ 'qual', version, 'numConst', '', '', 0.85, 0.45, False],
+		[ 'qual', 'Boosted', 'jet1Tau31', '', '', 0.85, 0.45, False],
+		[ 'qual', 'Boosted', 'jet2Tau31', '', '', 0.85, 0.45, False],
+		[ 'qual', 'Resolved', 'jet1Pt', 100, 1500, 0.85, 0.45, True],
+		[ 'qual', 'Resolved', 'jet2Pt', 0, 1500, 0.85, 0.45, True],
+		[ 'qual', 'Resolved', 'jet3Pt', 0, 500, 0.85, 0.45, True],
+		[ 'qual', 'Resolved', 'jet4Pt', 0, 300, 0.85, 0.45, True],
+		[ 'qual', 'Resolved', 'HT', 700, 2000, 0.85, 0.45, True],
+		[ 'qual', 'Resolved', 'jetNum', '', '', 0.85, 0.45, True],
+		[ 'qual', 'Resolved', 'massAve', 0, 1000, 2, '', '', True],
+		[ 'jetIDQual', version, 'neutralHadronEnergy', '', '', 0.85, 0.45, True],
+		[ 'jetIDQual', version, 'neutralEmEnergy', '', '', 0.85, 0.45, True],
+		[ 'jetIDQual', version, 'chargedHadronEnergy', '', '', 0.85, 0.45, True],
+		[ 'jetIDQual', version, 'chargedEmEnergy', '', '', 0.85, 0.45, True],
+		[ 'jetIDQual', version, 'chargedMultiplicity', '', '', 0.85, 0.45, True],
+		[ 'jetIDQual', version, 'numConst', '', '', 0.85, 0.45, True],
+		[ 'jetIDQual', version, 'jetPt', 100, 1500, 0.92, 0.8, False],
+		[ 'jetIDQual', version, 'jetEta', -3, 3, 0.92, 0.8, False],
+		[ 'jetIDQual', 'Boosted', 'jetMass', 0, 1000, 0.92, 0.8, True],
+		[ 'jetIDQual', version, 'NPV', 0, 50, 0.85, 0.45, False],
+		[ 'jetIDQual', version, 'NPV_NOPUWeight', '', '', 0.85, 0.45, False],
+		[ 'jetIDQual', version, 'MET', '', '', 0.85, 0.45, False],
 
 		[ 'Norm', 'Boosted', 'NPV', '', '', 1, '', '', False],
 		#[ 'Norm', 'Boosted', 'jet1Subjet1Pt', '', '', '', '', True],
@@ -936,27 +1069,30 @@ if __name__ == '__main__':
 		[ 'Norm', 'Boosted', 'jet2CosThetaStar', '', '', 1, '', '', False],
 		[ 'Norm', 'Boosted', 'deltaEtaDijet', '', '', 1, '', '', False],
 		#[ 'Norm', 'Boosted', 'jet1Subjet21MassRatio', '', '', 1, '', '', False],
-		[ 'Norm', 'Boosted', 'jet1Subjet112MassRatio', '', '', 1, '', '', False],
-		[ 'Norm', 'Boosted', 'jet1Subjet1JetMassRatio', '', '', 1, '', '', False],
-		[ 'Norm', 'Boosted', 'jet1Subjet212MassRatio', '', '', 1, '', '', False],
-		[ 'Norm', 'Boosted', 'jet1Subjet2JetMassRatio', '', '', 1, '', '', False],
-		[ 'Norm', 'Boosted', 'jet2Subjet112MassRatio', '', '', 1, '', '', False],
-		[ 'Norm', 'Boosted', 'jet2Subjet1JetMassRatio', '', '', 1, '', '', False],
-		[ 'Norm', 'Boosted', 'jet2Subjet212MassRatio', '', '', 1, '', '', False],
-		[ 'Norm', 'Boosted', 'jet2Subjet2JetMassRatio', '', '', 1, '', '', False],
-		[ 'Norm', 'Boosted', 'subjetPtRatio', '', '', 1, '', '', False],
-		[ 'Norm', 'Boosted', 'subjetMass21Ratio', '', '', 1, '', '', False],
-		[ 'Norm', 'Boosted', 'subjet112MassRatio', '', '', 1, '', '', False],
-		[ 'Norm', 'Boosted', 'subjet212MassRatio', '', '', 1, '', '', False],
-		[ 'Norm', 'Boosted', 'subjetPolAngle13412', polAngXmin, polAngXmax, 1, '', '', False],
-		[ 'Norm', 'Boosted', 'subjetPolAngle31234', polAngXmin, polAngXmax, 1, '', '', False],
+		#[ 'Norm', 'Boosted', 'jet1Subjet112MassRatio', '', '', 1, '', '', False],
+		#[ 'Norm', 'Boosted', 'jet1Subjet1JetMassRatio', '', '', 1, '', '', False],
+		#[ 'Norm', 'Boosted', 'jet1Subjet212MassRatio', '', '', 1, '', '', False],
+		#[ 'Norm', 'Boosted', 'jet1Subjet2JetMassRatio', '', '', 1, '', '', False],
+		#[ 'Norm', 'Boosted', 'jet2Subjet112MassRatio', '', '', 1, '', '', False],
+		#[ 'Norm', 'Boosted', 'jet2Subjet1JetMassRatio', '', '', 1, '', '', False],
+		#[ 'Norm', 'Boosted', 'jet2Subjet212MassRatio', '', '', 1, '', '', False],
+		#[ 'Norm', 'Boosted', 'jet2Subjet2JetMassRatio', '', '', 1, '', '', False],
+		#[ 'Norm', 'Boosted', 'subjetPtRatio', '', '', 1, '', '', False],
+		#[ 'Norm', 'Boosted', 'subjetMass21Ratio', '', '', 1, '', '', False],
+		#[ 'Norm', 'Boosted', 'subjet112MassRatio', '', '', 1, '', '', False],
+		#[ 'Norm', 'Boosted', 'subjet212MassRatio', '', '', 1, '', '', False],
+		#[ 'Norm', 'Boosted', 'subjetPolAngle13412', polAngXmin, polAngXmax, 1, '', '', False],
+		#[ 'Norm', 'Boosted', 'subjetPolAngle31234', polAngXmin, polAngXmax, 1, '', '', False],
 		[ 'Norm', 'Resolved', 'massRes', '', '', 1, '', '', False],
 		[ 'Norm', 'Resolved', 'deltaEta', '', '', 1, '', '', False],
 		[ 'Norm', 'Resolved', 'minDeltaR', '', '', 1, '', '', False],
+		[ 'Norm', 'Resolved', 'deltaR', '', '', 1, '', '', False],
 		[ 'Norm', 'Resolved', 'jet4Pt', 0, 300, 1, '', '', False],
+		[ 'Norm', 'Resolved', 'cosThetaStar1', '', '', 1, '', '', False],
+		[ 'Norm', 'Resolved', 'cosThetaStar2', '', '', 1, '', '', False],
 
-		[ 'CF', 'cutflow', 10, True],
-		[ 'CF', 'cutflowSimple', 10, True],
+		[ 'CF', version, 'cutflow', 10, True],
+		[ 'CF', version, 'cutflowSimple', 10, True],
 
 		[ 'simple', 'HT',  1000, '', '', False],
 		[ 'simple', 'HT',  1000, '', '', True],
@@ -968,15 +1104,13 @@ if __name__ == '__main__':
 		[ 'simple', 'massAve_cutTau31',  massMaxX, '', '', False],
 		[ 'simple', 'massAve_cutTau21',  massMaxX, '', '', False],
 
-		[ 'mini', 'massAve_Standard', 0, massMaxX, '', '', False],
-		[ 'mini', 'massAve_DeltaEtaSubjet', 0, massMaxX, '', '', False],
-		[ 'mini', 'massAve_DeltaEtaTau21', 0, massMaxX, '', '', False],
-		[ 'mini', 'massAve_Tau21', 0, massMaxX, '', '', False],
-		[ 'mini', 'massAve_Tau21CosTheta', 0, massMaxX, '', '', False],
-		[ 'mini', 'massAve_Tau21CosThetaDEta', 0, massMaxX, '', '', False],
-		[ 'mini', 'massAve_DeltaEtaTau31', 0, massMaxX, '', '', False],
-		[ 'mini', 'massAve_EffPFHT800', 0, massMaxX, '', '', False],
-		[ 'mini', 'massAve_Brock', 0, massMaxX, '', '', False],
+		#[ 'mini', version, 'massAve_NOMassAsymTau21CosTheta', 0, massMaxX, 1, '', '', False],
+		[ 'mini', version, 'massAve_Tau21CosTheta', 0, massMaxX, 1, '', '', False],
+		[ 'mini', version, 'massAve_Tau21CosThetaDEta', 0, massMaxX, 1, '', '', False],
+		[ 'mini', version, 'massAve_NOMassAsymTau31CosTheta', 0, massMaxX, 1, '', '', False],
+		[ 'mini', version, 'massAve_NOMassAsymTau31CosThetaDEta', 0, massMaxX, 1, '', '', False],
+		#[ 'mini', version, 'massAve_Tau21NOCosTheta', 0, massMaxX, 1, '', '', False],
+		#[ 'mini', version, 'massAve_NOMassAsymTau21', 0, massMaxX, 1, '', '', False],
 		[ '2dOpt', 'massAveVsHT', 'Average Pruned Mass [GeV]', 'HT [GeV]', 0, massMaxX, 1, 700, HTMaxX, 1, jetMassHTlabX, jetMassHTlabY],
 		[ '2dOpt', 'massAsymVscosThetaStar', 'Mass asymmetry', 'cos #theta^{*}', 0, 1, 1, 0, 1, 1, jetMassHTlabX, jetMassHTlabY],
 
@@ -986,13 +1120,13 @@ if __name__ == '__main__':
 	else: Plots = [ y[2:] for y in plotList if ( ( y[0] in process ) and ( y[1] in version ) and ( y[2] in single ) )  ]
 
 	if 'Resolved' in version: grom =  '' 
-	if 'all' in grom: Groomers = [ '', 'Trimmed', 'Pruned', 'Filtered' ]
+	if 'all' in grom: Grommers = [ '', 'Trimmed', 'Pruned', 'Filtered', "SoftDrop" ]
 	else: Grommers = [ grom ]
 
 	if 'all' in cut: 
-		if 'Boosted' in version: selection = [ '_cutDijet', '_cutMassAsym', '_cutTau21', '_cutCosTheta', '_cutDEta', '_cutBtag' ]
-		else: selection = [ '_cutBestPair', '_cutMassRes', '_cutDelta', '_cutEtaBand' ]
-	elif 'NO' in cut: selection = [ '_cutNOMassAsym', '_cutTau21_NOMA', '_cutCosTheta_NOMA', '_cutDEta_NOMA', '_cutBtag_NOMA' ]
+		if 'Boosted' in version: selection = [ '_cutDijet', '_cutMassAsym', '_cutTau21', '_cutCosTheta', '_cutDEta' ]
+		else: selection = [ '_cutMassRes', '_cutDelta', '_cutEtaBand', '_cutDeltaR', '_cutCosTheta', '_cutDEta', '_cutMassPairing' ]
+	#elif 'NO' in cut: selection = [ '_cutNOMassAsym', '_cutTau21_NOMA', '_cutCosTheta_NOMA', '_cutDEta_NOMA' ]
 	else: selection = [ cut ]
 
 	if 'opt' in process:
@@ -1002,27 +1136,33 @@ if __name__ == '__main__':
 		plotOptimization( inputFile, [ 'MA_J1CosTheta', 'MA_J2CosTheta', 'MA_J1Tau21', 'MA_J2Tau21', 'MA_J1Tau31', 'MA_J2Tau31', 'MA_J1SubjetPtRatio', 'MA_J2SubjetPtRatio' ], 'MA_J1Tau21' )
 		plotOptimization( inputFile, [ 'MAT21_J1CosTheta', 'MAT21_J2CosTheta', 'MAT21_J1Tau31', 'MAT21_J2Tau31', 'MAT21_J1SubjetPtRatio', 'MAT21_J2SubjetPtRatio' ], 'MAT21_J1CosTheta' )
 		plotOptimization( inputFile, [ 'MAT21CTS_J1Tau31', 'MAT21CTS_J2Tau31', 'MAT21CTS_J1SubjetPtRatio', 'MAT21CTS_J2SubjetPtRatio' ], 'MAT21CTS_J1Tau31' )
+	elif 'tmp' in process:
+		tmpplotDiff( TFile.Open('Rootfiles/RUNAnalysis_QCDPtAll_RunIISpring15MiniAODv2-74X_Asympt25ns_v08_v03.root'), 'BoostedAnalysisPlotsPruned/massAve_cutCosTheta', 'BoostedAnalysisPlotsPruned/massAve_NOMassCutCosTheta'  )
 
 	else:
 		for i in Plots:
 			for optGrom in Grommers:
 				if '2D' in process: 
-					plot2D( signalFiles, 'RPVStto'+jj, optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
-					plot2D( bkgFiles, 'QCD', optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
+					plot2D( signalFiles, 'RPVStto'+jj, optGrom, version+'AnalysisPlots'+Grom+'/'+[0], i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
+					plot2D( bkgFiles, 'QCD', optGrom, version+'AnalysisPlots'+Grom+'/'+[0], i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
 					#plot2D( inputFileTTJets, 'TTJets', optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
 					#plot2D( inputFileWJetsToQQ, 'WJets', optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
 					#plot2D( inputFileZJetsToQQ, 'ZJets', optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
+				elif '2dmini' in process: 
+					plot2D( signalFiles, 'RPVStto'+jj, optGrom, i[0], i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
+					plot2D( bkgFiles, 'QCD', optGrom, i[0], i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
 
 				elif '1D' in process:
 					for cut1 in selection:
 						plotSignalBkg( signalFiles, bkgFiles, optGrom, version+'AnalysisPlots'+optGrom+'/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], i[6], PU, version )
 				
-				elif 'qual' in process:
+				elif ( ( 'qual' in process ) or ( 'jetIDQual' in process ) ):
 					for cut1 in selection:
-						plotQuality( dataFile, bkgFiles, optGrom, version+'AnalysisPlots'+optGrom+'/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], PU, version )
+						if 'Boosted' in version: plotQuality( dataFile, bkgFiles, optGrom, version+'AnalysisPlots'+optGrom+'/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], i[6], PU, version )
+						else: plotQuality( dataFile, bkgFiles, '', version+'AnalysisPlots/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], i[6], PU, version )
 				
 				elif 'mini' in process:
-					plot( inputMiniFileSignal, inputMiniFileSignal200, inputMiniFileQCD, 0.8, inputMiniFileTTJets, inputMiniFileWJetsToQQ, inputMiniFileZJetsToQQ, optGrom, i[0], i[0], i[1], i[2], i[3], i[4], i[5], PU )
+					plotSignalBkg( signalFiles, bkgFiles, optGrom, i[0], i[0], i[1], i[2], i[3], i[4], i[5], i[6], PU, version )
 				
 				elif 'Norm' in process:
 					for cut1 in selection:

@@ -151,7 +151,19 @@ def myAnalyzer( sample, couts, grooming):
 	jet2CosThetaStar_cutTau21 	= TH1F('jet2CosThetaStar_cutTau21', 'jet2CosThetaStar_cutTau21', 20, 0, 1.)
 	jet1SubjetPtRatio_cutTau21 	= TH1F('jet1SubjetPtRatio_cutTau21', 'jet1SubjetPtRatio_cutTau21', 20, 0, 1.)
 	jet2SubjetPtRatio_cutTau21 	= TH1F('jet2SubjetPtRatio_cutTau21', 'jet2SubjetPtRatio_cutTau21', 20, 0, 1.)
+	massAsymVsJ1CosTheta_cutTau21 	= TH2D('massAsymVsJ1CosTheta_cutTau21', 'massAsymVsJ1CosTheta_cutTau21', 20, 0, 1., 20, 0, 1.)
+	massAsymVsJ2CosTheta_cutTau21 	= TH2D('massAsymVsJ2CosTheta_cutTau21', 'massAsymVsJ2CosTheta_cutTau21', 20, 0, 1., 20, 0, 1.)
+	massAsymVsCosTheta_cutTau21 	= TH2D('massAsymVsCosTheta_cutTau21', 'massAsymVsCosTheta_cutTau21', 20, 0, 1., 20, 0, 1.)
+	massAve_cutTau21_A 	= TH1F('massAve_cutTau21_A', 'massAve_cutTau21_A', nBinsMass, 0, maxMass )
+	massAsymVsCosTheta_cutTau21_A 	= TH2D('massAsymVsCosTheta_cutTau21_A', 'massAsymVsCosTheta_cutTau21_A', 20, 0, 1., 20, 0, 1.)
+	massAve_cutTau21_B 	= TH1F('massAve_cutTau21_B', 'massAve_cutTau21_B', nBinsMass, 0, maxMass )
+	massAsymVsCosTheta_cutTau21_B 	= TH2D('massAsymVsCosTheta_cutTau21_B', 'massAsymVsCosTheta_cutTau21_B', 20, 0, 1., 20, 0, 1.)
+	massAve_cutTau21_C 	= TH1F('massAve_cutTau21_C', 'massAve_cutTau21_C', nBinsMass, 0, maxMass )
+	massAsymVsCosTheta_cutTau21_C 	= TH2D('massAsymVsCosTheta_cutTau21_C', 'massAsymVsCosTheta_cutTau21_C', 20, 0, 1., 20, 0, 1.)
+	massAve_cutTau21_D 	= TH1F('massAve_cutTau21_D', 'massAve_cutTau21_D', nBinsMass, 0, maxMass )
+	massAsymVsCosTheta_cutTau21_D 	= TH2D('massAsymVsCosTheta_cutTau21_D', 'massAsymVsCosTheta_cutTau21_D', 20, 0, 1., 20, 0, 1.)
 
+	'''
 	massAve_cutMassAsym 	= TH1F('massAve_cutMassAsym', 'massAve_cutMassAsym', nBinsMass, 0, maxMass )
 	massAsymmetry_cutMassAsym 	= TH1F('massAsymmetry_cutMassAsym', 'massAsymmetry_cutMassAsym', 20, 0, 1.)
 	deltaEtaDijet_cutMassAsym 	= TH1F('deltaEtaDijet_cutMassAsym', 'deltaEtaDijet_cutMassAsym', 100, 0, 5.)
@@ -181,6 +193,7 @@ def myAnalyzer( sample, couts, grooming):
 	jet2SubjetPtRatio_cutMassAsymDEta 	= TH1F('jet2SubjetPtRatio_cutMassAsymDEta', 'jet2SubjetPtRatio_cutMassAsymDEta', 20, 0, 1.)
 	massAve_cutNOMassAsymDEta 	= TH1F('massAve_cutNOMassAsymDEta', 'massAve_cutNOMassAsymDEta', nBinsMass, 0, maxMass )
 	massAve_cutNOMassAsymNODEta 	= TH1F('massAve_cutNOMassAsymNODEta', 'massAve_cutNOMassAsymNODEta', nBinsMass, 0, maxMass )
+	'''
 
 	massAve_cutCosTheta 	= TH1F('massAve_cutCosTheta', 'massAve_cutCosTheta', nBinsMass, 0, maxMass )
 	massAsymmetry_cutCosTheta 	= TH1F('massAsymmetry_cutCosTheta', 'massAsymmetry_cutCosTheta', 20, 0, 1.)
@@ -213,6 +226,7 @@ def myAnalyzer( sample, couts, grooming):
 	massAve_cutNOCosThetaMassAsym 	= TH1F('massAve_cutNOCosThetaMassAsym', 'massAve_cutNOCosThetaMassAsym', nBinsMass, 0, maxMass )
 	massAve_cutNOCosThetaNOMassAsym 	= TH1F('massAve_cutNOCosThetaNOMassAsym', 'massAve_cutNOCosThetaNOMassAsym', nBinsMass, 0, maxMass )
 
+	'''
 	massAve_cutTau31 	= TH1F('massAve_cutTau31', 'massAve_cutTau31', nBinsMass, 0, maxMass )
 	massAsymmetry_cutTau31 	= TH1F('massAsymmetry_cutTau31', 'massAsymmetry_cutTau31', 20, 0, 1.)
 	deltaEtaDijet_cutTau31 	= TH1F('deltaEtaDijet_cutTau31', 'deltaEtaDijet_cutTau31', 100, 0, 5.)
@@ -317,6 +331,7 @@ def myAnalyzer( sample, couts, grooming):
 	tmpHT_cutNOTau21CosThetaMassAsym 	= TH1F('tmpHT_cutNOTau21CosThetaMassAsym', 'tmpHT_cutNOTau21CosThetaMassAsym', 2000, 0, 20000 )
 	massAve_cutNOTau21CosThetaMassAsym_ReScale 	= TH1F('massAve_cutNOTau21CosThetaMassAsym_ReScale', 'massAve_cutNOTau21CosThetaMassAsym_ReScale', nBinsMass, 0, maxMass )
 	HT_cutNOTau21CosThetaMassAsym_ReScale 	= TH1F('HT_cutNOTau21CosThetaMassAsym_ReScale', 'HT_cutNOTau21CosThetaMassAsym_ReScale', 2000, 0, 20000 )
+	'''
 
 	#### Optimization
 	jet1Pt_cutHT 	= TH1F('jet1Pt_cutHT', 'jet1Pt_cutHT', 100, 0, 1000. )
@@ -405,7 +420,8 @@ def myAnalyzer( sample, couts, grooming):
 		cosPhi13412     = events.cosPhi13412
 		cosPhi31234     = events.cosPhi31234
 
-		scale = 2476.*puWeight*lumiWeight
+		if 'Data' in samples: scale = 1
+		else: scale = 2476* puWeight * lumiWeight
 		#if ( jet1Mass > 400 ) or ( jet2Mass > 400 ): print 'Entry ', Run, ':', Lumi, ':', NumEvent
 		#if ( Lumi != tmpLumi ):
 		#	newLumi += Lumi
@@ -427,7 +443,7 @@ def myAnalyzer( sample, couts, grooming):
 		massAsymCut = ( massAsym < 0.1 ) 
 		deltaEtaDijetCut = ( deltaEtaDijet < 1. ) 
 		#cosThetaStarCut = ( abs( cosThetaStar ) < 0.3 ) 
-		cosThetaStarCut = ( abs( J1CosThetaStar ) < 0.3 )  and ( abs( J2CosThetaStar ) < 0.3 )
+		cosThetaStarCut = ( abs( J1CosThetaStar ) < 0.2 )  and ( abs( J2CosThetaStar ) < 0.2 )
 		jetPtCut =  ( jet1Pt > 500 ) and ( jet2Pt > 450 )
 		
 		#if ( ( jet1Tau21 < 0.6 ) and ( jet2Tau21 < 0.6 ) ): massAve_Tau2106.Fill( massAve, scale )
@@ -463,7 +479,30 @@ def myAnalyzer( sample, couts, grooming):
 				jet2CosThetaStar_cutTau21.Fill( J2CosThetaStar, scale )
 				jet1SubjetPtRatio_cutTau21.Fill( jet1SubjetPtRatio, scale )
 				jet2SubjetPtRatio_cutTau21.Fill( jet2SubjetPtRatio, scale )
+				massAsymVsJ1CosTheta_cutTau21.Fill( massAsym, J1CosThetaStar, scale )
+				massAsymVsJ2CosTheta_cutTau21.Fill( massAsym, J2CosThetaStar, scale )
+				massAsymVsCosTheta_cutTau21.Fill( massAsym, J1CosThetaStar, scale )
+				massAsymVsCosTheta_cutTau21.Fill( massAsym, J2CosThetaStar, scale )
+
+				if cosThetaStarCut and massAsymCut: 
+					massAve_cutTau21_A.Fill( massAve, scale )
+					massAsymVsCosTheta_cutTau21_A.Fill( massAsym, J1CosThetaStar, scale )
+					massAsymVsCosTheta_cutTau21_A.Fill( massAsym, J2CosThetaStar, scale )
+				elif cosThetaStarCut and not massAsymCut: 
+					massAve_cutTau21_B.Fill( massAve, scale )
+					massAsymVsCosTheta_cutTau21_B.Fill( massAsym, J1CosThetaStar, scale )
+					massAsymVsCosTheta_cutTau21_B.Fill( massAsym, J2CosThetaStar, scale )
+				elif not cosThetaStarCut and massAsymCut: 
+					massAve_cutTau21_D.Fill( massAve, scale )
+					massAsymVsCosTheta_cutTau21_D.Fill( massAsym, J1CosThetaStar, scale )
+					massAsymVsCosTheta_cutTau21_D.Fill( massAsym, J2CosThetaStar, scale )
+				else:
+					massAve_cutTau21_C.Fill( massAve, scale )
+					massAsymVsCosTheta_cutTau21_C.Fill( massAsym, J1CosThetaStar, scale )
+					massAsymVsCosTheta_cutTau21_C.Fill( massAsym, J2CosThetaStar, scale )
+
 				
+				'''
 				if ( ( jet1Tau31 < 0.5 ) and ( jet2Tau31 < 0.5 ) ):
 					massAve_cutTau31.Fill( massAve, scale )
 					massAsymmetry_cutTau31.Fill( massAsym, scale )
@@ -575,7 +614,6 @@ def myAnalyzer( sample, couts, grooming):
 						else: 
 							massAve_cutNOTau31NOCosThetaNOMassAsym.Fill( massAve, scale )
 
-		
 				if ( massAsym < 0.10 ):
 					massAve_cutMassAsym.Fill( massAve, scale )
 					massAsymmetry_cutMassAsym.Fill( massAsym, scale )
@@ -611,6 +649,7 @@ def myAnalyzer( sample, couts, grooming):
 					else: 
 						massAve_cutNOMassAsymNODEta.Fill( massAve, scale )
 
+				'''
 				if (( abs( J1CosThetaStar ) < 0.2 )  and ( abs( J2CosThetaStar ) < 0.2 )):
 					massAve_cutCosTheta.Fill( massAve, scale )
 					massAsymmetry_cutCosTheta.Fill( massAsym, scale )
@@ -629,9 +668,9 @@ def myAnalyzer( sample, couts, grooming):
 					if ( massAsym < 0.10 ):
 						massAve_cutCosThetaMassAsym.Fill( massAve, scale )
 						HT_cutCosThetaMassAsym.Fill( HT, scale )
-						tmpHT_cutCosThetaMassAsym.Fill( HT, scale )
-						tmp2HT_cutCosThetaMassAsym.Fill( HT, scale )
-						tmp3HT_cutCosThetaMassAsym.Fill( HT, scale )
+						#tmpHT_cutCosThetaMassAsym.Fill( HT, scale )
+						#tmp2HT_cutCosThetaMassAsym.Fill( HT, scale )
+						#tmp3HT_cutCosThetaMassAsym.Fill( HT, scale )
 						massAsymmetry_cutCosThetaMassAsym.Fill( massAsym, scale )
 						deltaEtaDijet_cutCosThetaMassAsym.Fill( deltaEtaDijet, scale )
 						jet1Tau31_cutCosThetaMassAsym.Fill( jet1Tau31, scale )
@@ -644,6 +683,7 @@ def myAnalyzer( sample, couts, grooming):
 						jet2CosThetaStar_cutCosThetaMassAsym.Fill( J2CosThetaStar, scale )
 						jet1SubjetPtRatio_cutCosThetaMassAsym.Fill( jet1SubjetPtRatio, scale )
 						jet2SubjetPtRatio_cutCosThetaMassAsym.Fill( jet2SubjetPtRatio, scale )
+				'''
 				else:
 					if ( massAsym < 0.30 ):
 						massAve_cutNOCosThetaMassAsym.Fill( massAve, scale )
@@ -664,10 +704,11 @@ def myAnalyzer( sample, couts, grooming):
 						variablesBkg3.append( [ HT, massAve, scale ] ) 
 						HT_cutNOTau21CosThetaMassAsym.Fill( HT, scale )
 						tmpHT_cutNOTau21CosThetaMassAsym.Fill( HT, scale )
+				'''
 
 				
 				
-
+	'''
 	tmpHT_cutCosThetaMassAsym.Divide( tmpHT_cutNOTau21 )
 	tmp2HT_cutCosThetaMassAsym.Divide( tmpHT_cutNOTau21CosTheta )
 	tmp3HT_cutCosThetaMassAsym.Divide( tmpHT_cutNOTau21CosThetaMassAsym )
@@ -698,6 +739,7 @@ def myAnalyzer( sample, couts, grooming):
 		if (newScale <= 1):
 			HT_cutNOTau21CosThetaMassAsym_ReScale.Fill( variablesBkg3[k][0], newScale )
 			massAve_cutNOTau21CosThetaMassAsym_ReScale.Fill( variablesBkg3[k][1], newScale )
+	'''
 
 
 	outputFile.Write()

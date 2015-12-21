@@ -45,6 +45,7 @@ dictXS = {
 		#### Z
 		'ZJetsToQQ' : 5.67,
 		'ZZTo4Q' : 6.842,
+		'WZ' : 22.82,
 		#### RPV
 		'RPVStopStopToJets_UDD312_M-100' : 1521.11,
 		'RPVStopStopToJets_UDD312_M-200' : 64.5085,
@@ -86,6 +87,7 @@ dictEvents = {
 		'WWTo4Q' : 	[ 0., 		1995200. 	 ],
 		'ZJetsToQQ' : 	[ 0., 		982095. 	 ],
 		'ZZTo4Q' : 	[ 0., 		35917388. 	 ],
+		'WZ' : 	[ 0., 		991232. 	 ],
 
 		#### RPV Stop
 		'RPVStopStopToJets_UDD312_M-100' :  	[ 0., 	166722. 	],	

@@ -6,16 +6,22 @@
 
 #from ROOT import RooRealVar, RooDataHist, RooArgList, RooArgSet, RooAddPdf, RooFit, RooGenericPdf, RooWorkspace, RooMsgService, RooHistPdf
 from ROOT import *
-import RUNA.RUNAnalysis.CMS_lumi as CMS_lumi 
-from RUNA.RUNAnalysis.histoLabels import labels, labelAxis 
-from multiprocessing import Process
-import RUNA.RUNAnalysis.tdrstyle as tdrstyle
 from array import array
 import argparse
 import glob,sys, os
 import warnings
 import random
 import numpy as np
+from multiprocessing import Process
+try: 
+	import RUNA.RUNAnalysis.CMS_lumi as CMS_lumi 
+	from RUNA.RUNAnalysis.histoLabels import labels, labelAxis 
+	import RUNA.RUNAnalysis.tdrstyle as tdrstyle
+except ImportError:
+	sys.path.append('../python') 
+	import CMS_lumi as CMS_lumi 
+	from histoLabels import labels, labelAxis 
+	import tdrstyle as tdrstyle
 
 gSystem.SetIncludePath('-I$ROOFITSYS/include')
 if os.access('RooPowerFunction.cxx', os.R_OK): ROOT.gROOT.ProcessLine('.L RooPowerFunction.cxx+')
