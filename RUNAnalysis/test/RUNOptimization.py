@@ -196,7 +196,7 @@ def RUNTMVATraining( BkgSample, SigSample, treename, outputFileName, variables )
 	sigCut = TCut("massAve>"+str(int(mass)-30)+" && massAve < "+str(int(mass)+30))
 	bkgCut = TCut("")
 	factory.PrepareTrainingAndTestTree(sigCut, bkgCut,
-			"nTrain_Signal=0:nTrain_Background=100000:SplitMode=Random:NormMode=NumEvents:!V")
+			"nTrain_Signal=0:nTrain_Background=1000:SplitMode=Random:NormMode=NumEvents:!V")
 
 	# define multivariate methods to be run
 	'''
@@ -238,7 +238,7 @@ def RUNTMVATraining( BkgSample, SigSample, treename, outputFileName, variables )
 	'''
 	factory.BookMethod( TMVA.Types.kBDT, 
 			"BDTG",
-			"!H:!V:NTrees=1000:"\
+			"!H:!V:NTrees=100:"\
 			"BoostType=Grad:"\
 			"Shrinkage=0.30:"\
 			"UseBaggedGrad:"\
@@ -348,12 +348,12 @@ if __name__ == '__main__':
 	inputFiles = args.inputFiles
 
 	bkgSamples = {}
-	#bkgSamples[ 'QCDPtAll' ] = 'Rootfiles/RUNAnalysis_QCDPtAll_TuneCUETP8M1_13TeV_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
+	bkgSamples[ 'QCDPtAll' ] = 'Rootfiles/RUNAnalysis_QCDPtAll_TuneCUETP8M1_13TeV_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
 	bkgSamples[ 'WWTo4Q' ] = 'Rootfiles/RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
 	bkgSamples[ 'WJetsToQQ' ] = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
-	#bkgSamples[ 'ZZTo4Q' ] = 'Rootfiles/RUNAnalysis_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
-	#bkgSamples[ 'ZJetsToQQ' ] = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
-	#bkgSamples[ 'TTJets' ] = 'Rootfiles/RUNAnalysis_TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
+	bkgSamples[ 'ZZTo4Q' ] = 'Rootfiles/RUNAnalysis_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
+	bkgSamples[ 'ZJetsToQQ' ] = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
+	bkgSamples[ 'TTJets' ] = 'Rootfiles/RUNAnalysis_TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
 
 	QCDSample = 'Rootfiles/RUNAnalysis_QCDPtAll_TuneCUETP8M1_13TeV_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
 	WWJetsSample = 'Rootfiles/RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
@@ -423,10 +423,10 @@ if __name__ == '__main__':
 	elif 'TMVA' in process:
 		variables = [ x[1] for x in var if ( version in x[0] ) ]
 		outputFileName = 'Rootfiles/RUN'+version+'OptimizationStudiesTMP.root'
-		#for sample in bkgSamples: 
-			#p0 = Process( target=RUNTMVATraining, args=( bkgSamples[ sample ], SigSample, treename, 'Rootfiles/RUNTMVATraining_'+bkgSamples[ sample ].split('_')[1]+'.root', variables ) )
-			#p0.start()
-			#p0.join()
+		for sample in bkgSamples: 
+			p0 = Process( target=RUNTMVATraining, args=( bkgSamples[ sample ], SigSample, treename, 'Rootfiles/RUNTMVATraining_'+bkgSamples[ sample ].split('_')[1]+'.root', variables ) )
+			p0.start()
+			p0.join()
 		p1 = Process( target=ApplicationCreateCombinedTree, args=( variables, outputFileName, bkgSamples, SigSample, treename ) )
 		p1.start()
 		p1.join()

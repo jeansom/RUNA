@@ -38,6 +38,7 @@ gStyle.SetStatY(0.91)
 gStyle.SetStatX(0.95)
 gStyle.SetStatW(0.15)
 gStyle.SetStatH(0.15) 
+gStyle.SetTextSize(0.5)
 
 xline = array('d', [0,2000])
 yline = array('d', [0,0])
@@ -48,18 +49,43 @@ line.SetLineColor(kRed)
 P4 = TF1("P4", "[0]* TMath::Power(1-(x/13000.0),[1]) / (TMath::Power(x/13000.0,[2]+([3]*log(x/13000.))))",0,2000);
 #P1 = TF1("P1", "[0] / (TMath::Power(x/13000.0,[1]))",0,2000);
 #P4 = TF1("P4", "( [0]*TMath::Power(1-x/13000,[1]) ) / ( TMath::Power(x/13000,[2]) )",0,2000);
-mTilde = TF1("mTilde", "(x - [0])/[1]", 0, 300 )
-sumExpo = TF1("sumExpo", "[0]*exp(-[1]*x)+[2]*exp(-[3]*x)", 0, 1000 )
 expoPoli = TF1("expoPoli", "exp([0]+[1]*x+[2]*x*x+[3]*x*x*x+[4]*x*x*x*x)", 0, 1000 )
-sigmoid = TF1("sigmoid", "mTilde/ (sqrt(1+ pow(mTilde,2)))", 0, 1000 )
 landau = TF1("landau","[0]*TMath::Landau(-x,[1],[2])",50,300)
 gaus = TF1("gaus", "gaus", 0, 2000);
 P4Gaus = TF1("P4Gaus", "[0]*pow(1-(x/13000.0),[1])/pow(x/13000.0,[2]+([3]*log(x/13000.)))+gaus(4)",0,2000);
 massBins = [0, 30, 60, 90, 120, 150, 180, 210, 250, 290, 330, 370, 410, 460, 510, 560, 610, 670, 730, 790, 860, 930, 1000, 1080, 1160, 1240, 1330, 1420, 1520, 1620, 1730, 1840, 2000]
 
+def createPseudoExperiment():
+	"""docstring for createPseudoExperiment"""
+	h1 = inFileBkg.Get(folder+'/' + hist)
+	binSize = h1.GetBinWidth(1)
+	P4PSE = TF1("P4PSE", "[0]*pow(1-x/13000.0,[1])/pow(x/13000.0,[2]+[3]*log(x/13000.))", minX, maxX);
+	P4PSE.SetParameter(0,bkgParameters[0])				
+	P4PSE.SetParameter(1,bkgParameters[1])
+	P4PSE.SetParameter(2,bkgParameters[2])
+	P4PSE.SetParameter(3,bkgParameters[3])
+	randomNumEventsQCD = random.randint( bkgParameters[4]-round(sqrt(bkgParameters[4])), bkgParameters[4]+round(sqrt(bkgParameters[4])) )
+	print "randomNumberOf QCD events", randomNumEventsQCD
+	hMainPSE = TH1D("hbkgPSE", "hbkgPSE", int( (maxX-minX)/binSize ) , minX, maxX)
+	hMainPSE.FillRandom( "P4PSE", int(randomNumEventsQCD) )
+	c1 = TCanvas('c1', 'c1',  10, 10, 750, 500 )
+	c1.SetLogy()
+	gStyle.SetOptFit()
+	gStyle.SetStatY(0.94)
+	gStyle.SetStatX(0.9)
+	gStyle.SetStatW(0.15)
+	gStyle.SetStatH(0.15) 
+	hMainPSE.GetXaxis().SetTitle( histYaxis )
+	hMainPSE.GetYaxis().SetTitle("Events / 10 GeV" ) # dN/dM_{bbjj} [GeV^{-1}]")
+	hMainPSE.GetYaxis().SetTitleOffset(1.2);
+	hMainPSE.SetTitle("QCD PseudoExperiments")
+	hMainPSE.Sumw2()
+	hMainPSE.Draw()
+	c1.SaveAs(outputDir+hist+"_PseudoExperiment_"+PU+"_Fit.pdf")
+	del c1
 
-def P4Fitter( inFileBkg, hist, folder, fitFunction, fitParam, minX, maxX, rebinX, plot, log=True ):
-	"""Simple P4Fitter"""
+def rootFitter( inFileBkg, hist, folder, fitFunction, fitParam, minX, maxX, rebinX, plot, log=True ):
+	"""Simple rootFitter"""
 
 	##### BKG
 	hInitialBkg = inFileBkg.Get(folder+hist)
@@ -94,10 +120,10 @@ def P4Fitter( inFileBkg, hist, folder, fitFunction, fitParam, minX, maxX, rebinX
 
 	fitStatus = 0
 	numParam = 0
-	for loop in range(0,20):
+	for loop in range(0,10):
 		#result = hBkg.Fit(fitFunction,"MELLS","",minX,maxX)
 		result = hBkg.Fit( fitFunction,"ELLSR","",minX,maxX)
-		fitStatus = int(result)
+		fitStatus = int(result.Status())
 		numParam = result.NFreeParameters()
 		print "|----> Fit status : %d" % fitStatus
 		if(fitStatus==1):
@@ -130,68 +156,50 @@ def P4Fitter( inFileBkg, hist, folder, fitFunction, fitParam, minX, maxX, rebinX
 def FitterCombination( inFileData, inFileBkg, inFileSignal, hist, folder, bkgFunction, fitParam, minX, maxX, rebinX ):
 	"""docstring for FitterCombination"""
 
-	outputDir = "Plots/"
-	binSize = 10
-
 	### Fit QCD
-	BkgParameters = P4Fitter( inFileBkg, hist, folder, P4, fitParam, minX, maxX, rebinX, False )
+	BkgParameters = rootFitter( inFileBkg, hist, folder, P4, fitParam, minX, maxX, rebinX, False )
 	bkgParameters = BkgParameters[0]
 	bkgAcceptance = BkgParameters[1]
-	bkgContent = BkgParameters[2]
-	bkgErr = BkgParameters[3]
+	points = BkgParameters[2]
+	pointsErr = BkgParameters[3]
 
-	SigParameters = P4Fitter( inFileSignal, hist, folder, gaus, [], MASS-50, MASS+50, rebinX, False )
-	gausParameters = SigParameters[0]
-	sigAcceptance = SigParameters[1]
-	sigContent = SigParameters[2]
-	sigErr = SigParameters[3]
+	if not 'Data' in process:
+		SigParameters = rootFitter( inFileSignal, hist, folder, gaus, [], MASS-50, MASS+50, rebinX, False )
+		gausParameters = SigParameters[0]
+		sigAcceptance = SigParameters[1]
+		sigContent = SigParameters[2]
+		sigErr = SigParameters[3]
+	
+	if not 'MC' in process:
+		DataParameters = rootFitter( inFileData, hist, folder, P4, bkgParameters, minX, maxX, rebinX, False )
+		dataParameters = DataParameters[0]
+		dataAcceptance = DataParameters[1]
+		points = DataParameters[2]
+		pointsErr = DataParameters[3]
 
-	data = bkgContent #+ sigContent
-	#dataErr = [ TMath.Sqrt( bkgErr[k]*bkgErr[k] + sigErr[k]*sigErr[k]  ) for k in range( 0, len(bkgErr) ) ]
-	dataErr = bkgErr #[ TMath.Sqrt( bkgErr[k]*bkgErr[k] ) for k in range( 0, len(bkgErr) ) ]
-	#print 'DATA :', data
-	#print 'DATA Err:', dataErr
-	hBkg = TH1D("hbkg", "hbkg", len(data) , minX, maxX)
-	hBkg.Sumw2()
-	hPull = TH1D("hpull", "hpull", len(data) , minX, maxX)
+	print '|----> DATA Plotted:', points
+	print '|----> DATA Err:', pointsErr
+	
+	mainP4 = TF1("mainP4", "[0]*pow(1-(x/13000.0),[1])/pow(x/13000.0,[2]+([3]*log(x/13000.)))", minX, maxX);
+	mainP4.SetParameter(0, dataParameters[0] if not 'MC' in process else bkgParameters[0] )				
+	mainP4.SetParameter(1, dataParameters[1] if not 'MC' in process else bkgParameters[1] )				
+	mainP4.SetParameter(2, dataParameters[2] if not 'MC' in process else bkgParameters[2] )				
+	mainP4.SetParameter(3, dataParameters[3] if not 'MC' in process else bkgParameters[3] )				
+
+	minX = minX-50
+	maxX = maxX-50
+	hMain = TH1D("hbkg", "hbkg", len(points) , minX, maxX)
+	hMain.Sumw2()
+	hPull = TH1D("hpull", "hpull", len(points) , minX, maxX)
 	hPull.Sumw2()
-	hResidual = TH1D("hresidual", "hresidual", len(data) , minX, maxX)
+	hResidual = TH1D("hresidual", "hresidual", len(points) , minX, maxX)
 	hResidual.Sumw2()
 
-	for ibin in range( 0, len(data)):
-		hBkg.SetBinContent( ibin, data[ibin] )
-		hBkg.SetBinError( ibin, dataErr[ibin] )
-
-	### Create PseudoExperiment
-	'''
-	h1 = inFileBkg.Get(folder+'/' + hist)
-	binSize = h1.GetBinWidth(1)
-	P4PSE = TF1("P4PSE", "[0]*pow(1-x/13000.0,[1])/pow(x/13000.0,[2]+[3]*log(x/13000.))", minX, maxX);
-	P4PSE.SetParameter(0,bkgParameters[0])				
-	P4PSE.SetParameter(1,bkgParameters[1])
-	P4PSE.SetParameter(2,bkgParameters[2])
-	P4PSE.SetParameter(3,bkgParameters[3])
-	randomNumEventsQCD = random.randint( bkgParameters[4]-round(sqrt(bkgParameters[4])), bkgParameters[4]+round(sqrt(bkgParameters[4])) )
-	print "randomNumberOf QCD events", randomNumEventsQCD
-	hBkgPSE = TH1D("hbkgPSE", "hbkgPSE", int( (maxX-minX)/binSize ) , minX, maxX)
-	hBkgPSE.FillRandom( "P4PSE", int(randomNumEventsQCD) )
-	c1 = TCanvas('c1', 'c1',  10, 10, 750, 500 )
-	c1.SetLogy()
-	gStyle.SetOptFit()
-	gStyle.SetStatY(0.94)
-	gStyle.SetStatX(0.9)
-	gStyle.SetStatW(0.15)
-	gStyle.SetStatH(0.15) 
-	hBkgPSE.GetXaxis().SetTitle( histYaxis )
-	hBkgPSE.GetYaxis().SetTitle("Events / 10 GeV" ) # dN/dM_{bbjj} [GeV^{-1}]")
-	hBkgPSE.GetYaxis().SetTitleOffset(1.2);
-	hBkgPSE.SetTitle("QCD PseudoExperiments")
-	hBkgPSE.Sumw2()
-	hBkgPSE.Draw()
-	c1.SaveAs(outputDir+hist+"_PseudoExperiment_"+PU+"_Fit.pdf")
-	del c1
-	'''
+	for ibin in range( 0, len(points)):
+		hMain.SetBinContent( ibin, points[ibin] )
+		hMain.SetBinError( ibin, pointsErr[ibin] )
 			
+	hMain.Fit( mainP4, "ELLSR", "", minX, maxX )
 	'''
 	P4Gaus.SetParameter(0,bkgParameters[0])				
 	P4Gaus.SetParameter(1,bkgParameters[1])
@@ -200,12 +208,9 @@ def FitterCombination( inFileData, inFileBkg, inFileSignal, hist, folder, bkgFun
 	P4Gaus.SetParameter(4,gausParameters[0])
 	P4Gaus.SetParameter(5,gausParameters[1])
 	P4Gaus.SetParameter(6,gausParameters[2])
-	hBkg.Fit( P4Gaus, "ELLSR", "", minX, maxX)
-	hBkg.Fit( P4Gaus, "ELLSR", "", minX, maxX)
-	hBkg.Fit( P4Gaus, "ELLSR", "", minX, maxX)
-	'''
-
-	gaus2 = TF1("gaus2", "gaus", MASS-30, MASS+30 );
+	hMain.Fit( P4Gaus, "ELLSR", "", minX, maxX)
+	hMain.Fit( P4Gaus, "ELLSR", "", minX, maxX)
+	hMain.Fit( P4Gaus, "ELLSR", "", minX, maxX)
 	P4_2 = TF1("P4_2", "[0]*pow(1-(x/13000.0),[1])/pow(x/13000.0,[2]+([3]*log(x/13000.)))", minX, maxX);
 	#P4_2.SetParameter(0, P4Gaus.GetParameter(0) )
 	#P4_2.SetParameter(1, P4Gaus.GetParameter(1) )
@@ -215,48 +220,40 @@ def FitterCombination( inFileData, inFileBkg, inFileSignal, hist, folder, bkgFun
 	P4_2.SetParameter(1,bkgParameters[1])
 	P4_2.SetParameter(2,bkgParameters[2])
 	P4_2.SetParameter(3,bkgParameters[3])
-	fitStatus = 0
-	for loop in range(0,20):
-		result = hBkg.Fit( P4_2,"ELLSR","",minX,maxX)
-		fitStatus = int(result)
-		print "fit status : %d" % fitStatus
-		if(fitStatus==1):
-			stopProgram=0
-			result.Print("V")
-			break
+
 	#gaus2.SetParameter(0, P4Gaus.GetParameter(4) )
 	#gaus2.SetParameter(1, P4Gaus.GetParameter(5) )
 	#gaus2.SetParameter(2, P4Gaus.GetParameter(6) )
 	#print "SIGNALLLL", gaus2.Integral(MASS-30, MASS+30)
 	#P4_2Parameters = [ P4_2.GetParameter(0), P4_2.GetParameter(1), P4_2.GetParameter(2), P4_2.GetParameter(3), P4Gaus.GetParameter(4), P4Gaus.GetParameter(5), P4Gauss.GetParameter(6), bkgAcceptance, sigAcceptance, minX, maxX ]
 	#print P4_2Parameters
+	'''
 
 
 	######## Calculating Pull and Residual
 	chi2 = 0 
 	nof = 0
-	for ibin in range(0, len(data) ):
+	for ibin in range(0, len(points) ):
 	
-		binCont = data[ibin]
-		binErr = dataErr[ibin]
-		valIntegral = P4_2.Eval( hBkg.GetBinCenter(ibin) ) ### +5 because binSize is 10
-		#print binCont, binErr, valIntegral 
-	
+		binCont = points[ibin]
+		binErr = pointsErr[ibin]
+		valIntegral = mainP4.Eval( hMain.GetBinCenter(ibin) ) 
 		diff = (binCont - valIntegral)/ valIntegral
 		#errDiff = diff * TMath.Sqrt( TMath.Power( P4Gaus.GetParError(0) / P4Gaus.GetParameter(0),2 ) + TMath.Power( P4Gaus.GetParError(1)/ P4Gaus.GetParameter(1), 2 )  + TMath.Power( P4Gaus.GetParError(2)/ P4Gaus.GetParameter(2), 2 )  + TMath.Power( P4Gaus.GetParError(3)/ P4Gaus.GetParameter(3), 2 ) )
-		#errDiff = diff * TMath.Sqrt( TMath.Power( P4_2.GetParError(0) / P4_2.GetParameter(0),2 ) + TMath.Power( P4_2.GetParError(1)/ P4_2.GetParameter(1), 2 )  + TMath.Power( P4_2.GetParError(2)/ P4_2.GetParameter(2), 2 )  + TMath.Power( P4_2.GetParError(3)/ P4_2.GetParameter(3), 2 ) )
+		#errDiff = diff * TMath.Sqrt( TMath.Power( mainP4.GetParError(0) / mainP4.GetParameter(0),2 ) + TMath.Power( mainP4.GetParError(1)/ mainP4.GetParameter(1), 2 )  + TMath.Power( mainP4.GetParError(2)/ mainP4.GetParameter(2), 2 )  + TMath.Power( mainP4.GetParError(3)/ mainP4.GetParameter(3), 2 ) )
+		#print binCont, binErr, valIntegral 
 
 		if (binCont != 0):
 			pull = (binCont - valIntegral)/ binErr
 			chi2 += TMath.Power(pull,2)
 			nof += 1
-			#print pull
+			
 			hPull.SetBinContent(ibin, pull)
 			hPull.SetBinError(ibin, 1.0)
 	
 			hResidual.SetBinContent(ibin, diff)
 			hResidual.SetBinError(ibin, binErr/valIntegral )
-	print '############### chi2 and nof: ', chi2, nof
+	print '|----> ############### chi2 and nof: ', chi2, nof
 
 
 	######### Plotting Histograms
@@ -268,44 +265,49 @@ def FitterCombination( inFileData, inFileBkg, inFileSignal, hist, folder, bkgFun
 	gStyle.SetStatX(0.95)
 	gStyle.SetStatW(0.15)
 	gStyle.SetStatH(0.30) 
-	c3 = TCanvas('c1', 'c1',  10, 10, 750, 1000 )
-	pad1 = TPad("pad1", "Fit",0,0.40,1.00,1.00,-1)
-	pad2 = TPad("pad2", "Pull",0,0.25,1.00,0.475,-1);
-	pad3 = TPad("pad3", "Residual",0,0,1.00,0.277,-1);
+	#c3 = TCanvas('c1', 'c1',  10, 10, 750, 1000 )
+	#pad1 = TPad("pad1", "Fit",0,0.40,1.00,1.00,-1)
+	#pad2 = TPad("pad2", "Pull",0,0.25,1.00,0.475,-1);
+	#pad3 = TPad("pad3", "Residual",0,0,1.00,0.277,-1);
+	c3 = TCanvas('c1', 'c1',  10, 10, 1000, 500 )
+	pad1 = TPad("pad1", "Fit",0,0.00,0.50,1.00,-1)
+	pad2 = TPad("pad2", "Pull",0.50,0.50,1.00,1.00,-1);
+	pad3 = TPad("pad3", "Residual",0.50,0,1.00,0.557,-1);
 	pad1.Draw()
 	pad2.Draw()
 	pad3.Draw()
 
 	pad1.cd()
 	pad1.SetLogy()
-	hBkg.SetMarkerStyle(8)
-	hBkg.GetYaxis().SetTitle("dN/dm_{av} / "+ str(hBkg.GetBinWidth(1)) +" GeV" ) # dN/dM_{bbjj} [GeV^{-1}]")
-	hBkg.GetYaxis().SetTitleOffset(1.2);
-	hBkg.SetTitle("")
-	#hBkg.SetMaximum( 1.5 * hBkg.GetMaximum() )
-	hBkg.Draw()
-	hBkg.GetXaxis().SetRangeUser( minX, maxXPlot  )
-	P4_2.SetLineColor(kBlack)
-	P4_2.Draw("same")
+	hMain.SetMarkerStyle(8)
+	hMain.GetYaxis().SetTitle("dN/dm_{av} / "+ str(hMain.GetBinWidth(1)) +" GeV" ) # dN/dM_{bbjj} [GeV^{-1}]")
+	hMain.GetYaxis().SetTitleOffset(1.2);
+	hMain.SetTitle("")
+	#hMain.SetMaximum( 1.5 * hMain.GetMaximum() )
+	hMain.Draw()
+	hMain.GetXaxis().SetRangeUser( minX, maxXPlot  )
+	mainP4.SetLineColor(kBlack)
+	mainP4.Draw("same")
 	#gaus2.SetLineColor(kRed-4)
 	#gaus2.Draw("same")
-	#P4_2.SetLineColor(kBlue-4)
-	#P4_2.Draw("same")
-	CMS_lumi.relPosX = 0.14
+	mainP4.SetLineColor(kBlue-4)
+	mainP4.Draw("same")
+	CMS_lumi.relPosX = 0.13
+	CMS_lumi.cmsTextSize = 0.60
+	CMS_lumi.lumiTextSize = 0.50
 	CMS_lumi.CMS_lumi(pad1, 4, 0)
-	labels( hist, '', '', 0.90, 0.75 )
+	labels( hist, '', '', 0.20, 0.45, 'left' )
 
 
 	pad2.cd()
 	pad2.SetGrid()
-	pad2.SetTopMargin(0)
+	#pad2.SetTopMargin(0)
 	gStyle.SetOptStat(0)
 	hPull.GetYaxis().SetTitle("#frac{(Data - Fit)}{#sigma_{Data}}")
-	hPull.GetYaxis().SetLabelSize(0.11)
-	hPull.GetXaxis().SetLabelSize(0.10)
-	hPull.GetYaxis().SetTitleSize(0.13)
-	hPull.GetYaxis().SetTitleOffset(0.50)
-	hResidual.GetYaxis().CenterTitle()
+	hPull.GetYaxis().SetLabelSize(0.08)
+	hPull.GetYaxis().SetTitleSize(0.09)
+	hPull.GetYaxis().SetTitleOffset(0.70)
+	hPull.GetYaxis().CenterTitle()
 	hPull.SetMarkerStyle(7)
 	#hPull.SetMaximum(3)
 	hPull.GetXaxis().SetRangeUser( minX, maxXPlot )
@@ -320,11 +322,11 @@ def FitterCombination( inFileData, inFileBkg, inFileSignal, hist, folder, bkgFun
 	gStyle.SetOptStat(0)
 	hResidual.GetXaxis().SetTitle( histYaxis )
 	hResidual.GetYaxis().SetTitle("#frac{(Data - Fit)}{Fit}")
-	hResidual.GetXaxis().SetTitleSize(0.12)
-	hResidual.GetXaxis().SetLabelSize(0.09)
-	hResidual.GetYaxis().SetLabelSize(0.09)
-	hResidual.GetYaxis().SetTitleSize(0.11)
-	hResidual.GetYaxis().SetTitleOffset(0.60)
+	hResidual.GetXaxis().SetTitleSize(0.10)
+	hResidual.GetXaxis().SetLabelSize(0.07)
+	hResidual.GetYaxis().SetLabelSize(0.07)
+	hResidual.GetYaxis().SetTitleSize(0.08)
+	hResidual.GetYaxis().SetTitleOffset(0.80)
 	hResidual.GetYaxis().CenterTitle()
 	hResidual.SetMarkerStyle(7)
 	hResidual.SetMaximum(1)
@@ -333,7 +335,7 @@ def FitterCombination( inFileData, inFileBkg, inFileSignal, hist, folder, bkgFun
 	#hResidual.Sumw2()
 	hResidual.Draw("e")
 	line.Draw("same")
-	c3.SaveAs(outputDir+hist+"_"+samples+"_"+version+"FitP4.pdf")
+	c3.SaveAs("Plots/"+hist+"_"+process+"_"+version+"FitP4.pdf")
 	del c3
 
 	#return P4GausParameters
@@ -710,11 +712,11 @@ if __name__ == '__main__':
 		p = Process( target=FitterCombination, args=( '', fileBkg, fileSignal, hist, folder, P4, [ 0.1, 100, 2, 0.1 ], minFit, maxFit, rebinX ))
 	elif 'QCD' in process:
 		CMS_lumi.extraText = "Preliminary Simulation"
-		p = Process( target=P4Fitter, args=( fileBkg, hist, folder, P4, [ 0.1, 100, 2, 0.1 ], minFit, maxFit, rebinX, True ) ) 
+		p = Process( target=rootFitter, args=( fileBkg, hist, folder, P4, [ 0.1, 100, 2, 0.1 ], minFit, maxFit, rebinX, True ) ) 
 	elif 'RPV' in process:
 		process = 'RPVSt'+str(MASS)+'tojj'
 		CMS_lumi.extraText = "Preliminary Simulation"
-		p = Process( target=P4Fitter, args=( fileSignal, hist, folder, gaus, [ ], MASS-50, MASS+50, rebinX, True, False ) ) 
+		p = Process( target=rootFitter, args=( fileSignal, hist, folder, gaus, [ ], MASS-50, MASS+50, rebinX, True, False ) ) 
 	elif 'rooFit' in process:
 		rooFitter( fileData, fileSignal, hist, folder, MASS, outputRootFile, 200.0, 1000.0  )
 		#rooFitter( fileBkg, fileSignal, hist, folder, MASS, outputRootFile, 250.0, 450.0  )
