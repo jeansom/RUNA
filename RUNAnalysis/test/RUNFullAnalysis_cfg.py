@@ -26,6 +26,13 @@ options.register('version',
 		VarParsing.varType.string,
 		"Version of the analysis to run. (Full, Resolved, Boosted)"
 		)
+options.register('systematics', 
+		False,		
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.bool,
+		"Run systematics, default false."
+		)
+
 
 ### Resolved Analysis Options
 options.register('HT', 
@@ -117,7 +124,7 @@ options.register('btag',
 		"Btag cut"
 		)
 options.register('namePUFile', 
-		'PileupData2015D_JSON_10-28-2015.root',
+		'supportFiles/PileupData2015D_JSON_10-28-2015.root',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
 		"namePUFile"
@@ -136,17 +143,26 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 		fileNames = cms.untracked.vstring(
-			'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_1.root',
-			'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_10.root',
-			'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_100.root',
-			'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_101.root',
-			'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_102.root',
-			'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_103.root',
-			'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_104.root',
-			'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_105.root',
-			'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_106.root',
-			'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_107.root'
-
+			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_1.root',
+			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_10.root',
+			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_100.root',
+			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_101.root',
+			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_102.root',
+			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_103.root',
+			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_104.root',
+			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_105.root',
+			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_106.root',
+			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_107.root'
+			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_1.root',
+			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_10.root',
+			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_100.root',
+			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_101.root',
+			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_102.root',
+			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_103.root',
+			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_104.root',
+			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_105.root',
+			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_106.root',
+			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_107.root'
 	    )
 	)
 
@@ -208,6 +224,9 @@ process.BoostedAnalysisPlotsPruned = process.BoostedAnalysisPlots.clone(
 		#subjetE 		= cms.InputTag('subjetsAK8Pruned:subjetAK8PrunedE'),
 		#subjetMass 		= cms.InputTag('subjetsAK8Pruned:subjetAK8PrunedMass'),
 		)
+process.BoostedAnalysisPlotsPrunedJESUp = process.BoostedAnalysisPlotsPruned.clone( systematics = cms.string( 'JESUp' ) )
+process.BoostedAnalysisPlotsPrunedJESDown = process.BoostedAnalysisPlotsPruned.clone( systematics = cms.string( 'JESDown' ) )
+
 process.BoostedAnalysisPlotsSoftDrop = process.BoostedAnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8softDropMass') )
 process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone( 
 		jetPt 			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiPt'),
@@ -252,6 +271,9 @@ elif 'Boosted' in options.version:
 		#* process.RUNATreeSoftDrop
 		* process.RUNATreePruned
 		)
+	if options.systematics:
+		process.p += process.BoostedAnalysisPlotsPrunedJESUp
+		process.p += process.BoostedAnalysisPlotsPrunedJESDown
 else: 
 	outputNAME = 'FullAnalysis_'
 	process.p = cms.Path( process.ResolvedAnalysisPlots

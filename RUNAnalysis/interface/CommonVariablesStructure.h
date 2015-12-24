@@ -22,8 +22,15 @@
 #include "FWCore/Framework/interface/GetterOfProducts.h"
 #include "FWCore/Framework/interface/ProcessMatch.h"
 
+// Jet Corrections
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
+
 using namespace edm;
 using namespace std;
+
+
 
 typedef struct Jet_struc {
 	TLorentzVector p4;
@@ -139,3 +146,45 @@ inline bool checkORListOfTriggerBits( Handle<vector<string>> triggerNames, Handl
 	
 	return ORTriggers;
 }
+
+inline double corrections( TLorentzVector rawJet, double jetArea, double Rho, int NPV, FactorizedJetCorrector* jetCorrector ){
+
+	jetCorrector->setJetPt ( rawJet.Pt() );
+	jetCorrector->setJetEta( rawJet.Eta() );
+	jetCorrector->setJetPhi( rawJet.Phi() );
+	jetCorrector->setJetE  ( rawJet.E() );
+	jetCorrector->setJetA  ( jetArea );
+	jetCorrector->setRho   ( Rho );
+	jetCorrector->setNPV   ( NPV );
+	double jecFactor= jetCorrector->getCorrection();
+
+	return jecFactor;
+}
+
+inline double uncertainty( TLorentzVector rawJet, JetCorrectionUncertainty* jetUnc, bool getUnc ){
+
+	jetUnc->setJetPt ( rawJet.Pt()  );
+	jetUnc->setJetEta( rawJet.Eta() );
+	double jetUncFactor = jetUnc->getUncertainty( getUnc );
+	return jetUncFactor;
+}
+
+inline double getJER( double jetEta, int JERType ){
+
+	double scaleNom = 1.0;
+	double scaleUnc = 1.0;
+	double eta = fabs(jetEta);
+	if(eta>=0.0 && eta<0.8) { scaleNom = 1.061; scaleUnc = 0.023; }
+	if(eta>=0.8 && eta<1.3) { scaleNom = 1.088; scaleUnc = 0.029; }
+	if(eta>=1.3 && eta<1.9) { scaleNom = 1.106; scaleUnc = 0.030; }
+	if(eta>=1.9 && eta<2.5) { scaleNom = 1.126; scaleUnc = 0.094; }
+	if(eta>=2.5 && eta<3.0) { scaleNom = 1.343; scaleUnc = 0.123; }
+	if(eta>=3.0 && eta<3.2) { scaleNom = 1.303; scaleUnc = 0.111; }
+	if(eta>=3.2 && eta<5.0) { scaleNom = 1.320; scaleUnc = 0.286; }
+
+	if ( JERType == 0 ) return scaleNom;
+	else if ( JERType == 1 ) return (scaleNom + scaleUnc);
+	else if ( JERType == -1 ) return (scaleNom - scaleUnc);
+	else return 1.;
+}
+

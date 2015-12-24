@@ -46,6 +46,8 @@ using namespace std;
 //
 // constants, enums and typedefs
 //
+boost::shared_ptr<FactorizedJetCorrector> jetJECAK8;
+boost::shared_ptr<FactorizedJetCorrector> massJECAK8;
 
 //
 // class declaration
@@ -80,9 +82,8 @@ class RUNBoostedAnalysis : public EDAnalyzer {
       bool mkTree;
       bool isData;
       string dataPUFile;
-      /*double cutAK4HTvalue;
-      double cutjetAK4Ptvalue;
-      double cutTrimmedMassvalue;*/
+      string jecVersion;
+      TString systematics;
       double scale;
       double cutHTvalue;
       double cutAsymvalue;
@@ -92,7 +93,13 @@ class RUNBoostedAnalysis : public EDAnalyzer {
       double cutTau21value;
       double cutBtagvalue;
       double cutDEtavalue;
+
       vector<string> triggerPass;
+      vector<JetCorrectorParameters> jetPar;
+      FactorizedJetCorrector * jetJECAK8;
+      vector<JetCorrectorParameters> massPar;
+      FactorizedJetCorrector * massJECAK8;
+      JetCorrectionUncertainty *jetCorrUnc;
 
       ULong64_t event = 0;
       int numJets = 0, numPV = 0;
@@ -134,10 +141,16 @@ class RUNBoostedAnalysis : public EDAnalyzer {
       EDGetTokenT<vector<vector<int>>> jetKeys_;
       EDGetTokenT<vector<float>> jetCSV_;
       EDGetTokenT<vector<float>> jetCSVV1_;
+      EDGetTokenT<vector<float>> jetArea_;
+      EDGetTokenT<vector<float>> jetGenPt_;
+      EDGetTokenT<vector<float>> jetGenEta_;
+      EDGetTokenT<vector<float>> jetGenPhi_;
+      EDGetTokenT<vector<float>> jetGenE_;
       EDGetTokenT<vector<float>> metPt_;
       EDGetTokenT<int> NPV_;
       EDGetTokenT<int> trueNInt_;
       EDGetTokenT<vector<int>> bunchCross_;
+      EDGetTokenT<vector<float>> rho_;
       EDGetTokenT<vector<int>> puNumInt_;
       EDGetTokenT<unsigned int> lumi_;
       EDGetTokenT<unsigned int> run_;
@@ -196,10 +209,16 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 	jetKeys_(consumes<vector<vector<int>>>(iConfig.getParameter<InputTag>("jetKeys"))),
 	jetCSV_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetCSV"))),
 	jetCSVV1_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetCSVV1"))),
+	jetArea_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetArea"))),
+	jetGenPt_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetGenPt"))),
+	jetGenEta_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetGenEta"))),
+	jetGenPhi_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetGenPhi"))),
+	jetGenE_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetGenE"))),
 	metPt_(consumes<vector<float>>(iConfig.getParameter<InputTag>("metPt"))),
 	NPV_(consumes<int>(iConfig.getParameter<InputTag>("NPV"))),
 	trueNInt_(consumes<int>(iConfig.getParameter<InputTag>("trueNInt"))),
 	bunchCross_(consumes<vector<int>>(iConfig.getParameter<InputTag>("bunchCross"))),
+	rho_(consumes<vector<float>>(iConfig.getParameter<InputTag>("rho"))),
 	puNumInt_(consumes<vector<int>>(iConfig.getParameter<InputTag>("puNumInt"))),
 	lumi_(consumes<unsigned int>(iConfig.getParameter<InputTag>("Lumi"))),
 	run_(consumes<unsigned int>(iConfig.getParameter<InputTag>("Run"))),
@@ -229,6 +248,8 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 	mkTree 		= iConfig.getParameter<bool>("mkTree");
 	isData 		= iConfig.getParameter<bool>("isData");
 	dataPUFile 	= iConfig.getParameter<string>("dataPUFile");
+	jecVersion 	= iConfig.getParameter<string>("jecVersion");
+	systematics 	= iConfig.getParameter<string>("systematics");
 	triggerPass 	= iConfig.getParameter<vector<string>>("triggerPass");
 	/*
 	cutAK4HTvalue = iConfig.getParameter<double>("cutAK4HTvalue");
@@ -244,6 +265,41 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 	cutBtagvalue 	= iConfig.getParameter<double>("cutBtagvalue");
 	cutDEtavalue 	= iConfig.getParameter<double>("cutDEtavalue");
 
+	/////// JECs
+	string tmpPrefix = "supportFiles/" + jecVersion;
+	string prefix;
+	if (isData) prefix = tmpPrefix + "_DATA_";
+	else prefix = tmpPrefix + "_MC_";
+
+	// all jet
+	vector<string> jecAK8PayloadNames_;
+	jecAK8PayloadNames_.push_back(prefix + "L1FastJet_AK8PFchs.txt");
+	jecAK8PayloadNames_.push_back(prefix + "L2Relative_AK8PFchs.txt");
+	jecAK8PayloadNames_.push_back(prefix + "L3Absolute_AK8PFchs.txt");
+	if (isData) jecAK8PayloadNames_.push_back(prefix + "L2L3Residual_AK8PFchs.txt");
+
+	for ( vector<string>::const_iterator payloadBegin = jecAK8PayloadNames_.begin(), payloadEnd = jecAK8PayloadNames_.end(), ipayload = payloadBegin; ipayload != payloadEnd; ++ipayload ) {
+		JetCorrectorParameters pars(*ipayload);
+		jetPar.push_back(pars);
+	}
+	jetJECAK8 = new FactorizedJetCorrector(jetPar);
+
+	// jet mass
+	vector<string> massjecAK8PayloadNames_;
+	massjecAK8PayloadNames_.push_back(prefix + "L2Relative_AK8PFchs.txt");
+	massjecAK8PayloadNames_.push_back(prefix + "L3Absolute_AK8PFchs.txt");
+	if (isData) massjecAK8PayloadNames_.push_back(prefix + "L2L3Residual_AK8PFchs.txt");
+
+	for ( vector<string>::const_iterator payloadBegin = massjecAK8PayloadNames_.begin(), payloadEnd = massjecAK8PayloadNames_.end(), ipayload = payloadBegin; ipayload != payloadEnd; ++ipayload ) {
+		JetCorrectorParameters massPars(*ipayload);
+		massPar.push_back(massPars);
+	}
+	massJECAK8 = new FactorizedJetCorrector(massPar);
+
+	// jec uncertainty
+	JetCorrectorParameters jecUncParam( prefix + "Uncertainty_AK8PFchs.txt");
+	jetCorrUnc  = new JetCorrectionUncertainty( jecUncParam);
+	////////////////////////////////////////////////////
 }
 
 
@@ -327,6 +383,21 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	Handle<vector<float> > jetCSVV1;
 	iEvent.getByToken(jetCSVV1_, jetCSVV1);
 
+	Handle<vector<float> > jetArea;
+	iEvent.getByToken(jetArea_, jetArea);
+
+	Handle<vector<float> > jetGenPt;
+	iEvent.getByToken(jetGenPt_, jetGenPt);
+
+	Handle<vector<float> > jetGenEta;
+	iEvent.getByToken(jetGenEta_, jetGenEta);
+
+	Handle<vector<float> > jetGenPhi;
+	iEvent.getByToken(jetGenPhi_, jetGenPhi);
+
+	Handle<vector<float> > jetGenE;
+	iEvent.getByToken(jetGenE_, jetGenE);
+
 	Handle<vector<float> > metPt;
 	iEvent.getByToken(metPt_, metPt);
 
@@ -338,6 +409,9 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 
 	Handle<vector<int>> bunchCross;
 	iEvent.getByToken(bunchCross_, bunchCross);
+
+	Handle<vector<float>> rho;
+	iEvent.getByToken(rho_, rho);
 
 	Handle<vector<int>> puNumInt;
 	iEvent.getByToken(puNumInt_, puNumInt);
@@ -404,12 +478,13 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 
 	bool ORTriggers = checkORListOfTriggerBits( triggerName, triggerBit, triggerPass );
 	
-	// PU Reweight
+	////////// PU Reweight
 	if ( isData ) puWeight = 1;
 	else puWeight = PUWeight_.getPUWeight( *trueNInt, *bunchCross );
 	histos1D_[ "PUWeight" ]->Fill( puWeight );
 	lumiWeight = scale;
 	double totalWeight = puWeight * lumiWeight;
+	////////////////////////////////////////////////////
 	
 	///////// AK4 jets to model PFHT trigger
 	AK4HT = 0;
@@ -425,7 +500,6 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	cutmap["Processed"] += totalWeight;
 	vector< myJet > JETS;
 	vector< float > tmpTriggerMass;
-	double rawHT = 0;
 	bool cutHT = 0;
 	//bool bTagCSV = 0;
 	int numberJets = 0;
@@ -435,21 +509,48 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 
 		if( TMath::Abs( (*jetEta)[i] ) > 2.4 ) continue;
 
-		rawHT += (*jetPt)[i];
-		histos1D_[ "rawJetPt" ]->Fill( (*jetPt)[i], totalWeight );
-
 		bool idL = jetID( (*jetEta)[i], (*jetE)[i], (*jecFactor)[i], (*neutralHadronEnergy)[i], (*neutralEmEnergy)[i], (*chargedHadronEnergy)[i], (*muonEnergy)[i], (*chargedEmEnergy)[i], (*chargedHadronMultiplicity)[i], (*neutralHadronMultiplicity)[i], (*chargedMultiplicity)[i] ); 
 
-		if( (*jetPt)[i] > 150 && idL ) { 
-			//LogWarning("jetInfo") << i << " " << (*jetPt)[i] << " " << (*jetEta)[i] << " " << (*jetPhi)[i] << " " << (*jetMass)[i];
+		if( (*jetPt)[i] < 50 ) continue; // just to reduce time
 
-			HT += (*jetPt)[i];
+		TLorentzVector tmpJet, rawJet, corrJet, genJet, smearJet;
+		tmpJet.SetPtEtaPhiE( (*jetPt)[i], (*jetEta)[i], (*jetPhi)[i], (*jetE)[i] );
+		rawJet = tmpJet* (*jecFactor)[i] ;
+
+		double JEC = corrections( rawJet, (*jetArea)[i], (*rho)[i] ,*NPV, jetJECAK8); 
+		double sysJEC = 0;
+		if ( !isData ) {
+			if ( systematics.Contains("JESUp") ){
+				double JESUp = uncertainty( rawJet, jetCorrUnc, true );
+				sysJEC = ( + JESUp );
+			} else if  ( systematics.Contains("JESDown") ){
+				double JESDown = uncertainty( rawJet, jetCorrUnc, false );
+				sysJEC = ( - JESDown );
+			}
+		} 
+		corrJet = rawJet* ( JEC + sysJEC  );
+
+		/*
+			genJet.SetPtEtaPhiE( (*jetGenPt)[i], (*jetGenEta)[i], (*jetGenPhi)[i], (*jetGenE)[i]);
+			smearjet = 
+			} else if  ( systematics.Contains("JER") ){
+				double smearFactor = getJER( (*jetEta)[i], 0 );
+				double smearPt = ( (*jetPt)[i] - (*jetGenPt)[i]) * smearFactor;
+				LogWarning("test") << smearFactor << " " << smearPt ;
+				*/
+
+		//LogWarning("jet") << i << " " << (*jetPt)[i] << " " << (*jetEta)[i] << " " << (*jetPhi)[i] << " " << (*jetMass)[i] << " " <<(*jetE)[i] << " " << (*jecFactor)[i];
+		//LogWarning("rawjet") << i << " " << rawJet.Pt() << " " << rawJet.Eta() << " " << rawJet.Phi() << " " << rawJet.M() << " " << rawJet.E();
+		//LogWarning("corrjet") << i << " " << corrJet.Pt() << " " << corrJet.Eta() << " " << corrJet.Phi() << " " << corrJet.M() << " " << corrJet.E() << " " << JEC;
+
+		if( corrJet.Pt() > 150 && idL ) { 
+
+			HT += corrJet.Pt();
 			tmpTriggerMass.push_back( (*jetTrimmedMass)[i] );
-
 			++numberJets;
 
-			TLorentzVector tmpJet;
-			tmpJet.SetPtEtaPhiE( (*jetPt)[i], (*jetEta)[i], (*jetPhi)[i], (*jetE)[i] );
+			double massJEC = corrections( rawJet, (*jetArea)[i], (*rho)[i] ,*NPV, massJECAK8); 
+			double corrMass = (*jetMass)[i] * ( massJEC + sysJEC  );
 
 			/// Vector of zeros
 			TLorentzVector tmpSubjet0, tmpSubjet1, tmpZeros;
@@ -470,10 +571,16 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			//if ( (*jetCSV)[i] > 0.679 ) bTagCSV = 1; 	// CSVM
 			//if ( (*jetCSVV1)[i] > 0.405 ) bTagCSV = 1; 	// CSVV1L
 			//if ( (*jetCSVV1)[i] > 0.783 ) bTagCSV = 1; 	// CSVV1M
-			histos1D_[ "jetPt" ]->Fill( (*jetPt)[i], totalWeight );
-			histos1D_[ "jetEta" ]->Fill( (*jetEta)[i], totalWeight );
-			histos1D_[ "jetMass" ]->Fill( (*jetMass)[i], totalWeight );
-			double jec = 1. / ( (*jecFactor)[i] * (*jetE)[i] );
+			histos1D_[ "oldJetPt" ]->Fill( (*jetPt)[i], totalWeight );
+			histos1D_[ "jetPt" ]->Fill( corrJet.Pt(), totalWeight );
+			histos1D_[ "rawJetPt" ]->Fill( rawJet.Pt(), totalWeight );
+			histos1D_[ "oldJetEta" ]->Fill( (*jetEta)[i], totalWeight );
+			histos1D_[ "jetEta" ]->Fill( corrJet.Eta(), totalWeight );
+			histos1D_[ "rawJetEta" ]->Fill( rawJet.Eta(), totalWeight );
+			histos1D_[ "oldJetMass" ]->Fill( (*jetMass)[i], totalWeight );
+			histos1D_[ "jetMass" ]->Fill( corrMass, totalWeight );
+			histos1D_[ "rawJetMass" ]->Fill( rawJet.M(), totalWeight );
+			double jec = 1. / ( rawJet.E() ); //(*jecFactor)[i] * (*jetE)[i] );
 			histos1D_[ "neutralHadronEnergy" ]->Fill( (*neutralHadronEnergy)[i] * jec, totalWeight );
 			histos1D_[ "neutralEmEnergy" ]->Fill( (*neutralEmEnergy)[i] * jec, totalWeight );
 			histos1D_[ "chargedHadronEnergy" ]->Fill( (*chargedHadronEnergy)[i] * jec, totalWeight );
@@ -485,7 +592,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			tmpJET.p4 = tmpJet;
 			tmpJET.subjet0 = tmpSubjet0;
 			tmpJET.subjet1 = tmpSubjet1;
-			tmpJET.mass = (*jetMass)[i];
+			tmpJET.mass = corrMass;
 			tmpJET.tau1 = (*jetTau1)[i];
 			tmpJET.tau2 = (*jetTau2)[i];
 			tmpJET.tau3 = (*jetTau3)[i];
@@ -510,7 +617,6 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	histos1D_[ "NPV_NOPUWeight" ]->Fill( numPV );
 	histos1D_[ "NPV" ]->Fill( numPV, totalWeight );
 	if ( HT > 0 ) histos1D_[ "HT" ]->Fill( HT, totalWeight );
-	if ( rawHT > 0 ) histos1D_[ "rawHT" ]->Fill( rawHT, totalWeight );
 	if ( HT > cutHTvalue ) cutHT = 1;
 
 	sort(tmpTriggerMass.begin(), tmpTriggerMass.end(), [](const float p1, const float p2) { return p1 > p2; }); 
@@ -1283,19 +1389,26 @@ void RUNBoostedAnalysis::beginJob() {
 	// Calculate PUWeight
 	if ( !isData ) PUWeight_.generateWeights( dataPUFile );
 
-	histos1D_[ "rawJetPt" ] = fs_->make< TH1D >( "rawJetPt", "rawJetPt", 100, 0., 1000. );
-	histos1D_[ "rawJetPt" ]->Sumw2();
-	histos1D_[ "rawHT" ] = fs_->make< TH1D >( "rawHT", "rawHT", 500, 0., 5000. );
-	histos1D_[ "rawHT" ]->Sumw2();
-
+	histos1D_[ "oldJetPt" ] = fs_->make< TH1D >( "oldJetPt", "oldJetPt", 100, 0., 1000. );
+	histos1D_[ "oldJetPt" ]->Sumw2();
 	histos1D_[ "jetPt" ] = fs_->make< TH1D >( "jetPt", "jetPt", 100, 0., 1000. );
 	histos1D_[ "jetPt" ]->Sumw2();
+	histos1D_[ "rawJetPt" ] = fs_->make< TH1D >( "rawJetPt", "rawJetPt", 100, 0., 1000. );
+	histos1D_[ "rawJetPt" ]->Sumw2();
+	histos1D_[ "oldJetEta" ] = fs_->make< TH1D >( "oldJetEta", "oldJetEta", 100, -5., 5. );
+	histos1D_[ "oldJetEta" ]->Sumw2();
 	histos1D_[ "jetEta" ] = fs_->make< TH1D >( "jetEta", "jetEta", 100, -5., 5. );
 	histos1D_[ "jetEta" ]->Sumw2();
-	histos1D_[ "jetNum" ] = fs_->make< TH1D >( "jetNum", "jetNum", 10, 0., 10. );
-	histos1D_[ "jetNum" ]->Sumw2();
+	histos1D_[ "rawJetEta" ] = fs_->make< TH1D >( "rawJetEta", "rawJetEta", 100, -5., 5. );
+	histos1D_[ "rawJetEta" ]->Sumw2();
+	histos1D_[ "oldJetMass" ] = fs_->make< TH1D >( "oldJetMass", "oldJetMass", 60, 0., 600. );
+	histos1D_[ "oldJetMass" ]->Sumw2();
 	histos1D_[ "jetMass" ] = fs_->make< TH1D >( "jetMass", "jetMass", 60, 0., 600. );
 	histos1D_[ "jetMass" ]->Sumw2();
+	histos1D_[ "rawJetMass" ] = fs_->make< TH1D >( "rawJetMass", "rawJetMass", 60, 0., 600. );
+	histos1D_[ "rawJetMass" ]->Sumw2();
+	histos1D_[ "jetNum" ] = fs_->make< TH1D >( "jetNum", "jetNum", 10, 0., 10. );
+	histos1D_[ "jetNum" ]->Sumw2();
 	histos1D_[ "jetTrimmedMass" ] = fs_->make< TH1D >( "jetTrimmedMass", "jetTrimmedMass", 60, 0., 600. );
 	histos1D_[ "jetTrimmedMass" ]->Sumw2();
 	histos1D_[ "HT" ] = fs_->make< TH1D >( "HT", "HT", 500, 0., 5000. );
@@ -2409,7 +2522,9 @@ void RUNBoostedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descr
 	desc.add<bool>("bjSample", false);
 	desc.add<bool>("mkTree", false);
 	desc.add<bool>("isData", false);
-	desc.add<string>("dataPUFile", "../data/PileupData2015D_JSON_10-23-2015.root");
+	desc.add<string>("dataPUFile", "supportFiles/PileupData2015D_JSON_10-23-2015.root");
+	desc.add<string>("jecVersion", "Summer15_25nsV6");
+	desc.add<string>("systematics", "None");
 	vector<string> HLTPass;
 	HLTPass.push_back("HLT_AK8PFHT700_TrimR0p1PT0p03Mass50");
 	desc.add<vector<string>>("triggerPass",	HLTPass);
@@ -2418,6 +2533,7 @@ void RUNBoostedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descr
 	desc.add<InputTag>("Run", 	InputTag("eventInfo:evtInfoRunNumber"));
 	desc.add<InputTag>("Event", 	InputTag("eventInfo:evtInfoEventNumber"));
 	desc.add<InputTag>("bunchCross", 	InputTag("eventUserData:puBX"));
+	desc.add<InputTag>("rho", 	InputTag("vertexInfo:rho"));
 	desc.add<InputTag>("puNumInt", 	InputTag("eventUserData:puNInt"));
 	desc.add<InputTag>("trueNInt", 	InputTag("eventUserData:puNtrueInt"));
 	desc.add<InputTag>("NPV", 	InputTag("eventUserData:npv"));
@@ -2442,6 +2558,11 @@ void RUNBoostedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descr
 	desc.add<InputTag>("jetKeys", 	InputTag("jetKeysAK8"));
 	desc.add<InputTag>("jetCSV", 	InputTag("jetsAK8:jetAK8CSV"));
 	desc.add<InputTag>("jetCSVV1", 	InputTag("jetsAK8:jetAK8CSVV1"));
+	desc.add<InputTag>("jetArea", 	InputTag("jetsAK8:jetAK8jetArea"));
+	desc.add<InputTag>("jetGenPt", 	InputTag("jetsAK8:jetAK8GenJetPt"));
+	desc.add<InputTag>("jetGenEta", 	InputTag("jetsAK8:jetAK8GenJetEta"));
+	desc.add<InputTag>("jetGenPhi", 	InputTag("jetsAK8:jetAK8GenJetPhi"));
+	desc.add<InputTag>("jetGenE", 	InputTag("jetsAK8:jetAK8GenJetE"));
 	desc.add<InputTag>("metPt", 	InputTag("met:metPt"));
 	// JetID
 	desc.add<InputTag>("jecFactor", 		InputTag("jetsAK8:jetAK8jecFactor0"));
