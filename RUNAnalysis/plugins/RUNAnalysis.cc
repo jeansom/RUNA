@@ -83,6 +83,8 @@ class RUNAnalysis : public EDAnalyzer {
       bool mkTree;
       bool isData;
       string dataPUFile;
+      string jecVersion;
+      TString systematics;
       double scale;
       double cutMassAsym;
       double cutDelta;
@@ -90,7 +92,11 @@ class RUNAnalysis : public EDAnalyzer {
       double cutHT;
       double cutDeltaR;
       double cutCosThetaStar;
+
       vector<string> triggerPass;
+      vector<JetCorrectorParameters> jetPar;
+      FactorizedJetCorrector * jetJEC;
+      JetCorrectionUncertainty *jetCorrUnc;
 
       vector<float> *jetsPt = new std::vector<float>();
       vector<float> *jetsEta = new std::vector<float>();
@@ -113,10 +119,12 @@ class RUNAnalysis : public EDAnalyzer {
       EDGetTokenT<vector<float>> jetMass_;
       EDGetTokenT<vector<float>> jetCSV_;
       EDGetTokenT<vector<float>> jetCSVV1_;
+      EDGetTokenT<vector<float>> jetArea_;
       EDGetTokenT<int> NPV_;
       EDGetTokenT<vector<float>> metPt_;
       EDGetTokenT<int> trueNInt_;
       EDGetTokenT<vector<int>> bunchCross_;
+      EDGetTokenT<vector<float>> rho_;
       EDGetTokenT<vector<int>> puNumInt_;
       EDGetTokenT<unsigned int> lumi_;
       EDGetTokenT<unsigned int> run_;
@@ -158,10 +166,12 @@ RUNAnalysis::RUNAnalysis(const ParameterSet& iConfig):
 	jetMass_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetMass"))),
 	jetCSV_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetCSV"))),
 	jetCSVV1_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetCSVV1"))),
+	jetArea_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetArea"))),
 	NPV_(consumes<int>(iConfig.getParameter<InputTag>("NPV"))),
 	metPt_(consumes<vector<float>>(iConfig.getParameter<InputTag>("metPt"))),
 	trueNInt_(consumes<int>(iConfig.getParameter<InputTag>("trueNInt"))),
 	bunchCross_(consumes<vector<int>>(iConfig.getParameter<InputTag>("bunchCross"))),
+	rho_(consumes<vector<float>>(iConfig.getParameter<InputTag>("rho"))),
 	puNumInt_(consumes<vector<int>>(iConfig.getParameter<InputTag>("puNumInt"))),
 	lumi_(consumes<unsigned int>(iConfig.getParameter<InputTag>("Lumi"))),
 	run_(consumes<unsigned int>(iConfig.getParameter<InputTag>("Run"))),
@@ -192,6 +202,31 @@ RUNAnalysis::RUNAnalysis(const ParameterSet& iConfig):
 	triggerPass 	= iConfig.getParameter<vector<string>>("triggerPass");
 	isData 		= iConfig.getParameter<bool>("isData");
 	dataPUFile 	= iConfig.getParameter<string>("dataPUFile");
+	jecVersion 	= iConfig.getParameter<string>("jecVersion");
+	systematics 	= iConfig.getParameter<string>("systematics");
+
+	/////// JECs
+	string tmpPrefix = "supportFiles/" + jecVersion;
+	string prefix;
+	if (isData) prefix = tmpPrefix + "_DATA_";
+	else prefix = tmpPrefix + "_MC_";
+
+	// all jet
+	vector<string> jecPayloadNames_;
+	jecPayloadNames_.push_back(prefix + "L1FastJet_AK4PFchs.txt");
+	jecPayloadNames_.push_back(prefix + "L2Relative_AK4PFchs.txt");
+	jecPayloadNames_.push_back(prefix + "L3Absolute_AK4PFchs.txt");
+	if (isData) jecPayloadNames_.push_back(prefix + "L2L3Residual_AK4PFchs.txt");
+
+	for ( vector<string>::const_iterator payloadBegin = jecPayloadNames_.begin(), payloadEnd = jecPayloadNames_.end(), ipayload = payloadBegin; ipayload != payloadEnd; ++ipayload ) {
+		JetCorrectorParameters pars(*ipayload);
+		jetPar.push_back(pars);
+	}
+	jetJEC = new FactorizedJetCorrector(jetPar);
+
+	// jec uncertainty
+	JetCorrectorParameters jecUncParam( prefix + "Uncertainty_AK8PFchs.txt");
+	jetCorrUnc  = new JetCorrectionUncertainty( jecUncParam);
 }
 
 
@@ -240,6 +275,9 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 	Handle<vector<float> > jetCSVV1;
 	iEvent.getByToken(jetCSVV1_, jetCSVV1);
 
+	Handle<vector<float> > jetArea;
+	iEvent.getByToken(jetArea_, jetArea);
+
 	Handle<int> NPV;
 	iEvent.getByToken(NPV_, NPV);
 
@@ -248,6 +286,9 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 	Handle<vector<int>> bunchCross;
 	iEvent.getByToken(bunchCross_, bunchCross);
+
+	Handle<vector<float>> rho;
+	iEvent.getByToken(rho_, rho);
 
 	Handle<vector<int>> puNumInt;
 	iEvent.getByToken(puNumInt_, puNumInt);
@@ -326,22 +367,35 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 		bool idL = jetID( (*jetEta)[i], (*jetE)[i], (*jecFactor)[i], (*neutralHadronEnergy)[i], (*neutralEmEnergy)[i], (*chargedHadronEnergy)[i], (*muonEnergy)[i], (*chargedEmEnergy)[i], (*chargedHadronMultiplicity)[i], (*neutralHadronMultiplicity)[i], (*chargedMultiplicity)[i] ); 
 
-		if( ( (*jetPt)[i] > 40. ) && idL ) { 
+		TLorentzVector tmpJet, rawJet, corrJet, genJet, smearJet;
+		tmpJet.SetPtEtaPhiE( (*jetPt)[i], (*jetEta)[i], (*jetPhi)[i], (*jetE)[i] );
+		rawJet = tmpJet* (*jecFactor)[i] ;
 
-			HT += (*jetPt)[i];
+		double JEC = corrections( rawJet, (*jetArea)[i], (*rho)[i] ,*NPV, jetJEC); 
+		double sysJEC = 0;
+		if ( !isData ) {
+			if ( systematics.Contains("JESUp") ){
+				double JESUp = uncertainty( rawJet, jetCorrUnc, true );
+				sysJEC = ( + JESUp );
+			} else if  ( systematics.Contains("JESDown") ){
+				double JESDown = uncertainty( rawJet, jetCorrUnc, false );
+				sysJEC = ( - JESDown );
+			}
+		} 
+		corrJet = rawJet* ( JEC + sysJEC  );
+
+		if( corrJet.Pt() > 80 && idL ) { 
+
+			HT += corrJet.Pt();
 			++numberJets;
-
-			TLorentzVector tmpJet;
-			tmpJet.SetPtEtaPhiE( (*jetPt)[i], (*jetEta)[i], (*jetPhi)[i], (*jetE)[i] );
-
 			//if ( (*jetCSV)[i] > 0.244 ) bTagCSV = 1; 	// CSVL
 			//if ( (*jetCSV)[i] > 0.679 ) bTagCSV = 1; 	// CSVM
 			//if ( (*jetCSVV1)[i] > 0.405 ) bTagCSV = 1; 	// CSVV1L
 			//if ( (*jetCSVV1)[i] > 0.783 ) bTagCSV = 1; 	// CSVV1M
 			//
-			histos1D_[ "jetPt" ]->Fill( (*jetPt)[i] , puWeight );
-			histos1D_[ "jetEta" ]->Fill( (*jetEta)[i] , puWeight );
-			double jec = 1. / ( (*jecFactor)[i] * (*jetE)[i] );
+			histos1D_[ "jetPt" ]->Fill( corrJet.Pt() , puWeight );
+			histos1D_[ "jetEta" ]->Fill( corrJet.Eta() , puWeight );
+			double jec = 1. / ( rawJet.E() ); //(*jecFactor)[i] * (*jetE)[i] );
 			histos1D_[ "neutralHadronEnergy" ]->Fill( (*neutralHadronEnergy)[i] * jec, puWeight );
 			histos1D_[ "neutralEmEnergy" ]->Fill( (*neutralEmEnergy)[i] * jec, puWeight );
 			histos1D_[ "chargedHadronEnergy" ]->Fill( (*chargedHadronEnergy)[i] * jec, puWeight );
@@ -350,7 +404,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 			histos1D_[ "chargedMultiplicity" ]->Fill( (*chargedMultiplicity)[i] * jec, puWeight );
 
 			myJet tmpJET;
-			tmpJET.p4 = tmpJet;
+			tmpJET.p4 = corrJet;
 			tmpJET.btagCSV = (*jetCSV)[i];
 			tmpJET.nhf = (*neutralHadronEnergy)[i] * jec;
 			tmpJET.nEMf = (*neutralEmEnergy)[i] * jec;
@@ -895,7 +949,9 @@ void RUNAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descriptions
 	desc.add<bool>("bjSample", false);
 	desc.add<bool>("mkTree", false);
 	desc.add<bool>("isData", false);
-	desc.add<string>("dataPUFile", "../data/PileupData2015D_JSON_10-23-2015.root");
+	desc.add<string>("dataPUFile", "supportFiles/PileupData2015D_JSON_10-23-2015.root");
+	desc.add<string>("jecVersion", "Summer15_25nsV6");
+	desc.add<string>("systematics", "None");
 	vector<string> HLTPass;
 	HLTPass.push_back("HLT_PFHT800");
 	desc.add<vector<string>>("triggerPass",	HLTPass);
@@ -904,6 +960,7 @@ void RUNAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descriptions
 	desc.add<InputTag>("Run", 	InputTag("eventInfo:evtInfoRunNumber"));
 	desc.add<InputTag>("Event", 	InputTag("eventInfo:evtInfoEventNumber"));
 	desc.add<InputTag>("bunchCross", 	InputTag("eventUserData:puBX"));
+	desc.add<InputTag>("rho", 	InputTag("vertexInfo:rho"));
 	desc.add<InputTag>("puNumInt", 	InputTag("eventUserData:puNInt"));
 	desc.add<InputTag>("trueNInt", 	InputTag("eventUserData:puNtrueInt"));
 	desc.add<InputTag>("jetPt", 	InputTag("jetsAK4:jetAK4Pt"));
@@ -914,6 +971,7 @@ void RUNAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descriptions
 	desc.add<InputTag>("jetMass", 	InputTag("jetsAK4:jetAK4Mass"));
 	desc.add<InputTag>("jetCSV", 	InputTag("jetsAK4:jetAK4CSV"));
 	desc.add<InputTag>("jetCSVV1", 	InputTag("jetsAK4:jetAK4CSVV1"));
+	desc.add<InputTag>("jetArea", 	InputTag("jetsAK8:jetAK8jetArea"));
 	desc.add<InputTag>("NPV", 	InputTag("eventUserData:npv"));
 	desc.add<InputTag>("metPt", 	InputTag("met:metPt"));
 	// JetID

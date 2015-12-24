@@ -195,6 +195,8 @@ process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 		isData			= cms.bool( isData ),
 )
 process.RUNATree = process.ResolvedAnalysisPlots.clone( mkTree = cms.bool( True ) )
+process.ResolvedAnalysisPlotsJESUp = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JESUp' ) )
+process.ResolvedAnalysisPlotsJESDown = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JESDown' ) )
 
 
 process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
@@ -260,6 +262,9 @@ if 'Resolved' in options.version:
 	process.p = cms.Path( process.ResolvedAnalysisPlots
 		* process.RUNATree
 		)
+	if options.systematics:
+		process.p += process.ResolvedAnalysisPlotsJESUp
+		process.p += process.ResolvedAnalysisPlotsJESDown
 elif 'Boosted' in options.version:
 	outputNAME = 'BoostedAnalysis_'
 	process.p = cms.Path( #* process.BoostedAnalysisPlots
@@ -287,6 +292,11 @@ else:
 		#* process.RUNATreeSoftDrop
 		* process.RUNATreePruned
 		)
+	if options.systematics:
+		process.p += process.BoostedAnalysisPlotsPrunedJESUp
+		process.p += process.BoostedAnalysisPlotsPrunedJESDown
+		process.p += process.ResolvedAnalysisPlotsJESUp
+		process.p += process.ResolvedAnalysisPlotsJESDown
 
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUN'+outputNAME+NAME+'.root' ) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

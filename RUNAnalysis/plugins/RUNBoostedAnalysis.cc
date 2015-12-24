@@ -46,8 +46,6 @@ using namespace std;
 //
 // constants, enums and typedefs
 //
-boost::shared_ptr<FactorizedJetCorrector> jetJECAK8;
-boost::shared_ptr<FactorizedJetCorrector> massJECAK8;
 
 //
 // class declaration
