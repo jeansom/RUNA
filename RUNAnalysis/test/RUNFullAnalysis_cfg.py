@@ -32,15 +32,15 @@ options.register('systematics',
 		VarParsing.varType.bool,
 		"Run systematics, default false."
 		)
+options.register('jecVersion', 
+		'supportFiles/Summer15_25nsV6',
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.string,
+		"Version of the analysis to run. (Full, Resolved, Boosted)"
+		)
 
 
 ### Resolved Analysis Options
-options.register('HT', 
-		800.0,
-		VarParsing.multiplicity.singleton,
-		VarParsing.varType.float,
-		"HT cut"
-		)
 options.register('MassRes', 
 		0.20,
 		VarParsing.multiplicity.singleton,
@@ -73,13 +73,6 @@ options.register('ResolvedCosThetaStar',
 		)
 
 ### Boosted Analysis Options
-options.register('boostedHT', 
-		900.0,
-		VarParsing.multiplicity.singleton,
-		VarParsing.varType.float,
-		"JetPt cut"
-		)
-
 options.register('Asym', 
 		0.1,
 		VarParsing.multiplicity.singleton,
@@ -87,7 +80,7 @@ options.register('Asym',
 		"Asymmetry cut"
 		)
 options.register('CosTheta', 
-		0.3,
+		0.2,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
 		"CosThetaStar cut"
@@ -105,7 +98,7 @@ options.register('Tau31',
 		"Tau31 cut"
 		)
 options.register('Tau21', 
-		0.5,
+		0.6,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.float,
 		"Tau21 cut"
@@ -143,7 +136,7 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 		fileNames = cms.untracked.vstring(
-			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_1.root',
+			'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_1.root',
 			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_10.root',
 			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_100.root',
 			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_101.root',
@@ -153,16 +146,16 @@ else:
 			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_105.root',
 			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_106.root',
 			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_107.root'
-			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_1.root',
-			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_10.root',
-			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_100.root',
-			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_101.root',
-			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_102.root',
-			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_103.root',
-			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_104.root',
-			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_105.root',
-			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_106.root',
-			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_107.root'
+			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_1.root',
+			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_10.root',
+			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_100.root',
+			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_101.root',
+			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_102.root',
+			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_103.root',
+			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_104.root',
+			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_105.root',
+			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_106.root',
+			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_107.root'
 	    )
 	)
 
@@ -175,6 +168,7 @@ if 'Run2015' in NAME:
 	isData=True
 	SF = 1 
 	HTtrigger = 'HLT_PFHT800'
+	options.systematics = False
 else:
 	isData=False
 	SF = scaleFactor(NAME) 
@@ -182,7 +176,6 @@ else:
 
 
 process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
-		cutHT	 		= cms.double( options.HT ),
 		cutMassAsym 		= cms.double( options.MassRes ),
 		cutDelta 		= cms.double( options.Delta ),
 		cutDeltaR 		= cms.double( options.DeltaR ),
@@ -192,6 +185,7 @@ process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 		scale 			= cms.double( SF ),
 		bjSample		= cms.bool( bjsample ),
 		dataPUFile		= cms.string( options.namePUFile  ),
+		jecVersion		= cms.string( options.jecVersion ),
 		isData			= cms.bool( isData ),
 )
 process.RUNATree = process.ResolvedAnalysisPlots.clone( mkTree = cms.bool( True ) )
@@ -200,7 +194,6 @@ process.ResolvedAnalysisPlotsJESDown = process.ResolvedAnalysisPlots.clone( syst
 
 
 process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
-		cutHTvalue  		= cms.double( options.boostedHT ),
 		cutAsymvalue 		= cms.double( options.Asym ),
 		cutCosThetavalue 	= cms.double( options.CosTheta ),
 		cutSubjetPtRatiovalue 	= cms.double( options.SubPt ),
@@ -212,6 +205,7 @@ process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		scale 			= cms.double( SF ),
 		bjSample		= cms.bool( bjsample ),
 		dataPUFile		= cms.string( options.namePUFile  ),
+		jecVersion		= cms.string( options.jecVersion ),
 		isData			= cms.bool( isData ),
 )
 

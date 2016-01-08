@@ -8,13 +8,13 @@ config.JobType.pluginName = 'PrivateMC'
 config.JobType.generator = 'lhe'
 config.JobType.psetName = 'test'
 
-config.Data.primaryDataset = 'NAME'
+config.Data.outputPrimaryDatasett = 'NAME'
 config.Data.splitting = 'EventBased'
 config.Data.unitsPerJob = 100
 NJOBS = 1000
 config.Data.totalUnits = config.Data.unitsPerJob * NJOBS
 config.Data.publication = True
-config.Data.publishDataName = 'GENSIM_RunIISpring15DR74'
+config.Data.outputDatasetTag = 'GENSIM_RunIISpring15DR74'
 config.Site.storageSite = 'T3_US_FNALLPC'
 
 ##### For hexfarm... but it does not work yet

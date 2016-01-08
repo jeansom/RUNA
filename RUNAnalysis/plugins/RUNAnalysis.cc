@@ -89,7 +89,6 @@ class RUNAnalysis : public EDAnalyzer {
       double cutMassAsym;
       double cutDelta;
       double cutDEta;
-      double cutHT;
       double cutDeltaR;
       double cutCosThetaStar;
 
@@ -196,7 +195,6 @@ RUNAnalysis::RUNAnalysis(const ParameterSet& iConfig):
 	cutMassAsym      = iConfig.getParameter<double>     ("cutMassAsym");
 	cutDelta        = iConfig.getParameter<double>     ("cutDelta");
 	cutDEta      = iConfig.getParameter<double>     ("cutDEta");
-	cutHT 		= iConfig.getParameter<double>("cutHT");
 	cutDeltaR 		= iConfig.getParameter<double>("cutDeltaR");
 	cutCosThetaStar 		= iConfig.getParameter<double>("cutCosThetaStar");
 	triggerPass 	= iConfig.getParameter<vector<string>>("triggerPass");
@@ -206,7 +204,7 @@ RUNAnalysis::RUNAnalysis(const ParameterSet& iConfig):
 	systematics 	= iConfig.getParameter<string>("systematics");
 
 	/////// JECs
-	string tmpPrefix = "supportFiles/" + jecVersion;
+	string tmpPrefix = jecVersion;
 	string prefix;
 	if (isData) prefix = tmpPrefix + "_DATA_";
 	else prefix = tmpPrefix + "_MC_";
@@ -344,7 +342,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 	// PU Reweight
 	if ( isData ) puWeight = 1;
 	else puWeight = PUWeight_.getPUWeight( *trueNInt, *bunchCross );
-	histos1D_[ "PUWeight" ]->Fill( puWeight );
+	if ( !mkTree ) histos1D_[ "PUWeight" ]->Fill( puWeight );
 	lumiWeight = scale;
 	double totalWeight = puWeight * lumiWeight;
 	
@@ -363,7 +361,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 		if( TMath::Abs( (*jetEta)[i] ) > 2.4 ) continue;
 
 		rawHT += (*jetPt)[i];
-		histos1D_[ "rawJetPt" ]->Fill( (*jetPt)[i] , puWeight );
+		if ( !mkTree ) histos1D_[ "rawJetPt" ]->Fill( (*jetPt)[i] , puWeight );
 
 		bool idL = jetID( (*jetEta)[i], (*jetE)[i], (*jecFactor)[i], (*neutralHadronEnergy)[i], (*neutralEmEnergy)[i], (*chargedHadronEnergy)[i], (*muonEnergy)[i], (*chargedEmEnergy)[i], (*chargedHadronMultiplicity)[i], (*neutralHadronMultiplicity)[i], (*chargedMultiplicity)[i] ); 
 
@@ -392,16 +390,17 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 			//if ( (*jetCSV)[i] > 0.679 ) bTagCSV = 1; 	// CSVM
 			//if ( (*jetCSVV1)[i] > 0.405 ) bTagCSV = 1; 	// CSVV1L
 			//if ( (*jetCSVV1)[i] > 0.783 ) bTagCSV = 1; 	// CSVV1M
-			//
-			histos1D_[ "jetPt" ]->Fill( corrJet.Pt() , puWeight );
-			histos1D_[ "jetEta" ]->Fill( corrJet.Eta() , puWeight );
 			double jec = 1. / ( rawJet.E() ); //(*jecFactor)[i] * (*jetE)[i] );
-			histos1D_[ "neutralHadronEnergy" ]->Fill( (*neutralHadronEnergy)[i] * jec, puWeight );
-			histos1D_[ "neutralEmEnergy" ]->Fill( (*neutralEmEnergy)[i] * jec, puWeight );
-			histos1D_[ "chargedHadronEnergy" ]->Fill( (*chargedHadronEnergy)[i] * jec, puWeight );
-			histos1D_[ "chargedEmEnergy" ]->Fill( (*chargedEmEnergy)[i] * jec, puWeight );
-			histos1D_[ "numConst" ]->Fill( (*chargedHadronMultiplicity)[i] + (*neutralHadronMultiplicity)[i], puWeight );
-			histos1D_[ "chargedMultiplicity" ]->Fill( (*chargedMultiplicity)[i] * jec, puWeight );
+			if ( !mkTree ) {
+				histos1D_[ "jetPt" ]->Fill( corrJet.Pt() , puWeight );
+				histos1D_[ "jetEta" ]->Fill( corrJet.Eta() , puWeight );
+				histos1D_[ "neutralHadronEnergy" ]->Fill( (*neutralHadronEnergy)[i] * jec, puWeight );
+				histos1D_[ "neutralEmEnergy" ]->Fill( (*neutralEmEnergy)[i] * jec, puWeight );
+				histos1D_[ "chargedHadronEnergy" ]->Fill( (*chargedHadronEnergy)[i] * jec, puWeight );
+				histos1D_[ "chargedEmEnergy" ]->Fill( (*chargedEmEnergy)[i] * jec, puWeight );
+				histos1D_[ "numConst" ]->Fill( (*chargedHadronMultiplicity)[i] + (*neutralHadronMultiplicity)[i], puWeight );
+				histos1D_[ "chargedMultiplicity" ]->Fill( (*chargedMultiplicity)[i] * jec, puWeight );
+			}
 
 			myJet tmpJET;
 			tmpJET.p4 = corrJet;
@@ -418,11 +417,13 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 	//sort(JETS.begin(), JETS.end(), [](const JETtype &p1, const JETtype &p2) { TLorentzVector tmpP1, tmpP2; tmpP1 = p1; tmpP2 = p2;  return tmpP1.M() > tmpP2.M(); }); 
 	numJets = numberJets;
-	histos1D_[ "jetNum" ]->Fill( numJets, totalWeight );
-	histos1D_[ "NPV" ]->Fill( numPV, totalWeight );
-	histos1D_[ "NPV_NOPUWeight" ]->Fill( numPV );
-	if ( HT > 0 ) histos1D_[ "HT" ]->Fill( HT , totalWeight );
-	if ( rawHT > 0 ) histos1D_[ "rawHT" ]->Fill( rawHT , totalWeight );
+	if (!mkTree) {
+		histos1D_[ "jetNum" ]->Fill( numJets, totalWeight );
+		histos1D_[ "NPV" ]->Fill( numPV, totalWeight );
+		histos1D_[ "NPV_NOPUWeight" ]->Fill( numPV );
+		if ( HT > 0 ) histos1D_[ "HT" ]->Fill( HT , totalWeight );
+		if ( rawHT > 0 ) histos1D_[ "rawHT" ]->Fill( rawHT , totalWeight );
+	}
 	MET = (*metPt)[0];
 
 	clearVariables();
@@ -430,11 +431,13 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 	if ( ORTriggers ) {
 		
 		cutmap["Trigger"] += totalWeight;
-		histos1D_[ "HT_cutTrigger" ]->Fill( HT , totalWeight );
-		histos1D_[ "jetNum_cutTrigger" ]->Fill( numJets, totalWeight );
-		for (int i = 0; i < numJets; i++) {
-			histos1D_[ "jetPt_cutTrigger" ]->Fill( JETS[i].p4.Pt(), totalWeight );
-			histos1D_[ "jetEta_cutTrigger" ]->Fill( JETS[i].p4.Eta(), totalWeight );
+		if (!mkTree) {
+			histos1D_[ "HT_cutTrigger" ]->Fill( HT , totalWeight );
+			histos1D_[ "jetNum_cutTrigger" ]->Fill( numJets, totalWeight );
+			for (int i = 0; i < numJets; i++) {
+				histos1D_[ "jetPt_cutTrigger" ]->Fill( JETS[i].p4.Pt(), totalWeight );
+				histos1D_[ "jetEta_cutTrigger" ]->Fill( JETS[i].p4.Eta(), totalWeight );
+			}
 		}
 		event		= *ievent;
 		run		= *Run;
@@ -451,9 +454,10 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 				histos1D_[ "jet3Pt_cut4Jets" ]->Fill( JETS[2].p4.Pt(), totalWeight );
 				histos1D_[ "jet4Pt_cut4Jets" ]->Fill( JETS[3].p4.Pt(), totalWeight );
 				histos1D_[ "MET_cut4Jets" ]->Fill( MET, totalWeight );
+				histos1D_[ "METHT_cut4Jets" ]->Fill( MET/HT, totalWeight );
 			}
 
-			if( ( numJets == 4 ) && ( HT > cutHT ) && ( JETS[3].p4.Pt() > 80.0 ) ){
+			if( ( numJets == 4 ) && ( HT > 800. ) && ( JETS[3].p4.Pt() > 80.0 ) ){
 				
 				vector<double> tmpDijetR;
 				double dR12 = JETS[0].p4.DeltaR( JETS[1].p4 );
@@ -582,6 +586,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 					cutmap["BestPair"] += totalWeight;
 					histos1D_[ "HT_cutBestPair" ]->Fill( HT, totalWeight );
 					histos1D_[ "MET_cutBestPair" ]->Fill( MET, totalWeight );
+					histos1D_[ "METHT_cutBestPair" ]->Fill( MET/HT, totalWeight );
 					histos1D_[ "jetNum_cutBestPair" ]->Fill( numJets, totalWeight );
 					histos1D_[ "jet1Pt_cutBestPair" ]->Fill( JETS[0].p4.Pt(), totalWeight );
 					histos1D_[ "jet2Pt_cutBestPair" ]->Fill( JETS[1].p4.Pt(), totalWeight );
@@ -677,50 +682,8 @@ void RUNAnalysis::beginJob() {
 	// Calculate PUWeight
 	if ( !isData ) PUWeight_.generateWeights( dataPUFile );
 
-	histos1D_[ "rawJetPt" ] = fs_->make< TH1D >( "rawJetPt", "rawJetPt", 100, 0., 1000. );
-	histos1D_[ "rawJetPt" ]->Sumw2();
-	histos1D_[ "rawHT" ] = fs_->make< TH1D >( "rawHT", "rawHT", 300, 0., 3000. );
-	histos1D_[ "rawHT" ]->Sumw2();
-
-	histos1D_[ "jetPt" ] = fs_->make< TH1D >( "jetPt", "jetPt", 100, 0., 1000. );
-	histos1D_[ "jetPt" ]->Sumw2();
-	histos1D_[ "jetEta" ] = fs_->make< TH1D >( "jetEta", "jetEta", 100, -5., 5. );
-	histos1D_[ "jetEta" ]->Sumw2();
-	histos1D_[ "jetNum" ] = fs_->make< TH1D >( "jetNum", "jetNum", 10, 0., 10. );
-	histos1D_[ "jetNum" ]->Sumw2();
-	histos1D_[ "HT" ] = fs_->make< TH1D >( "HT", "HT", 300, 0., 3000. );
-	histos1D_[ "HT" ]->Sumw2();
-	histos1D_[ "NPV" ] = fs_->make< TH1D >( "NPV", "NPV", 80, 0., 80. );
-	histos1D_[ "NPV" ]->Sumw2();
-	histos1D_[ "NPV_NOPUWeight" ] = fs_->make< TH1D >( "NPV_NOPUWeight", "NPV_NOPUWeight", 80, 0., 80. );
-	histos1D_[ "NPV_NOPUWeight" ]->Sumw2();
-	histos1D_[ "PUWeight" ] = fs_->make< TH1D >( "PUWeight", "PUWeight", 50, 0., 5. );
-	histos1D_[ "PUWeight" ]->Sumw2();
-	histos1D_[ "neutralHadronEnergy" ] = fs_->make< TH1D >( "neutralHadronEnergy", "neutralHadronEnergy", 50, 0., 1. );
-	histos1D_[ "neutralHadronEnergy" ]->Sumw2();
-	histos1D_[ "neutralEmEnergy" ] = fs_->make< TH1D >( "neutralEmEnergy", "neutralEmEnergy", 50, 0., 1. );
-	histos1D_[ "neutralEmEnergy" ]->Sumw2();
-	histos1D_[ "chargedHadronEnergy" ] = fs_->make< TH1D >( "chargedHadronEnergy", "chargedHadronEnergy", 50, 0., 1. );
-	histos1D_[ "chargedHadronEnergy" ]->Sumw2();
-	histos1D_[ "chargedEmEnergy" ] = fs_->make< TH1D >( "chargedEmEnergy", "chargedEmEnergy", 50, 0., 1. );
-	histos1D_[ "chargedEmEnergy" ]->Sumw2();
-	histos1D_[ "chargedMultiplicity" ] = fs_->make< TH1D >( "chargedMultiplicity", "chargedMultiplicity", 50, 0., 1. );
-	histos1D_[ "chargedMultiplicity" ]->Sumw2();
-	histos1D_[ "numConst" ] = fs_->make< TH1D >( "numConst", "numConst", 100, 0., 100. );
-	histos1D_[ "numConst" ]->Sumw2();
-
-
-	histos1D_[ "jetPt_cutTrigger" ] = fs_->make< TH1D >( "jetPt_cutTrigger", "jetPt_cutTrigger", 100, 0., 1000. );
-	histos1D_[ "jetPt_cutTrigger" ]->Sumw2();
-	histos1D_[ "jetEta_cutTrigger" ] = fs_->make< TH1D >( "jetEta_cutTrigger", "jetEta_cutTrigger", 100, -5., 5. );
-	histos1D_[ "jetEta_cutTrigger" ]->Sumw2();
-	histos1D_[ "jetNum_cutTrigger" ] = fs_->make< TH1D >( "jetNum_cutTrigger", "jetNum_cutTrigger", 10, 0., 10. );
-	histos1D_[ "jetNum_cutTrigger" ]->Sumw2();
-	histos1D_[ "HT_cutTrigger" ] = fs_->make< TH1D >( "HT_cutTrigger", "HT_cutTrigger", 300, 0., 3000. );
-	histos1D_[ "HT_cutTrigger" ]->Sumw2();
-
-
 	if (mkTree) {
+
 		RUNAtree = fs_->make< TTree >("RUNATree", "RUNATree"); 
 		RUNAtree->Branch( "run", &run, "run/I" );
 		RUNAtree->Branch( "lumi", &lumi, "lumi/I" );
@@ -749,6 +712,49 @@ void RUNAnalysis::beginJob() {
 		RUNAtree->Branch( "jetsQGL", "vector<float>", &jetsQGL);
 	} else {
 
+		histos1D_[ "rawJetPt" ] = fs_->make< TH1D >( "rawJetPt", "rawJetPt", 100, 0., 1000. );
+		histos1D_[ "rawJetPt" ]->Sumw2();
+		histos1D_[ "rawHT" ] = fs_->make< TH1D >( "rawHT", "rawHT", 300, 0., 3000. );
+		histos1D_[ "rawHT" ]->Sumw2();
+
+		histos1D_[ "jetPt" ] = fs_->make< TH1D >( "jetPt", "jetPt", 100, 0., 1000. );
+		histos1D_[ "jetPt" ]->Sumw2();
+		histos1D_[ "jetEta" ] = fs_->make< TH1D >( "jetEta", "jetEta", 100, -5., 5. );
+		histos1D_[ "jetEta" ]->Sumw2();
+		histos1D_[ "jetNum" ] = fs_->make< TH1D >( "jetNum", "jetNum", 10, 0., 10. );
+		histos1D_[ "jetNum" ]->Sumw2();
+		histos1D_[ "HT" ] = fs_->make< TH1D >( "HT", "HT", 300, 0., 3000. );
+		histos1D_[ "HT" ]->Sumw2();
+		histos1D_[ "NPV" ] = fs_->make< TH1D >( "NPV", "NPV", 80, 0., 80. );
+		histos1D_[ "NPV" ]->Sumw2();
+		histos1D_[ "NPV_NOPUWeight" ] = fs_->make< TH1D >( "NPV_NOPUWeight", "NPV_NOPUWeight", 80, 0., 80. );
+		histos1D_[ "NPV_NOPUWeight" ]->Sumw2();
+		histos1D_[ "PUWeight" ] = fs_->make< TH1D >( "PUWeight", "PUWeight", 50, 0., 5. );
+		histos1D_[ "PUWeight" ]->Sumw2();
+		histos1D_[ "neutralHadronEnergy" ] = fs_->make< TH1D >( "neutralHadronEnergy", "neutralHadronEnergy", 50, 0., 1. );
+		histos1D_[ "neutralHadronEnergy" ]->Sumw2();
+		histos1D_[ "neutralEmEnergy" ] = fs_->make< TH1D >( "neutralEmEnergy", "neutralEmEnergy", 50, 0., 1. );
+		histos1D_[ "neutralEmEnergy" ]->Sumw2();
+		histos1D_[ "chargedHadronEnergy" ] = fs_->make< TH1D >( "chargedHadronEnergy", "chargedHadronEnergy", 50, 0., 1. );
+		histos1D_[ "chargedHadronEnergy" ]->Sumw2();
+		histos1D_[ "chargedEmEnergy" ] = fs_->make< TH1D >( "chargedEmEnergy", "chargedEmEnergy", 50, 0., 1. );
+		histos1D_[ "chargedEmEnergy" ]->Sumw2();
+		histos1D_[ "chargedMultiplicity" ] = fs_->make< TH1D >( "chargedMultiplicity", "chargedMultiplicity", 50, 0., 1. );
+		histos1D_[ "chargedMultiplicity" ]->Sumw2();
+		histos1D_[ "numConst" ] = fs_->make< TH1D >( "numConst", "numConst", 100, 0., 100. );
+		histos1D_[ "numConst" ]->Sumw2();
+
+
+		histos1D_[ "jetPt_cutTrigger" ] = fs_->make< TH1D >( "jetPt_cutTrigger", "jetPt_cutTrigger", 100, 0., 1000. );
+		histos1D_[ "jetPt_cutTrigger" ]->Sumw2();
+		histos1D_[ "jetEta_cutTrigger" ] = fs_->make< TH1D >( "jetEta_cutTrigger", "jetEta_cutTrigger", 100, -5., 5. );
+		histos1D_[ "jetEta_cutTrigger" ]->Sumw2();
+		histos1D_[ "jetNum_cutTrigger" ] = fs_->make< TH1D >( "jetNum_cutTrigger", "jetNum_cutTrigger", 10, 0., 10. );
+		histos1D_[ "jetNum_cutTrigger" ]->Sumw2();
+		histos1D_[ "HT_cutTrigger" ] = fs_->make< TH1D >( "HT_cutTrigger", "HT_cutTrigger", 300, 0., 3000. );
+		histos1D_[ "HT_cutTrigger" ]->Sumw2();
+
+
 		histos1D_[ "jet1Pt_cut4Jets" ] = fs_->make< TH1D >( "jet1Pt_cut4Jets", "jet1Pt_cut4Jets", 100, 0., 1000. );
 		histos1D_[ "jet1Pt_cut4Jets" ]->Sumw2();
 		histos1D_[ "jet2Pt_cut4Jets" ] = fs_->make< TH1D >( "jet2Pt_cut4Jets", "jet2Pt_cut4Jets", 100, 0., 1000. );
@@ -763,6 +769,8 @@ void RUNAnalysis::beginJob() {
 		histos1D_[ "HT_cut4Jets" ]->Sumw2();
 		histos1D_[ "MET_cut4Jets" ] = fs_->make< TH1D >( "MET_cut4Jets", "MET_cut4Jets", 20, 0., 200. );
 		histos1D_[ "MET_cut4Jets" ]->Sumw2();
+		histos1D_[ "METHT_cut4Jets" ] = fs_->make< TH1D >( "METHT_cut4Jets", "METHT_cut4Jets", 50, 0., 1. );
+		histos1D_[ "METHT_cut4Jets" ]->Sumw2();
 
 		histos1D_[ "jet1Pt_cutBestPair" ] = fs_->make< TH1D >( "jet1Pt_cutBestPair", "jet1Pt_cutBestPair", 100, 0., 1000. );
 		histos1D_[ "jet1Pt_cutBestPair" ]->Sumw2();
@@ -778,6 +786,8 @@ void RUNAnalysis::beginJob() {
 		histos1D_[ "HT_cutBestPair" ]->Sumw2();
 		histos1D_[ "MET_cutBestPair" ] = fs_->make< TH1D >( "MET_cutBestPair", "MET_cutBestPair", 20, 0., 200. );
 		histos1D_[ "MET_cutBestPair" ]->Sumw2();
+		histos1D_[ "METHT_cutBestPair" ] = fs_->make< TH1D >( "METHT_cutBestPair", "METHT_cutBestPair", 50, 0., 1. );
+		histos1D_[ "METHT_cutBestPair" ]->Sumw2();
 		histos1D_[ "NPV_cutBestPair" ] = fs_->make< TH1D >( "NPV_cutBestPair", "NPV_cutBestPair", 80, 0., 80. );
 		histos1D_[ "NPV_cutBestPair" ]->Sumw2();
 		histos1D_[ "neutralHadronEnergy_cutBestPair" ] = fs_->make< TH1D >( "neutralHadronEnergy_cutBestPair", "neutralHadronEnergy", 50, 0., 1. );
@@ -942,7 +952,6 @@ void RUNAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descriptions
 	desc.add<double>("cutMassAsym", 1);
 	desc.add<double>("cutDelta", 1);
 	desc.add<double>("cutDEta", 1);
-	desc.add<double>("cutHT", 1);
 	desc.add<double>("cutCosThetaStar", 1);
 	desc.add<double>("cutDeltaR", 1);
 	desc.add<double>("scale", 1);
@@ -950,7 +959,7 @@ void RUNAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descriptions
 	desc.add<bool>("mkTree", false);
 	desc.add<bool>("isData", false);
 	desc.add<string>("dataPUFile", "supportFiles/PileupData2015D_JSON_10-23-2015.root");
-	desc.add<string>("jecVersion", "Summer15_25nsV6");
+	desc.add<string>("jecVersion", "supportFiles/Summer15_25nsV6");
 	desc.add<string>("systematics", "None");
 	vector<string> HLTPass;
 	HLTPass.push_back("HLT_PFHT800");

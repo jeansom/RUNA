@@ -57,84 +57,102 @@ def getTree(filename, treename):
 
 #----------------------------------------------------------------------
 ### Main Optimization
-def RUNOptimization( QCDSample, SigSample, folder, listOfHist, cuts, mass ):
+def RUNOptimization( BkgSamples, SigSample, treename, varList, mass, window ):
 	"""docstring for RUNOptimization"""
 	
+	outputFile = TFile( 'test.root', "RECREATE" )
+	
+	allHistos = {}
+	for var in varList: 
+		allHistos[ var[0]+'_Sig' ] = TH1F( var[0]+"_Sig", var[0]+"_Sig", var[1], var[2], var[3] )
+		for bkgSample in BkgSamples: 
+			allHistos[ var[0]+'_'+bkgSample ] = TH1F( var[0]+"_"+bkgSample, var[0]+"_"+bkgSample, var[1], var[2], var[3] )
+			allHistos[ var[0]+"_"+bkgSample+"_BkgROC"] = TH1F( var[0]+"_"+bkgSample+"_BkgROC", var[0]+"_"+bkgSample+"_BkgROC; "+var[0], var[1], var[2], var[3] )
+			allHistos[ var[0]+"_"+bkgSample+"_SigROC"] = TH1F( var[0]+"_"+bkgSample+"_SigROC", var[0]+"_"+bkgSample+"_SigROC; "+var[0], var[1], var[2], var[3] )
 
-	QCDFile = TFile( QCDSample, 'read' )
-	SigFile = TFile( SigSample, 'read' )
+	print '-'*40
+	print '---- Signal'
+	SigFile, sigEvents = getTree( SigSample, treename )
+	sigNumEntries = sigEvents.GetEntriesFast()
+	for i in xrange(sigNumEntries):
+		sigEvents.GetEntry(i)
+		for var in varList: 
+			sigMassAve = sigEvents.massAve
+			if ( ( sigMassAve > int(mass)-window ) and ( sigMassAve < int(mass)+window  ) ): allHistos[ var[0]+"_Sig" ].Fill( getattr( sigEvents, var[0] ) )
+	
 
-	for cut in cuts:
-		dictROC = {}
-		f1 = TF1("f1","x",0,1)
-		f1.SetLineColor(1)
-		f1.SetLineStyle(3)
-		for hist in listOfHist:
-			QCDHisto = QCDFile.Get( folder+hist[0]+cut )
-			QCDTotal = QCDHisto.Integral() 
+	for bkgSample in BkgSamples: 
+		print '-'*40
+		print '---- ', bkgSample
+		BkgFile, bkgEvents = getTree( BkgSamples[ bkgSample ], treename )
+		bkgNumEntries = bkgEvents.GetEntriesFast()
+		for i in xrange(bkgNumEntries):
+			bkgEvents.GetEntry(i)
+			for var in varList: 
+				bkgMassAve = bkgEvents.massAve
+				if ( ( bkgMassAve > int(mass)-window ) and ( bkgMassAve < int(mass)+window  ) ): 
+					allHistos[ var[0]+"_"+bkgSample ].Fill( getattr( bkgEvents, var[0] ) )
 
-			SigHisto = SigFile.Get( folder+hist[0]+cut )
+		for var in varList:
+			BkgHisto = allHistos[ var[0]+"_"+bkgSample ]
+			BkgTotal = BkgHisto.Integral() 
+
+			SigHisto = allHistos[ var[0]+"_Sig" ]
 			SigTotal = SigHisto.Integral() 
 
 			ibinCut = 0
-			if ( len( hist ) > 2 ): ibinCut = SigHisto.GetXaxis().FindBin( hist[2] )
+			#if ( len( var ) > 2 ): ibinCut = SigHisto.GetXaxis().FindBin( var[2] )
 
-			numBins = QCDHisto.GetNbinsX()
-			minBin = QCDHisto.GetXaxis().GetXmin()
-			maxBin = QCDHisto.GetXaxis().GetXmax()
-			QCDEffHisto = TH1F(hist[0]+cut+"_QCDROC", hist[0]+cut+"_QCDROC; "+hist[0]+cut, numBins, minBin, maxBin )
-			SigEffHisto = TH1F(hist[0]+cut+"_SigROC", hist[0]+cut+"_SigROC; "+hist[0]+cut, numBins, minBin, maxBin )
-			SigAxis = TGaxis(0, 1.1, 1, 1.1, minBin, maxBin, 510,"-")
-			QCDAxis = TGaxis(1.1, 1, 1.099, 0, minBin, maxBin, 510,"-")
-
-			QCDROCValues = []	
+			BkgROCValues = []	
 			SigROCValues = []	
 			SigROCBins = []	
 			SigROCLowEdge = []	
 			firstBin =  SigHisto.FindFirstBinAbove( 0, 1 )
 			lastBin =  SigHisto.FindLastBinAbove( 0, 1 )+1 
 			for ibin in range( firstBin, lastBin ):
-				if hist[1]:
-					#print ibin, SigHisto.GetXaxis().GetBinLowEdge(ibin), SigHisto.Integral( 0, ibin ), SigHisto.Integral( firstBin, ibin ) #, SigTotal, SigHisto.Integral( 0, ibin+1 ) / SigTotal,  QCDHisto.GetXaxis().GetBinLowEdge(ibin), QCDHisto.Integral( 0, ibin+1 ) , QCDTotal, QCDHisto.Integral( 0, ibin+1 ) / QCDTotal
-					effQCD = 1 - QCDHisto.Integral( firstBin, ibin ) / QCDTotal 
-					QCDEffHisto.SetBinContent( ibin, effQCD )
-					QCDROCValues.append( effQCD )
+				if var[4]:
+					#print ibin, SigHisto.GetXaxis().GetBinLowEdge(ibin), SigHisto.Integral( 0, ibin ), SigHisto.Integral( firstBin, ibin ) #, SigTotal, SigHisto.Integral( 0, ibin+1 ) / SigTotal,  BkgHisto.GetXaxis().GetBinLowEdge(ibin), BkgHisto.Integral( 0, ibin+1 ) , BkgTotal, BkgHisto.Integral( 0, ibin+1 ) / BkgTotal
+					effBkg = 1 - BkgHisto.Integral( firstBin, ibin ) / BkgTotal 
+					allHistos[ var[0]+"_"+bkgSample+"_BkgROC" ].SetBinContent( ibin, effBkg )
+					BkgROCValues.append( effBkg )
 
 					effSig = SigHisto.Integral( firstBin, ibin ) / SigTotal 
-					SigEffHisto.SetBinContent( ibin, effSig )
+					allHistos[ var[0]+"_"+bkgSample+"_SigROC" ].SetBinContent( ibin, effSig )
 					SigROCValues.append( effSig )
 					SigROCBins.append( ibin )
 					SigROCLowEdge.append( SigHisto.GetXaxis().GetBinLowEdge(ibin+1) )
-					SigAxis = TGaxis(0, 1.1, 1, 1.1, minBin, maxBin, 510,"-")
-					QCDAxis = TGaxis(1.1, 1, 1.099, 0, minBin, maxBin, 510,"-")
 
 				else:
-					effQCD = 1 - QCDHisto.Integral( ibin, lastBin ) / QCDTotal 
-					QCDEffHisto.SetBinContent( ibin, effQCD )
-					QCDROCValues.append( effQCD )
+					effBkg = 1 - BkgHisto.Integral( ibin, lastBin ) / BkgTotal 
+					allHistos[ var[0]+"_"+bkgSample+"_BkgROC" ].SetBinContent( ibin, effBkg )
+					BkgROCValues.append( effBkg )
 
 					effSig = SigHisto.Integral( ibin, lastBin ) / SigTotal 
-					SigEffHisto.SetBinContent( ibin, effSig )
+					allHistos[ var[0]+"_"+bkgSample+"_SigROC" ].SetBinContent( ibin, effSig )
 					SigROCValues.append( effSig )
 					SigROCBins.append( ibin )
 					SigROCLowEdge.append( SigHisto.GetXaxis().GetBinLowEdge(ibin+1) )
-					SigAxis = TGaxis(1, 1.099, 0, 1.1, minBin, maxBin, 510,"")
-					QCDAxis = TGaxis(1.1, 0, 1.1, 1, minBin, maxBin, 510,"+L")
 
-			QCDROCArray = np.asarray( QCDROCValues )
+			BkgROCArray = np.asarray( BkgROCValues )
 			SigROCArray = np.asarray( SigROCValues )
 			SigROCBinsArray = np.asarray( SigROCBins )
 			SigROCLowEdgeArray = np.asarray( SigROCLowEdge )
-			if ( len(hist) > 2 ): 
-				x = find_nearest(SigROCLowEdgeArray, hist[2])
-				print 'For cut', hist[2], 'in', hist[0]+cut, 'effSig: ', SigROCArray[x], ', effQCD: ', QCDROCArray[x]
-			if ( len(hist) > 3 ): 
-				y = find_nearest( SigROCArray, hist[3] )
-				print 'Optimal value for ', hist[0]+cut, SigROCLowEdge[y], 'is', SigROCArray[y]
+			'''
+			if ( len(var) > 2 ): 
+				x = find_nearest(SigROCLowEdgeArray, var[2])
+				print 'For cut', var[2], 'in', var[0]+cut, 'effSig: ', SigROCArray[x], ', effBkg: ', BkgROCArray[x]
+			if ( len(var) > 3 ): 
+				y = find_nearest( SigROCArray, var[3] )
+				print 'Optimal value for ', var[0]+cut, SigROCLowEdge[y], 'is', SigROCArray[y]
 			
-			ROC = TGraph( len( QCDROCArray ), SigROCArray, QCDROCArray )		
-			dictROC[ hist[0] ] = ROC
-
+			'''
+			ROC = TGraph( len( BkgROCArray ), SigROCArray, BkgROCArray )		
+			ROC.Write(var[0]+"_"+bkgSample+"_ROC")
+			#dictROC[  ] = ROC
+		'''
+		f1 = TF1("f1","x",0,1)
+		f1.SetLineColor(1)
+		f1.SetLineStyle(3)
 		can = TCanvas('c1', 'c1',  10, 10, 750, 500 )
 		can.SetGrid()
 		multiGraph = TMultiGraph()
@@ -161,6 +179,11 @@ def RUNOptimization( QCDSample, SigSample, folder, listOfHist, cuts, mass ):
 		legend.Draw()
 		can.SaveAs('Plots/'+version+'RPVSt'+mass+'_ROC'+cut+'.pdf')
 		del can
+		'''
+
+	outputFile.Write()
+	outputFile.Close()
+	sys.exit(0)
 
 #----------------------------------------------------------------------
 def RUNTMVATraining( BkgSample, SigSample, treename, outputFileName, variables ):
@@ -178,7 +201,7 @@ def RUNTMVATraining( BkgSample, SigSample, treename, outputFileName, variables )
 	# everything is done via a TMVA factory
 	outputFile = TFile(outputFileName, "recreate")
 	#factory = TMVA.Factory("sigbkg", outputFile, "!V:Transformations=I;N;D")
-	factory = TMVA.Factory( "TMVATraining"+bkgName, outputFile, "!V:!Silent:Transformations=I;D;P;G,D:AnalysisType=Classification")
+	factory = TMVA.Factory( "TMVATraining"+version+bkgName+"_RPVSt"+mass, outputFile, "!V:!Silent:Transformations=I;D;P;G,D:AnalysisType=Classification")
 
 	# define input var
 	factory.AddTarget( 'massAve', 'F' )
@@ -193,10 +216,15 @@ def RUNTMVATraining( BkgSample, SigSample, treename, outputFileName, variables )
 	# remove problematic events and specify how
 	# many events are to be used
 	# for training and testing
+	if ( ('QCD' in bkgName) or ('TTJets' in bkgName)): bkgTrain = 100000
+	else: bkgTrain = 0
+	if ('QCD' in bkgName) : bkgTest = 100000
+	else: bkgTest = 0
 	sigCut = TCut("massAve>"+str(int(mass)-30)+" && massAve < "+str(int(mass)+30))
-	bkgCut = TCut("")
+	bkgCut = TCut("massAve>"+str(int(mass)-30)+" && massAve < "+str(int(mass)+30))
 	factory.PrepareTrainingAndTestTree(sigCut, bkgCut,
-			"nTrain_Signal=0:nTrain_Background=1000:SplitMode=Random:NormMode=NumEvents:!V")
+			#"nTrain_Signal=0:nTrain_Background=100000:SplitMode=Random:NormMode=NumEvents:!V")
+			"nTrain_Background="+str(bkgTrain)+":nTest_Background="+str(bkgTest)+":SplitMode=Random:NormMode=NumEvents:!V")
 
 	# define multivariate methods to be run
 	'''
@@ -207,20 +235,6 @@ def RUNTMVATraining( BkgSample, SigSample, treename, outputFileName, variables )
 			"EffSel:"\
 			"SampleSize=200000:"\
 			"VarProp=FSmart" )
-	factory.BookMethod( TMVA.Types.kCuts, 
-			"CutsGA",
-			"H:!V:"\
-			"FitMethod=GA:"\
-			#"CutRangeMin[0]=-10:"\
-			#"CutRangeMax[0]=10:"\
-			#"VarProp[1]=FMax:"\  ## varProp for gaussian shape variables
-			#"EffSel:Steps=30:"\  ## Default 40 
-			"Cycles=3:"\
-			#"PopSize=400:"\ ## Default 300
-			#"SC_steps=10:"\  ## Default 10 
-			#"SC_rate=5:"\  ## default 5
-			#"SC_factor=0.95"  ## default
-			)
 	factory.BookMethod( TMVA.Types.kMLP,
 			"MLP",
 			"!H:!V:"\
@@ -235,7 +249,6 @@ def RUNTMVATraining( BkgSample, SigSample, treename, outputFileName, variables )
 			"NTrees=400:"\
 			"nEventsMin=100:"\
 			"nCuts=50")
-	'''
 	factory.BookMethod( TMVA.Types.kBDT, 
 			"BDTG",
 			"!H:!V:NTrees=100:"\
@@ -246,6 +259,22 @@ def RUNTMVATraining( BkgSample, SigSample, treename, outputFileName, variables )
 			"SeparationType=GiniIndex:"\
 			"nCuts=20:"\
 			"NNodesMax=5" )
+	'''
+	factory.BookMethod( TMVA.Types.kCuts, 
+			"CutsGA",
+			"!H:!V:"\
+			"FitMethod=GA:"\
+			#"CutRangeMin[0]=-1:"\
+			#"CutRangeMin[1]=0:"\
+			#"CutRangeMax[0]=10:"\
+			#"VarProp[1]=FMax:"\  ## varProp for gaussian shape variables
+			#"EffSel:Steps=30:"\  ## Default 40 
+			"Cycles=3:"\
+			#"PopSize=400:"\ ## Default 300
+			#"SC_steps=10:"\  ## Default 10 
+			#"SC_rate=5:"\  ## default 5
+			#"SC_factor=0.95"  ## default
+			)
 
 	factory.TrainAllMethods()  
 	factory.TestAllMethods()
@@ -253,6 +282,30 @@ def RUNTMVATraining( BkgSample, SigSample, treename, outputFileName, variables )
 
 	outputFile.Close()
 	del factory
+
+
+def getOptimizeValues( variables, sample ):
+	"""docstring for getOptimizeValues"""
+
+	dictVariables = {}
+	for k in variables: dictVariables[ k ] = array('f', [0.] )
+	
+	reader = TMVA.Reader( "!Color:Silent" )
+	for k in variables: reader.AddVariable( k, dictVariables[k] )
+	reader.BookMVA( "CutsGA method", "weights/TMVATraining"+version+sample+"_RPVSt"+mass+"_CutsGA.weights.xml" )
+	#passed = reader.EvaluateMVA( "CutsGA method", 0.9 )
+	mcuts = reader.FindMVA( "CutsGA method" )
+	cutsMin = array( 'd', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] )        
+        cutsMax = array( 'd', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] )
+	finalValues = []
+	for k in np.arange(0,1,0.01):
+		mcuts.GetCuts( k, cutsMin, cutsMax )
+		for ivar in range( len(variables) ):
+			#print "... %.2g: %.5g < %s <= %.5g" % (k, cutsMin[ivar], variables[ivar], cutsMax[ivar])
+			finalValues.append( [ k, variables[ivar], cutsMin[ivar], cutsMax[ivar] ] )
+				
+	return finalValues
+
 
 def ApplicationCreateCombinedTree( variables, outputFileName, bkgSamples, SigSample, treename ):
 	"""docstring for ApplicationCreateCombinedTree"""
@@ -330,10 +383,11 @@ if __name__ == '__main__':
 	
 	parser = argparse.ArgumentParser()
 	parser.add_argument( '-m', '--mass', action='store', dest='mass', default=100, help='Mass of the Stop' )
-	parser.add_argument( '-i', '--inputFiles', action='store',  dest='inputFiles', default='Mini', help='From my root files: RUNMiniAnalysis or RUNAnalysis.' )
+	parser.add_argument( '-i', '--inputFiles', action='store',  dest='inputFiles', default='', help='From my root files: RUNMiniAnalysis or RUNAnalysis.')
 	parser.add_argument( '-s', '--selection', action='store',  dest='selection', default='', help='Selection, like _cutDEta' )
 	parser.add_argument( '-p', '--process', action='store',  dest='process', default='Simple', help='Process: simple or TMVA' )
 	parser.add_argument( '-v', '--version', action='store',  dest='version', default='Boosted', help='Variable to optimize, as histogram in rootfile.' )
+	parser.add_argument( '-e', '--eff', action='store', dest='effS', type=int, default=0, help='Mass of the Stop' )
 
 	try:
 		args = parser.parse_args()
@@ -346,18 +400,20 @@ if __name__ == '__main__':
 	process = args.process
 	version = args.version
 	inputFiles = args.inputFiles
+	effS = args.effS
 
 	bkgSamples = {}
-	bkgSamples[ 'QCDPtAll' ] = 'Rootfiles/RUNAnalysis_QCDPtAll_TuneCUETP8M1_13TeV_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
-	bkgSamples[ 'WWTo4Q' ] = 'Rootfiles/RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
-	bkgSamples[ 'WJetsToQQ' ] = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
-	bkgSamples[ 'ZZTo4Q' ] = 'Rootfiles/RUNAnalysis_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
-	bkgSamples[ 'ZJetsToQQ' ] = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
-	bkgSamples[ 'TTJets' ] = 'Rootfiles/RUNAnalysis_TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
+	#bkgSamples[ 'QCDPtAll' ] = 'Rootfiles/RUNAnalysis_QCDPtAll_TuneCUETP8M1_13TeV_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	bkgSamples[ 'WWTo4Q' ] = 'Rootfiles/RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	#bkgSamples[ 'WJetsToQQ' ] = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	#bkgSamples[ 'ZZTo4Q' ] = 'Rootfiles/RUNAnalysis_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	#bkgSamples[ 'ZJetsToQQ' ] = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	#bkgSamples[ 'TTJets' ] = 'Rootfiles/RUNAnalysis_TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	bkgSamples[ 'WZ' ] = 'Rootfiles/RUNAnalysis_WZ_TuneCUETP8M1_13TeV-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 
-	QCDSample = 'Rootfiles/RUNAnalysis_QCDPtAll_TuneCUETP8M1_13TeV_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
-	WWJetsSample = 'Rootfiles/RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
-	SigSample = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(mass)+'-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'
+	QCDSample = 'Rootfiles/RUNAnalysis_QCDPtAll_TuneCUETP8M1_13TeV_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	WWJetsSample = 'Rootfiles/RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	SigSample = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(mass)+'-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 	treename = "RUNATree/RUNATree" if ( 'Resolved' in version ) else 'RUNATreePruned/RUNATree'
 	if 'Mini' in inputFiles:
 		QCDSample = QCDSample.replace('Analysis', 'Mini'+version+'Analysis' )
@@ -382,54 +438,62 @@ if __name__ == '__main__':
 		#[ 'Boosted', "HT", True ],
 		#[ 'Boosted', "jet1Pt", True ],
 		#[ 'Boosted', "jet2Pt", True ],
-		#[ 'Boosted', "massAve", True ],
-		[ 'Boosted', "massAsym", True, 0.1, 0.40 ],
-		[ 'Boosted', "jet1CosThetaStar", True, 0.3, 0.8 ],
-		[ 'Boosted', "jet2CosThetaStar", True, 0.3, 0.8 ],
+		##[ 'Boosted', "massAve", True ],
+		[ 'Boosted', "massAsym", 20, 0., 1., True, 0.1, 0.40 ],
+		#[ 'Boosted', "jet1CosThetaStar", True, 0.3, 0.8 ],
+		[ 'Boosted', "jet2CosThetaStar", 20, 0., 1., True, 0.3, 0.8 ],
 		#[ 'Boosted', "jet1Tau1", True ],
 		#[ 'Boosted', "jet1Tau2", True ],
 		#[ 'Boosted', "jet1Tau3", True ],
-		[ 'Boosted', "jet1Tau21", True, 1.0, 0.7 ],
-		[ 'Boosted', "jet1Tau31", True, 0.5, 0.8 ],
-		[ 'Boosted', "jet1Tau32", True ],
+		#[ 'Boosted', "jet1Tau21", True, 1.0, 0.7 ],
+		#[ 'Boosted', "jet1Tau31", True, 0.5, 0.8 ],
+		#[ 'Boosted', "jet1Tau32", True ],
 		#[ 'Boosted', "jet2Tau1", True ],
 		#[ 'Boosted', "jet2Tau2", True ],
 		#[ 'Boosted', "jet2Tau3", True ],
-		[ 'Boosted', "jet2Tau21", True, 0.5, 0.7 ],
-		[ 'Boosted', "jet2Tau31", True, 0.5, 0.6 ],
-		[ 'Boosted', "jet2Tau32", True ],
-		[ 'Boosted', "deltaEtaDijet", True, 1, 0.80 ],
-		[ 'Boosted', "jet1SubjetPtRatio", True ],
-		[ 'Boosted', "jet2SubjetPtRatio", True ],
+		[ 'Boosted', "jet2Tau21", 20, 0., 1., True, 0.5, 0.7 ],
+		[ 'Boosted', "jet2Tau31", 20, 0., 1., True, 0.5, 0.6 ],
+		[ 'Boosted', "jet2Tau32", 20, 0., 1., True ],
+		#[ 'Boosted', "deltaEtaDijet", True, 1, 0.80 ],
+		#[ 'Boosted', "jet1SubjetPtRatio", True ],
+		#[ 'Boosted', "jet2SubjetPtRatio", True ],
 	]
 
 	if 'Simple' in process: 
-		
-		if 'all' in selection: 
-			if 'Boosted' in version: cuts = [ '_cutDijet', '_cutMassAsym', '_cutTau21', '_cutCosTheta' ]
-			elif 'Resolved' in version: cuts = [ '', '_cutMassPair', '_cutDEta' ]
-		else:
-			cuts = [ selection ]
-
-		if 'Resolved' in version: 
-			folder = ''
-			variables = [ x[1:] for x in var if ( 'Resolved' in x[0] ) ]
-		else: 
-			folder = '' #version+'AnalysisPlotsPruned/'
-			variables = [ x[1:] for x in var if ( 'Boosted' in x[0] ) ]
-
-		RUNOptimization( QCDSample, SigSample, folder, variables, cuts, str(mass) )
+		variables = [ x[1:] for x in var if ( version in x[0] ) ]
+		p0 = Process( target=RUNOptimization, args=( bkgSamples, SigSample, treename, variables, mass, 10 ) )
+		p0.start()
+		p0.join()
 
 	elif 'TMVA' in process:
 		variables = [ x[1] for x in var if ( version in x[0] ) ]
-		outputFileName = 'Rootfiles/RUN'+version+'OptimizationStudiesTMP.root'
 		for sample in bkgSamples: 
-			p0 = Process( target=RUNTMVATraining, args=( bkgSamples[ sample ], SigSample, treename, 'Rootfiles/RUNTMVATraining_'+bkgSamples[ sample ].split('_')[1]+'.root', variables ) )
+			p0 = Process( target=RUNTMVATraining, args=( bkgSamples[ sample ], SigSample, treename, 'Rootfiles/RUNTMVATraining_'+bkgSamples[ sample ].split('_')[1]+'_RPVSt'+str(mass)+'.root', variables ) )
 			p0.start()
 			p0.join()
-		p1 = Process( target=ApplicationCreateCombinedTree, args=( variables, outputFileName, bkgSamples, SigSample, treename ) )
-		p1.start()
-		p1.join()
+		#outputFileName = 'Rootfiles/RUN'+version+'OptimizationStudiesTMP.root'
+		#p1 = Process( target=ApplicationCreateCombinedTree, args=( variables, outputFileName, bkgSamples, SigSample, treename ) )
+		#p1.start()
+		#p1.join()
+	elif 'Print' in process:
+		results = {}
+		variables = [ x[1] for x in var if ( version in x[0] ) ]
+		for sample in bkgSamples: 
+			optValues = getOptimizeValues( variables, sample )
+			results[ sample ] = optValues
+
+		listSamples = []
+		finalValues = {}
+		print '\t', '\t'.join(str(p) for p in variables) 
+		for k in results:
+			listSamples.append( k )
+			tmpMax = []
+			for q in results[ k ]:
+				if ( q[0] == effS/100. ): 
+					for v in variables:
+						if (q[1] == v ): tmpMax.append( q[3] )
+			print k, '\t', '\t'.join(str(round(p, 2)) for p in tmpMax) 
+				
 
 	else:
 		print 'No', process, 'in RUNOptimization. Have a nice day! :)'

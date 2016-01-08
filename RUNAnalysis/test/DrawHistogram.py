@@ -33,7 +33,8 @@ gStyle.SetOptStat(0)
 def plotSignalBkg( signalFiles, bkgFiles, Grom, nameInRoot, name, xmin, xmax, rebinX, labX, labY, log, PU, version, Norm=False ):
 	"""docstring for plot"""
 
-	outputFileName = name+'_'+Grom+'_RPVSt'+jj+mass+'_'+PU+'_PlusBkg_'+version+'AnalysisPlots.'+ext 
+	if 'mini' in process: outputFileName = name+'_'+Grom+'_RPVSt'+jj+mass+'_'+PU+'_PlusBkg_Mini'+version+'AnalysisPlots.'+ext 
+	else: outputFileName = name+'_'+Grom+'_RPVSt'+jj+mass+'_'+PU+'_PlusBkg_'+version+'AnalysisPlots.'+ext 
 	print 'Processing.......', outputFileName
 
 	legend=TLegend(0.60,0.60,0.90,0.87)
@@ -766,6 +767,63 @@ def plotQuality( dataFile, bkgFiles, Grom, nameInRoot, name, xmin, xmax, rebinX,
 	can.SaveAs( 'Plots/'+ outputFileName )
 	del can
 
+def plotSystematics( inFileSample, Grom, name, xmin, xmax, rebinX, labX, labY, log, version, proc):
+	"""docstring for plot"""
+
+	if 'JES' in proc: typeSys = 'JES'
+
+	outputFileName = name+'_RPVSt'+mass+'to'+jj+'_'+typeSys+version+'.'+ext 
+	print 'Processing.......', outputFileName
+
+	histos = {}
+	histos[ 'Nominal' ] = inFileSample[ 'Signal' ][0].Get( version+'AnalysisPlots'+Grom+'/'+name )
+	histos[ 'Nominal' ].Scale( inFileSample[ 'Signal' ][1] )
+	histos[ 'Up' ] = inFileSample[ 'Signal' ][0].Get( version+'AnalysisPlots'+Grom+typeSys+'Up/'+name )
+	histos[ 'Up' ].Scale( inFileSample[ 'Signal' ][1] )
+	histos[ 'Down' ] = inFileSample[ 'Signal' ][0].Get( version+'AnalysisPlots'+Grom+typeSys+'Down/'+name )
+	histos[ 'Down' ].Scale( inFileSample[ 'Signal' ][1] )
+
+	if rebinX > 1: 
+		for k in histos: histos[ k ].Rebin( rebinX )
+
+	binWidth = histos['Nominal'].GetBinWidth(1)
+
+	legend=TLegend(0.60,0.75,0.90,0.90)
+	legend.SetFillStyle(0)
+	legend.SetTextSize(0.03)
+	legend.AddEntry( histos[ 'Nominal' ], 'Nominal', 'l' )
+	legend.AddEntry( histos[ 'Up' ], typeSys+'Up', 'l' )
+	legend.AddEntry( histos[ 'Down' ], typeSys+'Down', 'l' )
+
+	histos[ 'Nominal' ].SetLineWidth(2)
+	histos[ 'Up' ].SetLineWidth(2)
+	histos[ 'Down' ].SetLineWidth(2)
+	histos[ 'Nominal' ].SetLineColor(kBlack)
+	histos[ 'Up' ].SetLineColor(kBlue)
+	histos[ 'Down' ].SetLineColor(kRed)
+	histos[ 'Nominal' ].SetMaximum( 1.2* max( histos[ 'Nominal' ].GetMaximum(), histos[ 'Up' ].GetMaximum(), histos[ 'Down' ].GetMaximum() ) ) 
+	if xmax: histos[ 'Nominal' ].GetXaxis().SetRangeUser( xmin, xmax )
+
+	can = TCanvas('c1', 'c1',  10, 10, 750, 500 )
+	if log: can.SetLogy()
+	#histos['Sample1'].SetMinimum(10)
+	histos['Nominal'].Draw('histe')
+	histos['Up'].Draw('histe same')
+	histos['Down'].Draw('histe same')
+	histos['Nominal'].GetYaxis().SetTitleOffset(0.9)
+	histos['Nominal'].GetYaxis().SetTitle( 'Events / '+str(binWidth) )
+
+	labelAxis( name, histos['Nominal'], Grom )
+	legend.Draw()
+	CMS_lumi.extraText = "Preliminary Simulation"
+	CMS_lumi.relPosX = 0.12
+	CMS_lumi.CMS_lumi(can, 4, 0)
+	if not (labX and labY): labels( name, '', '' )
+	else: labels( name, '', '', labX, labY )
+
+	can.SaveAs( 'Plots/'+outputFileName )
+	del can
+
 def tmpplotDiff( dataFile, name1, name2 ):
 	"""docstring for plot"""
 
@@ -845,7 +903,7 @@ if __name__ == '__main__':
 	parser.add_argument('-v', '--version', action='store', default='Boosted', help='Boosted or non version, example: Boosted' )
 	parser.add_argument('-g', '--grom', action='store', default='Pruned', help='Grooming Algorithm, example: Pruned, Filtered.' )
 	parser.add_argument('-m', '--mass', action='store', default='100', help='Mass of Stop, example: 100' )
-	parser.add_argument('-C', '--cut', action='store', default='_cutDEta', help='cut, example: cutDEta' )
+	parser.add_argument('-C', '--cut', action='store', default='_cutMassAsym', help='cut, example: cutDEta' )
 	parser.add_argument('-pu', '--PU', action='store', default='Asympt25ns', help='PU, example: PU40bx25.' )
 	parser.add_argument('-s', '--single', action='store', default='all', help='single histogram, example: massAve_cutDijet.' )
 	parser.add_argument('-q', '--QCD', action='store', default='Pt', help='Type of QCD binning, example: HT.' )
@@ -883,23 +941,25 @@ if __name__ == '__main__':
 	QCDSF = 0.92
 
 	if ( 'mini' in process ) or ( '2dOpt' in process ):
-		signalFiles[ 'Signal' ] = [ TFile.Open('Rootfiles/RUNMini'+version+'Analysis_RPVSt100tojj_RunIISpring15MiniAODv2-74X_Asympt25ns_v08_v03.root'), 1, 'RPV #tilde{t}#rightarrow '+jj+' 100 GeV', kRed-4 ]
-		bkgFiles[ 'QCD' ] = [ TFile.Open('Rootfiles/RUNMini'+version+'Analysis_QCDPtAll_RunIISpring15MiniAODv2-74X_Asympt25ns_v08_v03.root'), QCDSF, 'QCD', kBlue-4 ]
+		signalFiles[ 'Signal' ] = [ TFile.Open('Rootfiles/RUNMini'+version+'Analysis_RPVStopStopToJets_UDD312_M-'+str(mass)+'-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'), 1, 'RPV #tilde{t}#rightarrow '+jj+' '+str(mass)+' GeV', kRed-4]
+		bkgFiles[ 'QCD' ] = [ TFile.Open('Rootfiles/RUNMini'+version+'Analysis_QCDPtAll_TuneCUETP8M1_13TeV_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'), QCDSF, 'QCD', kBlue-4 ]
+		bkgFiles[ 'TTJets' ] = [ TFile.Open('Rootfiles/RUNMini'+version+'Analysis_TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'),	1, 't #bar{t} + Jets', kGreen ]
+		bkgFiles[ 'WJets' ] = [ TFile.Open('Rootfiles/RUNMini'+version+'Analysis_WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'), 1 , 'W + Jets', kMagenta ]
+		bkgFiles[ 'WWTo4Q' ] = [ TFile.Open('Rootfiles/RUNMini'+version+'Analysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'), 1 , 'WW (had)', kMagenta+2 ]
+		bkgFiles[ 'ZJets' ] = [ TFile.Open('Rootfiles/RUNMini'+version+'Analysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'), 1, 'Z + Jets', kOrange ]
+		bkgFiles[ 'ZZTo4Q' ] = [ TFile.Open('Rootfiles/RUNMini'+version+'Analysis_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'), 1, 'ZZ (had)', kOrange+2 ]
+		#bkgFiles[ 'WZ' ] = [ TFile.Open('Rootfiles/RUNMini'+version+'Analysis_WZ_TuneCUETP8M1_13TeV-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'), 1, 'WZ', kCyan ]
 	else:
 		#dataFile = TFile.Open('Rootfiles/RUNAnalysis_JetHTRun2015D-All_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root')
 		dataFile = TFile.Open('Rootfiles/RUNAnalysis_JetHTRun2015D-All_v09_v01.root')
-		bkgFiles[ 'QCD' ] = [ TFile.Open('Rootfiles/RUNAnalysis_QCDPtAll_TuneCUETP8M1_13TeV_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'), QCDSF*lumi, 'QCD', kBlue-4 ]
-		bkgFiles[ 'TTJets' ] = [ TFile.Open('Rootfiles/RUNAnalysis_TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'),	lumi, 't #bar{t} + Jets', kGreen ]
-		bkgFiles[ 'WJets' ] = [ TFile.Open('Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'), lumi , 'W + Jets', kMagenta ]
-		bkgFiles[ 'WWTo4Q' ] = [ TFile.Open('Rootfiles/RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'), lumi , 'WW (had)', kMagenta+2 ]
-		bkgFiles[ 'ZJets' ] = [ TFile.Open('Rootfiles/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'), lumi, 'Z + Jets', kOrange ]
-		bkgFiles[ 'ZZTo4Q' ] = [ TFile.Open('Rootfiles/RUNAnalysis_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'), lumi, 'ZZ (had)', kOrange+2 ]
-		bkgFiles[ 'WZ' ] = [ TFile.Open('Rootfiles/RUNAnalysis_WZ_TuneCUETP8M1_13TeV-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'), lumi, 'WZ', kCyan ]
-		if 'Resolved' in version: 
-			signalFiles[ 'Signal' ] = [ TFile.Open('Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-350-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'), lumi, 'RPV #tilde{t}#rightarrow '+jj+' 350 GeV', kRed-4]
-		else: 
-			#signalFiles[ 'Signal' ] = [ TFile.Open('Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-100-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'), lumi, 'RPV #tilde{t}#rightarrow '+jj+' 100 GeV', kRed-4]
-			signalFiles[ 'Signal' ] = [ TFile.Open('Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-200-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v02.root'), lumi, 'RPV #tilde{t}#rightarrow '+jj+' 200 GeV', kRed-6]
+		signalFiles[ 'Signal' ] = [ TFile.Open('Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(mass)+'-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'), lumi, 'RPV #tilde{t}#rightarrow '+jj+' '+str(mass)+' GeV', kRed-4]
+		bkgFiles[ 'QCD' ] = [ TFile.Open('Rootfiles/RUNAnalysis_QCDPtAll_TuneCUETP8M1_13TeV_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'), QCDSF*lumi, 'QCD', kBlue-4 ]
+		bkgFiles[ 'TTJets' ] = [ TFile.Open('Rootfiles/RUNAnalysis_TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'),	lumi, 't #bar{t} + Jets', kGreen ]
+		bkgFiles[ 'WJets' ] = [ TFile.Open('Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'), lumi , 'W + Jets', kMagenta ]
+		bkgFiles[ 'WWTo4Q' ] = [ TFile.Open('Rootfiles/RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'), lumi , 'WW (had)', kMagenta+2 ]
+		bkgFiles[ 'ZJets' ] = [ TFile.Open('Rootfiles/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'), lumi, 'Z + Jets', kOrange ]
+		bkgFiles[ 'ZZTo4Q' ] = [ TFile.Open('Rootfiles/RUNAnalysis_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'), lumi, 'ZZ (had)', kOrange+2 ]
+		bkgFiles[ 'WZ' ] = [ TFile.Open('Rootfiles/RUNAnalysis_WZ_TuneCUETP8M1_13TeV-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'), lumi, 'WZ', kCyan ]
 			
 
 	dijetlabX = 0.85
@@ -995,7 +1055,7 @@ if __name__ == '__main__':
 		[ '1D', 'Boosted', 'jet2Pt', 100, 1500, 1, '', '', False],
 		[ '1D', 'Boosted', 'jet2Eta', -3, 3, 1, '', '', False],
 		[ '1D', 'Boosted', 'jet2Mass', 0, massMaxX, 1, '', '', False],
-		[ '1D', 'Boosted', 'massAve', 0, massMaxX, 1, '', '', True],
+		[ '1D', 'Boosted', 'massAve', 0, massMaxX, 1, '', '', False],
 
 		[ '1D', 'Resolved', 'HT', 700, 5000, 2, '', '', True],
 		[ '1D', 'Resolved', 'jet1Pt', 100, 1500, 2, '', '', True],
@@ -1103,12 +1163,14 @@ if __name__ == '__main__':
 		#[ 'simple', 'massAve_cutSubjetPtRatio',  massMaxX, '', '', True ],
 		[ 'simple', 'massAve_cutTau31',  massMaxX, '', '', False],
 		[ 'simple', 'massAve_cutTau21',  massMaxX, '', '', False],
+		
+		[ 'sys', 'Boosted', 'massAve', 0, massMaxX, 1, 0.85, 0.45, False],
+		[ 'sys', 'Boosted', 'jet1Pt', 400, 1500, 2, 0.85, 0.45, False],
+		[ 'sys', 'Boosted', 'jet2Pt', 400, 1500, 2, 0.85, 0.45, False],
+		[ 'sys', 'Boosted', 'HT', 700, 2000, 5, 0.85, 0.45, False],
 
 		#[ 'mini', version, 'massAve_NOMassAsymTau21CosTheta', 0, massMaxX, 1, '', '', False],
-		[ 'mini', version, 'massAve_Tau21CosTheta', 0, massMaxX, 1, '', '', False],
-		[ 'mini', version, 'massAve_Tau21CosThetaDEta', 0, massMaxX, 1, '', '', False],
-		[ 'mini', version, 'massAve_NOMassAsymTau31CosTheta', 0, massMaxX, 1, '', '', False],
-		[ 'mini', version, 'massAve_NOMassAsymTau31CosThetaDEta', 0, massMaxX, 1, '', '', False],
+		[ 'mini', version, 'massAve_cutMassAsym', 0, massMaxX, 1, '', '', False],
 		#[ 'mini', version, 'massAve_Tau21NOCosTheta', 0, massMaxX, 1, '', '', False],
 		#[ 'mini', version, 'massAve_NOMassAsymTau21', 0, massMaxX, 1, '', '', False],
 		[ '2dOpt', 'massAveVsHT', 'Average Pruned Mass [GeV]', 'HT [GeV]', 0, massMaxX, 1, 700, HTMaxX, 1, jetMassHTlabX, jetMassHTlabY],
@@ -1178,3 +1240,6 @@ if __name__ == '__main__':
 				
 				elif '2dOpt' in process: 
 					plot2DOptimization( inputMiniFileSignal, inputMiniFileQCD, optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU )
+				elif 'sys' in process:
+					for cut in selection: plotSystematics( signalFiles, optGrom, i[0]+cut, i[1], i[2], i[3], i[4], i[5], i[6], version, process )
+				

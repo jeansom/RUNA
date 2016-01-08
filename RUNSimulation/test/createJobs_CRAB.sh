@@ -21,15 +21,16 @@
 ### PARAMETERS
 #####################################
 
-stop1=100	## You can use this parameters later to make everything simpler. 
+stop1=200	## You can use this parameters later to make everything simpler. 
 stop2=250	## You can use this parameters later to make everything simpler. Now I am not using them at all
 
 totalNumberEvents=200000
 
-Name=RPVSt${stop1}tojj_13TeV_pythia8
+#Name=RPVSt${stop1}tojj_13TeV_pythia8
+Name=RPVStopStopToJets_UDD312_M-${stop1}-madgraph
 LHEFile=/store/user/algomez/lhe/RPVStop${stop1}_UDD312_13TeV_200k.lhe					#### DONT USE the entire eos path!!!!!
 
-PU=( 'Asympt25ns' 'Asympt50ns' )									#### You can remove the PU scenario that you are not going to use.
+PU=( 'Asympt25ns' ) # 'Asympt50ns' )									#### You can remove the PU scenario that you are not going to use.
 
 
 #####################################################

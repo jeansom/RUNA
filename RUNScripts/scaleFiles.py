@@ -64,7 +64,7 @@ if __name__ == '__main__':
 	parser.add_argument( '-s', '--sample', action='store', dest='sample', default="QCD", help='Sample to scale.' )
 	parser.add_argument( '-m', '--mass', action='store', dest='mass', default='100', help='Mass of the Stop' )
 	parser.add_argument( '-p', '--pileup', action='store',  dest='pileup', default='Asympt25ns', help='Pileup' )
-	parser.add_argument( '-v', '--version', action='store',  dest='version', default='v06_v01', help='Pileup' )
+	parser.add_argument( '-v', '--version', action='store',  dest='version', default='v08_v01', help='Pileup' )
 	parser.add_argument( '-l', '--lumi', action='store', type=float, dest='lumi', default=1000, help='Lumi' )
 	
 	try:
@@ -96,7 +96,7 @@ if __name__ == '__main__':
 					]
 
 			for pt in ptBins:
-				scaleFiles( 'RUNAnalysis_QCD_Pt_'+pt+'_RunIISpring15DR74_'+pu+'_'+version, lumi )
+				scaleFiles( 'RUNAnalysis_QCD_Pt_'+pt+'_RunIISpring15MiniAODv2-74X_'+pu+'_'+version, lumi )
 		else:
 			htBins = [
 					'500to700',
@@ -107,9 +107,9 @@ if __name__ == '__main__':
 					]
 
 			for ht in htBins:
-				scaleFiles( 'RUNAnalysis_QCD_HT'+ht+'_RunIISpring15DR74_'+pu+'_'+version, lumi )
+				scaleFiles( 'RUNAnalysis_QCD_HT'+ht+'_RunIISpring15MiniAODv2-74X_'+pu+'_'+version, lumi )
 
 	elif 'RPV' in sample:
-		scaleFiles( 'RUNAnalysis_RPVSt'+mass+'tojj_RunIISpring15DR74_'+pu+'_'+version, lumi )
+		scaleFiles( 'RUNAnalysis_RPVSt'+mass+'tojj_RunIISpring15MiniAODv2-74X_'+pu+'_'+version, lumi )
 	elif 'WWTo4Q' in sample:
-		scaleFiles( 'RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15DR74_'+pu+'_'+version, lumi )
+		scaleFiles( 'RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_'+pu+'_'+version, lumi )

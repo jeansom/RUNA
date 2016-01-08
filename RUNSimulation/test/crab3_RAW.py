@@ -14,7 +14,7 @@ config.Data.unitsPerJob = 1
 NJOBS = 1000
 config.Data.totalUnits = config.Data.unitsPerJob * NJOBS
 config.Data.publication = True
-config.Data.publishDataName = 'PROC'
+config.Data.outputDatasetTag = 'PROC'
 config.Data.ignoreLocality = True
 
 config.Site.storageSite = 'T3_US_FNALLPC'

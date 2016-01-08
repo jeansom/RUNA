@@ -18,12 +18,11 @@ def setSelection( listSel, xMin=0.65, yMax=0.65, align='right' ):
 
 def labels( name, PU, camp, X=0.92, Y=0.50, align='right', listSel=[] ):
 
-	if 'cutDijet' in name: listSel = [ camp, PU, 'jet p_{T} > 150 GeV', 'jet |#eta| < 2.4', 'numJets > 1' ] 
-	elif 'cutHT' in name: listSel = [ camp, PU, 'jet p_{T} > 150 GeV', 'jet |#eta| < 2.4', 'numJets > 1', 'HT > 900 GeV' ] 
-	elif ( 'cutAsym' in name ) or ('cutMassAsym' in name): listSel = [ camp, PU, 'HT > 900 GeV', 'numJets > 1', 'A < 0.1' ]
-	elif 'cutTau21' in name: listSel = [ camp, PU, 'HT > 900 GeV', 'numJets > 1', 'A < 0.1', '#tau_{21} < 0.5']
-	elif 'cutCosTheta' in name: listSel = [ camp, PU,  'HT > 900 GeV', 'numJets > 1','A < 0.1', '#tau_{21} < 0.5', '|cos(#theta*)| < 0.3']
-	elif 'SR' in name: listSel = [ 'Signal Region',  'HT > 900 GeV', 'numJets > 1','A < 0.1', '#tau_{21} < 0.5', '|cos(#theta*)| < 0.3']
+	if 'cutDijet' in name: listSel = [ 'jet p_{T} > 150 GeV', 'jet |#eta| < 2.4', 'numJets > 1' ] 
+	elif 'cutHT' in name: listSel = [ 'numJets > 1', 'p_{T}^{j1} = 500 GeV',  'p_{T}^{j2} = 450 GeV' ] 
+	elif 'cutTau21' in name: listSel = [ 'numJets > 1', 'p_{T}^{j1} = 500 GeV',  'p_{T}^{j2} = 450 GeV', '#tau_{21} < 0.6']
+	elif 'cutCosTheta' in name: listSel = [ 'numJets > 1', 'p_{T}^{j1} = 500 GeV',  'p_{T}^{j2} = 450 GeV', '#tau_{21} < 0.6', '|cos(#theta*)| < 0.2']
+	elif 'cutMassAsym' in name: listSel = [ 'numJets > 1', 'p_{T}^{j1} = 500 GeV',  'p_{T}^{j2} = 450 GeV', '#tau_{21} < 0.6', '|cos(#theta*)| < 0.2', 'A < 0.1' ]
 	elif 'cutCosThetaMassAsym' in name: listSel = [ 'HT > 900 GeV', '1st jet pt > 500 GeV', '2nd jet pt > 450 GeV', 'numJets > 1', '#tau_{21} < 0.6', '|cos(#theta*)| < 0.2','A < 0.1' ]
 	elif 'NOMassCutCosTheta' in name: listSel = [ camp, PU,  'HT > 900 GeV', 'numJets > 1','A > 0.1', '#tau_{31} < 0.4', '|cos(#theta*)| < 0.3']
 	elif 'CR' in name: listSel = [ 'Control Region',  'HT > 900 GeV', 'numJets > 1','A > 0.1', '#tau_{31} < 0.4', '|cos(#theta*)| < 0.3']
