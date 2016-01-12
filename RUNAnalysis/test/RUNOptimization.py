@@ -57,8 +57,8 @@ def getTree(filename, treename):
 
 #----------------------------------------------------------------------
 ### Main Optimization
-def RUNOptimization( BkgSamples, SigSample, treename, varList, mass, window ):
-	"""docstring for RUNOptimization"""
+def calcROCs( BkgSamples, SigSample, treename, varList, mass, window, cutsList ):
+	"""docstring for calcROCs"""
 	
 	outputFile = TFile( 'test.root', "RECREATE" )
 	
@@ -71,27 +71,46 @@ def RUNOptimization( BkgSamples, SigSample, treename, varList, mass, window ):
 			allHistos[ var[0]+"_"+bkgSample+"_SigROC"] = TH1F( var[0]+"_"+bkgSample+"_SigROC", var[0]+"_"+bkgSample+"_SigROC; "+var[0], var[1], var[2], var[3] )
 
 	print '-'*40
-	print '---- Signal'
+	print '---- Signal RPV St'+mass
 	SigFile, sigEvents = getTree( SigSample, treename )
 	sigNumEntries = sigEvents.GetEntriesFast()
 	for i in xrange(sigNumEntries):
 		sigEvents.GetEntry(i)
-		for var in varList: 
-			sigMassAve = sigEvents.massAve
-			if ( ( sigMassAve > int(mass)-window ) and ( sigMassAve < int(mass)+window  ) ): allHistos[ var[0]+"_Sig" ].Fill( getattr( sigEvents, var[0] ) )
+		sigCutsList = []
+		sigMassAve = sigEvents.massAve
+		if ( ( sigMassAve > int(mass)-window ) and ( sigMassAve < int(mass)+window  ) ): 
+			if len(cutsList) > 0:
+				for cutVar in cutsList: 
+					if cutVar[4]: sigCutsList.append( True ) if ( getattr( sigEvents, cutVar[0] ) < cutVar[5] ) else sigCutsList.append( False )
+					else: sigCutsList.append( True ) if ( getattr( sigEvents, cutVar[0] ) > cutVar[5] ) else sigCutsList.append( False )
+			if all( sigCutsList ): 
+				for sigVar in varList: allHistos[ sigVar[0]+"_Sig" ].Fill( getattr( sigEvents, sigVar[0] ) )
 	
-
+	allROCs = {}
 	for bkgSample in BkgSamples: 
 		print '-'*40
 		print '---- ', bkgSample
 		BkgFile, bkgEvents = getTree( BkgSamples[ bkgSample ], treename )
 		bkgNumEntries = bkgEvents.GetEntriesFast()
+		print '---- ', bkgNumEntries
+		d = 0
 		for i in xrange(bkgNumEntries):
 			bkgEvents.GetEntry(i)
-			for var in varList: 
-				bkgMassAve = bkgEvents.massAve
-				if ( ( bkgMassAve > int(mass)-window ) and ( bkgMassAve < int(mass)+window  ) ): 
-					allHistos[ var[0]+"_"+bkgSample ].Fill( getattr( bkgEvents, var[0] ) )
+			#---- progress of the reading --------
+			fraction = 10.*i/(1.*bkgNumEntries)
+			if TMath.FloorNint(fraction) > d: print str(10*TMath.FloorNint(fraction))+'%' 
+			d = TMath.FloorNint(fraction)
+			#if i > 1000000: break
+
+			bkgCutsList = []
+			bkgMassAve = bkgEvents.massAve
+			if ( ( bkgMassAve > int(mass)-window ) and ( bkgMassAve < int(mass)+window  ) ): 
+				if len(cutsList) > 0:
+					for cutVar in cutsList: 
+						if cutVar[4]: bkgCutsList.append( True ) if ( getattr( bkgEvents, cutVar[0] ) < cutVar[5] ) else bkgCutsList.append( False )
+						else: bkgCutsList.append( True ) if ( getattr( bkgEvents, cutVar[0] ) > cutVar[5] ) else bkgCutsList.append( False )
+				if all( bkgCutsList ): 
+					for bkgVar in varList: allHistos[ bkgVar[0]+'_'+bkgSample ].Fill( getattr( bkgEvents, bkgVar[0] ) )
 
 		for var in varList:
 			BkgHisto = allHistos[ var[0]+"_"+bkgSample ]
@@ -112,11 +131,13 @@ def RUNOptimization( BkgSamples, SigSample, treename, varList, mass, window ):
 			for ibin in range( firstBin, lastBin ):
 				if var[4]:
 					#print ibin, SigHisto.GetXaxis().GetBinLowEdge(ibin), SigHisto.Integral( 0, ibin ), SigHisto.Integral( firstBin, ibin ) #, SigTotal, SigHisto.Integral( 0, ibin+1 ) / SigTotal,  BkgHisto.GetXaxis().GetBinLowEdge(ibin), BkgHisto.Integral( 0, ibin+1 ) , BkgTotal, BkgHisto.Integral( 0, ibin+1 ) / BkgTotal
-					effBkg = 1 - BkgHisto.Integral( firstBin, ibin ) / BkgTotal 
+					try: effBkg = 1 - BkgHisto.Integral( firstBin, ibin ) / BkgTotal 
+					except ZeroDivisionError: effBkg = 1
 					allHistos[ var[0]+"_"+bkgSample+"_BkgROC" ].SetBinContent( ibin, effBkg )
 					BkgROCValues.append( effBkg )
 
-					effSig = SigHisto.Integral( firstBin, ibin ) / SigTotal 
+					try: effSig = SigHisto.Integral( firstBin, ibin ) / SigTotal 
+					except ZeroDivisionError: effSig = 0
 					allHistos[ var[0]+"_"+bkgSample+"_SigROC" ].SetBinContent( ibin, effSig )
 					SigROCValues.append( effSig )
 					SigROCBins.append( ibin )
@@ -133,57 +154,88 @@ def RUNOptimization( BkgSamples, SigSample, treename, varList, mass, window ):
 					SigROCBins.append( ibin )
 					SigROCLowEdge.append( SigHisto.GetXaxis().GetBinLowEdge(ibin+1) )
 
-			BkgROCArray = np.asarray( BkgROCValues )
-			SigROCArray = np.asarray( SigROCValues )
-			SigROCBinsArray = np.asarray( SigROCBins )
-			SigROCLowEdgeArray = np.asarray( SigROCLowEdge )
-			'''
-			if ( len(var) > 2 ): 
-				x = find_nearest(SigROCLowEdgeArray, var[2])
-				print 'For cut', var[2], 'in', var[0]+cut, 'effSig: ', SigROCArray[x], ', effBkg: ', BkgROCArray[x]
-			if ( len(var) > 3 ): 
-				y = find_nearest( SigROCArray, var[3] )
-				print 'Optimal value for ', var[0]+cut, SigROCLowEdge[y], 'is', SigROCArray[y]
-			
-			'''
-			ROC = TGraph( len( BkgROCArray ), SigROCArray, BkgROCArray )		
-			ROC.Write(var[0]+"_"+bkgSample+"_ROC")
-			#dictROC[  ] = ROC
-		'''
-		f1 = TF1("f1","x",0,1)
-		f1.SetLineColor(1)
-		f1.SetLineStyle(3)
-		can = TCanvas('c1', 'c1',  10, 10, 750, 500 )
-		can.SetGrid()
-		multiGraph = TMultiGraph()
-		legend=TLegend(0.70,0.60,0.90,0.90)
-		legend.SetFillStyle(0)
-		legend.SetTextSize(0.03)
-		dummyColor = 0
-		for h in dictROC:
-			dummyColor += 1
-			if (dummyColor == 10): dummyColor = 40
-			legend.AddEntry( dictROC[ h ], h, 'l' )
-			dictROC[h].SetLineColor( dummyColor )
-			dictROC[h].SetLineWidth( 2 )
-			dictROC[h].SetMarkerStyle(4)
-			multiGraph.Add( dictROC[h] )
-		multiGraph.Draw("ALP")
-		multiGraph.GetXaxis().SetRangeUser(-0.05,1.05)
-		multiGraph.GetYaxis().SetRangeUser(-0.05,1.05)
-		multiGraph.GetXaxis().SetTitle('Signal efficiency')
-		multiGraph.GetYaxis().SetTitle('Bkg rejection')
-		multiGraph.GetYaxis().SetTitleOffset(0.95)
-		multiGraph.SetTitle('')
-		f1.Draw("same")
-		legend.Draw()
-		can.SaveAs('Plots/'+version+'RPVSt'+mass+'_ROC'+cut+'.pdf')
-		del can
-		'''
+			allROCs[ var[0]+"_"+bkgSample+"_ROC" ] = [ BkgROCValues, SigROCValues, SigROCBins, SigROCLowEdge ]
 
+	outputTextFile = 'ROC'+version+'Values_RPVSt'+mass+'_cut'+str(len(cuts))+'.txt'
+	print '--- Creating ', outputTextFile 
+	print >> open(outputTextFile, 'w+'), allROCs
 	outputFile.Write()
 	outputFile.Close()
-	sys.exit(0)
+
+def makeROCs( textFile, variables, bkgSamples, perVariable, cutsList, printValue, printVar ):
+	"""docstring for makeROCs"""
+
+	f = open( textFile, 'r' )
+	tmpDictVar = eval( f.read() )
+
+	dictVar = {}
+	for q in tmpDictVar:
+		for tmpVar in variables:
+			if tmpVar[0] in q: 
+				dictVar[ q ] = tmpDictVar[ q ]
+
+	dictROC = {}
+	for varROC in dictVar:
+		BkgROCArray = np.asarray( dictVar[ varROC ][0] )
+		SigROCArray = np.asarray( dictVar[ varROC ][1] )
+		SigROCBinsArray = np.asarray( dictVar[ varROC ][2] )
+		SigROCLowEdgeArray = np.asarray( dictVar[ varROC ][3] )
+		ROC = TGraph( len( BkgROCArray ), SigROCArray, BkgROCArray )		
+		dictROC[ varROC ] = ROC
+		if (printValue and ( printVar in varROC )):
+			'''
+			if var[0] in varROC:
+				x = find_nearest(SigROCLowEdgeArray, var[6] )
+				print 'For cut', var[6], 'in', var[0], 'effSig: ', SigROCArray[x], ', effBkg: ', BkgROCArray[x]
+			'''
+			for Cut in cutsList:
+				if printVar in Cut[0]:
+					y = find_nearest( SigROCArray, Cut[6] )
+					print 'Optimal value for ', varROC, SigROCLowEdgeArray[y], 'is', SigROCArray[y], 'bkgRej = ', BkgROCArray[y]
+
+	if not printValue:
+		if perVariable:
+			for var in variables:
+				dictVariables = { rocs: dictROC[ rocs ] for rocs in dictROC if var[0] in rocs }
+				plotROC( var[0], dictVariables, len(cutsList) )
+		else: 
+			for bkg in bkgSamples: 
+				dictBkg = { rocs: dictROC[ rocs ] for rocs in dictROC if bkg in rocs }
+				plotROC( bkg, dictBkg, len(cutsList) )
+
+def plotROC( name, dictROC, numCuts ):
+	"""docstring for plotROC"""
+	
+	f1 = TF1("f1","x",0,1)
+	f1.SetLineColor(1)
+	f1.SetLineStyle(3)
+	can = TCanvas('c1', 'c1',  10, 10, 750, 500 )
+	can.SetGrid()
+	multiGraph = TMultiGraph()
+	legend=TLegend(0.70,0.60,0.90,0.90)
+	legend.SetFillStyle(0)
+	legend.SetTextSize(0.03)
+	dummyColor = 0
+	for h in dictROC:
+		dummyColor += 1
+		if (dummyColor == 10): dummyColor = 40
+		tmpName = h.replace( name+'_', '' ).replace( '_ROC', '' )
+		legend.AddEntry( dictROC[ h ], tmpName, 'l' )
+		dictROC[h].SetLineColor( dummyColor )
+		dictROC[h].SetLineWidth( 2 )
+		dictROC[h].SetMarkerStyle(4)
+		multiGraph.Add( dictROC[h] )
+	multiGraph.Draw("ALP")
+	multiGraph.GetXaxis().SetRangeUser(-0.05,1.05)
+	multiGraph.GetYaxis().SetRangeUser(-0.05,1.05)
+	multiGraph.GetXaxis().SetTitle('Signal efficiency')
+	multiGraph.GetYaxis().SetTitle('Bkg rejection')
+	multiGraph.GetYaxis().SetTitleOffset(0.95)
+	multiGraph.SetTitle( name )
+	f1.Draw("same")
+	legend.Draw()
+	can.SaveAs('Plots/'+name+'_'+version+'RPVSt'+mass+'_ROC_cut'+str(numCuts)+'.png')
+	del can
 
 #----------------------------------------------------------------------
 def RUNTMVATraining( BkgSample, SigSample, treename, outputFileName, variables ):
@@ -207,7 +259,8 @@ def RUNTMVATraining( BkgSample, SigSample, treename, outputFileName, variables )
 	factory.AddTarget( 'massAve', 'F' )
 	for k in variables: factory.AddVariable( k, "F" )
 
-	factory.SetWeightExpression( "weight" if ( 'Mini' in inputFiles ) else 'puWeight*lumiWeight' )
+	#factory.SetWeightExpression( "weight" if ( 'Mini' in inputFiles ) else 'puWeight*lumiWeight' )
+	factory.SetWeightExpression( 'puWeight*lumiWeight' )
 
 	# define from which trees data are to be taken
 	factory.AddSignalTree( sigTree ) 
@@ -383,7 +436,9 @@ if __name__ == '__main__':
 	
 	parser = argparse.ArgumentParser()
 	parser.add_argument( '-m', '--mass', action='store', dest='mass', default=100, help='Mass of the Stop' )
-	parser.add_argument( '-i', '--inputFiles', action='store',  dest='inputFiles', default='', help='From my root files: RUNMiniAnalysis or RUNAnalysis.')
+	parser.add_argument( '-t', '--typeROC', action='store',  dest='typeROC', default='var', help='Type of ROC: variables only (var) or bkgs only (bkg)')
+	parser.add_argument( '-P', '--printValue', action='store',  dest='printValue', type=bool, default=False, help='Print values of ROCs')
+	parser.add_argument( '-q', '--quantity', action='store',  dest='quantity', default='massAsym', help='Variable to print ROC.')
 	parser.add_argument( '-s', '--selection', action='store',  dest='selection', default='', help='Selection, like _cutDEta' )
 	parser.add_argument( '-p', '--process', action='store',  dest='process', default='Simple', help='Process: simple or TMVA' )
 	parser.add_argument( '-v', '--version', action='store',  dest='version', default='Boosted', help='Variable to optimize, as histogram in rootfile.' )
@@ -399,29 +454,25 @@ if __name__ == '__main__':
 	selection = args.selection
 	process = args.process
 	version = args.version
-	inputFiles = args.inputFiles
+	typeROC = args.typeROC
+	quantity = args.quantity
+	printValue = args.printValue
 	effS = args.effS
 
 	bkgSamples = {}
-	#bkgSamples[ 'QCDPtAll' ] = 'Rootfiles/RUNAnalysis_QCDPtAll_TuneCUETP8M1_13TeV_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	bkgSamples[ 'QCDPtAll' ] = 'Rootfiles/RUNAnalysis_QCDPtAll_TuneCUETP8M1_13TeV_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 	bkgSamples[ 'WWTo4Q' ] = 'Rootfiles/RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
-	#bkgSamples[ 'WJetsToQQ' ] = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
-	#bkgSamples[ 'ZZTo4Q' ] = 'Rootfiles/RUNAnalysis_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
-	#bkgSamples[ 'ZJetsToQQ' ] = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
-	#bkgSamples[ 'TTJets' ] = 'Rootfiles/RUNAnalysis_TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	bkgSamples[ 'WJetsToQQ' ] = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	bkgSamples[ 'ZZTo4Q' ] = 'Rootfiles/RUNAnalysis_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	bkgSamples[ 'ZJetsToQQ' ] = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	bkgSamples[ 'TTJets' ] = 'Rootfiles/RUNAnalysis_TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 	bkgSamples[ 'WZ' ] = 'Rootfiles/RUNAnalysis_WZ_TuneCUETP8M1_13TeV-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 
-	QCDSample = 'Rootfiles/RUNAnalysis_QCDPtAll_TuneCUETP8M1_13TeV_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
-	WWJetsSample = 'Rootfiles/RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 	SigSample = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(mass)+'-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 	treename = "RUNATree/RUNATree" if ( 'Resolved' in version ) else 'RUNATreePruned/RUNATree'
-	if 'Mini' in inputFiles:
-		QCDSample = QCDSample.replace('Analysis', 'Mini'+version+'Analysis' )
-		SigSample = SigSample.replace('Analysis', 'Mini'+version+'Analysis' )
-		WWJetsSample = SigSample.replace('Analysis', 'Mini'+version+'Analysis' )
-		treename = 'RUNAMiniTree'
 
 	var = [
+		## Version, Variable, nBins, minX, maxX, Below value, cut, Check ROC value
 		[ 'Resolved', 'mindR', True, 1.5, 0.8 ],
 		##[ 'Resolved', 'massAve', True ],
 		#[ 'Resolved', 'deltaEtaDijet1', True,  ],
@@ -439,31 +490,32 @@ if __name__ == '__main__':
 		#[ 'Boosted', "jet1Pt", True ],
 		#[ 'Boosted', "jet2Pt", True ],
 		##[ 'Boosted', "massAve", True ],
-		[ 'Boosted', "massAsym", 20, 0., 1., True, 0.1, 0.40 ],
-		#[ 'Boosted', "jet1CosThetaStar", True, 0.3, 0.8 ],
-		[ 'Boosted', "jet2CosThetaStar", 20, 0., 1., True, 0.3, 0.8 ],
-		#[ 'Boosted', "jet1Tau1", True ],
-		#[ 'Boosted', "jet1Tau2", True ],
-		#[ 'Boosted', "jet1Tau3", True ],
-		#[ 'Boosted', "jet1Tau21", True, 1.0, 0.7 ],
-		#[ 'Boosted', "jet1Tau31", True, 0.5, 0.8 ],
-		#[ 'Boosted', "jet1Tau32", True ],
-		#[ 'Boosted', "jet2Tau1", True ],
-		#[ 'Boosted', "jet2Tau2", True ],
-		#[ 'Boosted', "jet2Tau3", True ],
-		[ 'Boosted', "jet2Tau21", 20, 0., 1., True, 0.5, 0.7 ],
-		[ 'Boosted', "jet2Tau31", 20, 0., 1., True, 0.5, 0.6 ],
-		[ 'Boosted', "jet2Tau32", 20, 0., 1., True ],
-		#[ 'Boosted', "deltaEtaDijet", True, 1, 0.80 ],
-		#[ 'Boosted', "jet1SubjetPtRatio", True ],
-		#[ 'Boosted', "jet2SubjetPtRatio", True ],
+		[ 'Boosted', "massAsym", 20, 0., 1., True, 0.3, 0.80 ],
+		[ 'Boosted', "jet1CosThetaStar", 20, 0., 1, True, 0., 0.8 ],
+		[ 'Boosted', "jet2CosThetaStar", 20, 0., 1, True, 0., 0.8 ],
+		[ 'Boosted', "jet1Tau21", 20, 0., 1., True, 0., 0  ],
+		[ 'Boosted', "jet1Tau31", 20, 0., 1., True, 0., 0  ],
+		[ 'Boosted', "jet1Tau32", 20, 0., 1., True, 0., 0  ],
+		[ 'Boosted', "jet2Tau21", 20, 0., 1., True, 0.5, 0.65 ],
+		[ 'Boosted', "jet2Tau31", 20, 0., 1., True, 0., 0 ],
+		[ 'Boosted', "jet2Tau32", 20, 0., 1., True, 0., 0  ],
+		[ 'Boosted', "deltaEtaDijet", 50, 0., 5., True, 0.7, 0.6 ],
+		[ 'Boosted', "jet1SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
+		[ 'Boosted', "jet2SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
 	]
 
-	if 'Simple' in process: 
+	if 'calcROC' in process: 
 		variables = [ x[1:] for x in var if ( version in x[0] ) ]
-		p0 = Process( target=RUNOptimization, args=( bkgSamples, SigSample, treename, variables, mass, 10 ) )
+		cuts = [ x[1:] for x in var if ( ( version in x[0] ) and ( x[6]!=x[3] ) ) ]
+		p0 = Process( target=calcROCs, args=( bkgSamples, SigSample, treename, variables, mass, 10, cuts ) )
 		p0.start()
 		p0.join()
+	
+	elif 'plotROC' in process: 
+		variables = [ x[1:] for x in var if ( ( version in x[0] ) and ( x[6]==x[3] ) ) ]
+		cuts = [ x[1:] for x in var if ( ( version in x[0] ) and ( x[6]!=x[3] ) ) ]
+		if printValue: makeROCs( 'ROC'+version+'Values_RPVSt'+mass+'_cut'+str(len(cuts)-1)+'.txt', cuts, bkgSamples, True if 'var' in typeROC else False, cuts, printValue, quantity )
+		else: makeROCs( 'ROC'+version+'Values_RPVSt'+mass+'_cut'+str(len(cuts))+'.txt', variables, bkgSamples, True if 'var' in typeROC else False, cuts, printValue, quantity )
 
 	elif 'TMVA' in process:
 		variables = [ x[1] for x in var if ( version in x[0] ) ]
@@ -495,5 +547,3 @@ if __name__ == '__main__':
 			print k, '\t', '\t'.join(str(round(p, 2)) for p in tmpMax) 
 				
 
-	else:
-		print 'No', process, 'in RUNOptimization. Have a nice day! :)'
