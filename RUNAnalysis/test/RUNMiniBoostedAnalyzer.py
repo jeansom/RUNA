@@ -129,7 +129,7 @@ def myAnalyzer( dictSamples, listCuts, signalName ):
 				else: print 'Correct selection dictionary'
 
 				if all(sigCutsList[1]):    ## pass first selection
-					plotABCD( sigCutsList[0][0], sigCutsList[0][1], listCuts[0], events, massAve, scale, sample )
+					plotABCD( sigCutsList[0], listCuts[0], events, massAve, scale, sample )
 					if all(sigCutsList[0]): 	### pass second selection
 						allHistos[ 'massAve_'+sample ].Fill( massAve, scale )
 						
@@ -164,34 +164,34 @@ def myAnalyzer( dictSamples, listCuts, signalName ):
 	#	f.close()
 	#########################
 
-def plotABCD( sel1, sel2, var, fromTree, massAve, scale, sample ):
+def plotABCD( listSel, var, fromTree, massAve, scale, sample ):
 	"""docstring for plotABCD"""
 
 	if len(var) == 2:
-		if sel1 and sel2: 
+		if listSel[0] and listSel[1]: 
 			allHistos[ 'massAve_'+sample+'_A' ].Fill( massAve, scale )
 			allHistos[ var[0][0]+'Vs'+var[1][0]+'_'+sample+'_A' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
-		elif sel1 and not sel2: 
+		elif listSel[0] and not listSel[1]: 
 			allHistos[ 'massAve_'+sample+'_B' ].Fill( massAve, scale )
 			allHistos[ 'massAve_'+sample+'_Bkg' ].Fill( massAve, scale )
 			allHistos[ var[0][0]+'Vs'+var[1][0]+'_'+sample+'_B' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
-		elif not sel1 and sel2: 
+		elif not listSel[0] and listSel[1]: 
 			allHistos[ 'massAve_'+sample+'_D' ].Fill( massAve, scale )
 			allHistos[ var[0][0]+'Vs'+var[1][0]+'_'+sample+'_D' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
 		else:
 			allHistos[ 'massAve_'+sample+'_C' ].Fill( massAve, scale )
 			allHistos[ var[0][0]+'Vs'+var[1][0]+'_'+sample+'_C' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
 	else:
-		if sel1 and (sel2[0][0] and sel2[1][0]): 
+		if listSel[0] and (listSel[1] and listSel[2]): 
 			allHistos[ 'massAve_'+sample+'_A' ].Fill( massAve, scale )
 			allHistos[ var[0][0]+'Vs'+var[1][0][3:]+'_'+sample+'_A' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
 			allHistos[ var[0][0]+'Vs'+var[1][0][3:]+'_'+sample+'_A' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[2][0] ), scale )
-		elif sel1 and not ( sel2[0][0] and sel2[1][0] ): 
+		elif listSel[0] and not ( listSel[1] and listSel[2] ): 
 			allHistos[ 'massAve_'+sample+'_B' ].Fill( massAve, scale )
 			allHistos[ 'massAve_'+sample+'_Bkg' ].Fill( massAve, scale )
 			allHistos[ var[0][0]+'Vs'+var[1][0][3:]+'_'+sample+'_B' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
 			allHistos[ var[0][0]+'Vs'+var[1][0][3:]+'_'+sample+'_B' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[2][0] ), scale )
-		elif not sel1 and ( sel2[0][0] and sel2[1][0] ): 
+		elif not listSel[0] and ( listSel[1] and listSel[2] ): 
 			allHistos[ 'massAve_'+sample+'_D' ].Fill( massAve, scale )
 			allHistos[ var[0][0]+'Vs'+var[1][0][3:]+'_'+sample+'_D' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
 			allHistos[ var[0][0]+'Vs'+var[1][0][3:]+'_'+sample+'_D' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[2][0] ), scale )
@@ -227,7 +227,7 @@ if __name__ == '__main__':
 
 	allSamples = {}
 	allSamples[ 'DATA' ] = 'Rootfiles/RUNAnalysis_JetHTRun2015D-All_v09_v03.root'
-	allSamples[ 'RPVSt'+str(mass) ] = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(mass)+'-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	if not 'Dibosons' in mass: allSamples[ 'RPVSt'+str(mass) ] = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(mass)+'-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 	allSamples[ 'QCDPtAll' ] = 'Rootfiles/RUNAnalysis_QCDPtAll_TuneCUETP8M1_13TeV_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 	allSamples[ 'TTJets' ] = 'Rootfiles/RUNAnalysis_TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 	allSamples[ 'WJetsToQQ' ] = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
@@ -238,7 +238,7 @@ if __name__ == '__main__':
 
 
 	selection = OrderedDict()
-	selection[ 'Dibosons' ] = [ [ [ 'massAsym', 0.65 ], [ 'jet1Tau21', 0.55 ], [ 'jet2Tau21', 0.55 ] ], [ [ 'jet1Tau31', 0.35 ], [ 'jet2Tau31', 0.35 ] ] ]
+	selection[ 'Dibosons' ] = [ [ [ 'massAsym', 0.65 ], [ 'jet1Tau21', 0.55 ], [ 'jet2Tau21', 0.55 ] ],  [ [ 'jet1Tau31', 0.35 ], [ 'jet2Tau31', 0.35 ] ] ]
 	selection[ 'RPVSt100' ] = [ [ [ 'massAsym', 0.30 ], [ 'deltaEtaDijet', 0.7 ] ], [ [ 'jet1Tau21', 0.5 ], [ 'jet2Tau21', 0.5 ], [ 'jet1Tau31', 0.5, 4 ], [ 'jet2Tau31', 0.5, 4 ] ] ]
 	selection[ 'RPVSt200' ] = [ [ [ 'massAsym', 0.10 ], [ 'deltaEtaDijet', 0.9 ] ], [ [ 'jet1Tau21', 0.4 ], [ 'jet2Tau21', 0.4 ] ] ]
 		
