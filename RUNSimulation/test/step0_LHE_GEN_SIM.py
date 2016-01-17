@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: Configuration/GenProduction/python/B2G-RunIIWinter15GS-00051-fragment.py --filein file:B2G-RunIIWinter15wmLHE-00016.root --fileout file:B2G-RunIIWinter15GS-00051.root --mc --eventcontent RAWSIM --customise SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1,Configuration/DataProcessing/Utils.addMonitoring --datatier GEN-SIM --inputCommands keep *,drop LHEXMLStringProduct_*_*_* --conditions MCRUN2_71_V1::All --beamspot NominalCollision2015 --step GEN,SIM --magField 38T_PostLS1 --python_filename /afs/cern.ch/cms/PPD/PdmV/work/McM/submit/B2G-RunIIWinter15GS-00051/B2G-RunIIWinter15GS-00051_1_cfg.py --no_exec -n 105
+# with command line options: Configuration/GenProduction/python/RPVStop_Hadronizer_TuneCUETP8M1_13TeV_MLM_5f_max2j_LHE_pythia8_cff.py --filein file::wmLHE.root --fileout file:Winter15GS.root --mc --eventcontent RAWSIM --customise SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1,Configuration/DataProcessing/Utils.addMonitoring --datatier GEN-SIM --inputCommands keep *,drop LHEXMLStringProduct_*_*_* --conditions MCRUN2_71_V1::All --beamspot NominalCollision2015 --step GEN,SIM --magField 38T_PostLS1 --python_filename Winter15GS_cfg.py --no_exec -n 20
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process('SIM')
@@ -21,15 +21,23 @@ process.load('IOMC.EventVertexGenerators.VtxSmearedNominalCollision2015_cfi')
 process.load('GeneratorInterface.Core.genFilterSummary_cff')
 process.load('Configuration.StandardSequences.SimIdeal_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(20)
+    input = cms.untracked.int32(-1)
 )
 
 # Input source
+#process.source = cms.Source("PoolSource",
+#    secondaryFileNames = cms.untracked.vstring(),
+#    fileNames = cms.untracked.vstring('file::wmLHE.root'),
+#    inputCommands = cms.untracked.vstring('keep *', 
+#        'drop LHEXMLStringProduct_*_*_*', 
+#        'drop LHEXMLStringProduct_*_*_*'),
+#    dropDescendantsOfDroppedBranches = cms.untracked.bool(False)
+#)
 process.source = cms.Source("LHESource",
-    fileNames = cms.untracked.vstring('root://cmsxrootd.fnal.gov//store/user/algomez/lhe/RPVStop100_UDD312_13TeV_200k.lhe')
+    fileNames = cms.untracked.vstring('root://cmsxrootd.fnal.gov//store/user/algomez/lhe/RPVSt100tojj_ISR2j_13TeV.lhe')
 )
 
 process.options = cms.untracked.PSet(
@@ -39,7 +47,7 @@ process.options = cms.untracked.PSet(
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
     version = cms.untracked.string('$Revision: 1.19 $'),
-    annotation = cms.untracked.string('Configuration/GenProduction/python/B2G-RunIIWinter15GS-00051-fragment.py nevts:105'),
+    annotation = cms.untracked.string('Configuration/GenProduction/python/RPVStop_Hadronizer_TuneCUETP8M1_13TeV_MLM_5f_max2j_LHE_pythia8_cff.py nevts:20'),
     name = cms.untracked.string('Applications')
 )
 
@@ -63,10 +71,12 @@ process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
 
 # Other statements
 process.genstepfilter.triggerConditions=cms.vstring("generation_step")
-from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'MCRUN2_71_V1', '')
+from Configuration.AlCa.GlobalTag import GlobalTag
+process.GlobalTag = GlobalTag(process.GlobalTag, 'MCRUN2_71_V1::All', '')
 
-from Configuration.Generator.PythiaUEZ2starSettings_cfi import *
+process.htFilter = cms.EDFilter("PythiaFilterHT",
+    MinHT = cms.untracked.double(500.0)
+)
 
 process.generator = cms.EDFilter("Pythia8HadronizerFilter",
     pythiaPylistVerbosity = cms.untracked.int32(1),
@@ -75,7 +85,8 @@ process.generator = cms.EDFilter("Pythia8HadronizerFilter",
     comEnergy = cms.double(13000.0),
     maxEventsToPrint = cms.untracked.int32(1),
     PythiaParameters = cms.PSet(
-        pythia8CommonSettings = cms.vstring('Main:timesAllowErrors = 10000', 
+        pythia8CommonSettings = cms.vstring('Tune:preferLHAPDF = 2', 
+            'Main:timesAllowErrors = 10000', 
             'Check:epTolErr = 0.01', 
             'Beams:setProductionScalesFromLHEF = off', 
             'SLHA:keepSM = on', 
@@ -95,17 +106,18 @@ process.generator = cms.EDFilter("Pythia8HadronizerFilter",
             'JetMatching:etaJetMax = 5.', 
             'JetMatching:coneRadius = 1.', 
             'JetMatching:slowJetPower = 1', 
-            'JetMatching:qCut = 35.', 
+            'JetMatching:qCut = 40.', 
             'JetMatching:nQmatch = 5', 
-            'JetMatching:nJetMax = 3', 
+            'JetMatching:nJetMax = 2', 
             'JetMatching:doShowerKt = off'),
         parameterSets = cms.vstring('pythia8CommonSettings', 
             'pythia8CUEP8M1Settings', 
-            #'processParameters'
-	    )
+            'processParameters')
     )
 )
 
+
+process.ProductionFilterSequence = cms.Sequence(process.generator+process.htFilter)
 
 # Path and EndPath definitions
 process.generation_step = cms.Path(process.pgen)
@@ -116,22 +128,23 @@ process.RAWSIMoutput_step = cms.EndPath(process.RAWSIMoutput)
 
 # Schedule definition
 process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step,process.simulation_step,process.endjob_step,process.RAWSIMoutput_step)
+# filter all path with the production filter sequence
+for path in process.paths:
+	getattr(process,path)._seq = process.ProductionFilterSequence * getattr(process,path)._seq 
 
 # customisation of the process.
-for path in process.paths:
-	getattr(process,path)._seq = process.generator * getattr(process,path)._seq 
-
-# Automatic addition of the customisation function from SLHCUpgradeSimulations.Configuration.postLS1Customs
-from SLHCUpgradeSimulations.Configuration.postLS1Customs import customisePostLS1 
-
-#call to customisation function customisePostLS1 imported from SLHCUpgradeSimulations.Configuration.postLS1Customs
-process = customisePostLS1(process)
 
 # Automatic addition of the customisation function from Configuration.DataProcessing.Utils
 from Configuration.DataProcessing.Utils import addMonitoring 
 
 #call to customisation function addMonitoring imported from Configuration.DataProcessing.Utils
 process = addMonitoring(process)
+
+# Automatic addition of the customisation function from SLHCUpgradeSimulations.Configuration.postLS1Customs
+from SLHCUpgradeSimulations.Configuration.postLS1Customs import customisePostLS1 
+
+#call to customisation function customisePostLS1 imported from SLHCUpgradeSimulations.Configuration.postLS1Customs
+process = customisePostLS1(process)
 
 # End of customisation functions
 
