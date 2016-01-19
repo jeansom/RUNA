@@ -22,7 +22,6 @@ except ImportError:
 	from cuts import selection
 
 gROOT.SetBatch()
-
 ######################################
 def myAnalyzer( dictSamples, listCuts, signalName ):
 
@@ -39,25 +38,45 @@ def myAnalyzer( dictSamples, listCuts, signalName ):
 
 
 	################################################################################################## Histos
+	massBins = 500
+	massXmin = 0.
+	massXmax = 500.
+	listOfOptions = [ [ j,k] for j in range(len(listCuts)-1) for k in range(1, len(listCuts) ) if k > j ]
+
 	for sam in dictSamples:
-		allHistos[ "massAve_"+sam ] = TH1F( "massAve_"+sam, "massAve_"+sam, 100, 0., 500. )
-		allHistos[ "massAve_"+sam+'_A' ] = TH1F( "massAve_"+sam+'_A', "massAve_"+sam+'_A', 100, 0., 500. )
-		allHistos[ "massAve_"+sam+'_B' ] = TH1F( "massAve_"+sam+'_B', "massAve_"+sam+'_B', 100, 0., 500. )
-		allHistos[ "massAve_"+sam+'_Bkg' ] = TH1F( "massAve_"+sam+'_Bkg', "massAve_"+sam+'_Bkg', 100, 0., 500. )
-		allHistos[ "massAve_"+sam+'_C' ] = TH1F( "massAve_"+sam+'_C', "massAve_"+sam+'_C', 100, 0., 500. )
-		allHistos[ "massAve_"+sam+'_D' ] = TH1F( "massAve_"+sam+'_D', "massAve_"+sam+'_D', 100, 0., 500. )
+		allHistos[ "massAve_"+sam ] = TH1F( "massAve_"+sam, "massAve_"+sam, massBins, massXmin, massXmax )
+		allHistos[ "massAve_"+sam ].Sumw2()
 		allHistos[ "cutFlow_"+sam ] = TH1F( "cutflow_"+sam, "cutflow_"+sam, len(listCuts), 0., len(listCuts) )
 
 		for var in listCuts:
 			if 'deltaEta' in var[0]: allHistos[ var[0]+'_'+sam ] = TH1F( var[0]+'_'+sam, var[0]+'_'+sam, 50, 0., 5. )
 			else: allHistos[ var[0]+'_'+sam ] = TH1F( var[0]+'_'+sam, var[0]+'_'+sam, 20, 0., 1. )
-		for k in [ 'A', 'B', 'C', 'D' ]:
-			tmpName = listCuts[0][0]+'Vs'+listCuts[1][0]+'_'+sam+'_'+k
-			allHistos[ tmpName ] = TH2F( tmpName, tmpName, 
-					(50 if 'deltaEta' in listCuts[0][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[0][0] else 1. ),
-					(50 if 'deltaEta' in listCuts[1][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[1][0] else 1. ) 
-					)
+			allHistos[ var[0]+'_'+sam ].Sumw2()
 
+		for ind in listOfOptions:
+			tmpName = listCuts[ind[0]][0]+'Vs'+listCuts[ind[1]][0]+'_'+sam
+			allHistos[ tmpName ] = TH2F( tmpName, tmpName, 
+					(50 if 'deltaEta' in listCuts[ind[0]][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[ind[0]][0] else 1. ),
+					(50 if 'deltaEta' in listCuts[ind[1]][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[ind[1]][0] else 1. ) 
+					)
+			allHistos[ tmpName ].Sumw2()
+			allHistos[ "massAve_"+tmpName+'_Bkg' ] = TH1F( "massAve_"+tmpName+'_Bkg', "massAve_"+tmpName+'_Bkg', massBins, massXmin, massXmax )
+			allHistos[ "massAve_"+tmpName+'_Bkg' ].Sumw2()
+			allHistos[ tmpName+'_Bkg' ] = TH2F( tmpName+'_Bkg', tmpName+'_Bkg', 
+					(50 if 'deltaEta' in listCuts[ind[0]][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[ind[0]][0] else 1. ),
+					(50 if 'deltaEta' in listCuts[ind[1]][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[ind[1]][0] else 1. ) 
+					)
+			allHistos[ tmpName+'_Bkg' ].Sumw2()
+
+			for k in [ 'A', 'B', 'C', 'D' ]:
+				allHistos[ "massAve_"+tmpName+'_'+k ] = TH1F( "massAve_"+tmpName+'_'+k, "massAve_"+tmpName+'_'+k, massBins, massXmin, massXmax )
+				allHistos[ "massAve_"+tmpName+'_'+k ].Sumw2()
+				allHistos[ tmpName+'_'+k ] = TH2F( tmpName+'_'+k, tmpName+'_'+k, 
+						(50 if 'deltaEta' in listCuts[ind[0]][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[ind[0]][0] else 1. ),
+						(50 if 'deltaEta' in listCuts[ind[1]][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[ind[1]][0] else 1. ) 
+						)
+				allHistos[ tmpName+'_'+k ].Sumw2()
+	################################################################################################## Running the Analysis
 	for sample in dictSamples:
 
 		####### Get GenTree 
@@ -69,8 +88,7 @@ def myAnalyzer( dictSamples, listCuts, signalName ):
 		cutFlowList = OrderedDict()
 		cutFlowList[ 'Process' ] = 0
 		cutFlowList[ 'Preselection' ] = 0
-		for tmpk in listCuts:
-			for k in tmpk: cutFlowList[ k[0] ] = 0
+		for k in listCuts: cutFlowList[ k[0] ] = 0
 
 		#newLumi = 0
 		#tmpLumi = 0
@@ -116,33 +134,31 @@ def myAnalyzer( dictSamples, listCuts, signalName ):
 			if HTCut and dijetCut and jetPtCut:
 				cutFlowList[ 'Preselection' ] += 1
 				sigCutsList = []
-				if len(listCuts) > 0:
-					for setCuts in listCuts:
-						tmpBoolList = []
-						for var in setCuts: 
-							allHistos[ var[0]+'_'+sample ].Fill( getattr( events, var[0] ), scale )
-							if ( getattr( events, var[0] ) < var[1] ):
-								tmpBoolList.append( True )
-								cutFlowList[ var[0] ] += 1
-							else: tmpBoolList.append( False )
-						sigCutsList.append( tmpBoolList )
-				else: print 'Correct selection dictionary'
+				for var in listCuts:
+					allHistos[ var[0]+'_'+sample ].Fill( getattr( events, var[0] ), scale )
+					if ( getattr( events, var[0] ) < var[1] ): sigCutsList.append( True )
+					else: sigCutsList.append( False )
+				if all(sigCutsList): allHistos[ 'massAve_'+sample ].Fill( massAve, scale )
 
-				if all(sigCutsList[1]):    ## pass first selection
-					plotABCD( sigCutsList[0], listCuts[0], events, massAve, scale, sample )
-					if all(sigCutsList[0]): 	### pass second selection
-						allHistos[ 'massAve_'+sample ].Fill( massAve, scale )
+				for Ind in listOfOptions:
+					allHistos[ listCuts[Ind[0]][0]+'Vs'+listCuts[Ind[1]][0]+'_'+sam ].Fill( getattr( events, listCuts[Ind[0]][0] ), getattr( events, listCuts[Ind[1]][0] ), scale )
+					tmpSigCutsList = [ x for i,x in enumerate(sigCutsList) if i not in Ind ]
+					if all(tmpSigCutsList): 
+						allHistos[ listCuts[Ind[0]][0]+'Vs'+listCuts[Ind[1]][0]+'_'+sam+'_Bkg' ].Fill( getattr( events, listCuts[Ind[0]][0] ), getattr( events, listCuts[Ind[1]][0] ), scale )
+						plotABCD( [ sigCutsList[Ind[0]], sigCutsList[Ind[1]] ], [ listCuts[Ind[0]], listCuts[Ind[1]] ], events, massAve, scale, sample )
 						
+		for IND in listOfOptions:
+			tmpNameABCD = listCuts[0][0]+'Vs'+listCuts[1][0]+'_'+sample
+			allHistos[ 'massAve_'+tmpNameABCD+'_Bkg' ].Multiply( allHistos[ 'massAve_'+tmpNameABCD+'_D' ] )
+			allHistos[ 'massAve_'+tmpNameABCD+'_Bkg' ].Divide( allHistos[ 'massAve_'+tmpNameABCD+'_C' ] )
+
+		'''
 		dummy = 1
 		for q in cutFlowList: 
 			allHistos[ 'cutFlow_'+sample ].SetBinContent( dummy, cutFlowList[q] )
 			allHistos[ 'cutFlow_'+sample ].GetXaxis().SetBinLabel( dummy, q )
 			dummy+=1
 			
-		allHistos[ 'massAve_'+sample+'_Bkg' ].Multiply( allHistos[ 'massAve_'+sample+'_D' ] )
-		allHistos[ 'massAve_'+sample+'_Bkg' ].Divide( allHistos[ 'massAve_'+sample+'_C' ] )
-
-		'''
 		tmpHT_cutDEtaMassAsym.Divide( tmpHT_cutNOTau21 )
 		for k in range( len( variablesBkg ) ):
 			try: 
@@ -158,28 +174,24 @@ def myAnalyzer( dictSamples, listCuts, signalName ):
 	print 'Writing output file: '+ outputFileName
 	outputFile.Close()
 
-	###### Extra: send prints to file
-	#if couts == False: 
-	#	sys.stdout = outfileStdOut
-	#	f.close()
-	#########################
 
 def plotABCD( listSel, var, fromTree, massAve, scale, sample ):
 	"""docstring for plotABCD"""
 
+	nameABCD = var[0][0]+'Vs'+var[1][0]+'_'+sample
 	if listSel[0] and listSel[1]: 
-		allHistos[ 'massAve_'+sample+'_A' ].Fill( massAve, scale )
-		allHistos[ var[0][0]+'Vs'+var[1][0]+'_'+sample+'_A' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
+		allHistos[ 'massAve_'+nameABCD+'_A' ].Fill( massAve, scale )
+		allHistos[ nameABCD+'_A' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
 	elif listSel[0] and not listSel[1]: 
-		allHistos[ 'massAve_'+sample+'_B' ].Fill( massAve, scale )
-		allHistos[ 'massAve_'+sample+'_Bkg' ].Fill( massAve, scale )
-		allHistos[ var[0][0]+'Vs'+var[1][0]+'_'+sample+'_B' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
+		allHistos[ 'massAve_'+nameABCD+'_B' ].Fill( massAve, scale )
+		allHistos[ 'massAve_'+nameABCD+'_Bkg' ].Fill( massAve, scale )
+		allHistos[ nameABCD+'_B' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
 	elif not listSel[0] and listSel[1]: 
-		allHistos[ 'massAve_'+sample+'_D' ].Fill( massAve, scale )
-		allHistos[ var[0][0]+'Vs'+var[1][0]+'_'+sample+'_D' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
+		allHistos[ 'massAve_'+nameABCD+'_D' ].Fill( massAve, scale )
+		allHistos[ nameABCD+'_D' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
 	else:
-		allHistos[ 'massAve_'+sample+'_C' ].Fill( massAve, scale )
-		allHistos[ var[0][0]+'Vs'+var[1][0]+'_'+sample+'_C' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
+		allHistos[ 'massAve_'+nameABCD+'_C' ].Fill( massAve, scale )
+		allHistos[ nameABCD+'_C' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
 
 
 #################################################################################
