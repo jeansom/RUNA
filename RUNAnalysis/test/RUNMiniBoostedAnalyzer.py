@@ -60,8 +60,10 @@ def myAnalyzer( dictSamples, listCuts, signalName ):
 					(50 if 'deltaEta' in listCuts[ind[1]][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[ind[1]][0] else 1. ) 
 					)
 			allHistos[ tmpName ].Sumw2()
-			allHistos[ "massAve_"+tmpName+'_Bkg' ] = TH1F( "massAve_"+tmpName+'_Bkg', "massAve_"+tmpName+'_Bkg', massBins, massXmin, massXmax )
-			allHistos[ "massAve_"+tmpName+'_Bkg' ].Sumw2()
+			allHistos[ "massAve_"+tmpName+'_BD' ] = TH1F( "massAve_"+tmpName+'_BD', "massAve_"+tmpName+'_BD', massBins, massXmin, massXmax )
+			allHistos[ "massAve_"+tmpName+'_BD' ].Sumw2()
+			allHistos[ "massAve_"+tmpName+'_BCD' ] = TH1F( "massAve_"+tmpName+'_BCD', "massAve_"+tmpName+'_BCD', massBins, massXmin, massXmax )
+			allHistos[ "massAve_"+tmpName+'_BCD' ].Sumw2()
 			allHistos[ tmpName+'_Bkg' ] = TH2F( tmpName+'_Bkg', tmpName+'_Bkg', 
 					(50 if 'deltaEta' in listCuts[ind[0]][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[ind[0]][0] else 1. ),
 					(50 if 'deltaEta' in listCuts[ind[1]][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[ind[1]][0] else 1. ) 
@@ -148,9 +150,9 @@ def myAnalyzer( dictSamples, listCuts, signalName ):
 						plotABCD( [ sigCutsList[Ind[0]], sigCutsList[Ind[1]] ], [ listCuts[Ind[0]], listCuts[Ind[1]] ], events, massAve, scale, sample )
 						
 		for IND in listOfOptions:
-			tmpNameABCD = listCuts[0][0]+'Vs'+listCuts[1][0]+'_'+sample
-			allHistos[ 'massAve_'+tmpNameABCD+'_Bkg' ].Multiply( allHistos[ 'massAve_'+tmpNameABCD+'_D' ] )
-			allHistos[ 'massAve_'+tmpNameABCD+'_Bkg' ].Divide( allHistos[ 'massAve_'+tmpNameABCD+'_C' ] )
+			tmpNameABCD = listCuts[IND[0]][0]+'Vs'+listCuts[IND[1]][0]+'_'+sample
+			allHistos[ 'massAve_'+tmpNameABCD+'_BD' ].Multiply( allHistos[ 'massAve_'+tmpNameABCD+'_D' ] )
+			allHistos[ 'massAve_'+tmpNameABCD+'_BCD' ].Divide( allHistos[ 'massAve_'+tmpNameABCD+'_BD' ], allHistos[ 'massAve_'+tmpNameABCD+'_C' ], scale, 1., '' )
 
 		'''
 		dummy = 1
@@ -183,14 +185,14 @@ def plotABCD( listSel, var, fromTree, massAve, scale, sample ):
 		allHistos[ 'massAve_'+nameABCD+'_A' ].Fill( massAve, scale )
 		allHistos[ nameABCD+'_A' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
 	elif listSel[0] and not listSel[1]: 
-		allHistos[ 'massAve_'+nameABCD+'_B' ].Fill( massAve, scale )
-		allHistos[ 'massAve_'+nameABCD+'_Bkg' ].Fill( massAve, scale )
+		allHistos[ 'massAve_'+nameABCD+'_B' ].Fill( massAve )
+		allHistos[ 'massAve_'+nameABCD+'_BD' ].Fill( massAve )
 		allHistos[ nameABCD+'_B' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
 	elif not listSel[0] and listSel[1]: 
-		allHistos[ 'massAve_'+nameABCD+'_D' ].Fill( massAve, scale )
+		allHistos[ 'massAve_'+nameABCD+'_D' ].Fill( massAve )
 		allHistos[ nameABCD+'_D' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
 	else:
-		allHistos[ 'massAve_'+nameABCD+'_C' ].Fill( massAve, scale )
+		allHistos[ 'massAve_'+nameABCD+'_C' ].Fill( massAve )
 		allHistos[ nameABCD+'_C' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
 
 
