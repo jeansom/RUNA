@@ -15,9 +15,11 @@ from ROOT import TFile, TTree, TDirectory, gDirectory, gROOT, TH1F, TH2F, TMath
 from array import array
 try: 
 	from RUNA.RUNAnalysis.commonFunctions import *
+	from RUNA.RUNAnalysis.cuts import selection
 except ImportError: 
 	sys.path.append('../python') 
 	from commonFunctions import *
+	from cuts import selection
 
 gROOT.SetBatch()
 
@@ -46,16 +48,14 @@ def myAnalyzer( dictSamples, listCuts, signalName ):
 		allHistos[ "massAve_"+sam+'_D' ] = TH1F( "massAve_"+sam+'_D', "massAve_"+sam+'_D', 100, 0., 500. )
 		allHistos[ "cutFlow_"+sam ] = TH1F( "cutflow_"+sam, "cutflow_"+sam, len(listCuts), 0., len(listCuts) )
 
-		for tmpVar in listCuts:
-			for var in tmpVar:
-				if 'deltaEta' in var[0]: allHistos[ var[0]+'_'+sam ] = TH1F( var[0]+'_'+sam, var[0]+'_'+sam, 50, 0., 5. )
-				else: allHistos[ var[0]+'_'+sam ] = TH1F( var[0]+'_'+sam, var[0]+'_'+sam, 20, 0., 1. )
+		for var in listCuts:
+			if 'deltaEta' in var[0]: allHistos[ var[0]+'_'+sam ] = TH1F( var[0]+'_'+sam, var[0]+'_'+sam, 50, 0., 5. )
+			else: allHistos[ var[0]+'_'+sam ] = TH1F( var[0]+'_'+sam, var[0]+'_'+sam, 20, 0., 1. )
 		for k in [ 'A', 'B', 'C', 'D' ]:
-			if len(listCuts[0]) == 2: tmpName = listCuts[0][0][0]+'Vs'+listCuts[0][1][0]+'_'+sam+'_'+k
-			else: tmpName = listCuts[0][0][0]+'Vs'+listCuts[0][1][0][3:]+'_'+sam+'_'+k
+			tmpName = listCuts[0][0]+'Vs'+listCuts[1][0]+'_'+sam+'_'+k
 			allHistos[ tmpName ] = TH2F( tmpName, tmpName, 
-					(50 if 'deltaEta' in listCuts[0][0][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[0][0][0] else 1. ),
-					(50 if 'deltaEta' in listCuts[0][1][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[0][1][0] else 1. ) 
+					(50 if 'deltaEta' in listCuts[0][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[0][0] else 1. ),
+					(50 if 'deltaEta' in listCuts[1][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[1][0] else 1. ) 
 					)
 
 	for sample in dictSamples:
@@ -97,7 +97,7 @@ def myAnalyzer( dictSamples, listCuts, signalName ):
 			jet2Pt          = events.jet2Pt
 			#print 'Entry ', Run, ':', Lumi, ':', NumEvent
 
-			if 'Data' in samples: scale = 1
+			if 'DATA' in sample: scale = 1
 			else: scale = 2476* puWeight * lumiWeight
 
 			#### test
@@ -167,38 +167,19 @@ def myAnalyzer( dictSamples, listCuts, signalName ):
 def plotABCD( listSel, var, fromTree, massAve, scale, sample ):
 	"""docstring for plotABCD"""
 
-	if len(var) == 2:
-		if listSel[0] and listSel[1]: 
-			allHistos[ 'massAve_'+sample+'_A' ].Fill( massAve, scale )
-			allHistos[ var[0][0]+'Vs'+var[1][0]+'_'+sample+'_A' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
-		elif listSel[0] and not listSel[1]: 
-			allHistos[ 'massAve_'+sample+'_B' ].Fill( massAve, scale )
-			allHistos[ 'massAve_'+sample+'_Bkg' ].Fill( massAve, scale )
-			allHistos[ var[0][0]+'Vs'+var[1][0]+'_'+sample+'_B' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
-		elif not listSel[0] and listSel[1]: 
-			allHistos[ 'massAve_'+sample+'_D' ].Fill( massAve, scale )
-			allHistos[ var[0][0]+'Vs'+var[1][0]+'_'+sample+'_D' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
-		else:
-			allHistos[ 'massAve_'+sample+'_C' ].Fill( massAve, scale )
-			allHistos[ var[0][0]+'Vs'+var[1][0]+'_'+sample+'_C' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
+	if listSel[0] and listSel[1]: 
+		allHistos[ 'massAve_'+sample+'_A' ].Fill( massAve, scale )
+		allHistos[ var[0][0]+'Vs'+var[1][0]+'_'+sample+'_A' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
+	elif listSel[0] and not listSel[1]: 
+		allHistos[ 'massAve_'+sample+'_B' ].Fill( massAve, scale )
+		allHistos[ 'massAve_'+sample+'_Bkg' ].Fill( massAve, scale )
+		allHistos[ var[0][0]+'Vs'+var[1][0]+'_'+sample+'_B' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
+	elif not listSel[0] and listSel[1]: 
+		allHistos[ 'massAve_'+sample+'_D' ].Fill( massAve, scale )
+		allHistos[ var[0][0]+'Vs'+var[1][0]+'_'+sample+'_D' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
 	else:
-		if listSel[0] and (listSel[1] and listSel[2]): 
-			allHistos[ 'massAve_'+sample+'_A' ].Fill( massAve, scale )
-			allHistos[ var[0][0]+'Vs'+var[1][0][3:]+'_'+sample+'_A' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
-			allHistos[ var[0][0]+'Vs'+var[1][0][3:]+'_'+sample+'_A' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[2][0] ), scale )
-		elif listSel[0] and not ( listSel[1] and listSel[2] ): 
-			allHistos[ 'massAve_'+sample+'_B' ].Fill( massAve, scale )
-			allHistos[ 'massAve_'+sample+'_Bkg' ].Fill( massAve, scale )
-			allHistos[ var[0][0]+'Vs'+var[1][0][3:]+'_'+sample+'_B' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
-			allHistos[ var[0][0]+'Vs'+var[1][0][3:]+'_'+sample+'_B' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[2][0] ), scale )
-		elif not listSel[0] and ( listSel[1] and listSel[2] ): 
-			allHistos[ 'massAve_'+sample+'_D' ].Fill( massAve, scale )
-			allHistos[ var[0][0]+'Vs'+var[1][0][3:]+'_'+sample+'_D' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
-			allHistos[ var[0][0]+'Vs'+var[1][0][3:]+'_'+sample+'_D' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[2][0] ), scale )
-		else:
-			allHistos[ 'massAve_'+sample+'_C' ].Fill( massAve, scale )
-			allHistos[ var[0][0]+'Vs'+var[1][0][3:]+'_'+sample+'_C' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
-			allHistos[ var[0][0]+'Vs'+var[1][0][3:]+'_'+sample+'_C' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[2][0] ), scale )
+		allHistos[ 'massAve_'+sample+'_C' ].Fill( massAve, scale )
+		allHistos[ var[0][0]+'Vs'+var[1][0]+'_'+sample+'_C' ].Fill( getattr( fromTree, var[0][0] ), getattr( fromTree, var[1][0] ), scale )
 
 
 #################################################################################
@@ -235,13 +216,6 @@ if __name__ == '__main__':
 	allSamples[ 'WWTo4Q' ] = 'Rootfiles/RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 	allSamples[ 'ZZTo4Q' ] = 'Rootfiles/RUNAnalysis_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 	allSamples[ 'WZ' ] = 'Rootfiles/RUNAnalysis_WZ_TuneCUETP8M1_13TeV-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
-
-
-	selection = OrderedDict()
-	selection[ 'Dibosons' ] = [ [ [ 'massAsym', 0.65 ], [ 'jet1Tau21', 0.55 ], [ 'jet2Tau21', 0.55 ] ],  [ [ 'jet1Tau31', 0.35 ], [ 'jet2Tau31', 0.35 ] ] ]
-	selection[ 'RPVSt100' ] = [ [ [ 'massAsym', 0.30 ], [ 'deltaEtaDijet', 0.7 ] ], [ [ 'jet1Tau21', 0.5 ], [ 'jet2Tau21', 0.5 ], [ 'jet1Tau31', 0.5, 4 ], [ 'jet2Tau31', 0.5, 4 ] ] ]
-	selection[ 'RPVSt200' ] = [ [ [ 'massAsym', 0.10 ], [ 'deltaEtaDijet', 0.9 ] ], [ [ 'jet1Tau21', 0.4 ], [ 'jet2Tau21', 0.4 ] ] ]
-		
 
 	signalSample = ( 'Dibosons' if 'Dibosons' in mass else 'RPVSt'+mass )
 	try: cuts = selection[ signalSample ]

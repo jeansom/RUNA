@@ -3,6 +3,15 @@
 #from ROOT import TFile, TH1F, THStack, TCanvas, TMath, gROOT, gPad
 from ROOT import *
 import ROOT as rt
+from cuts import selection
+
+varLabels = {}
+varLabels[ 'massAsym' ] = 'Asym'
+varLabels[ 'deltaEtaDijet' ] = '| #eta_{j1} - #eta_{j2} |'
+varLabels[ 'jet1Tau21' ] = '#tau_{21}^{j1}'
+varLabels[ 'jet2Tau21' ] = '#tau_{21}^{j2}'
+varLabels[ 'jet1Tau31' ] = '#tau_{31}^{j1}'
+varLabels[ 'jet2Tau31' ] = '#tau_{31}^{j2}'
 
 def setSelection( listSel, xMin=0.65, yMax=0.65, align='right' ):
 
@@ -15,6 +24,19 @@ def setSelection( listSel, xMin=0.65, yMax=0.65, align='right' ):
 		textBox.DrawLatex(xMin, yMax, listSel[i])
 		yMax = yMax -0.05
 	
+def finalLabels( signal, X=0.92, Y=0.50, align='right' ):
+	"""docstring for finalLabels"""
+
+	tmpListSel = (selection[k] for k in selection if signal in k )
+	print tmpListSel
+
+	listSel = [ 'Preselection' ]
+	for sel in tmpListSel:
+		for lab in varLabels: 
+			if sel[0] in lab: listSel.append( varLabels[lab]+' < '+str(sel[1]) )
+
+	setSelection( listSel, X, Y, align) 
+
 
 def labels( name, PU, camp, X=0.92, Y=0.50, align='right', listSel=[] ):
 
