@@ -14,12 +14,14 @@ from collections import OrderedDict
 try:
 	from RUNA.RUNAnalysis.histoLabels import labels, labelAxis, finalLabels 
 	from RUNA.RUNAnalysis.scaleFactors import scaleFactor as SF
+	from RUNA.RUNAnalysis.cuts import selection 
 	import RUNA.RUNAnalysis.CMS_lumi as CMS_lumi 
 	import RUNA.RUNAnalysis.tdrstyle as tdrstyle
 except ImportError:
 	sys.path.append('../python')
 	from histoLabels import labels, labelAxis, finalLabels
 	from scaleFactors import scaleFactor as SF
+	from cuts import selection 
 	import CMS_lumi as CMS_lumi 
 	import tdrstyle as tdrstyle
 
@@ -766,14 +768,14 @@ def plotSystematics( inFileSample, Grom, name, xmin, xmax, rebinX, labX, labY, l
 def plotBkgEstimation( allHistosFile, bkgFiles, Grom, nameInRoot, xmin, xmax, rebinX, labX, labY, log, PU, version, Norm=False ):
 	"""docstring for plotBkgEstimation"""
 
-	outputFileName = nameInRoot+'_'+Grom+'_'+'RPVSt'+str(mass)+'_'+PU+'_bkgShapeEstimation'+version+'Plots.'+ext
+	outputFileName = nameInRoot+'_'+'RPVSt'+str(mass)+'_'+PU+'_bkgShapeEstimation'+version+'Plots.'+ext
 	print 'Processing.......', outputFileName
 
 	SRHistos = OrderedDict()
 	CRHistos = OrderedDict()
 	for bkgSamples in bkgFiles:
-		SRHistos[ bkgSamples ] = allHistosFile.Get( nameInRoot+'_'+bkgSamples )
-		CRHistos[ bkgSamples ] = allHistosFile.Get( nameInRoot+'_'+bkgSamples+'_Bkg' )
+		SRHistos[ bkgSamples ] = allHistosFile.Get( nameInRoot+'_'+bkgSamples+'_A' )
+		CRHistos[ bkgSamples ] = allHistosFile.Get( nameInRoot+'_'+bkgSamples+'_BCD' )
 		if rebinX > 1: 
 			SRHistos[ bkgSamples ].Rebin( rebinX )
 			CRHistos[ bkgSamples ].Rebin( rebinX )
@@ -781,7 +783,7 @@ def plotBkgEstimation( allHistosFile, bkgFiles, Grom, nameInRoot, xmin, xmax, re
 			SRHistos[ bkgSamples ].Scale( bkgFiles[ bkgSamples ][1] ) 
 			CRHistos[ bkgSamples ].Scale( bkgFiles[ bkgSamples ][1] ) 
 	
-	hDataCR =  allHistosFile.Get( nameInRoot+'_DATA_Bkg' )
+	hDataCR =  allHistosFile.Get( nameInRoot+'_'+'DATA_BCD' )
 	if rebinX > 1: hDataCR.Rebin( rebinX )
 
 	hSR = SRHistos[ 'QCDPtAll' ].Clone()
@@ -790,11 +792,13 @@ def plotBkgEstimation( allHistosFile, bkgFiles, Grom, nameInRoot, xmin, xmax, re
 		if 'QCD' not in samples: 
 			hSR.Add( SRHistos[ samples ].Clone() )
 			hCR.Add( CRHistos[ samples ].Clone() )
-		
+	
+	hSR.Scale(1/hSR.Integral())
+	hCR.Scale(1/hCR.Integral())
+	hDataCR.Scale(1/hDataCR.Integral())
 	tmphSR = hSR.Clone()
 	tmphCR = hCR.Clone()
 	tmphSR.Divide( tmphCR )
-
 	binWidth = hSR.GetBinWidth(1)
 
 	legend=TLegend(0.70,0.75,0.90,0.87)
@@ -1071,8 +1075,8 @@ if __name__ == '__main__':
 		[ 'sys', 'Boosted', 'jet2Pt', 400, 1500, 2, 0.85, 0.45, False],
 		[ 'sys', 'Boosted', 'HT', 700, 2000, 5, 0.85, 0.45, False],
 
-		[ 'mini', version, 'massAve', 0, massMaxX, 2, '', '', False],
-		[ 'bkgEst', version, 'massAve', 0, massMaxX, 2, '', '', False],
+		[ 'mini', version, 'massAve', 0, massMaxX, 10, '', '', False],
+		[ 'bkgEst', version, 'massAve', 0, massMaxX, 10, '', '', False],
 
 		]
 
@@ -1084,10 +1088,10 @@ if __name__ == '__main__':
 	else: Grommers = [ grom ]
 
 	if 'all' in cut: 
-		if 'Boosted' in version: selection = [ '_cutDijet', '_cutMassAsym', '_cutTau21', '_cutCosTheta', '_cutDEta' ]
-		else: selection = [ '_cutMassRes', '_cutDelta', '_cutEtaBand', '_cutDeltaR', '_cutCosTheta', '_cutDEta', '_cutMassPairing' ]
-	#elif 'NO' in cut: selection = [ '_cutNOMassAsym', '_cutTau21_NOMA', '_cutCosTheta_NOMA', '_cutDEta_NOMA' ]
-	else: selection = [ cut ]
+		if 'Boosted' in version: listCuts = [ '_cutDijet', '_cutMassAsym', '_cutTau21', '_cutCosTheta', '_cutDEta' ]
+		else: listCuts = [ '_cutMassRes', '_cutDelta', '_cutEtaBand', '_cutDeltaR', '_cutCosTheta', '_cutDEta', '_cutMassPairing' ]
+	#elif 'NO' in cut: listCuts = [ '_cutNOMassAsym', '_cutTau21_NOMA', '_cutCosTheta_NOMA', '_cutDEta_NOMA' ]
+	else: listCuts = [ cut ]
 
 	for i in Plots:
 		for optGrom in Grommers:
@@ -1102,11 +1106,11 @@ if __name__ == '__main__':
 				plot2D( bkgFiles, 'QCD', optGrom, i[0], i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
 
 			elif '1D' in process:
-				for cut1 in selection:
+				for cut1 in listCuts:
 					plotSignalBkg( signalFiles, bkgFiles, optGrom, version+'AnalysisPlots'+optGrom+'/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], i[6], PU, version )
 			
 			elif ( ( 'qual' in process ) or ( 'jetIDQual' in process ) ):
-				for cut1 in selection:
+				for cut1 in listCuts:
 					if 'Boosted' in version: plotQuality( dataFile, bkgFiles, optGrom, version+'AnalysisPlots'+optGrom+'/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], i[6], PU, version )
 					else: plotQuality( dataFile, bkgFiles, '', version+'AnalysisPlots/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], i[6], PU, version )
 			
@@ -1114,7 +1118,7 @@ if __name__ == '__main__':
 				plotSignalBkg( signalFiles, bkgFiles, optGrom, i[0], i[0], i[1], i[2], i[3], i[4], i[5], i[6], PU, version )
 			
 			elif 'Norm' in process:
-				for cut1 in selection:
+				for cut1 in listCuts:
 					plotSignalBkg( signalFiles, bkgFiles, optGrom, version+'AnalysisPlots'+optGrom+'/'+i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], i[6], PU, version, True )
 
 			elif 'CF' in process:
@@ -1126,7 +1130,12 @@ if __name__ == '__main__':
 				plotSimple( inputFileZJetsToQQ, 'ZJets', optGrom, i[0], i[1], i[2], i[3], i[4], PU )
 			
 			elif 'sys' in process:
-				for cut in selection: plotSystematics( signalFiles, optGrom, i[0]+cut, i[1], i[2], i[3], i[4], i[5], i[6], version, process )
+				for cut in listCuts: plotSystematics( signalFiles, optGrom, i[0]+cut, i[1], i[2], i[3], i[4], i[5], i[6], version, process )
 			
 			elif 'bkgEst' in process:
-				plotBkgEstimation( TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_RPVSt'+str(mass)+'_allHistos.root'), bkgFiles, optGrom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], PU, version )
+
+				tmpListCuts = selection[ 'RPVSt'+str(mass) ]
+				listOfOptions = [ [ j,k] for j in range(len(tmpListCuts)-1) for k in range(1, len(tmpListCuts) ) if k > j ]
+				for IND in listOfOptions: 
+					nameVarABCD = i[0]+'_'+tmpListCuts[IND[0]][0]+'Vs'+tmpListCuts[IND[1]][0]
+					plotBkgEstimation( TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_RPVSt'+str(mass)+'_allHistos.root'), bkgFiles, optGrom, nameVarABCD, i[1], i[2], i[3], i[4], i[5], i[6], PU, version )
