@@ -790,15 +790,17 @@ def plotBkgEstimation( allHistosFile, bkgFiles, Grom, nameInRoot, xmin, xmax, re
 	hCR = CRHistos[ 'QCDPtAll' ].Clone()
 	for samples in SRHistos:
 		if 'QCD' not in samples: 
-			hSR.Add( SRHistos[ samples ].Clone() )
-			hCR.Add( CRHistos[ samples ].Clone() )
+			tmpSR = SRHistos[ samples ].Clone()
+			tmpCR = CRHistos[ samples ].Clone()
+			hSR.Add( tmpSR )
+			hCR.Add( tmpCR )
 	
 	hSR.Scale(1/hSR.Integral())
 	hCR.Scale(1/hCR.Integral())
 	hDataCR.Scale(1/hDataCR.Integral())
 	tmphSR = hSR.Clone()
-	tmphCR = hCR.Clone()
-	tmphSR.Divide( tmphCR )
+	tmphSR.Reset()
+	tmphSR.Divide( hSR, hCR, 1., 1., 'B' )
 	binWidth = hSR.GetBinWidth(1)
 
 	legend=TLegend(0.70,0.75,0.90,0.87)

@@ -27,8 +27,7 @@ def setSelection( listSel, xMin=0.65, yMax=0.65, align='right' ):
 def finalLabels( signal, X=0.92, Y=0.50, align='right' ):
 	"""docstring for finalLabels"""
 
-	tmpListSel = (selection[k] for k in selection if signal in k )
-	print tmpListSel
+	tmpListSel = selection[signal]
 
 	listSel = [ 'Preselection' ]
 	for sel in tmpListSel:
