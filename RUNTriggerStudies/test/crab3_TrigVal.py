@@ -11,7 +11,7 @@ from multiprocessing import Process
 config = config()
 
 name = 'RUNTriggerValidation'
-version = 'v1'
+version = 'v763'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
@@ -38,10 +38,8 @@ def submit(config):
 if __name__ == '__main__':
 
 	Samples = [ 
-			#'/JetHT/Run2015B-PromptReco-v1/MINIAOD',
-			'/JetHT/Run2015C-PromptReco-v1/MINIAOD',
-			##'/MET/Run2015B-PromptReco-v1/MINIAOD',
-			##'/SingleMu/Run2015B-PromptReco-v1/MINIAOD',
+			'/QCD_Pt-15to3000_TuneCUETP8M1_Flat_13TeV_pythia8/RunIIFall15DR76-25nsFlat10to25TSG_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
+			'/QCD_Pt-15to3000_TuneCUETP8M1_Flat_13TeV_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM',
 			]
 	
 	for dataset in Samples:
@@ -49,8 +47,7 @@ if __name__ == '__main__':
 		config.General.requestName = dataset.split('/')[1]+"_"+dataset.split('/')[2]+'_'+name+'_'+version
 		if 'Run2015' in dataset: 
 			config.JobType.pyCfgParams = [ 'RUN='+dataset.split('/')[1]+"_"+dataset.split('/')[2], 'local=0' ]
-			if 'Run2015B' in dataset: config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON.txt'
-			elif 'Run2015C' in dataset: config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_25ns_JSON_v2.txt'
+			config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_25ns_JSON_v2.txt'
 		p = Process(target=submit, args=(config,))
 		p.start()
 		p.join()
