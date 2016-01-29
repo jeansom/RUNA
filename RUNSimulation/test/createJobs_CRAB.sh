@@ -64,36 +64,37 @@ cp ${Main_Dir}/step0_LHE_GEN_SIM.py  ${step0PythonFile}
 sed -i 's,/store/user/algomez/lhe/RPVSt100tojj_ISR2j_13TeV.lhe,'"${LHEFile}"',' ${step0PythonFile}
 sed -i 's/OUTPUT/'"${Name}"'_GEN/' ${step0PythonFile}
 
-echo " Creating python file for RAWSIM (different PU scenarios).. "
-step1PythonFile="step1_${Name}_DIGI_LI_DIGI2RAW_HLT_"
-cp ${Main_Dir}/step1_DIGI_LI_DIGI2RAW_HLT.py  ${step1PythonFile}'Asympt50ns.py'
-cp ${Main_Dir}/step1_DIGI_LI_DIGI2RAW_HLT.py  ${step1PythonFile}'Asympt25ns.py'
-cp ${Main_Dir}/MinBias_TuneCUETP8M1_13TeV-pythia8_cfi.py  . 
+#echo " Creating python file for RAWSIM (different PU scenarios).. "
+#step1PythonFile="step1_${Name}_DIGI_LI_DIGI2RAW_HLT_"
+#cp ${Main_Dir}/step1_DIGI_LI_DIGI2RAW_HLT.py  ${step1PythonFile}'Asympt50ns.py'
+#cp ${Main_Dir}/step1_DIGI_LI_DIGI2RAW_HLT.py  ${step1PythonFile}'Asympt25ns.py'
+#cp ${Main_Dir}/MinBias_TuneCUETP8M1_13TeV-pythia8_cfi.py  . 
+#
+#sed -i 's/inputFile/'"${Name}"'_RAWSIM_Asympt50ns/' ${step1PythonFile}'Asympt50ns.py'
+#sed -i 's/inputFile/'"${Name}"'_RAWSIM_Asympt25ns/' ${step1PythonFile}'Asympt25ns.py'
+#sed -i 's/MCRUN2_74_V7A/MCRUN2_74_V9/' ${step1PythonFile}'Asympt25ns.py'
+#sed -i 's/mix_2015_50ns_Startup_PoissonOOTPU_cfi/mix_2015_25ns_Startup_PoissonOOTPU_cfi/' ${step1PythonFile}'Asympt25ns.py'
+#sed -i 's/HLT_50ns_5e33_v1_cff/HLT_25ns14e33_v1_cff/' ${step1PythonFile}'Asympt25ns.py'
+#sed -i 's/customisePostLS1_50ns/customisePostLS1/' ${step1PythonFile}'Asympt25ns.py'
+#
+#echo " Creating python file for AODSIM (different PU scenarios).. "
+#step2PythonFile="step2_${Name}_RAW2DIGI_L1Reco_RECO_"
+#cp ${Main_Dir}/step2_RAW2DIGI_L1Reco_RECO.py  ${step2PythonFile}'Asympt50ns.py'
+#cp ${Main_Dir}/step2_RAW2DIGI_L1Reco_RECO.py  ${step2PythonFile}'Asympt25ns.py'
+#sed -i 's/inputFile/'"${Name}"'_AODSIM_Asympt50ns/' ${step2PythonFile}'Asympt50ns.py'
+#sed -i 's/inputFile/'"${Name}"'_AODSIM_Asympt25ns/' ${step2PythonFile}'Asympt25ns.py'
+#sed -i 's/MCRUN2_74_V9A/MCRUN2_74_V9/' ${step2PythonFile}'Asympt25ns.py'
+#sed -i 's/customisePostLS1_50ns/customisePostLS1/' ${step2PythonFile}'Asympt25ns.py'
 
-sed -i 's/inputFile/'"${Name}"'_RAWSIM_Asympt50ns/' ${step1PythonFile}'Asympt50ns.py'
-sed -i 's/inputFile/'"${Name}"'_RAWSIM_Asympt25ns/' ${step1PythonFile}'Asympt25ns.py'
-sed -i 's/MCRUN2_74_V7A/MCRUN2_74_V9/' ${step1PythonFile}'Asympt25ns.py'
-sed -i 's/mix_2015_50ns_Startup_PoissonOOTPU_cfi/mix_2015_25ns_Startup_PoissonOOTPU_cfi/' ${step1PythonFile}'Asympt25ns.py'
-sed -i 's/HLT_50ns_5e33_v1_cff/HLT_25ns14e33_v1_cff/' ${step1PythonFile}'Asympt25ns.py'
-sed -i 's/customisePostLS1_50ns/customisePostLS1/' ${step1PythonFile}'Asympt25ns.py'
-
-echo " Creating python file for AODSIM (different PU scenarios).. "
-step2PythonFile="step2_${Name}_RAW2DIGI_L1Reco_RECO_"
-cp ${Main_Dir}/step2_RAW2DIGI_L1Reco_RECO.py  ${step2PythonFile}'Asympt50ns.py'
-cp ${Main_Dir}/step2_RAW2DIGI_L1Reco_RECO.py  ${step2PythonFile}'Asympt25ns.py'
-sed -i 's/inputFile/'"${Name}"'_AODSIM_Asympt50ns/' ${step2PythonFile}'Asympt50ns.py'
-sed -i 's/inputFile/'"${Name}"'_AODSIM_Asympt25ns/' ${step2PythonFile}'Asympt25ns.py'
-sed -i 's/MCRUN2_74_V9A/MCRUN2_74_V9/' ${step2PythonFile}'Asympt25ns.py'
-sed -i 's/customisePostLS1_50ns/customisePostLS1/' ${step2PythonFile}'Asympt25ns.py'
-
+echo " Creating python file for RAW-AODSIM (different PU scenarios).. "
+step12PythonFile="step12_${Name}_RAW_AOD_"
+cp ${Main_Dir}/step12_RAW_AODSIM.py  ${step12PythonFile}'Asympt25ns.py'
+sed -i 's/inputFile/'"${Name}"'_AODSIM_Asympt25ns/' ${step12PythonFile}'Asympt25ns.py'
 echo " Creating python file for MiniAOD (different PU scenarios).. "
+
 step3PythonFile="step3_${Name}_MiniAOD_"
 cp ${Main_Dir}/step3_MiniAOD.py  ${step3PythonFile}'Asympt25ns.py'
-cp ${Main_Dir}/step3_MiniAOD.py  ${step3PythonFile}'Asympt50ns.py'
 sed -i 's/inputFile/'"${Name}"'_MiniAOD_Asympt25ns/' ${step3PythonFile}'Asympt25ns.py'
-sed -i 's/inputFile/'"${Name}"'_MiniAOD_Asympt50ns/' ${step3PythonFile}'Asympt50ns.py'
-sed -i 's/MCRUN2_74_V9A/MCRUN2_74_V9/' ${step3PythonFile}'Asympt25ns.py'
-sed -i 's/customisePostLS1_50ns/customisePostLS1/' ${step3PythonFile}'Asympt25ns.py'
 
 ########################################################
 ######### Small file with the commands for condor
@@ -106,30 +107,33 @@ sed -i 's/test/'"${step0PythonFile}"'/' ${crabFileStep0}
 
 crabFileStep1=crab3_${Name}_RAWSIM_step1_
 crabFileStep2=crab3_${Name}_AODSIM_step2_
+crabFileStep12=crab3_${Name}_RAW_AODSIM_step12_
 crabFileStep3=crab3_${Name}_MiniAOD_step3_
 for i in ${PU[@]}; do
-	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep1}${i}'.py'
-	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep1}${i}'.py'
-	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep1}${i}'.py'
-	sed -i 's/test/'"${step1PythonFile}${i}"'/' ${crabFileStep1}${i}'.py'
-	sed -i 's/NAME/'"${Name}"'_RunIISpring15DR74_RAWSIM_'"${i}"'/' ${crabFileStep1}${i}'.py'
-	sed -i 's/PROC/RunIISpring15DR74_RAWSIM_'${i}'/' ${crabFileStep1}${i}'.py'
-	sed -i 's/None/ADD_YOUR_DATASET_HERE/' ${crabFileStep1}${i}'.py'
+#	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep1}${i}'.py'
+#	sed -i 's/test/'"${step1PythonFile}${i}"'/' ${crabFileStep1}${i}'.py'
+#	sed -i 's/NAME/'"${Name}"'_RunIISpring15DR74_RAWSIM_'"${i}"'/' ${crabFileStep1}${i}'.py'
+#	sed -i 's/PROC/RunIISpring15DR74_RAWSIM_'${i}'/' ${crabFileStep1}${i}'.py'
+#	sed -i 's/None/ADD_YOUR_DATASET_HERE/' ${crabFileStep1}${i}'.py'
+#
+#	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep2}${i}'.py'
+#	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep2}${i}'.py'
+#	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep2}${i}'.py'
+#	sed -i 's/test/'"${step2PythonFile}${i}"'/' ${crabFileStep2}${i}'.py'
+#	sed -i 's/NAME/'"${Name}"'_RunIISpring15DR74_AODSIM_'"${i}"'/' ${crabFileStep2}${i}'.py'
+#	sed -i 's/PROC/RunIISpring15DR74_AODSIM_'${i}'/' ${crabFileStep2}${i}'.py'
+#	sed -i 's/None/ADD_YOUR_DATASET_HERE/' ${crabFileStep2}${i}'.py'
+#
+	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep12}${i}'.py'
+	sed -i 's/test/'"${step12PythonFile}${i}"'/' ${crabFileStep12}${i}'.py'
+	sed -i 's/NAME/'"${Name}"'_RunIIFall15DR76_RAW_AODSIM_'"${i}"'/' ${crabFileStep12}${i}'.py'
+	sed -i 's/PROC/RunIIFall15DR76_RAW_AODSIM_'${i}'/' ${crabFileStep12}${i}'.py'
+	sed -i 's/None/ADD_YOUR_DATASET_HERE/' ${crabFileStep12}${i}'.py'
 
-	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep2}${i}'.py'
-	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep2}${i}'.py'
-	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep2}${i}'.py'
-	sed -i 's/test/'"${step2PythonFile}${i}"'/' ${crabFileStep2}${i}'.py'
-	sed -i 's/NAME/'"${Name}"'_RunIISpring15DR74_AODSIM_'"${i}"'/' ${crabFileStep2}${i}'.py'
-	sed -i 's/PROC/RunIISpring15DR74_AODSIM_'${i}'/' ${crabFileStep2}${i}'.py'
-	sed -i 's/None/ADD_YOUR_DATASET_HERE/' ${crabFileStep2}${i}'.py'
-
-	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep3}${i}'.py'
-	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep3}${i}'.py'
 	cp ${Main_Dir}/crab3_RAW.py  ${crabFileStep3}${i}'.py'
 	sed -i 's/test/'"${step3PythonFile}${i}"'/' ${crabFileStep3}${i}'.py'
-	sed -i 's/NAME/'"${Name}"'_RunIISpring15DR74_MiniAOD_'"${i}"'/' ${crabFileStep3}${i}'.py'
-	sed -i 's/PROC/RunIISpring15DR74_MiniAOD_'${i}'/' ${crabFileStep3}${i}'.py'
+	sed -i 's/NAME/'"${Name}"'_RunIIFall15DR76_MiniAOD_'"${i}"'/' ${crabFileStep3}${i}'.py'
+	sed -i 's/PROC/RunIIFall15DR76_MiniAOD_'${i}'/' ${crabFileStep3}${i}'.py'
 	sed -i 's/None/ADD_YOUR_DATASET_HERE/' ${crabFileStep3}${i}'.py'
 
 done
