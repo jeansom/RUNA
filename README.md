@@ -13,8 +13,8 @@ This package contains scripts:
 
 ## Instructions
 ```
-cmsrel CMSSW_7_6_3
-cd CMSSW_7_6_3/src/
+cmsrel CMSSW_7_6_3_patch2
+cd CMSSW_7_6_3_patch2/src/
 cmsenv 
 git cms-addpkg CommonTools/PileupAlgos
 git clone https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_7_6_X_V0
