@@ -2,7 +2,7 @@
 
 EDMNtuples based on [B2GEDMNtuples](https://github.com/cmsb2g/B2GAnaFW/tree/master)
 
-This is a modify version of the B2GEDMNtuples. The main change is that here, to make jet, I am using the jetToolbox. Initially the results must be the same.
+This is a simpler version of the B2GEDMNtuples. 
 
 Before you set your enviroment as described in the main README of these package, go to RUNtuples/test. There you have a file called `RUNtuples_cfg.py`. You should not change anything there unless you want to modify something specific for your analysis. To check if everything is working you can run a test job:
 
