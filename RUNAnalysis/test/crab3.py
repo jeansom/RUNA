@@ -72,13 +72,18 @@ if __name__ == '__main__':
 #			'/QCD_Pt_1800to2400_TuneCUETP8M1_13TeV_pythia8/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
 #			'/QCD_Pt_2400to3200_TuneCUETP8M1_13TeV_pythia8/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
 #			'/QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
+			'/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/jsomalwa-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v12-6cd9a37acb7fba8686d9247b86713620/USER',
+#			'/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/jsomalwa-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v12-6cd9a37acb7fba8686d9247b86713620/USER',
+#			'/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
+#			'/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
+			'/QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
 
-			'/WWTo4Q_13TeV-powheg/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
-			'/WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
+#			'/WWTo4Q_13TeV-powheg/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
+#			'/WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
 #			'/ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
-			'/ZJetsToQQ_HT600toInf_13TeV-madgraph/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
-			'/WZ_TuneCUETP8M1_13TeV-pythia8/algomez-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-6cd9a37acb7fba8686d9247b86713620/USER',
-			'/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/dsheffie-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-6cd9a37acb7fba8686d9247b86713620/USER',
+#			'/ZJetsToQQ_HT600toInf_13TeV-madgraph/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
+#			'/WZ_TuneCUETP8M1_13TeV-pythia8/algomez-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-6cd9a37acb7fba8686d9247b86713620/USER',
+#			'/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/dsheffie-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-6cd9a37acb7fba8686d9247b86713620/USER',
 
 #			#'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-6cd9a37acb7fba8686d9247b86713620/USER',
 #			#'/RPVSt350tojj_13TeV_pythia8/algomez-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-6cd9a37acb7fba8686d9247b86713620/USER',
@@ -100,7 +105,8 @@ if __name__ == '__main__':
 		#	config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_Silver.txt' 
 		#config.Data.lumiMask = 'test.json'
 		config.General.requestName = procName #+'1'
-		config.JobType.pyCfgParams = [ 'PROC='+procName, 'local=0', 'systematics=1', 'jecVersion=Summer15_25nsV6', 'namePUFile=PileupData2015D_JSON_10-28-2015.root' ]
+		if 'RPV' in dataset: config.JobType.pyCfgParams = [ 'PROC='+procName, 'local=0', 'systematics=1', 'jecVersion=Summer15_25nsV6', 'namePUFile=PileupData2015D_JSON_10-28-2015.root' ]
+		else: config.JobType.pyCfgParams = [ 'PROC='+procName, 'local=0', 'jecVersion=Summer15_25nsV6', 'namePUFile=PileupData2015D_JSON_10-28-2015.root' ]
 		p = Process(target=submit, args=(config,))
 		p.start()
 		p.join()

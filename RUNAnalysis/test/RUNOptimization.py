@@ -56,14 +56,13 @@ def calcROCs( BkgSamples, SigSamples, treename, varList, mass, window, cutsList 
 		print '---- Signal ', signalName
 		for i in xrange(sigNumEntries):
 			sigEvents.GetEntry(i)
-			printProgress( d, i, sigNumEntries )
 			#---- progress of the reading --------
 			fraction = 10.*i/(1.*sigNumEntries)
 			if TMath.FloorNint(fraction) > d: print str(10*TMath.FloorNint(fraction))+'%' 
 			d = TMath.FloorNint(fraction)
 			#if i > 1000000: break
 			sigCutsList = []
-			sigMassAve = sigEvents.massAve
+			sigMassAve = ( sigEvents.massAve if 'Boosted' in version else sigEvents.avgMass  )
 			if ( ( sigMassAve > int(mass)-window ) and ( sigMassAve < int(mass)+window  ) ): 
 				if len(cutsList) > 0:
 					for cutVar in cutsList: 
@@ -88,7 +87,7 @@ def calcROCs( BkgSamples, SigSamples, treename, varList, mass, window, cutsList 
 			#if i > 1000000: break
 
 			bkgCutsList = []
-			bkgMassAve = bkgEvents.massAve
+			bkgMassAve = ( bkgEvents.massAve if 'Boosted' in version else bkgEvents.avgMass  )
 			if ( ( bkgMassAve > int(mass)-window ) and ( bkgMassAve < int(mass)+window  ) ): 
 				if len(cutsList) > 0:
 					for cutVar in cutsList: 
@@ -465,19 +464,15 @@ if __name__ == '__main__':
 
 	var = [
 		## Version, Variable, nBins, minX, maxX, Below value, cut, Check ROC value
-		[ 'Resolved', 'mindR', True, 1.5, 0.8 ],
-		##[ 'Resolved', 'massAve', True ],
-		#[ 'Resolved', 'deltaEtaDijet1', True,  ],
-		#[ 'Resolved', 'deltaEtaDijet2', True,  ],
-		#[ 'Resolved', 'deltaEtaAveDijets', True ],
-		[ 'Resolved', 'deltaEtaDijets', True, .75, 0.65 ],
-		[ 'Resolved', 'massAsymmetry', True, 0.2, 0.64 ],
-		[ 'Resolved', 'cosThetaStarDijet1', True, 0.6, 0.70 ],
-		[ 'Resolved', 'cosThetaStarDijet2', True, 0.6, 0.70 ],
-		[ 'Resolved', 'deltaDijet1', False, 300, 0.6 ],
-		[ 'Resolved', 'deltaDijet2', False, 300, 0.6 ],
-		[ 'Resolved', 'xi1', True, 1, 0.6 ],
-		[ 'Resolved', 'xi2', True , 1, 0.6],
+		#[ 'Resolved', 'mindR', 50, 0., 5., True, 0., 0.8 ],
+		[ 'Resolved', 'deltaEta', 50, 0., 5., True, 0., 0.65 ],
+		[ 'Resolved', 'massAsym', 20, 0., 1., True, 0., 0.64 ],
+		[ 'Resolved', 'cosThetaStar1', 20, 0., 1., True, 0., 0.70 ],
+		[ 'Resolved', 'cosThetaStar2', 20, 0., 1., True, 0., 0.70 ],
+		[ 'Resolved', 'delta1', 30, -500, 1000,  False, 0, 0.6 ],
+		[ 'Resolved', 'delta2', 30, -500, 1000, False, 0, 0.6 ],
+		#[ 'Resolved', 'xi1', 20, 0., 1., True, 0, 0.6 ],
+		#[ 'Resolved', 'xi2', 20, 0., 1., True , 0, 0.6],
 		##### RPV St 100
 		[ 'Boosted', "massAsym", 20, 0., 1., True, 0.3, 0.80 ],
 		[ 'Boosted', "jet1CosThetaStar", 20, 0., 1, True, 0., 0.8 ],
@@ -491,32 +486,6 @@ if __name__ == '__main__':
 		[ 'Boosted', "deltaEtaDijet", 50, 0., 5., True, 0.7, 0.6 ],
 		[ 'Boosted', "jet1SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
 		[ 'Boosted', "jet2SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
-		####### Dibosons
-		#[ 'Boosted', "massAsym", 20, 0., 1., True, 0.65, 0.60 ],
-		#[ 'Boosted', "jet1CosThetaStar", 20, 0., 1, True, 0., 0.8 ],
-		#[ 'Boosted', "jet2CosThetaStar", 20, 0., 1, True, 0., 0.8 ],
-		#[ 'Boosted', "jet1Tau21", 20, 0., 1., True, 0.55, 0.6  ],
-		#[ 'Boosted', "jet2Tau21", 20, 0., 1., True, 0.55, 0.6 ],
-		#[ 'Boosted', "jet1Tau31", 20, 0., 1., True, 0.35, 0.6  ],
-		#[ 'Boosted', "jet2Tau31", 20, 0., 1., True, 0.35, 0.6 ],
-		#[ 'Boosted', "jet1Tau32", 20, 0., 1., True, 0., 0  ],
-		#[ 'Boosted', "jet2Tau32", 20, 0., 1., True, 0., 0  ],
-		#[ 'Boosted', "deltaEtaDijet", 50, 0., 5., True, 0., 0.6 ],
-		#[ 'Boosted', "jet1SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
-		#[ 'Boosted', "jet2SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
-		###### RPV St 200 
-		#[ 'Boosted', "massAsym", 20, 0., 1., True, 0.1, 0.80 ],
-		#[ 'Boosted', "jet1CosThetaStar", 20, 0., 1, True, 0., 0.8 ],
-		#[ 'Boosted', "jet2CosThetaStar", 20, 0., 1, True, 0., 0.8 ],
-		#[ 'Boosted', "jet1Tau21", 20, 0., 1., True, 0.4, 0.8  ],
-		#[ 'Boosted', "jet2Tau21", 20, 0., 1., True, 0.4, 0.8 ],
-		#[ 'Boosted', "jet1Tau31", 20, 0., 1., True, 0., 0.6  ],
-		#[ 'Boosted', "jet2Tau31", 20, 0., 1., True, 0., 0.6 ],
-		#[ 'Boosted', "jet1Tau32", 20, 0., 1., True, 0., 0  ],
-		#[ 'Boosted', "jet2Tau32", 20, 0., 1., True, 0., 0  ],
-		#[ 'Boosted', "deltaEtaDijet", 50, 0., 5., True, 0.9, 0.75 ],
-		#[ 'Boosted', "jet1SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
-		#[ 'Boosted', "jet2SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
 	]
 
 	if 'calcROC' in process: 

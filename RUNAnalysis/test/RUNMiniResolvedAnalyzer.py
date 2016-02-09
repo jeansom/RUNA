@@ -336,7 +336,6 @@ def myAnalyzer( sample, couts ):
 		if TMath.FloorNint(fraction) > d: print str(10*TMath.FloorNint(fraction))+'%' 
 		d = TMath.FloorNint(fraction)
 
-		#---- progress of the reading --------
 		Run      = events.run
 		Lumi     = events.lumi
 		NumEvent = events.event
