@@ -4,7 +4,7 @@
 ### Creating datacards
 ################################
 
-from ROOT import TFile, TH1F, TH1D, TGraph, kTRUE, kFALSE, gROOT, gSystem, gStyle
+from ROOT import TFile, TH1F, TH1D, TGraph, kTRUE, kFALSE, gROOT, gSystem, gStyle, TMath
 from ROOT import RooRealVar, RooDataHist, RooArgList, RooArgSet, RooAddPdf, RooFit, RooGenericPdf, RooWorkspace, RooMsgService, RooHistPdf
 from array import array
 import argparse
@@ -13,6 +13,12 @@ import warnings
 import random
 import numpy as np
 from multiprocessing import Process
+try: 
+	from RUNA.RUNAnalysis.scaleFactors import *
+except ImportError: 
+	sys.path.append('../python') 
+	from scaleFactors import *
+
 
 currentDir = os.getcwdu()
 gSystem.SetIncludePath('-I$ROOFITSYS/include')
@@ -23,18 +29,18 @@ if os.access('RooPowerFunction.cxx', os.R_OK): ROOT.gROOT.ProcessLine('.L RooPow
 #line = TGraph(2, xline, yline)
 #line.SetLineColor(kRed)
 
-def shapeCards( process, histosFile, signalSample, hist, signalMass, jesValue, jerValue, lumiUnc, outputRootFile ):
+
+def shapeCards( process, isData, histosFile, signalSample, hist, signalMass, minMass, maxMass, jesValue, jerValue, lumiUnc, outputName ):
 	"""function to run Roofit and save workspace for RooStats"""
 	warnings.filterwarnings( action='ignore', category=RuntimeWarning, message='.*class stack<RooAbsArg\*,deque<RooAbsArg\*> >' )
 	
-	minX = signalMass - 100
-	maxX = signalMass + 100
 	hSignal = histosFile.Get(hist+'_'+signalSample+'_A')
 	htmpSignal = hSignal.Clone()
-	hSignal.Scale(1/hSignal.Integral())
-	sigAcc = hSignal.Integral(hSignal.GetXaxis().FindBin(minX), hSignal.GetXaxis().FindBin( maxX )) #/hSignal.Integral(1,hSignal.GetXaxis().FindBin( maxX) )
+	#htmpSignal.Scale(100)
+	signalXS = search(dictXS, 'RPVStopStopToJets_UDD312_M-'+str(signalMass) )
+	#hSignal.Scale( lumi*signalXS / hSignal.Integral())
 
-	massAve = RooRealVar( 'massAve', 'massAve', minX, maxX  )
+	massAve = RooRealVar( 'massAve', 'massAve', minMass, maxMass  )
 	rooSigHist = RooDataHist( 'rooSigHist', 'rooSigHist', RooArgList(massAve), hSignal )
 	rooSigHist.Print()
 
@@ -46,10 +52,14 @@ def shapeCards( process, histosFile, signalSample, hist, signalMass, jesValue, j
 
 	hBkg = histosFile.Get(hist+'_DATA_BCD')
 	#hBkg = histosFile.Get(hist+'_QCDPtAll_BCD')
-	hBkg.Scale(1/hBkg.Integral())
-	bkgAcc = hBkg.Integral( hBkg.GetXaxis().FindBin( minX ), hBkg.GetXaxis().FindBin( maxX )) 
-        background_norm = RooRealVar('background_norm','background_norm',bkgAcc,0.,1e+07)
+	bkgAcc = round(hBkg.Integral( hBkg.GetXaxis().FindBin( minMass ), hBkg.GetXaxis().FindBin( maxMass )))
+	#hBkg.Scale(1/hBkg.Integral())
+	hPseudo = hBkg.Clone()
+	hPseudo.Reset()
+        #background_norm = RooRealVar('background_norm','background_norm',bkgAcc,0.,1e+07)
+        background_norm = RooRealVar('background_norm','background_norm',1.,0.,1e+07)
         background_norm.Print()
+
 	if 'template' in process:
 		rooBkgHist = RooDataHist( 'rooBkgHist', 'rooBkgHist', RooArgList(massAve), hBkg )
 		rooBkgHist.Print()
@@ -65,11 +75,18 @@ def shapeCards( process, histosFile, signalSample, hist, signalMass, jesValue, j
 		background.Print()
 		### S+B model
 
+	if not isData:
+		newNumEvents = random.randint( bkgAcc-round(TMath.Sqrt(bkgAcc)), bkgAcc+round(TMath.Sqrt(bkgAcc)) )
+		print 'Events in MC:', bkgAcc, ', in PseudoExperiment:', newNumEvents
+		hPseudo.FillRandom( hBkg, newNumEvents ) 
+		#hPseudo.Scale(1/hPseudo.Integral())
+
 	#hData = histosFile.Get(hist+'_DATA_A')
-	hData = histosFile.Get(hist+'_QCDPtAll_A')
-	#hData.Add(htmpSignal)
-	hData.Scale(1/hData.Integral())
-        rooDataHist = RooDataHist('rooDatahist','rooDatahist',RooArgList(massAve),hData)
+	hData = histosFile.Get(hist+'_DATA_BCD')
+	#hData = histosFile.Get(hist+'_QCDPtAll_A')
+	hData.Add(htmpSignal)
+	#hData.Scale(1/hData.Integral())
+        rooDataHist = RooDataHist('rooDatahist','rooDatahist',RooArgList(massAve), hData if isData else hPseudo )
         rooDataHist.Print()
 
 	#model = RooAddPdf("model","s+b",RooArgList(background,signal),RooArgList(background_norm,signal_norm))
@@ -150,13 +167,14 @@ def shapeCards( process, histosFile, signalSample, hist, signalMass, jesValue, j
 		getattr(myWS,'import')(hSigSystDataHist['JERDown'],RooFit.Rename("signal__JERDown"))
         getattr(myWS,'import')(rooDataHist,RooFit.Rename("data_obs"))
         myWS.Print()
+	outputRootFile = currentDir+'/Rootfiles/workspace_'+outputName+'.root'
         myWS.writeToFile(outputRootFile, True)
 	print ' |----> Workspace created in root file:\n', outputRootFile
  # -----------------------------------------
         # write a datacard
 
-        #datacard = open('/afs/cern.ch/work/a/algomez/Substructure/CMSSW_7_1_5/src/MyLimits/datacard_RPVStop'+str(MASS)+'.txt','w')
-        datacard = open( currentDir+'/Datacards/datacard_'+signalSample+'.txt','w')
+	dataCardName = currentDir+'/Datacards/datacard_'+outputName+'.txt'
+        datacard = open( dataCardName ,'w')
         datacard.write('imax 1\n')
         datacard.write('jmax 1\n')
         datacard.write('kmax *\n')
@@ -171,7 +189,7 @@ def shapeCards( process, histosFile, signalSample, hist, signalMass, jesValue, j
         datacard.write('bin          1          1\n')
         datacard.write('process      signal     background\n')
         datacard.write('process      0          1\n')
-        datacard.write('rate         '+str(sigAcc)+'      '+str(bkgAcc)+'\n')
+        datacard.write('rate         -1         -1\n')
         datacard.write('------------------------------\n')
 	if args.lumiUnc: datacard.write('lumi  lnN    %f         -\n'%(lumiUnc))
         if args.jesUnc: datacard.write('JES  shape   1          -\n')
@@ -180,13 +198,14 @@ def shapeCards( process, histosFile, signalSample, hist, signalMass, jesValue, j
 	if args.normUnc: datacard.write('background_norm  flatParam\n')
         #datacard.write('p1  flatParam\n')
         datacard.close()
-	print ' |----> Datacard created:\n', currentDir+'/Datacards/datacard_'+signalSample+'.txt'
+	print ' |----> Datacard created:\n', dataCardName
 
 
 if __name__ == '__main__':
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-p', '--process', action='store', default='template', help='Process: template or fit.' )
+	parser.add_argument('-d', '--data', dest='isData', type=bool, default=True, help='Data: data or pseudoData.' )
 	#parser.add_argument('-d', '--decay', action='store', default='jj', help='Decay, example: jj, bj.' )
 	parser.add_argument('-l', '--lumiUnc', dest='lumiUnc', type=bool, default=False, help='Luminosity, example: 1.' )
 	parser.add_argument('-n', '--normUnc', dest='normUnc', type=bool, default=False, help='Luminosity, example: 1.' )
@@ -213,16 +232,19 @@ if __name__ == '__main__':
 	jesValue = 0.05
 	jerValue = 0.1
 	lumiUnc = 1.12
+	lumi = 2476
+	minMass = 0 
+	maxMass = 600 
 
 	for mass in masses:
 		signalSample = 'RPVSt'+str(mass)
-		fileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+signalSample+'_allHistos_v0.root'
-		#outputRootFile = '/afs/cern.ch/work/a/algomez/Substructure/CMSSW_7_4_5_patch1/src/RUNA/RUNAnalysis/test/Rootfiles/workspace_QCD_RPVSt'+str(MASS)+'tojj_FitP4Gaus_'+PU+'_rooFit_'+lumi+'fb.root'
-		outputRootFile = currentDir+'/Rootfiles/workspace_'+signalSample+'.root'
+		fileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+signalSample+'_allHistos_v7.root'
+		if args.unc: outputName = signalSample+'_v7'
+		else: outputName = signalSample+'_NOSys_v7'
 
 		print '#'*50 
 		print ' |----> Creating datacard and workspace for RPV St', str(mass)
 		print '#'*50 
-		p = Process( target=shapeCards, args=( args.process, TFile.Open(fileHistos), signalSample, masses[ mass ], mass, jesValue, jerValue, lumiUnc, outputRootFile ) )
+		p = Process( target=shapeCards, args=( args.process, args.isData, TFile.Open(fileHistos), signalSample, masses[ mass ], mass, minMass, maxMass, jesValue, jerValue, lumiUnc, outputName ) )
 		p.start()
 		p.join()
