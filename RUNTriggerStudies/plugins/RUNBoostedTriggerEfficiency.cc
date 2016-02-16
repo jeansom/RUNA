@@ -330,16 +330,7 @@ void RUNBoostedTriggerEfficiency::analyze(const Event& iEvent, const EventSetup&
 	iEvent.getByToken(subjetMass_, subjetMass);
 
 	bool basedTriggerFired = checkTriggerBits( triggerName, triggerBit, baseTrigger  );
-	
-	vector<bool> triggersFired;
-	for (size_t t = 0; t < triggerPass.size(); t++) {
-		bool triggerFired = checkTriggerBits( triggerName, triggerBit, triggerPass[t] );
-		triggersFired.push_back( triggerFired );
-		//if ( triggerFired ) LogWarning("test") << triggerPass[t] << " " << triggerFired;
-	}
-	
-	bool ORTriggers = !none_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
-	//if( ORTriggers ) LogWarning("OR") << std::none_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
+	bool ORTriggers = checkORListOfTriggerBits( triggerName, triggerBit, triggerPass );
 
 	/// Applying kinematic, trigger and jet ID
 	vector< JETtype > JETS;
@@ -414,14 +405,14 @@ void RUNBoostedTriggerEfficiency::analyze(const Event& iEvent, const EventSetup&
 		histos2D_[ "jetMassHT_noTrigger" ]->Fill( JETS[0].mass, HT );
 		histos2D_[ "jetTrimmedMassHT_noTrigger" ]->Fill( trimmedMass, HT );
 	}
-	if ( basedTriggerFired || triggersFired[0] ) {
-		if ( basedTriggerFired && triggersFired[0] ) {
+	if ( basedTriggerFired || ORTriggers ) {
+		if ( basedTriggerFired && ORTriggers ) {
 			if(JETS.size() > 0) histos2D_[ "jetMassHT_triggerOneAndTwo" ]->Fill( JETS[0].mass, HT );
 			histos2D_[ "jetTrimmedMassHT_triggerOneAndTwo" ]->Fill( trimmedMass, HT );
 		} else if ( basedTriggerFired ) {
 			if(JETS.size() > 0) histos2D_[ "jetMassHT_triggerOne" ]->Fill( JETS[0].mass, HT );
 			histos2D_[ "jetTrimmedMassHT_triggerOne" ]->Fill( trimmedMass, HT );
-		} else if ( triggersFired[0] ) {
+		} else if ( ORTriggers ) {
 			if(JETS.size() > 0) histos2D_[ "jetMassHT_triggerTwo" ]->Fill( JETS[0].mass, HT );
 			histos2D_[ "jetTrimmedMassHT_triggerTwo" ]->Fill( trimmedMass, HT );
 		}
@@ -454,14 +445,14 @@ void RUNBoostedTriggerEfficiency::analyze(const Event& iEvent, const EventSetup&
 		
 		histos2D_[ "jetMassHT_cutDijet_noTrigger" ]->Fill( jetPrunedMass, HT );
 		histos2D_[ "jetTrimmedMassHT_cutDijet_noTrigger" ]->Fill( trimmedMass, HT );
-		if ( basedTriggerFired || triggersFired[0] ) {
-			if ( basedTriggerFired && triggersFired[0] ) {
+		if ( basedTriggerFired || ORTriggers ) {
+			if ( basedTriggerFired && ORTriggers ) {
 				histos2D_[ "jetMassHT_cutDijet_triggerOneAndTwo" ]->Fill( jetPrunedMass, HT );
 				histos2D_[ "jetTrimmedMassHT_cutDijet_triggerOneAndTwo" ]->Fill( trimmedMass, HT );
 			} else if ( basedTriggerFired ) {
 				histos2D_[ "jetMassHT_cutDijet_triggerOne" ]->Fill( jetPrunedMass, HT );
 				histos2D_[ "jetTrimmedMassHT_cutDijet_triggerOne" ]->Fill( trimmedMass, HT );
-			} else if ( triggersFired[0] ) {
+			} else if ( ORTriggers ) {
 				histos2D_[ "jetMassHT_cutDijet_triggerTwo" ]->Fill( jetPrunedMass, HT );
 				histos2D_[ "jetTrimmedMassHT_cutDijet_triggerTwo" ]->Fill( trimmedMass, HT );
 			}

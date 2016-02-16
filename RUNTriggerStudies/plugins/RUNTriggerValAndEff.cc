@@ -25,15 +25,17 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 
+#include "RUNA/RUNAnalysis/interface/CommonVariablesStructure.h"
+
 using namespace edm;
 using namespace std;
 
-class RUNTriggerValidation : public edm::EDAnalyzer {
+class RUNTriggerValAndEff : public edm::EDAnalyzer {
 
 	public:
-		explicit RUNTriggerValidation(const edm::ParameterSet&);
+		explicit RUNTriggerValAndEff(const edm::ParameterSet&);
       		static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
-		~RUNTriggerValidation() {}
+		~RUNTriggerValAndEff() {}
 
 	private:
 		virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
@@ -44,25 +46,26 @@ class RUNTriggerValidation : public edm::EDAnalyzer {
 	edm::EDGetTokenT<pat::PackedTriggerPrescales> triggerPrescales_;
 	edm::EDGetTokenT<trigger::TriggerEvent> triggerEvent_;
 	edm::EDGetTokenT<pat::JetCollection> jetToken_;
-	std::string hltPath_;
-    	int triggerBit;
+	std::string baseTrigger_;
+      	vector<string> triggerPass_;
 
 	edm::Service<TFileService> fs_;
 	map< string, TH1D* > histos1D_;
 	map< string, TH2D* > histos2D_;
 };
 
-RUNTriggerValidation::RUNTriggerValidation(const edm::ParameterSet& iConfig):
+RUNTriggerValAndEff::RUNTriggerValAndEff(const edm::ParameterSet& iConfig):
 	triggerBits_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("bits"))),
 	triggerObjects_(consumes<pat::TriggerObjectStandAloneCollection>(iConfig.getParameter<edm::InputTag>("objects"))),
 	triggerPrescales_(consumes<pat::PackedTriggerPrescales>(iConfig.getParameter<edm::InputTag>("prescales"))),
 	triggerEvent_(consumes<trigger::TriggerEvent>(iConfig.getParameter<edm::InputTag>("hltTrigger"))),
-	jetToken_(consumes<pat::JetCollection>(iConfig.getParameter<edm::InputTag>("recoJets"))),
-	hltPath_(iConfig.getParameter<std::string>("hltPath"))
+	jetToken_(consumes<pat::JetCollection>(iConfig.getParameter<edm::InputTag>("recoJets")))
 {
+	baseTrigger_ = iConfig.getParameter<std::string>("baseTrigger");
+	triggerPass_ = iConfig.getParameter<vector<string>>("triggerPass");
 }
 
-void RUNTriggerValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
+void RUNTriggerValAndEff::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
 	edm::Handle<edm::TriggerResults> triggerBits;
 	edm::Handle<pat::TriggerObjectStandAloneCollection> triggerObjects;
@@ -77,60 +80,64 @@ void RUNTriggerValidation::analyze(const edm::Event& iEvent, const edm::EventSet
 	iEvent.getByToken(jetToken_, jets);
 
 	const edm::TriggerNames &names = iEvent.triggerNames(*triggerBits);
-	triggerBit = -1;
-  	bool pathFound = 0;
-	std::string triggerName;
-	for (unsigned int i = 0, n = triggerBits->size(); i < n; ++i) {
-		if (TString(names.triggerName(i)).Contains(hltPath_) && (triggerBits->accept(i))) {
-			triggerBit = i;
-			pathFound=1;
-			triggerName = names.triggerName(i);
-			//std::cout << "\n === TRIGGER PATHS === " << std::endl;
-			//std::cout << "Trigger " << names.triggerName(i) << ", prescale " << triggerPrescales->getPrescaleForIndex(i) << ": " << (triggerBits->accept(i) ? "PASS" : "fail (or not run)") << std::endl;
-		}
-	}
+  	bool ORTriggers = checkORListOfTriggerBitsMiniAOD( names, triggerBits, triggerPass_ );
+  	bool baseTrigger = checkTriggerBitsMiniAOD( names, triggerBits, baseTrigger_ );
 
-	if (pathFound) {
-		//std::cout << "\n === TRIGGER OBJECTS === " << std::endl;
-		double hltHT = 0;
-		double hlttrimmedMass = 0;
-		int numJets = 0;
-		for (pat::TriggerObjectStandAlone obj : *triggerObjects) { // note: not "const &" since we want to call unpackPathNames
-			obj.unpackPathNames(names);
-			if ( TString(obj.collection()).Contains("hltAK8PFJetsTrimR0p1PT0p03") ) {
-				//std::cout << "\tTrigger object Trimmed Mass:  pt " << obj.pt() << ", eta " << obj.eta() << ", phi " << obj.phi() << ", mass " << obj.mass() << std::endl;
-				hlttrimmedMass = obj.mass();
-				numJets++;
-				histos1D_[ "hltTrimmedMass" ]->Fill( obj.mass() );
-			}
-			if ( TString(obj.collection()).Contains("hltAK8PFHT") ) {
-				for (unsigned h = 0; h < obj.filterIds().size(); ++h) {
-					if (obj.filterIds()[h] == 89 ) {
-						hltHT = obj.pt();
-						histos1D_[ "hltHT" ]->Fill( obj.pt() );
-						//std::cout << "\tTrigger object HT:  pt " << obj.pt() << ", eta " << obj.eta() << ", phi " << obj.phi() << ", mass " << obj.mass() << std::endl;
+	if ( baseTrigger || ORTriggers ) {
+
+		if (ORTriggers) {
+			//std::cout << "\n === TRIGGER OBJECTS === " << std::endl;
+			double hltHT = 0;
+			double hlttrimmedMass = 0;
+			int numJets = 0;
+			for (pat::TriggerObjectStandAlone obj : *triggerObjects) { // note: not "const &" since we want to call unpackPathNames
+				obj.unpackPathNames(names);
+				if ( TString(obj.collection()).Contains("hltAK8PFJetsTrimR0p1PT0p03") ) {
+					//std::cout << "\tTrigger object Trimmed Mass:  pt " << obj.pt() << ", eta " << obj.eta() << ", phi " << obj.phi() << ", mass " << obj.mass() << std::endl;
+					hlttrimmedMass = obj.mass();
+					numJets++;
+					histos1D_[ "hltTrimmedMass" ]->Fill( obj.mass() );
+				}
+				if ( TString(obj.collection()).Contains("hltAK8PFHT") ) {
+					for (unsigned h = 0; h < obj.filterIds().size(); ++h) {
+						if (obj.filterIds()[h] == 89 ) {
+							hltHT = obj.pt();
+							histos1D_[ "hltHT" ]->Fill( obj.pt() );
+							//std::cout << "\tTrigger object HT:  pt " << obj.pt() << ", eta " << obj.eta() << ", phi " << obj.phi() << ", mass " << obj.mass() << std::endl;
+						}
 					}
 				}
 			}
+			if ( hltHT > 0 ) histos2D_[ "hltTrimmedMassvsHT" ]->Fill( hlttrimmedMass, hltHT );
+			if ( numJets > 0 ) histos1D_[ "hltNumJetsTrimmedMass" ]->Fill( numJets );
 		}
-		if ( hltHT > 0 ) histos2D_[ "hltTrimmedMassvsHT" ]->Fill( hlttrimmedMass, hltHT );
-		if ( numJets > 0 ) histos1D_[ "hltNumJetsTrimmedMass" ]->Fill( numJets );
 
 		double HT = 0;
 		int k = 0;
 		for (const pat::Jet &jet : *jets) {
 			HT += jet.pt();
+			if ( jet.pt() < 150 ) continue;
+			if ( TMath::Abs( jet.eta() ) > 2.4 ) continue;
+
 			if ((++k)==1){
 				histos1D_[ "jet1Mass" ]->Fill( jet.mass() );
 				histos1D_[ "jet1TrimmedMass" ]->Fill( jet.userFloat( "ak8PFJetsCHSTrimmedMass" ) );
 				histos1D_[ "jet1Pt" ]->Fill( jet.pt() );
+			}
+
+			if ( baseTrigger ) {
+				histos1D_[ "trimmedMassDenom_cutDijet" ]->Fill( jet.userFloat( "ak8PFJetsCHSTrimmedMass" ) );
+
+				if ( ORTriggers ){
+					histos1D_[ "trimmedMassPassing_cutDijet" ]->Fill( jet.userFloat( "ak8PFJetsCHSTrimmedMass" ) );
+				}
 			}
 		}
 		if ( HT > 0 ) histos1D_[ "HT" ]->Fill( HT );
 	}
 }
 
-void RUNTriggerValidation::beginJob() {
+void RUNTriggerValAndEff::beginJob() {
 
 	histos1D_[ "hltTrimmedMass" ] = fs_->make< TH1D >( "hltTrimmedMass", "hltTrimmedMass", 100, 0., 1000. );
 	histos1D_[ "hltTrimmedMass" ]->Sumw2();
@@ -149,20 +156,27 @@ void RUNTriggerValidation::beginJob() {
 
 	histos2D_[ "hltTrimmedMassvsHT" ] = fs_->make< TH2D >( "hltTrimmedMassvsHT", "hltTrimmedMassvsHT", 100, 0., 1000., 100, 0., 2000. );
 	histos2D_[ "hltTrimmedMassvsHT" ]->Sumw2();
+
+	histos1D_[ "trimmedMassDenom_cutDijet" ] = fs_->make< TH1D >( "trimmedMassDenom_cutDijet", "trimmedMassDenom_cutDijet", 100, 0., 1000. );
+	histos1D_[ "trimmedMassDenom_cutDijet" ]->Sumw2();
+	histos1D_[ "trimmedMassPassing_cutDijet" ] = fs_->make< TH1D >( "trimmedMassPassing_cutDijet", "trimmedMassPassing_cutDijet", 100, 0., 1000. );
+	histos1D_[ "trimmedMassPassing_cutDijet" ]->Sumw2();
 }
 
-void RUNTriggerValidation::fillDescriptions(edm::ConfigurationDescriptions & descriptions) {
+void RUNTriggerValAndEff::fillDescriptions(edm::ConfigurationDescriptions & descriptions) {
 
 	edm::ParameterSetDescription desc;
 	desc.add<InputTag>("bits", 	InputTag("TriggerResults", "", "HLT"));
 	desc.add<InputTag>("prescales", 	InputTag("patTrigger"));
 	desc.add<InputTag>("objects", 	InputTag("selectedPatTrigger"));
-	desc.add<InputTag>("hltPath", 	InputTag("HLT_PFHT800"));
+	desc.add<string>("baseTrigger", 	"HLT_PFHT800");
 	desc.add<InputTag>("hltTrigger", 	InputTag("hltTriggerSummaryAOD","","HLT"));
 	desc.add<InputTag>("recoJets", 	InputTag("slimmedJetsAK8"));
+	vector<string> HLTPass;
+	HLTPass.push_back("HLT_AK8PFHT650_TrimR0p1PT0p03Mass50");
+	desc.add<vector<string>>("triggerPass",	HLTPass);
 	descriptions.addDefault(desc);
 }
       
-
 //define this as a plug-in
-DEFINE_FWK_MODULE(RUNTriggerValidation);
+DEFINE_FWK_MODULE(RUNTriggerValAndEff);

@@ -8,7 +8,7 @@ from httplib import HTTPException
 
 config = config()
 
-version = 'v03'
+version = '_v00'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
@@ -23,25 +23,25 @@ config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = 1
 config.Data.publication = False
 config.Data.ignoreLocality = True
-config.JobType.inputFiles = [ 'supportFiles/PileupData2015D_JSON_10-28-2015.root',
-		'supportFiles/Summer15_25nsV6_DATA_L1FastJet_AK4PFchs.txt',
-		'supportFiles/Summer15_25nsV6_DATA_L1FastJet_AK8PFchs.txt',
-		'supportFiles/Summer15_25nsV6_DATA_L2L3Residual_AK4PFchs.txt',
-		'supportFiles/Summer15_25nsV6_DATA_L2L3Residual_AK8PFchs.txt',
-		'supportFiles/Summer15_25nsV6_DATA_L2Relative_AK4PFchs.txt',
-		'supportFiles/Summer15_25nsV6_DATA_L2Relative_AK8PFchs.txt',
-		'supportFiles/Summer15_25nsV6_DATA_L3Absolute_AK4PFchs.txt',
-		'supportFiles/Summer15_25nsV6_DATA_L3Absolute_AK8PFchs.txt',
-		'supportFiles/Summer15_25nsV6_DATA_Uncertainty_AK4PFchs.txt',
-		'supportFiles/Summer15_25nsV6_DATA_Uncertainty_AK8PFchs.txt',
-		'supportFiles/Summer15_25nsV6_MC_L1FastJet_AK4PFchs.txt',
-		'supportFiles/Summer15_25nsV6_MC_L1FastJet_AK8PFchs.txt',
-		'supportFiles/Summer15_25nsV6_MC_L2Relative_AK4PFchs.txt',
-		'supportFiles/Summer15_25nsV6_MC_L2Relative_AK8PFchs.txt',
-		'supportFiles/Summer15_25nsV6_MC_L3Absolute_AK4PFchs.txt',
-		'supportFiles/Summer15_25nsV6_MC_L3Absolute_AK8PFchs.txt',
-		'supportFiles/Summer15_25nsV6_MC_Uncertainty_AK4PFchs.txt',
-		'supportFiles/Summer15_25nsV6_MC_Uncertainty_AK8PFchs.txt',
+config.JobType.inputFiles = [ 'supportFiles/PileupData2015D_JSON_11-19-2015.root',
+		'supportFiles/Summer15_25nsV7_DATA_L1FastJet_AK4PFchs.txt',
+		'supportFiles/Summer15_25nsV7_DATA_L1FastJet_AK8PFchs.txt',
+		'supportFiles/Summer15_25nsV7_DATA_L2L3Residual_AK4PFchs.txt',
+		'supportFiles/Summer15_25nsV7_DATA_L2L3Residual_AK8PFchs.txt',
+		'supportFiles/Summer15_25nsV7_DATA_L2Relative_AK4PFchs.txt',
+		'supportFiles/Summer15_25nsV7_DATA_L2Relative_AK8PFchs.txt',
+		'supportFiles/Summer15_25nsV7_DATA_L3Absolute_AK4PFchs.txt',
+		'supportFiles/Summer15_25nsV7_DATA_L3Absolute_AK8PFchs.txt',
+		'supportFiles/Summer15_25nsV7_DATA_Uncertainty_AK4PFchs.txt',
+		'supportFiles/Summer15_25nsV7_DATA_Uncertainty_AK8PFchs.txt',
+		'supportFiles/Summer15_25nsV7_MC_L1FastJet_AK4PFchs.txt',
+		'supportFiles/Summer15_25nsV7_MC_L1FastJet_AK8PFchs.txt',
+		'supportFiles/Summer15_25nsV7_MC_L2Relative_AK4PFchs.txt',
+		'supportFiles/Summer15_25nsV7_MC_L2Relative_AK8PFchs.txt',
+		'supportFiles/Summer15_25nsV7_MC_L3Absolute_AK4PFchs.txt',
+		'supportFiles/Summer15_25nsV7_MC_L3Absolute_AK8PFchs.txt',
+		'supportFiles/Summer15_25nsV7_MC_Uncertainty_AK4PFchs.txt',
+		'supportFiles/Summer15_25nsV7_MC_Uncertainty_AK8PFchs.txt',
 		]
 
 config.Site.storageSite = 'T3_US_FNALLPC'
@@ -72,11 +72,11 @@ if __name__ == '__main__':
 #			'/QCD_Pt_1800to2400_TuneCUETP8M1_13TeV_pythia8/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
 #			'/QCD_Pt_2400to3200_TuneCUETP8M1_13TeV_pythia8/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
 #			'/QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
-			'/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/jsomalwa-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v12-6cd9a37acb7fba8686d9247b86713620/USER',
+#			'/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/jsomalwa-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v12-6cd9a37acb7fba8686d9247b86713620/USER',
 #			'/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/jsomalwa-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v12-6cd9a37acb7fba8686d9247b86713620/USER',
 #			'/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
 #			'/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
-			'/QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
+			#'/QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
 
 #			'/WWTo4Q_13TeV-powheg/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
 #			'/WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/mmorris-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-7bcba442d2602d92a19f8ca61d13bc6c/USER',
@@ -85,6 +85,10 @@ if __name__ == '__main__':
 #			'/WZ_TuneCUETP8M1_13TeV-pythia8/algomez-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-6cd9a37acb7fba8686d9247b86713620/USER',
 #			'/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/dsheffie-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-6cd9a37acb7fba8686d9247b86713620/USER',
 
+			######## Centrally produced
+			'/RPVStopStopToJets_UDD312_M-350_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv1-PU25nsData2015v1_76X_b2ganafw763__v01-9fb1be677821e870f6ad2ccb589527d9/USER',
+
+			######## Privately produced
 #			#'/RPVSt100tojj_13TeV_pythia8/algomez-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-6cd9a37acb7fba8686d9247b86713620/USER',
 #			#'/RPVSt350tojj_13TeV_pythia8/algomez-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-6cd9a37acb7fba8686d9247b86713620/USER',
 #			'/RPVStopStopToJets_UDD312_M-100-madgraph/algomez-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09p1-6cd9a37acb7fba8686d9247b86713620/USER',
@@ -105,8 +109,8 @@ if __name__ == '__main__':
 		#	config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_Silver.txt' 
 		#config.Data.lumiMask = 'test.json'
 		config.General.requestName = procName #+'1'
-		if 'RPV' in dataset: config.JobType.pyCfgParams = [ 'PROC='+procName, 'local=0', 'systematics=1', 'jecVersion=Summer15_25nsV6', 'namePUFile=PileupData2015D_JSON_10-28-2015.root' ]
-		else: config.JobType.pyCfgParams = [ 'PROC='+procName, 'local=0', 'jecVersion=Summer15_25nsV6', 'namePUFile=PileupData2015D_JSON_10-28-2015.root' ]
+		if 'RPV' in dataset: config.JobType.pyCfgParams = [ 'PROC='+procName, 'local=0', 'systematics=1', 'jecVersion=Summer15_25nsV7', 'namePUFile=PileupData2015D_JSON_11-19-2015.root' ]
+		else: config.JobType.pyCfgParams = [ 'PROC='+procName, 'local=0', 'jecVersion=Summer15_25nsV7', 'namePUFile=PileupData2015D_JSON_11-19-2015.root' ]
 		p = Process(target=submit, args=(config,))
 		p.start()
 		p.join()
