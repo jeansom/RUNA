@@ -3,7 +3,7 @@
 #include <vector>
 #include <TLorentzVector.h>
 #include <TVector3.h>
-#include <TH2.h>
+#include <TH1.h>
 #include <TTree.h>
 
 // user include files
@@ -26,6 +26,9 @@
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
+
+#include "FWCore/Common/interface/TriggerNames.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
 
 using namespace edm;
 using namespace std;
@@ -147,6 +150,34 @@ inline bool checkORListOfTriggerBits( Handle<vector<string>> triggerNames, Handl
 	return ORTriggers;
 }
 
+inline bool checkTriggerBitsMiniAOD( TriggerNames triggerNames, Handle<TriggerResults> triggerBits, TString HLTtrigger  ){
+
+  	bool triggerFired = 0;
+	for (unsigned int i = 0, n = triggerBits->size(); i < n; ++i) {
+		if (TString(triggerNames.triggerName(i)).Contains(HLTtrigger) && (triggerBits->accept(i))) {
+		       	triggerFired=1;
+			//LogWarning("test") << "Trigger " << triggerNames.triggerName(i) << ": " << (triggerBits->accept(i) ? "PASS" : "fail (or not run)") ;
+		}
+	}
+
+	return triggerFired;
+}	
+
+inline bool checkORListOfTriggerBitsMiniAOD( TriggerNames triggerNames, Handle<TriggerResults> triggerBits, vector<string>  triggerPass  ){
+
+	vector<bool> triggersFired;
+	for (size_t t = 0; t < triggerPass.size(); t++) {
+		bool triggerFired = checkTriggerBitsMiniAOD( triggerNames, triggerBits, triggerPass[t] );
+		triggersFired.push_back( triggerFired );
+		//if ( triggerFired ) LogWarning("test") << triggerPass[t] << " " << triggerFired;
+	}
+	
+	bool ORTriggers = !none_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
+	//if( ORTriggers ) LogWarning("OR") << std::none_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
+	
+	return ORTriggers;
+}
+
 inline double corrections( TLorentzVector rawJet, double jetArea, double Rho, int NPV, FactorizedJetCorrector* jetCorrector ){
 
 	jetCorrector->setJetPt ( rawJet.Pt() );
@@ -187,4 +218,3 @@ inline double getJER( double jetEta, int JERType ){
 	else if ( JERType == -1 ) return (scaleNom - scaleUnc);
 	else return 1.;
 }
-
