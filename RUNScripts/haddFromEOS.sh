@@ -10,16 +10,19 @@ else
 	eosFolder=$1
 	haddFile=$2
 	arrayOfFiles=()
-	myEOSLS() { eosls -l /store/user/"$USER"/"$eosFolder"; }
+	myEOSLS() { eosls -l /store/user/"$USER"/$1; }
 	numDir=($(myEOSLS ${eosFolder} | awk '{print $9}'))
 	for i in "${numDir[@]}"
 	do
 		eachFile=($(myEOSLS ${eosFolder}/$i | awk '{ print $9 }'))
 		for j in "${eachFile[@]}"
 		do 
+			echo ${eosFolder}/${i}/${j}
 			arrayOfFiles+="root://cmseos.fnal.gov//store/user/${USER}/${eosFolder}/${i}/${j} "
 		done
 	done
 	hadd -f $haddFile $arrayOfFiles
 
 fi
+
+
