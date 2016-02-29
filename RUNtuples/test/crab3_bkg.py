@@ -7,14 +7,16 @@ from CRABClient.UserUtilities import config
 from httplib import HTTPException
 config = config()
 
-name = 'RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns'
-version = 'v09'
+name = 'RunIIFall15MiniAODv2-PU25nsData2015v1_76X_'
+version = 'b2ganafw763_v01'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
 
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'RUNtuples_cfg.py'
+config.JobType.pyCfgParams = [ 'DataProcessing=MC25ns_MiniAOD_76X', 'useNoHFMET=0' ]
+config.JobType.inputFiles = [ 'Fall15_25nsV1_MC.db' ]
 config.JobType.allowUndistributedCMSSW = True
 
 config.Data.inputDataset = ''
@@ -50,14 +52,14 @@ if __name__ == '__main__':
 			#'/QCD_Pt_1800to2400_TuneCUETP8M1_13TeV_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
 			#'/QCD_Pt_2400to3200_TuneCUETP8M1_13TeV_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
 			#'/QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
+			
+			#'/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/'+name+'mcRun2_asymptotic_v12-v1/MINIAODSIM',
+			#'/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/'+name+'mcRun2_asymptotic_v12-v1/MINIAODSIM',
+			#'/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/'+name+'mcRun2_asymptotic_v12-v1/MINIAODSIM',
+			'/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/'+name+'mcRun2_asymptotic_v12-v1/MINIAODSIM',
+			#'/QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/'+name+'mcRun2_asymptotic_v12-v1/MINIAODSIM',
 
-			#'/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
-			#'/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
-			#'/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
-			#'/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
-			#'/QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
-
-			'/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
+			#'/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
 			#'/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM',
 
 			]
@@ -65,13 +67,8 @@ if __name__ == '__main__':
 	from multiprocessing import Process
 	for dataset in Samples:
 		config.Data.inputDataset = dataset
-		#if 'Asympt50ns' in dataset: config.JobType.pyCfgParams = [ 'DataProcessing=MC50ns' ]  
-		#elif 'Asympt25ns' in dataset: config.JobType.pyCfgParams = [ 'DataProcessing=MC25ns' ]  
-		config.JobType.pyCfgParams = [ 'DataProcessing=MC25ns' ]  
-		config.JobType.inputFiles = [ 'Summer15_25nsV6_MC.db' ]
-		#config.General.requestName = dataset.split('/')[1]+"_"+dataset.split('/')[2]+'_'+name+'_'+version
-		config.General.requestName = dataset.split('/')[1]+name+'_'+version
-		config.Data.outputDatasetTag = name+'_'+version
+		procName = dataset.split('/')[1].replace('_TuneCUETP8M1_13TeV-madgraphMLM-pythia8','')+'_'+name+'_'+version
+		config.General.requestName = procName
 		p = Process(target=submit, args=(config,))
 		p.start()
 		p.join()
