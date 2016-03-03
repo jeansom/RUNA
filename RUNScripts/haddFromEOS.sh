@@ -17,12 +17,13 @@ else
 		eachFile=($(myEOSLS ${eosFolder}/$i | awk '{ print $9 }'))
 		for j in "${eachFile[@]}"
 		do 
-			echo ${eosFolder}/${i}/${j}
-			arrayOfFiles+="root://cmseos.fnal.gov//store/user/${USER}/${eosFolder}/${i}/${j} "
+			if [[ "${j}" != "failed" ]] 
+			then 
+				echo ${eosFolder}/${i}/${j}
+				arrayOfFiles+="root://cmseos.fnal.gov//store/user/${USER}/${eosFolder}/${i}/${j} "
+			fi
 		done
 	done
 	hadd -f $haddFile $arrayOfFiles
 
 fi
-
-
