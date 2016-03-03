@@ -9,7 +9,7 @@ options = VarParsing ('python')
 
 ### General Options
 options.register('PROC', 
-		'RPVStopStopToJets_UDD312_M-100',
+		'RPVStopStopToJets_UDD312_M-120',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
 		"name"
@@ -33,7 +33,7 @@ options.register('systematics',
 		"Run systematics, default false."
 		)
 options.register('jecVersion', 
-		'supportFiles/Summer15_25nsV6',
+		'supportFiles/Fall15_25nsV2',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
 		"Version of the analysis to run. (Full, Resolved, Boosted)"
@@ -73,42 +73,6 @@ options.register('ResolvedCosThetaStar',
 		)
 
 ### Boosted Analysis Options
-options.register('Asym', 
-		0.1,
-		VarParsing.multiplicity.singleton,
-		VarParsing.varType.float,
-		"Asymmetry cut"
-		)
-options.register('CosTheta', 
-		0.2,
-		VarParsing.multiplicity.singleton,
-		VarParsing.varType.float,
-		"CosThetaStar cut"
-		)
-options.register('SubPt', 
-		0.3,
-		VarParsing.multiplicity.singleton,
-		VarParsing.varType.float,
-		"Subjet Pt Ratio cut"
-		)
-options.register('Tau31', 
-		0.4,
-		VarParsing.multiplicity.singleton,
-		VarParsing.varType.float,
-		"Tau31 cut"
-		)
-options.register('Tau21', 
-		0.6,
-		VarParsing.multiplicity.singleton,
-		VarParsing.varType.float,
-		"Tau21 cut"
-		)
-options.register('DEta', 
-		1.0,
-		VarParsing.multiplicity.singleton,
-		VarParsing.varType.float,
-		"DEta cut"
-		)
 options.register('btag', 
 		#0.244,  ## CSVL
 		0.679, ## CSVM
@@ -136,43 +100,27 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 		fileNames = cms.untracked.vstring(
-			'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_1.root',
-			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_10.root',
-			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_100.root',
-			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_101.root',
-			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_102.root',
-			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_103.root',
-			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_104.root',
-			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_105.root',
-			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_106.root',
-			#'/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v09/151117_100001/0000/RUNtuple_107.root'
-			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_1.root',
-			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_10.root',
-			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_100.root',
-			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_101.root',
-			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_102.root',
-			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_103.root',
-			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_104.root',
-			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_105.root',
-			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_106.root',
-			#'/store/user/algomez/RPVSt100tojj_13TeV_pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_131102/0000/RUNtuple_107.root'
+			'/store/user/algomez/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X__b2ganafw763_v01/160219_084716/0000/B2GEDMNtuple_1.root',
+			'/store/user/algomez/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X__b2ganafw763_v01/160219_084716/0000/B2GEDMNtuple_10.root',
+			'/store/user/algomez/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X__b2ganafw763_v01/160219_084716/0000/B2GEDMNtuple_100.root',
+			'/store/user/algomez/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X__b2ganafw763_v01/160219_084716/0000/B2GEDMNtuple_101.root',
+			#'/store/user/algomez/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v1p0/160222_145142/0000/B2GEDMNtuple_1.root',
+			#'/store/user/algomez/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v1p0/160222_145142/0000/B2GEDMNtuple_10.root',
+			#'/store/user/algomez/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v1p0/160222_145142/0000/B2GEDMNtuple_100.root',
+			#'/store/user/algomez/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v1p0/160222_145142/0000/B2GEDMNtuple_101.root',
 	    )
 	)
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32 (options.maxEvents) )
 
-from RUNA.RUNAnalysis.scaleFactors import scaleFactor
+from JetMETCorrections.Configuration.JetCorrectors_cff import *
 
 bjsample = True if 'bj' in NAME else False
-if 'Run2015' in NAME: 
+if 'JetHT' in NAME: 
 	isData=True
-	SF = 1 
-	HTtrigger = 'HLT_PFHT800'
 	options.systematics = False
 else:
 	isData=False
-	SF = scaleFactor(NAME) 
-	HTtrigger = 'HLT_PFHT900'
 
 
 process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
@@ -181,55 +129,37 @@ process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 		cutDeltaR 		= cms.double( options.DeltaR ),
 		cutCosThetaStar 	= cms.double( options.ResolvedCosThetaStar ),
 		cutDEta    		= cms.double( options.EtaBand ),
-		triggerPass 		= cms.vstring( [ HTtrigger, 'HLT_PFHT750_4JetPt' ] ),
-		scale 			= cms.double( SF ),
+		triggerPass 		= cms.vstring( [ 'HLT_PFHT800', 'HLT_PFHT750_4JetPt' ] ),
 		bjSample		= cms.bool( bjsample ),
 		dataPUFile		= cms.string( options.namePUFile  ),
 		jecVersion		= cms.string( options.jecVersion ),
 		isData			= cms.bool( isData ),
 )
-process.RUNATree = process.ResolvedAnalysisPlots.clone( mkTree = cms.bool( True ) )
 process.ResolvedAnalysisPlotsJESUp = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JESUp' ) )
 process.ResolvedAnalysisPlotsJESDown = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JESDown' ) )
 
 
 process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
-		cutAsymvalue 		= cms.double( options.Asym ),
-		cutCosThetavalue 	= cms.double( options.CosTheta ),
-		cutSubjetPtRatiovalue 	= cms.double( options.SubPt ),
-		cutTau31value 		= cms.double( options.Tau31 ),
-		cutTau21value 		= cms.double( options.Tau21 ),
-		cutDEtavalue 		= cms.double( options.DEta ),
-		cutBtagvalue 		= cms.double( options.btag ),
-		triggerPass 		= cms.vstring( [ 'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', HTtrigger ] ),
-		scale 			= cms.double( SF ),
+		triggerPass 		= cms.vstring( [ 'HLT_AK8PFHT650_TrimR0p1PT0p03Mass50', 'HLT_PFHT800'] ),
 		bjSample		= cms.bool( bjsample ),
 		dataPUFile		= cms.string( options.namePUFile  ),
 		jecVersion		= cms.string( options.jecVersion ),
 		isData			= cms.bool( isData ),
 )
 
-process.BoostedAnalysisPlotsTrimmed = process.BoostedAnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8trimmedMass') )
-process.BoostedAnalysisPlotsFiltered = process.BoostedAnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8filteredMass') )
-process.BoostedAnalysisPlotsPruned = process.BoostedAnalysisPlots.clone( 
-		jetMass 		= cms.InputTag('jetsAK8:jetAK8prunedMass'),
-		#### Subjets
-		#subjetPt 		= cms.InputTag('subjetsAK8Pruned:subjetAK8PrunedPt'),
-		#subjetEta 		= cms.InputTag('subjetsAK8Pruned:subjetAK8PrunedEta'),
-		#subjetPhi 		= cms.InputTag('subjetsAK8Pruned:subjetAK8PrunedPhi'),
-		#subjetE 		= cms.InputTag('subjetsAK8Pruned:subjetAK8PrunedE'),
-		#subjetMass 		= cms.InputTag('subjetsAK8Pruned:subjetAK8PrunedMass'),
-		)
-process.BoostedAnalysisPlotsPrunedJESUp = process.BoostedAnalysisPlotsPruned.clone( systematics = cms.string( 'JESUp' ) )
-process.BoostedAnalysisPlotsPrunedJESDown = process.BoostedAnalysisPlotsPruned.clone( systematics = cms.string( 'JESDown' ) )
+process.BoostedAnalysisPlotsJESUp = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JESUp' ) )
+process.BoostedAnalysisPlotsJESDown = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JESDown' ) )
 
-process.BoostedAnalysisPlotsSoftDrop = process.BoostedAnalysisPlots.clone( jetMass = cms.InputTag('jetsAK8:jetAK8softDropMass') )
 process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone( 
 		jetPt 			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiPt'),
 		jetEta			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiEta'),
 		jetPhi 			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiPhi'),
 		jetE 			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiE'),
 		jetMass 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppiMass'),
+		jetTrimmedMass 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppitrimmedMass'),
+		jetPrunedMass 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppiprunedMass'),
+		jetFilteredMass 	= cms.InputTag('jetsAK8Puppi:jetAK8PuppifilteredMass'),
+		jetSoftDropMass		= cms.InputTag('jetsAK8Puppi:jetAK8PuppisoftDropMass'),
 		jetTau1 		= cms.InputTag('jetsAK8Puppi:jetAK8Puppitau1'),
 		jetTau2 		= cms.InputTag('jetsAK8Puppi:jetAK8Puppitau2'),
 		jetTau3 		= cms.InputTag('jetsAK8Puppi:jetAK8Puppitau3'),
@@ -239,6 +169,21 @@ process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone(
 		jetSubjetIndex2 	= cms.InputTag('jetsAK8Puppi:jetAK8PuppivSubjetIndex0'),
 		jetSubjetIndex3 	= cms.InputTag('jetsAK8Puppi:jetAK8PuppivSubjetIndex1'),
 		jetKeys 		= cms.InputTag('jetKeysAK8Puppi'),
+		jetCSV	 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppiCSVv2'),
+		jetArea 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppijetArea'),
+		jetGenPt 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppiGenJetPt'),
+		jetGenEta		= cms.InputTag('jetsAK8Puppi:jetAK8PuppiGenJetEta'),
+		jetGenPhi 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppiGenJetPhi'),
+		jetGenE 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppiGenJetE'),
+		jecFactor 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppijecFactor0'),
+		neutralHadronEnergy 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppineutralHadronEnergy'),
+		neutralEmEnergy 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppineutralEmEnergy'),
+		chargedEmEnergy 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppichargedEmEnergy'),
+		muonEnergy 			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiMuonEnergy'),
+		chargedHadronEnergy 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppichargedHadronEnergy'),
+		chargedHadronMultiplicity 	= cms.InputTag('jetsAK8Puppi:jetAK8PuppiChargedHadronMultiplicity'),
+		neutralHadronMultiplicity 	= cms.InputTag('jetsAK8Puppi:jetAK8PuppineutralHadronMultiplicity'),
+		chargedMultiplicity 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppichargedMultiplicity'),
 		#### Subjets
 		subjetPt 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiPt'),
 		subjetEta 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiEta'),
@@ -247,48 +192,35 @@ process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone(
 		subjetMass 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiMass'),
 		)
 
+process.BoostedAnalysisPlotsPuppiJESUp = process.BoostedAnalysisPlotsPuppi.clone( systematics = cms.string( 'JESUp' ) )
+process.BoostedAnalysisPlotsPuppiJESDown = process.BoostedAnalysisPlotsPuppi.clone( systematics = cms.string( 'JESDown' ) )
 
-process.RUNATreeSoftDrop = process.BoostedAnalysisPlotsSoftDrop.clone( mkTree = cms.bool( True ) )
-process.RUNATreePruned = process.BoostedAnalysisPlotsPruned.clone( mkTree = cms.bool( True ) )
 
+
+process.p = cms.Path()
 if 'Resolved' in options.version:
 	outputNAME = 'ResolvedAnalysis_'
-	process.p = cms.Path( process.ResolvedAnalysisPlots
-		* process.RUNATree
-		)
+	process.p += process.ResolvedAnalysisPlots
 	if options.systematics:
 		process.p += process.ResolvedAnalysisPlotsJESUp
 		process.p += process.ResolvedAnalysisPlotsJESDown
 elif 'Boosted' in options.version:
 	outputNAME = 'BoostedAnalysis_'
-	process.p = cms.Path( #* process.BoostedAnalysisPlots
-		#* process.BoostedAnalysisPlotsTrimmed
-		process.BoostedAnalysisPlotsPruned
-		#* process.BoostedAnalysisPlotsSoftDrop
-		#* process.BoostedAnalysisPlotsPuppi
-		#* process.BoostedAnalysisPlotsFiltered
-		#* process.RUNATreeSoftDrop
-		* process.RUNATreePruned
-		)
+	process.p += process.BoostedAnalysisPlots
+	process.p += process.BoostedAnalysisPlotsPuppi
 	if options.systematics:
-		process.p += process.BoostedAnalysisPlotsPrunedJESUp
-		process.p += process.BoostedAnalysisPlotsPrunedJESDown
+		process.p += process.BoostedAnalysisPlotsJESUp
+		process.p += process.BoostedAnalysisPlotsJESDown
+		#process.p += process.BoostedAnalysisPlotsPuppiJESUp
+		#process.p += process.BoostedAnalysisPlotsPuppiJESDown
 else: 
 	outputNAME = 'FullAnalysis_'
-	process.p = cms.Path( process.ResolvedAnalysisPlots
-		* process.RUNATree
-		#* process.BoostedAnalysisPlots
-		#* process.BoostedAnalysisPlotsTrimmed
-		* process.BoostedAnalysisPlotsPruned
-		#* process.BoostedAnalysisPlotsSoftDrop
-		#* process.BoostedAnalysisPlotsPuppi
-		#* process.BoostedAnalysisPlotsFiltered
-		#* process.RUNATreeSoftDrop
-		* process.RUNATreePruned
-		)
+	process.p += process.ResolvedAnalysisPlots
+	process.p += process.BoostedAnalysisPlots
+	process.p += process.BoostedAnalysisPlotsPuppi
 	if options.systematics:
-		process.p += process.BoostedAnalysisPlotsPrunedJESUp
-		process.p += process.BoostedAnalysisPlotsPrunedJESDown
+		process.p += process.BoostedAnalysisPlotsJESUp
+		process.p += process.BoostedAnalysisPlotsJESDown
 		process.p += process.ResolvedAnalysisPlotsJESUp
 		process.p += process.ResolvedAnalysisPlotsJESDown
 
