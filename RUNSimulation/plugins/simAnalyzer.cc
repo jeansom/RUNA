@@ -33,7 +33,7 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "DataFormats/JetReco/interface/GenJet.h"
-//#include "DataFormats/PatCandidates/interface/Jets.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/JetReco/interface/PFJetCollection.h"
 
@@ -52,6 +52,8 @@ using namespace edm;
 using namespace std;
 
 
+
+template<class Jet>
 class SimAnalyzer : public edm::EDAnalyzer {
 	public:
 		explicit SimAnalyzer(const edm::ParameterSet&);
@@ -65,6 +67,7 @@ class SimAnalyzer : public edm::EDAnalyzer {
 		virtual void endJob() ;
 
 	// ----------member data ---------------------------
+	typedef std::vector<Jet> JetCollection;
       	edm::Service<TFileService> fs_;
       	map< string, TH1D* > histos1D_;
 	map< string, TH2D* > histos2D_;
@@ -76,7 +79,7 @@ class SimAnalyzer : public edm::EDAnalyzer {
 	double minPt_;
       	EDGetTokenT<reco::GenJetCollection> genJets_;
       	EDGetTokenT<vector<reco::GenParticle>> genParticles_;
-      	EDGetTokenT<reco::PFJetCollection> recoJets_;
+      	EDGetTokenT<JetCollection> recoJets_;
 
 };
 
@@ -91,10 +94,11 @@ class SimAnalyzer : public edm::EDAnalyzer {
 //
 // constructors and destructor
 //
-SimAnalyzer::SimAnalyzer(const edm::ParameterSet& iConfig) :
+template<class Jet>
+SimAnalyzer<Jet>::SimAnalyzer(const edm::ParameterSet& iConfig) :
 	genJets_(consumes<reco::GenJetCollection>(iConfig.getParameter<InputTag>("genJets"))),
 	genParticles_(consumes<vector<reco::GenParticle>>(iConfig.getParameter<InputTag>("genParticles"))),
-	recoJets_(consumes<reco::PFJetCollection>(iConfig.getParameter<InputTag>("recoJets")))
+	recoJets_(consumes<JetCollection>(iConfig.getParameter<InputTag>("recoJets")))
 {
 	momPdgId_	= iConfig.getParameter<double>("momPdgId");
 	dau1PdgId_	= iConfig.getParameter<double>("dau1PdgId");
@@ -104,7 +108,8 @@ SimAnalyzer::SimAnalyzer(const edm::ParameterSet& iConfig) :
 }
 
 
-SimAnalyzer::~SimAnalyzer()
+template<class Jet>
+SimAnalyzer<Jet>::~SimAnalyzer()
 {
  
    // do anything here that needs to be done at desctruction time
@@ -118,7 +123,8 @@ SimAnalyzer::~SimAnalyzer()
 //
 
 // ------------ method called to for each event  ------------
-void SimAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
+template<class Jet>
+void SimAnalyzer<Jet>::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
 	using namespace std;
 	using namespace edm;
@@ -130,7 +136,7 @@ void SimAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	Handle<std::vector<reco::GenParticle>> particles;
 	iEvent.getByToken(genParticles_, particles);
 
-	Handle<reco::PFJetCollection> recoJets;
+	Handle<JetCollection> recoJets;
 	iEvent.getByToken(recoJets_, recoJets);
 
 	// Reading genParticle info and saving mothers and daughters info
@@ -265,7 +271,8 @@ void SimAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	float recoHT = 0;
 	int numRecoJets = 0;
 	vector<TLorentzVector> selRecoJets;
-    	for (const reco::PFJet &recoJet : *recoJets) {
+    	//for (const reco::PFJet &recoJet : *recoJets) {
+    	for (const Jet &recoJet : *recoJets) {
 		numRawRecoJets += 1;
 		rawRecoHT += recoJet.pt();
 		histos1D_[ "recoRawJetPt" ]->Fill( recoJet.pt() );
@@ -464,7 +471,8 @@ void SimAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
-void SimAnalyzer::beginJob() {
+template<class Jet>
+void SimAnalyzer<Jet>::beginJob() {
 
 	histos1D_[ "mom_Pt" ] = fs_->make< TH1D >( "mom_Pt", "mom_Pt", 100, 0., 1000. );
 	histos1D_[ "mom_Pt" ]->Sumw2();
@@ -567,12 +575,14 @@ void SimAnalyzer::beginJob() {
 	histos1D_[ "resolvedRecoJetPt" ] = fs_->make< TH1D >( "resolvedRecoJetPt", "resolvedRecoJetPt", 100, 0., 1000. );
 	histos1D_[ "resolvedRecoJetPt" ]->Sumw2();
 }
-void 
-SimAnalyzer::endJob() {
 
+template<class Jet>
+void SimAnalyzer<Jet>::endJob() {
 }
 
-void SimAnalyzer::fillDescriptions(edm::ConfigurationDescriptions & descriptions) {
+
+template<class Jet>
+void SimAnalyzer<Jet>::fillDescriptions(edm::ConfigurationDescriptions & descriptions) {
 
 	ParameterSetDescription desc;
 	desc.add<InputTag>("genJets", 	InputTag("ak4GenJetsNoNu"));
@@ -588,4 +598,8 @@ void SimAnalyzer::fillDescriptions(edm::ConfigurationDescriptions & descriptions
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(SimAnalyzer);
+typedef SimAnalyzer<reco::PFJet> SimAnalyzerAOD;
+DEFINE_FWK_MODULE(SimAnalyzerAOD);
+
+typedef SimAnalyzer<pat::Jet> SimAnalyzerMiniAOD;
+DEFINE_FWK_MODULE(SimAnalyzerMiniAOD);
