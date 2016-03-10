@@ -9,21 +9,36 @@ if [ $# -ne 2 ]; then
 else
 	eosFolder=$1
 	haddFile=$2
-	arrayOfFiles=()
 	myEOSLS() { eosls -l /store/user/"$USER"/$1; }
 	numDir=($(myEOSLS ${eosFolder} | awk '{print $9}'))
+	arrayOfAllFiles=()
 	for i in "${numDir[@]}"
 	do
+		arrayOfFiles=()
 		eachFile=($(myEOSLS ${eosFolder}/$i | awk '{ print $9 }'))
 		for j in "${eachFile[@]}"
 		do 
 			if [[ "${j}" != "failed" ]] 
 			then 
 				echo ${eosFolder}/${i}/${j}
-				arrayOfFiles+="root://cmseos.fnal.gov//store/user/${USER}/${eosFolder}/${i}/${j} "
+				if [ "${#eachFile[@]}" -gt 1 ]; then
+					arrayOfFiles+="root://cmseos.fnal.gov//store/user/${USER}/${eosFolder}/${i}/${j} "
+				else
+					arrayOfAllFiles+="root://cmseos.fnal.gov//store/user/${USER}/${eosFolder}/${i}/${j} "
+				fi
 			fi
 		done
+		if [ "${#eachFile[@]}" -gt 1 ]; then
+			echo "Making tmp"${i}${haddFile}" file"
+			hadd -f tmp${i}${haddFile} $arrayOfFiles
+		fi
 	done
-	hadd -f $haddFile $arrayOfFiles
+	if [ "${#arrayOfAllFiles[@]}" -gt 0 ]; then
+		hadd -f $haddFile $arrayOfAllFiles
+		echo "test"
+	else
+		hadd -f $haddFile tmp*${haddFile}
+		rm tmp*${haddFile}
+	fi
 
 fi
