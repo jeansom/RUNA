@@ -90,7 +90,10 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
-		   '/store/user/algomez/JetHT/Run2015D-PromptReco-v4_RUNA_v08p1/151028_103522/0000/RUNtuple_100.root',
+		   '/store/user/algomez/JetHT/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v1p0/160224_095259/0000/B2GEDMNtuple_1.root',
+		   '/store/user/algomez/JetHT/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v1p0/160224_095259/0000/B2GEDMNtuple_100.root',
+		   '/store/user/algomez/JetHT/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v1p0/160224_095259/0000/B2GEDMNtuple_101.root',
+		   '/store/user/algomez/JetHT/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v1p0/160224_095259/0000/B2GEDMNtuple_102.root',
 	    )
 	)
 
@@ -135,40 +138,40 @@ process.BoostedTriggerEfficiency = cms.EDAnalyzer('RUNBoostedTriggerEfficiency',
 process.BoostedTriggerEfficiencyPFHT800 = process.BoostedTriggerEfficiency.clone( 
 		triggerPass = cms.vstring( ['HLT_PFHT800'] ) )
 
-process.BoostedTriggerEfficiencyAK8PFHT700PFHT800 = process.BoostedTriggerEfficiency.clone( 
-		triggerPass = cms.vstring( ['HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_PFHT800'] ) )
+process.BoostedTriggerEfficiencyAK8PFHT650PFHT800 = process.BoostedTriggerEfficiency.clone( 
+		triggerPass = cms.vstring( ['HLT_AK8PFHT650_TrimR0p1PT0p03Mass50', 'HLT_PFHT800'] ) )
 
-process.BoostedTriggerEfficiencyAK8PFHT700Pt360 = process.BoostedTriggerEfficiency.clone( 
-		triggerPass = cms.vstring( ['HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFJet360_TrimMass30'] ) )
+process.BoostedTriggerEfficiencyAK8PFHT650Pt360 = process.BoostedTriggerEfficiency.clone( 
+		triggerPass = cms.vstring( ['HLT_AK8PFHT650_TrimR0p1PT0p03Mass50', 'HLT_AK8PFJet360_TrimMass30'] ) )
 
-process.BoostedTriggerEfficiencyAK8PFHT700PFHT7504Jets = process.BoostedTriggerEfficiency.clone( 
-		triggerPass = cms.vstring( ['HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_PFHT750_4JetPt'] ) )
+process.BoostedTriggerEfficiencyAK8PFHT650PFHT7504Jets = process.BoostedTriggerEfficiency.clone( 
+		triggerPass = cms.vstring( ['HLT_AK8PFHT650_TrimR0p1PT0p03Mass50', 'HLT_PFHT750_4JetPt'] ) )
 
-process.BoostedTriggerEfficiencyAK8PFHT700Pt360PFHT800 = process.BoostedTriggerEfficiency.clone( 
-		triggerPass = cms.vstring( ['HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFJet360_TrimMass30', 'HLT_PFHT800'] ) )
+process.BoostedTriggerEfficiencyAK8PFHT650Pt360PFHT800 = process.BoostedTriggerEfficiency.clone( 
+		triggerPass = cms.vstring( ['HLT_AK8PFHT650_TrimR0p1PT0p03Mass50', 'HLT_AK8PFJet360_TrimMass30', 'HLT_PFHT800'] ) )
 
-process.BoostedTriggerEfficiencyAK8PFHT700Pt360PFHT7504Jets = process.BoostedTriggerEfficiency.clone( 
-		triggerPass = cms.vstring( ['HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFJet360_TrimMass30', 'HLT_PFHT750_4JetPt'] ) )
+process.BoostedTriggerEfficiencyAK8PFHT650Pt360PFHT7504Jets = process.BoostedTriggerEfficiency.clone( 
+		triggerPass = cms.vstring( ['HLT_AK8PFHT650_TrimR0p1PT0p03Mass50', 'HLT_AK8PFJet360_TrimMass30', 'HLT_PFHT750_4JetPt'] ) )
 
-process.BoostedTriggerEfficiencyAK8PFHT700Pt360PFHT7504JetsPFHT800 = process.BoostedTriggerEfficiency.clone( 
-		triggerPass = cms.vstring( ['HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFJet360_TrimMass30', 'HLT_PFHT750_4JetPt', 'PFHT800'] ) )
+process.BoostedTriggerEfficiencyAK8PFHT650Pt360PFHT7504JetsPFHT800 = process.BoostedTriggerEfficiency.clone( 
+		triggerPass = cms.vstring( ['HLT_AK8PFHT650_TrimR0p1PT0p03Mass50', 'HLT_AK8PFJet360_TrimMass30', 'HLT_PFHT750_4JetPt', 'PFHT800'] ) )
 
 
 if options.debug:
 	process.p = cms.Path( process.BoostedTriggerEfficiency )
 else:
 
-	process.p = cms.Path( process.BoostedTriggerEfficiency
-		* process.BoostedTriggerEfficiencyPFHT800 
-		* process.BoostedTriggerEfficiencyAK8PFHT700PFHT800 
-		* process.BoostedTriggerEfficiencyAK8PFHT700PFHT800
-		* process.BoostedTriggerEfficiencyAK8PFHT700Pt360
-		* process.BoostedTriggerEfficiencyAK8PFHT700PFHT7504Jets
-		* process.BoostedTriggerEfficiencyAK8PFHT700Pt360PFHT800
-		* process.BoostedTriggerEfficiencyAK8PFHT700Pt360PFHT7504Jets
-		* process.BoostedTriggerEfficiencyAK8PFHT700Pt360PFHT7504JetsPFHT800
-		* process.ResolvedTriggerEfficiency
-		* process.ResolvedTriggerEfficiencyPFHT7504Jet
+	process.p = cms.Path( 
+		#process.BoostedTriggerEfficiency
+		#* process.BoostedTriggerEfficiencyPFHT800 
+		process.BoostedTriggerEfficiencyAK8PFHT650PFHT800 
+		* process.BoostedTriggerEfficiencyAK8PFHT650Pt360
+		#* process.BoostedTriggerEfficiencyAK8PFHT650PFHT7504Jets
+		* process.BoostedTriggerEfficiencyAK8PFHT650Pt360PFHT800
+		#* process.BoostedTriggerEfficiencyAK8PFHT650Pt360PFHT7504Jets
+		#* process.BoostedTriggerEfficiencyAK8PFHT650Pt360PFHT7504JetsPFHT800
+		#* process.ResolvedTriggerEfficiency
+		#* process.ResolvedTriggerEfficiencyPFHT7504Jet
 		* process.ResolvedTriggerEfficiencyPFHT800PFHT7504Jet
 		)
 
