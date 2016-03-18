@@ -113,14 +113,17 @@ else:
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32 (options.maxEvents) )
 
-from JetMETCorrections.Configuration.JetCorrectors_cff import *
+from RUNA.RUNAnalysis.scaleFactors import scaleFactor
+
 
 bjsample = True if 'bj' in NAME else False
 if 'JetHT' in NAME: 
+	SF = 1
 	isData=True
 	options.systematics = False
 else:
 	isData=False
+	SF = scaleFactor(NAME)
 
 
 process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
@@ -131,6 +134,7 @@ process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 		cutDEta    		= cms.double( options.EtaBand ),
 		triggerPass 		= cms.vstring( [ 'HLT_PFHT800', 'HLT_PFHT750_4JetPt' ] ),
 		bjSample		= cms.bool( bjsample ),
+		scale 			= cms.double( SF ),
 		dataPUFile		= cms.string( options.namePUFile  ),
 		jecVersion		= cms.string( options.jecVersion ),
 		isData			= cms.bool( isData ),
@@ -145,6 +149,7 @@ process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		dataPUFile		= cms.string( options.namePUFile  ),
 		jecVersion		= cms.string( options.jecVersion ),
 		isData			= cms.bool( isData ),
+		scale 			= cms.double( SF ),
 )
 
 process.BoostedAnalysisPlotsJESUp = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JESUp' ) )

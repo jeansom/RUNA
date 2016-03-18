@@ -84,6 +84,7 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 
       bool bjSample;
       bool isData;
+      double scale;
       string dataPUFile;
       string jecVersion;
       TString systematics;
@@ -98,7 +99,7 @@ class RUNBoostedAnalysis : public EDAnalyzer {
       ULong64_t event = 0;
       int numJets = 0, numPV = 0;
       unsigned int lumi = 0, run=0;
-      float AK4HT = 0, HT = 0, trimmedMass = -999, puWeight = -999, genWeight = -999, MET = -999,
+      float AK4HT = 0, HT = 0, trimmedMass = -999, puWeight = -999, genWeight = -999, lumiWeight = -999, MET = -999,
 	    jet1Pt = -999, jet1Eta = -999, jet1Phi = -999, jet1E = -999, jet1btagCSV = -9999,
 	    jet2Pt = -999, jet2Eta = -999, jet2Phi = -999, jet2E = -999, jet2btagCSV = -9999,
 	    subjet11Pt = -999, subjet11Eta = -999, subjet11Phi = -999, subjet11E = -999, 
@@ -252,6 +253,7 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 	subjetMass_(consumes<vector<float>>(iConfig.getParameter<InputTag>("subjetMass")))
 {
 	consumes<LHERunInfoProduct,edm::InRun> (edm::InputTag("externalLHEProducer"));
+	scale 		= iConfig.getParameter<double>("scale");
 	bjSample 	= iConfig.getParameter<bool>("bjSample");
 	isData 		= iConfig.getParameter<bool>("isData");
 	dataPUFile 	= iConfig.getParameter<string>("dataPUFile");
@@ -500,6 +502,8 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	if ( isData ) puWeight = 1;
 	else puWeight = PUWeight_.getPUWeight( *trueNInt, *bunchCross );
 	histos1D_[ "PUWeight" ]->Fill( puWeight );
+	lumiWeight = scale;
+	double totalWeight = puWeight * lumiWeight;
 	////////////////////////////////////////////////////
 	
 	///////// AK4 jets to model PFHT trigger
@@ -581,25 +585,25 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			//if ( (*jetCSVV1)[i] > 0.783 ) bTagCSV = 1; 	// CSVV1M
 			
 			double jec = 1. / ( rawJet.E() ); //(*jecFactor)[i] * (*jetE)[i] );
-			histos1D_[ "oldJetPt" ]->Fill( (*jetPt)[i], puWeight );
-			histos1D_[ "jetPt" ]->Fill( corrJet.Pt(), puWeight );
-			histos1D_[ "rawJetPt" ]->Fill( rawJet.Pt(), puWeight );
-			histos1D_[ "oldJetEta" ]->Fill( (*jetEta)[i], puWeight );
-			histos1D_[ "jetEta" ]->Fill( corrJet.Eta(), puWeight );
-			histos1D_[ "rawJetEta" ]->Fill( rawJet.Eta(), puWeight );
-			histos1D_[ "oldJetMass" ]->Fill( (*jetMass)[i], puWeight );
-			histos1D_[ "jetMass" ]->Fill( corrMass, puWeight );
-			histos1D_[ "jetTrimmedMass" ]->Fill( corrTrimmedMass, puWeight );
-			histos1D_[ "jetPrunedMass" ]->Fill( corrPrunedMass, puWeight );
-			histos1D_[ "jetFilteredMass" ]->Fill( corrFilteredMass, puWeight );
-			histos1D_[ "jetSoftDropMass" ]->Fill( corrSoftDropMass, puWeight );
-			histos1D_[ "rawJetMass" ]->Fill( rawJet.M(), puWeight );
-			histos1D_[ "neutralHadronEnergy" ]->Fill( (*neutralHadronEnergy)[i] * jec, puWeight );
-			histos1D_[ "neutralEmEnergy" ]->Fill( (*neutralEmEnergy)[i] * jec, puWeight );
-			histos1D_[ "chargedHadronEnergy" ]->Fill( (*chargedHadronEnergy)[i] * jec, puWeight );
-			histos1D_[ "chargedEmEnergy" ]->Fill( (*chargedEmEnergy)[i] * jec, puWeight );
-			histos1D_[ "numConst" ]->Fill( (*chargedHadronMultiplicity)[i] + (*neutralHadronMultiplicity)[i], puWeight );
-			histos1D_[ "chargedMultiplicity" ]->Fill( (*chargedMultiplicity)[i] * jec, puWeight );
+			histos1D_[ "oldJetPt" ]->Fill( (*jetPt)[i], totalWeight );
+			histos1D_[ "jetPt" ]->Fill( corrJet.Pt(), totalWeight );
+			histos1D_[ "rawJetPt" ]->Fill( rawJet.Pt(), totalWeight );
+			histos1D_[ "oldJetEta" ]->Fill( (*jetEta)[i], totalWeight );
+			histos1D_[ "jetEta" ]->Fill( corrJet.Eta(), totalWeight );
+			histos1D_[ "rawJetEta" ]->Fill( rawJet.Eta(), totalWeight );
+			histos1D_[ "oldJetMass" ]->Fill( (*jetMass)[i], totalWeight );
+			histos1D_[ "jetMass" ]->Fill( corrMass, totalWeight );
+			histos1D_[ "jetTrimmedMass" ]->Fill( corrTrimmedMass, totalWeight );
+			histos1D_[ "jetPrunedMass" ]->Fill( corrPrunedMass, totalWeight );
+			histos1D_[ "jetFilteredMass" ]->Fill( corrFilteredMass, totalWeight );
+			histos1D_[ "jetSoftDropMass" ]->Fill( corrSoftDropMass, totalWeight );
+			histos1D_[ "rawJetMass" ]->Fill( rawJet.M(), totalWeight );
+			histos1D_[ "neutralHadronEnergy" ]->Fill( (*neutralHadronEnergy)[i] * jec, totalWeight );
+			histos1D_[ "neutralEmEnergy" ]->Fill( (*neutralEmEnergy)[i] * jec, totalWeight );
+			histos1D_[ "chargedHadronEnergy" ]->Fill( (*chargedHadronEnergy)[i] * jec, totalWeight );
+			histos1D_[ "chargedEmEnergy" ]->Fill( (*chargedEmEnergy)[i] * jec, totalWeight );
+			histos1D_[ "numConst" ]->Fill( (*chargedHadronMultiplicity)[i] + (*neutralHadronMultiplicity)[i], totalWeight );
+			histos1D_[ "chargedMultiplicity" ]->Fill( (*chargedMultiplicity)[i] * jec, totalWeight );
 
 			myJet tmpJET;
 			tmpJET.p4 = tmpJet;
@@ -630,16 +634,16 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	numJets = numberJets;
 	//sort(JETS.begin(), JETS.end(), [](const JETtype &p1, const JETtype &p2) { return p1.mass > p2.mass; }); 
 	//sort(JETS.begin(), JETS.end(), [](const JETtype &p1, const JETtype &p2) { TLorentzVector tmpP1, tmpP2; tmpP1 = p1.p4; tmpP2 = p2.p4;  return tmpP1.M() > tmpP2.M(); }); 
-	histos1D_[ "jetNum" ]->Fill( numJets, puWeight );
+	histos1D_[ "jetNum" ]->Fill( numJets, totalWeight );
 	histos1D_[ "NPV_NOPUWeight" ]->Fill( numPV );
-	histos1D_[ "NPV" ]->Fill( numPV, puWeight );
-	if ( HT > 0 ) histos1D_[ "HT" ]->Fill( HT, puWeight );
+	histos1D_[ "NPV" ]->Fill( numPV, totalWeight );
+	if ( HT > 0 ) histos1D_[ "HT" ]->Fill( HT, totalWeight );
 	if ( HT > 900. ) cutHT = 1;
 
 	sort(tmpTriggerMass.begin(), tmpTriggerMass.end(), [](const float p1, const float p2) { return p1 > p2; }); 
 	if ( ( tmpTriggerMass.size()> 0 ) ) { //&& ( tmpTriggerMass[0] > cutTrimmedMassvalue) ){
 		trimmedMass = tmpTriggerMass[0];
-		if (HT > 0) histos2D_[ "jetTrimmedMassHT" ]->Fill( tmpTriggerMass[0], HT, puWeight );
+		if (HT > 0) histos2D_[ "jetTrimmedMassHT" ]->Fill( tmpTriggerMass[0], HT, totalWeight );
 	}
 	tmpTriggerMass.clear();
 
@@ -647,23 +651,23 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 		//LogWarning("fired") << HT << " " << trimmedMass;
 		cutmap["Trigger"] += 1; 
 
-		histos1D_[ "HT_cutTrigger" ]->Fill( HT, puWeight );
-		histos1D_[ "MET_cutTrigger" ]->Fill( MET, puWeight );
-		histos1D_[ "METHT_cutTrigger" ]->Fill( MET/HT, puWeight );
-		histos1D_[ "NPV_cutTrigger" ]->Fill( numPV, puWeight );
-		histos1D_[ "jetNum_cutTrigger" ]->Fill( numJets, puWeight );
-		histos2D_[ "jetTrimmedMassHT_cutTrigger" ]->Fill( trimmedMass, HT, puWeight );
+		histos1D_[ "HT_cutTrigger" ]->Fill( HT, totalWeight );
+		histos1D_[ "MET_cutTrigger" ]->Fill( MET, totalWeight );
+		histos1D_[ "METHT_cutTrigger" ]->Fill( MET/HT, totalWeight );
+		histos1D_[ "NPV_cutTrigger" ]->Fill( numPV, totalWeight );
+		histos1D_[ "jetNum_cutTrigger" ]->Fill( numJets, totalWeight );
+		histos2D_[ "jetTrimmedMassHT_cutTrigger" ]->Fill( trimmedMass, HT, totalWeight );
 
 		int kdum = 0;
 		for (size_t k = 0; k < JETS.size(); k++) {
-			histos1D_[ "jetPt_cutTrigger" ]->Fill( JETS[k].p4.Pt(), puWeight );
-			histos1D_[ "jetEta_cutTrigger" ]->Fill( JETS[k].p4.Eta(), puWeight );
-			histos1D_[ "jetMass_cutTrigger" ]->Fill( JETS[k].mass, puWeight );
+			histos1D_[ "jetPt_cutTrigger" ]->Fill( JETS[k].p4.Pt(), totalWeight );
+			histos1D_[ "jetEta_cutTrigger" ]->Fill( JETS[k].p4.Eta(), totalWeight );
+			histos1D_[ "jetMass_cutTrigger" ]->Fill( JETS[k].mass, totalWeight );
 
 			if ( (++kdum) == 1 ) {
-				histos1D_[ "jet1Pt_cutTrigger" ]->Fill( JETS[0].p4.Pt(), puWeight );
-				histos1D_[ "jet1Mass_cutTrigger" ]->Fill( JETS[0].mass, puWeight );
-				histos1D_[ "jet1Eta_cutTrigger" ]->Fill( JETS[0].p4.Eta(), puWeight );
+				histos1D_[ "jet1Pt_cutTrigger" ]->Fill( JETS[0].p4.Pt(), totalWeight );
+				histos1D_[ "jet1Mass_cutTrigger" ]->Fill( JETS[0].mass, totalWeight );
+				histos1D_[ "jet1Eta_cutTrigger" ]->Fill( JETS[0].p4.Eta(), totalWeight );
 			}
 		 }
 		//////////////////////////////////////////////////////////////////////////////
@@ -675,24 +679,24 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 
 			cutmap["Dijet"] += 1;
 			
-			histos1D_[ "HT_cutDijet" ]->Fill( HT, puWeight );
-			histos1D_[ "MET_cutDijet" ]->Fill( MET, puWeight );
-			histos1D_[ "METHT_cutDijet" ]->Fill( MET/HT, puWeight );
-			histos1D_[ "NPV_cutDijet" ]->Fill( numPV, puWeight );
-			histos1D_[ "jetNum_cutDijet" ]->Fill( numJets, puWeight );
-			histos1D_[ "jet1Pt_cutDijet" ]->Fill( JETS[0].p4.Pt(), puWeight );
-			histos1D_[ "jet1Eta_cutDijet" ]->Fill( JETS[0].p4.Eta(), puWeight );
-			histos1D_[ "jet1Mass_cutDijet" ]->Fill( JETS[0].mass, puWeight );
-			histos1D_[ "jet2Pt_cutDijet" ]->Fill( JETS[1].p4.Pt(), puWeight );
-			histos1D_[ "jet2Eta_cutDijet" ]->Fill( JETS[1].p4.Eta(), puWeight );
-			histos1D_[ "jet2Mass_cutDijet" ]->Fill( JETS[1].mass, puWeight );
+			histos1D_[ "HT_cutDijet" ]->Fill( HT, totalWeight );
+			histos1D_[ "MET_cutDijet" ]->Fill( MET, totalWeight );
+			histos1D_[ "METHT_cutDijet" ]->Fill( MET/HT, totalWeight );
+			histos1D_[ "NPV_cutDijet" ]->Fill( numPV, totalWeight );
+			histos1D_[ "jetNum_cutDijet" ]->Fill( numJets, totalWeight );
+			histos1D_[ "jet1Pt_cutDijet" ]->Fill( JETS[0].p4.Pt(), totalWeight );
+			histos1D_[ "jet1Eta_cutDijet" ]->Fill( JETS[0].p4.Eta(), totalWeight );
+			histos1D_[ "jet1Mass_cutDijet" ]->Fill( JETS[0].mass, totalWeight );
+			histos1D_[ "jet2Pt_cutDijet" ]->Fill( JETS[1].p4.Pt(), totalWeight );
+			histos1D_[ "jet2Eta_cutDijet" ]->Fill( JETS[1].p4.Eta(), totalWeight );
+			histos1D_[ "jet2Mass_cutDijet" ]->Fill( JETS[1].mass, totalWeight );
 			for (size_t k = 0; k < JETS.size(); k++) {
-				histos1D_[ "neutralHadronEnergy_cutDijet" ]->Fill( JETS[k].nhf, puWeight );
-				histos1D_[ "neutralEmEnergy_cutDijet" ]->Fill( JETS[k].nEMf, puWeight );
-				histos1D_[ "chargedHadronEnergy_cutDijet" ]->Fill( JETS[k].chf, puWeight );
-				histos1D_[ "chargedEmEnergy_cutDijet" ]->Fill( JETS[k].cEMf, puWeight );
-				histos1D_[ "numConst_cutDijet" ]->Fill( JETS[k].numConst, puWeight );
-				histos1D_[ "chargedMultiplicity_cutDijet" ]->Fill( JETS[k].chm, puWeight );
+				histos1D_[ "neutralHadronEnergy_cutDijet" ]->Fill( JETS[k].nhf, totalWeight );
+				histos1D_[ "neutralEmEnergy_cutDijet" ]->Fill( JETS[k].nEMf, totalWeight );
+				histos1D_[ "chargedHadronEnergy_cutDijet" ]->Fill( JETS[k].chf, totalWeight );
+				histos1D_[ "chargedEmEnergy_cutDijet" ]->Fill( JETS[k].cEMf, totalWeight );
+				histos1D_[ "numConst_cutDijet" ]->Fill( JETS[k].numConst, totalWeight );
+				histos1D_[ "chargedMultiplicity_cutDijet" ]->Fill( JETS[k].chm, totalWeight );
 			}
 
 			// Cut Pt
@@ -745,28 +749,28 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 				jet2SubjetsTLV.push_back( JETS[1].subjet0 );
 				jet2SubjetsTLV.push_back( JETS[1].subjet1 );
 				sort(jet2SubjetsTLV.begin(), jet2SubjetsTLV.end(), [](const TLorentzVector &p1, const TLorentzVector &p2) { return p1.M() > p2.M(); }); 
-				/*
 				if( ( jet1SubjetsTLV.size() > 0 ) && ( jet2SubjetsTLV.size() > 0 ) ) {
 
 					// Subjet Pt ratio, subjet mass ratio 
 					//LogWarning("subjet0") <<  jet1SubjetsTLV[0].Pt() << " " <<  jet1SubjetsTLV[1].Pt();
 					jet1SubjetPtRatio = min( jet1SubjetsTLV[0].Pt(), jet1SubjetsTLV[1].Pt() ) / max( jet1SubjetsTLV[0].Pt(), jet1SubjetsTLV[1].Pt() );
-					jet1SubjetMass21Ratio =  jet1SubjetsTLV[1].M() / jet1SubjetsTLV[0].M() ;
+					/*jet1SubjetMass21Ratio =  jet1SubjetsTLV[1].M() / jet1SubjetsTLV[0].M() ;
 					jet1Subjet112MassRatio = jet1SubjetsTLV[0].M() / ( jet1SubjetsTLV[0] + jet1SubjetsTLV[1] ).M();
 					jet1Subjet1JetMassRatio = jet1SubjetsTLV[0].M() /JETS[0].mass;
 					jet1Subjet212MassRatio = jet1SubjetsTLV[1].M() / ( jet1SubjetsTLV[0] + jet1SubjetsTLV[1] ).M();
 					jet1Subjet2JetMassRatio = jet1SubjetsTLV[1].M() /JETS[0].mass;
+					*/
 
 					jet2SubjetPtRatio = min( jet2SubjetsTLV[0].Pt(), jet2SubjetsTLV[1].Pt() ) / max( jet2SubjetsTLV[0].Pt(), jet2SubjetsTLV[1].Pt() );
-					jet2SubjetMass21Ratio =  jet2SubjetsTLV[1].M()/jet2SubjetsTLV[0].M();
+					/*jet2SubjetMass21Ratio =  jet2SubjetsTLV[1].M()/jet2SubjetsTLV[0].M();
 					jet2Subjet112MassRatio = jet2SubjetsTLV[0].M()/ ( jet2SubjetsTLV[0] + jet2SubjetsTLV[1] ).M();
 					jet2Subjet1JetMassRatio = jet2SubjetsTLV[0].M()/JETS[1].mass;
 					jet2Subjet212MassRatio = jet2SubjetsTLV[1].M()/ ( jet2SubjetsTLV[0] + jet2SubjetsTLV[1] ).M();
 					jet2Subjet2JetMassRatio = jet2SubjetsTLV[1].M()/JETS[1].mass;
-					//////////////////////////////////////////////////////////////////////////////////
+					/////////////////////////////////////////////////////////////////////////////////*/
 
 				
-					// SUbjet Polarization angle & dalitz variables
+					/*/ SUbjet Polarization angle & dalitz variables
 					double m1 = jet1SubjetsTLV[0].M();
 					double m2 = jet1SubjetsTLV[1].M();
 					double m3 = jet2SubjetsTLV[0].M();
@@ -841,9 +845,9 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 					dalitzY4 = ( dalitz2[2] + ( 2 * dalitz2[1] ) ) / TMath::Sqrt(3);
 					dalitzY5 = ( dalitz2[0] + ( 2 * dalitz2[2] ) ) / TMath::Sqrt(3);
 					dalitzY6 = ( dalitz2[1] + ( 2 * dalitz2[2] ) ) / TMath::Sqrt(3);
-					///////////////////////////////////////////////////////////////////////////////////////
+					//////////////////////////////////////////////////////////////////////////////////////*/
 
-				}*/
+				}
 
 				///// Variables for tree
 				event		= *ievent;
@@ -873,17 +877,49 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 				subjet22Eta	= jet2SubjetsTLV[1].Eta();
 				subjet22Phi	= jet2SubjetsTLV[1].Phi();
 				subjet22E	= jet2SubjetsTLV[1].E();
-
 				RUNAtree->Fill();  
-				histos1D_[ "HT_cutEffTrigger" ]->Fill( HT, puWeight );
-				histos1D_[ "MET_cutEffTrigger" ]->Fill( MET, puWeight );
-				histos1D_[ "METHT_cutEffTrigger" ]->Fill( MET/HT, puWeight );
-				histos1D_[ "NPV_cutEffTrigger" ]->Fill( numPV, puWeight );
-				histos1D_[ "jetNum_cutEffTrigger" ]->Fill( numJets, puWeight );
-				histos1D_[ "jet1Pt_cutEffTrigger" ]->Fill( JETS[0].p4.Pt(), puWeight );
-				histos1D_[ "jet1Eta_cutEffTrigger" ]->Fill( JETS[0].p4.Eta(), puWeight );
-				histos1D_[ "jet2Pt_cutEffTrigger" ]->Fill( JETS[1].p4.Pt(), puWeight );
-				histos1D_[ "jet2Eta_cutEffTrigger" ]->Fill( JETS[1].p4.Eta(), puWeight );
+
+				histos1D_[ "HT_cutEffTrigger" ]->Fill( HT, totalWeight );
+				histos1D_[ "MET_cutEffTrigger" ]->Fill( MET, totalWeight );
+				histos1D_[ "METHT_cutEffTrigger" ]->Fill( MET/HT, totalWeight );
+				histos1D_[ "NPV_cutEffTrigger" ]->Fill( numPV, totalWeight );
+				histos1D_[ "jetNum_cutEffTrigger" ]->Fill( numJets, totalWeight );
+
+				histos1D_[ "jet1NeutralHadronEnergy_cutEffTrigger" ]->Fill( JETS[0].nhf, totalWeight );
+				histos1D_[ "jet1NeutralEmEnergy_cutEffTrigger" ]->Fill( JETS[0].nEMf, totalWeight );
+				histos1D_[ "jet1ChargedHadronEnergy_cutEffTrigger" ]->Fill( JETS[0].chf, totalWeight );
+				histos1D_[ "jet1ChargedEmEnergy_cutEffTrigger" ]->Fill( JETS[0].cEMf, totalWeight );
+				histos1D_[ "jet1NumConst_cutEffTrigger" ]->Fill( JETS[0].numConst, totalWeight );
+				histos1D_[ "jet1ChargedMultiplicity_cutEffTrigger" ]->Fill( JETS[0].chm, totalWeight );
+				histos1D_[ "jet1Pt_cutEffTrigger" ]->Fill( JETS[0].p4.Pt(), totalWeight );
+				histos1D_[ "jet1Eta_cutEffTrigger" ]->Fill( JETS[0].p4.Eta(), totalWeight );
+				histos1D_[ "jet1Mass_cutEffTrigger" ]->Fill( JETS[0].mass, totalWeight );
+				histos1D_[ "jet1PrunedMass_cutEffTrigger" ]->Fill( JETS[0].prunedMass, totalWeight );
+				histos1D_[ "jet1TrimmedMass_cutEffTrigger" ]->Fill( JETS[0].trimmedMass, totalWeight );
+				histos1D_[ "jet1SoftDropMass_cutEffTrigger" ]->Fill( JETS[0].softDropMass, totalWeight );
+				histos1D_[ "jet1FilteredMass_cutEffTrigger" ]->Fill( JETS[0].filteredMass, totalWeight );
+
+				histos1D_[ "jet2NeutralHadronEnergy_cutEffTrigger" ]->Fill( JETS[1].nhf, totalWeight );
+				histos1D_[ "jet2NeutralEmEnergy_cutEffTrigger" ]->Fill( JETS[1].nEMf, totalWeight );
+				histos1D_[ "jet2ChargedHadronEnergy_cutEffTrigger" ]->Fill( JETS[1].chf, totalWeight );
+				histos1D_[ "jet2ChargedEmEnergy_cutEffTrigger" ]->Fill( JETS[1].cEMf, totalWeight );
+				histos1D_[ "jet2NumConst_cutEffTrigger" ]->Fill( JETS[1].numConst, totalWeight );
+				histos1D_[ "jet2ChargedMultiplicity_cutEffTrigger" ]->Fill( JETS[1].chm, totalWeight );
+				histos1D_[ "jet2Pt_cutEffTrigger" ]->Fill( JETS[1].p4.Pt(), totalWeight );
+				histos1D_[ "jet2Eta_cutEffTrigger" ]->Fill( JETS[1].p4.Eta(), totalWeight );
+				histos1D_[ "jet2Mass_cutEffTrigger" ]->Fill( JETS[1].mass, totalWeight );
+				histos1D_[ "jet2PrunedMass_cutEffTrigger" ]->Fill( JETS[1].prunedMass, totalWeight );
+				histos1D_[ "jet2TrimmedMass_cutEffTrigger" ]->Fill( JETS[1].trimmedMass, totalWeight );
+				histos1D_[ "jet2SoftDropMass_cutEffTrigger" ]->Fill( JETS[1].softDropMass, totalWeight );
+				histos1D_[ "jet2FilteredMass_cutEffTrigger" ]->Fill( JETS[1].filteredMass, totalWeight );
+				for (size_t k = 0; k < JETS.size(); k++) {
+					histos1D_[ "neutralHadronEnergy_cutEffTrigger" ]->Fill( JETS[k].nhf, totalWeight );
+					histos1D_[ "neutralEmEnergy_cutEffTrigger" ]->Fill( JETS[k].nEMf, totalWeight );
+					histos1D_[ "chargedHadronEnergy_cutEffTrigger" ]->Fill( JETS[k].chf, totalWeight );
+					histos1D_[ "chargedEmEnergy_cutEffTrigger" ]->Fill( JETS[k].cEMf, totalWeight );
+					histos1D_[ "numConst_cutEffTrigger" ]->Fill( JETS[k].numConst, totalWeight );
+					histos1D_[ "chargedMultiplicity_cutEffTrigger" ]->Fill( JETS[k].chm, totalWeight );
+				}
 
 			}
 		}
@@ -909,8 +945,10 @@ void RUNBoostedAnalysis::beginJob() {
 	RUNAtree->Branch( "numJets", &numJets, "numJets/I" );
 	RUNAtree->Branch( "numPV", &numPV, "numPV/I" );
 	RUNAtree->Branch( "puWeight", &puWeight, "puWeight/F" );
+	RUNAtree->Branch( "lumiWeight", &lumiWeight, "lumiWeight/F" );
 	RUNAtree->Branch( "genWeight", &genWeight, "genWeight/F" );
 	RUNAtree->Branch( "HT", &HT, "HT/F" );
+	RUNAtree->Branch( "MET", &MET, "MET/F" );
 	RUNAtree->Branch( "AK4HT", &AK4HT, "AK4HT/F" );
 	RUNAtree->Branch( "trimmedMass", &trimmedMass, "trimmedMass/F" );
 	RUNAtree->Branch( "jet1Pt", &jet1Pt, "jet1Pt/F" );
@@ -1085,18 +1123,75 @@ void RUNBoostedAnalysis::beginJob() {
 	histos1D_[ "NPV_cutEffTrigger" ]->Sumw2();
 	histos1D_[ "jetNum_cutEffTrigger" ] = fs_->make< TH1D >( "jetNum_cutEffTrigger", "jetNum_cutEffTrigger", 10, 0., 10. );
 	histos1D_[ "jetNum_cutEffTrigger" ]->Sumw2();
+
+	histos1D_[ "jet1NeutralHadronEnergy_cutEffTrigger" ] = fs_->make< TH1D >( "jet1NeutralHadronEnergy_cutEffTrigger", "jet1NeutralHadronEnergy", 50, 0., 1. );
+	histos1D_[ "jet1NeutralHadronEnergy_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet1NeutralEmEnergy_cutEffTrigger" ] = fs_->make< TH1D >( "jet1NeutralEmEnergy_cutEffTrigger", "jet1NeutralEmEnergy", 50, 0., 1. );
+	histos1D_[ "jet1NeutralEmEnergy_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet1ChargedHadronEnergy_cutEffTrigger" ] = fs_->make< TH1D >( "jet1ChargedHadronEnergy_cutEffTrigger", "jet1ChargedHadronEnergy", 50, 0., 1. );
+	histos1D_[ "jet1ChargedHadronEnergy_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet1ChargedEmEnergy_cutEffTrigger" ] = fs_->make< TH1D >( "jet1ChargedEmEnergy_cutEffTrigger", "jet1ChargedEmEnergy", 50, 0., 1. );
+	histos1D_[ "jet1ChargedEmEnergy_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet1ChargedMultiplicity_cutEffTrigger" ] = fs_->make< TH1D >( "jet1ChargedMultiplicity_cutEffTrigger", "jet1ChargedMultiplicity", 50, 0., 1. );
+	histos1D_[ "jet1ChargedMultiplicity_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet1NumConst_cutEffTrigger" ] = fs_->make< TH1D >( "jet1NumConst_cutEffTrigger", "jet1NumConst", 100, 0., 100. );
+	histos1D_[ "jet1NumConst_cutEffTrigger" ]->Sumw2();
 	histos1D_[ "jet1Pt_cutEffTrigger" ] = fs_->make< TH1D >( "jet1Pt_cutEffTrigger", "jet1Pt_cutEffTrigger", 100, 0., 1000. );
 	histos1D_[ "jet1Pt_cutEffTrigger" ]->Sumw2();
 	histos1D_[ "jet1Eta_cutEffTrigger" ] = fs_->make< TH1D >( "jet1Eta_cutEffTrigger", "jet1Eta_cutEffTrigger", 100, -5., 5. );
 	histos1D_[ "jet1Eta_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet1Mass_cutEffTrigger" ] = fs_->make< TH1D >( "jet1Mass_cutEffTrigger", "jet1Mass_cutEffTrigger", 600, 0., 600. );
+	histos1D_[ "jet1Mass_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet1PrunedMass_cutEffTrigger" ] = fs_->make< TH1D >( "jet1PrunedMass_cutEffTrigger", "jet1PrunedMass_cutEffTrigger", 600, 0., 600. );
+	histos1D_[ "jet1PrunedMass_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet1TrimmedMass_cutEffTrigger" ] = fs_->make< TH1D >( "jet1TrimmedMass_cutEffTrigger", "jet1TrimmedMass_cutEffTrigger", 600, 0., 600. );
+	histos1D_[ "jet1TrimmedMass_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet1FilteredMass_cutEffTrigger" ] = fs_->make< TH1D >( "jet1FilteredMass_cutEffTrigger", "jet1FilteredMass_cutEffTrigger", 600, 0., 600. );
+	histos1D_[ "jet1FilteredMass_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet1SoftDropMass_cutEffTrigger" ] = fs_->make< TH1D >( "jet1SoftDropMass_cutEffTrigger", "jet1SoftDropMass_cutEffTrigger", 600, 0., 600. );
+	histos1D_[ "jet1SoftDropMass_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet2NeutralHadronEnergy_cutEffTrigger" ] = fs_->make< TH1D >( "jet2NeutralHadronEnergy_cutEffTrigger", "jet2NeutralHadronEnergy", 50, 0., 1. );
+	histos1D_[ "jet2NeutralHadronEnergy_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet2NeutralEmEnergy_cutEffTrigger" ] = fs_->make< TH1D >( "jet2NeutralEmEnergy_cutEffTrigger", "jet2NeutralEmEnergy", 50, 0., 1. );
+	histos1D_[ "jet2NeutralEmEnergy_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet2ChargedHadronEnergy_cutEffTrigger" ] = fs_->make< TH1D >( "jet2ChargedHadronEnergy_cutEffTrigger", "jet2ChargedHadronEnergy", 50, 0., 1. );
+	histos1D_[ "jet2ChargedHadronEnergy_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet2ChargedEmEnergy_cutEffTrigger" ] = fs_->make< TH1D >( "jet2ChargedEmEnergy_cutEffTrigger", "jet2ChargedEmEnergy", 50, 0., 1. );
+	histos1D_[ "jet2ChargedEmEnergy_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet2ChargedMultiplicity_cutEffTrigger" ] = fs_->make< TH1D >( "jet2ChargedMultiplicity_cutEffTrigger", "jet2ChargedMultiplicity", 50, 0., 1. );
+	histos1D_[ "jet2ChargedMultiplicity_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet2NumConst_cutEffTrigger" ] = fs_->make< TH1D >( "jet2NumConst_cutEffTrigger", "jet2NumConst", 100, 0., 100. );
+	histos1D_[ "jet2NumConst_cutEffTrigger" ]->Sumw2();
 	histos1D_[ "jet2Pt_cutEffTrigger" ] = fs_->make< TH1D >( "jet2Pt_cutEffTrigger", "jet2Pt_cutEffTrigger", 100, 0., 1000. );
 	histos1D_[ "jet2Pt_cutEffTrigger" ]->Sumw2();
 	histos1D_[ "jet2Eta_cutEffTrigger" ] = fs_->make< TH1D >( "jet2Eta_cutEffTrigger", "jet2Eta_cutEffTrigger", 100, -5., 5. );
 	histos1D_[ "jet2Eta_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet2Mass_cutEffTrigger" ] = fs_->make< TH1D >( "jet2Mass_cutEffTrigger", "jet2Mass_cutEffTrigger", 600, 0., 600. );
+	histos1D_[ "jet2Mass_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet2PrunedMass_cutEffTrigger" ] = fs_->make< TH1D >( "jet2PrunedMass_cutEffTrigger", "jet2PrunedMass_cutEffTrigger", 600, 0., 600. );
+	histos1D_[ "jet2PrunedMass_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet2TrimmedMass_cutEffTrigger" ] = fs_->make< TH1D >( "jet2TrimmedMass_cutEffTrigger", "jet2TrimmedMass_cutEffTrigger", 600, 0., 600. );
+	histos1D_[ "jet2TrimmedMass_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet2FilteredMass_cutEffTrigger" ] = fs_->make< TH1D >( "jet2FilteredMass_cutEffTrigger", "jet2FilteredMass_cutEffTrigger", 600, 0., 600. );
+	histos1D_[ "jet2FilteredMass_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "jet2SoftDropMass_cutEffTrigger" ] = fs_->make< TH1D >( "jet2SoftDropMass_cutEffTrigger", "jet2SoftDropMass_cutEffTrigger", 600, 0., 600. );
+	histos1D_[ "jet2SoftDropMass_cutEffTrigger" ]->Sumw2();
 	histos1D_[ "MET_cutEffTrigger" ] = fs_->make< TH1D >( "MET_cutEffTrigger", "MET_cutEffTrigger", 20, 0., 200. );
 	histos1D_[ "MET_cutEffTrigger" ]->Sumw2();
 	histos1D_[ "METHT_cutEffTrigger" ] = fs_->make< TH1D >( "METHT_cutEffTrigger", "METHT_cutEffTrigger", 50, 0., 1. );
 	histos1D_[ "METHT_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "neutralHadronEnergy_cutEffTrigger" ] = fs_->make< TH1D >( "neutralHadronEnergy_cutEffTrigger", "neutralHadronEnergy", 50, 0., 1. );
+	histos1D_[ "neutralHadronEnergy_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "neutralEmEnergy_cutEffTrigger" ] = fs_->make< TH1D >( "neutralEmEnergy_cutEffTrigger", "neutralEmEnergy", 50, 0., 1. );
+	histos1D_[ "neutralEmEnergy_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "chargedHadronEnergy_cutEffTrigger" ] = fs_->make< TH1D >( "chargedHadronEnergy_cutEffTrigger", "chargedHadronEnergy", 50, 0., 1. );
+	histos1D_[ "chargedHadronEnergy_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "chargedEmEnergy_cutEffTrigger" ] = fs_->make< TH1D >( "chargedEmEnergy_cutEffTrigger", "chargedEmEnergy", 50, 0., 1. );
+	histos1D_[ "chargedEmEnergy_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "chargedMultiplicity_cutEffTrigger" ] = fs_->make< TH1D >( "chargedMultiplicity_cutEffTrigger", "chargedMultiplicity", 50, 0., 1. );
+	histos1D_[ "chargedMultiplicity_cutEffTrigger" ]->Sumw2();
+	histos1D_[ "numConst_cutEffTrigger" ] = fs_->make< TH1D >( "numConst_cutEffTrigger", "numConst", 100, 0., 100. );
+	histos1D_[ "numConst_cutEffTrigger" ]->Sumw2();
 
 
 	cutLabels.push_back("Processed");
@@ -1131,6 +1226,7 @@ void RUNBoostedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descr
 	desc.add<string>("dataPUFile", "supportFiles/PileupData2015D_JSON_10-23-2015.root");
 	desc.add<string>("jecVersion", "supportFiles/Summer15_25nsV6");
 	desc.add<string>("systematics", "None");
+	desc.add<double>("scale", 1);
 	vector<string> HLTPass;
 	HLTPass.push_back("HLT_AK8PFHT700_TrimR0p1PT0p03Mass50");
 	desc.add<vector<string>>("triggerPass",	HLTPass);

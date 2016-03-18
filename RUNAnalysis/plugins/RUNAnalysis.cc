@@ -90,6 +90,7 @@ class RUNAnalysis : public EDAnalyzer {
       string dataPUFile;
       string jecVersion;
       TString systematics;
+      double scale;
       double cutMassAsym;
       double cutDelta;
       double cutDEta;
@@ -112,7 +113,7 @@ class RUNAnalysis : public EDAnalyzer {
       float HT = 0, mass1 = -999, mass2 = -999, avgMass = -999, MET = -999,
 	    delta1 = -999, delta2 = -999, massAsym = -999, eta1 = -999, eta2 = -999, deltaEta = -999, 
 	    deltaR = -999, cosThetaStar1 = -999, cosThetaStar2 = -999,
-	    puWeight = -999, genWeight = -999 ;
+	    puWeight = -999, genWeight = -999, lumiWeight = -999 ;
       vector<float> scaleWeights, pdfWeights, alphaWeights;
 
       EDGetTokenT<vector<float>> jetPt_;
@@ -197,6 +198,7 @@ RUNAnalysis::RUNAnalysis(const ParameterSet& iConfig):
 	muonEnergy_(consumes<vector<float>>(iConfig.getParameter<InputTag>("muonEnergy")))
 {
 	consumes<LHERunInfoProduct,edm::InRun> (edm::InputTag("externalLHEProducer"));
+	scale 		= iConfig.getParameter<double>("scale");
 	bjSample 	= iConfig.getParameter<bool>("bjSample");
 	cutMassAsym      = iConfig.getParameter<double>     ("cutMassAsym");
 	cutDelta        = iConfig.getParameter<double>     ("cutDelta");
@@ -363,8 +365,10 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 	if ( isData ) puWeight = 1;
 	else puWeight = PUWeight_.getPUWeight( *trueNInt, *bunchCross );
 	histos1D_[ "PUWeight" ]->Fill( puWeight );
+	lumiWeight = scale;
+	double totalWeight = puWeight * lumiWeight;
 	
-	cutmap["Processed"] += puWeight;
+	cutmap["Processed"] += totalWeight;
 
 	int numPV = *NPV;
 	vector< myJet > JETS;
@@ -379,7 +383,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 		if( TMath::Abs( (*jetEta)[i] ) > 2.4 ) continue;
 
 		rawHT += (*jetPt)[i];
-		histos1D_[ "rawJetPt" ]->Fill( (*jetPt)[i] , puWeight );
+		histos1D_[ "rawJetPt" ]->Fill( (*jetPt)[i] , totalWeight );
 
 		bool idL = jetID( (*jetEta)[i], (*jetE)[i], (*jecFactor)[i], (*neutralHadronEnergy)[i], (*neutralEmEnergy)[i], (*chargedHadronEnergy)[i], (*muonEnergy)[i], (*chargedEmEnergy)[i], (*chargedHadronMultiplicity)[i], (*neutralHadronMultiplicity)[i], (*chargedMultiplicity)[i] ); 
 
@@ -409,18 +413,19 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 			//if ( (*jetCSVV1)[i] > 0.405 ) bTagCSV = 1; 	// CSVV1L
 			//if ( (*jetCSVV1)[i] > 0.783 ) bTagCSV = 1; 	// CSVV1M
 			double jec = 1. / ( rawJet.E() ); //(*jecFactor)[i] * (*jetE)[i] );
-			histos1D_[ "jetPt" ]->Fill( corrJet.Pt() , puWeight );
-			histos1D_[ "jetEta" ]->Fill( corrJet.Eta() , puWeight );
-			histos1D_[ "neutralHadronEnergy" ]->Fill( (*neutralHadronEnergy)[i] * jec, puWeight );
-			histos1D_[ "neutralEmEnergy" ]->Fill( (*neutralEmEnergy)[i] * jec, puWeight );
-			histos1D_[ "chargedHadronEnergy" ]->Fill( (*chargedHadronEnergy)[i] * jec, puWeight );
-			histos1D_[ "chargedEmEnergy" ]->Fill( (*chargedEmEnergy)[i] * jec, puWeight );
-			histos1D_[ "numConst" ]->Fill( (*chargedHadronMultiplicity)[i] + (*neutralHadronMultiplicity)[i], puWeight );
-			histos1D_[ "chargedMultiplicity" ]->Fill( (*chargedMultiplicity)[i] * jec, puWeight );
+			histos1D_[ "jetPt" ]->Fill( corrJet.Pt() , totalWeight );
+			histos1D_[ "jetEta" ]->Fill( corrJet.Eta() , totalWeight );
+			histos1D_[ "neutralHadronEnergy" ]->Fill( (*neutralHadronEnergy)[i] * jec, totalWeight );
+			histos1D_[ "neutralEmEnergy" ]->Fill( (*neutralEmEnergy)[i] * jec, totalWeight );
+			histos1D_[ "chargedHadronEnergy" ]->Fill( (*chargedHadronEnergy)[i] * jec, totalWeight );
+			histos1D_[ "chargedEmEnergy" ]->Fill( (*chargedEmEnergy)[i] * jec, totalWeight );
+			histos1D_[ "numConst" ]->Fill( (*chargedHadronMultiplicity)[i] + (*neutralHadronMultiplicity)[i], totalWeight );
+			histos1D_[ "chargedMultiplicity" ]->Fill( (*chargedMultiplicity)[i] * jec, totalWeight );
 
 			myJet tmpJET;
 			tmpJET.p4 = corrJet;
 			tmpJET.btagCSV = (*jetCSV)[i];
+			tmpJET.qgl = (*jetQGL)[i];
 			tmpJET.nhf = (*neutralHadronEnergy)[i] * jec;
 			tmpJET.nEMf = (*neutralEmEnergy)[i] * jec;
 			tmpJET.chf = (*chargedHadronEnergy)[i] * jec;
@@ -433,23 +438,23 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 	//sort(JETS.begin(), JETS.end(), [](const JETtype &p1, const JETtype &p2) { TLorentzVector tmpP1, tmpP2; tmpP1 = p1; tmpP2 = p2;  return tmpP1.M() > tmpP2.M(); }); 
 	numJets = numberJets;
-	histos1D_[ "jetNum" ]->Fill( numJets, puWeight );
-	histos1D_[ "NPV" ]->Fill( numPV, puWeight );
+	histos1D_[ "jetNum" ]->Fill( numJets, totalWeight );
+	histos1D_[ "NPV" ]->Fill( numPV, totalWeight );
 	histos1D_[ "NPV_NOPUWeight" ]->Fill( numPV );
-	if ( HT > 0 ) histos1D_[ "HT" ]->Fill( HT , puWeight );
-	if ( rawHT > 0 ) histos1D_[ "rawHT" ]->Fill( rawHT , puWeight );
+	if ( HT > 0 ) histos1D_[ "HT" ]->Fill( HT , totalWeight );
+	if ( rawHT > 0 ) histos1D_[ "rawHT" ]->Fill( rawHT , totalWeight );
 	MET = (*metPt)[0];
 
 	clearVariables();
 
 	if ( ORTriggers ) {
 		
-		cutmap["Trigger"] += puWeight;
-		histos1D_[ "HT_cutTrigger" ]->Fill( HT , puWeight );
-		histos1D_[ "jetNum_cutTrigger" ]->Fill( numJets, puWeight );
+		cutmap["Trigger"] += totalWeight;
+		histos1D_[ "HT_cutTrigger" ]->Fill( HT , totalWeight );
+		histos1D_[ "jetNum_cutTrigger" ]->Fill( numJets, totalWeight );
 		for (int i = 0; i < numJets; i++) {
-			histos1D_[ "jetPt_cutTrigger" ]->Fill( JETS[i].p4.Pt(), puWeight );
-			histos1D_[ "jetEta_cutTrigger" ]->Fill( JETS[i].p4.Eta(), puWeight );
+			histos1D_[ "jetPt_cutTrigger" ]->Fill( JETS[i].p4.Pt(), totalWeight );
+			histos1D_[ "jetEta_cutTrigger" ]->Fill( JETS[i].p4.Eta(), totalWeight );
 		}
 		event		= *ievent;
 		run		= *Run;
@@ -457,15 +462,15 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 		if( numJets > 3 ) { 
 			
-			cutmap["4Jets"] += puWeight;
-			histos1D_[ "HT_cut4Jets" ]->Fill( HT, puWeight );
-			histos1D_[ "jetNum_cut4Jets" ]->Fill( numJets, puWeight );
-			histos1D_[ "jet1Pt_cut4Jets" ]->Fill( JETS[0].p4.Pt(), puWeight );
-			histos1D_[ "jet2Pt_cut4Jets" ]->Fill( JETS[1].p4.Pt(), puWeight );
-			histos1D_[ "jet3Pt_cut4Jets" ]->Fill( JETS[2].p4.Pt(), puWeight );
-			histos1D_[ "jet4Pt_cut4Jets" ]->Fill( JETS[3].p4.Pt(), puWeight );
-			histos1D_[ "MET_cut4Jets" ]->Fill( MET, puWeight );
-			histos1D_[ "METHT_cut4Jets" ]->Fill( MET/HT, puWeight );
+			cutmap["4Jets"] += totalWeight;
+			histos1D_[ "HT_cut4Jets" ]->Fill( HT, totalWeight );
+			histos1D_[ "jetNum_cut4Jets" ]->Fill( numJets, totalWeight );
+			histos1D_[ "jet1Pt_cut4Jets" ]->Fill( JETS[0].p4.Pt(), totalWeight );
+			histos1D_[ "jet2Pt_cut4Jets" ]->Fill( JETS[1].p4.Pt(), totalWeight );
+			histos1D_[ "jet3Pt_cut4Jets" ]->Fill( JETS[2].p4.Pt(), totalWeight );
+			histos1D_[ "jet4Pt_cut4Jets" ]->Fill( JETS[3].p4.Pt(), totalWeight );
+			histos1D_[ "MET_cut4Jets" ]->Fill( MET, totalWeight );
+			histos1D_[ "METHT_cut4Jets" ]->Fill( MET/HT, totalWeight );
 
 			if( ( numJets == 4 ) && ( HT > 800. ) && ( JETS[3].p4.Pt() > 80.0 ) ){
 				
@@ -591,87 +596,87 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 				RUNAtree->Fill();
 
-				cutmap["BestPair"] += puWeight;
-				histos1D_[ "HT_cutBestPair" ]->Fill( HT, puWeight );
-				histos1D_[ "MET_cutBestPair" ]->Fill( MET, puWeight );
-				histos1D_[ "METHT_cutBestPair" ]->Fill( MET/HT, puWeight );
-				histos1D_[ "jetNum_cutBestPair" ]->Fill( numJets, puWeight );
-				histos1D_[ "jet1Pt_cutBestPair" ]->Fill( JETS[0].p4.Pt(), puWeight );
-				histos1D_[ "jet2Pt_cutBestPair" ]->Fill( JETS[1].p4.Pt(), puWeight );
-				histos1D_[ "jet3Pt_cutBestPair" ]->Fill( JETS[2].p4.Pt(), puWeight );
-				histos1D_[ "jet4Pt_cutBestPair" ]->Fill( JETS[3].p4.Pt(), puWeight );
-				histos1D_[ "jet1QGL_cutBestPair" ]->Fill( qgl1, puWeight );
-				histos1D_[ "jet2QGL_cutBestPair" ]->Fill( qgl2, puWeight );
-				histos1D_[ "jet3QGL_cutBestPair" ]->Fill( qgl3, puWeight );
-				histos1D_[ "jet4QGL_cutBestPair" ]->Fill( qgl4, puWeight );
-				histos1D_[ "NPV_cutBestPair" ]->Fill( numPV, puWeight );
+				cutmap["BestPair"] += totalWeight;
+				histos1D_[ "HT_cutBestPair" ]->Fill( HT, totalWeight );
+				histos1D_[ "MET_cutBestPair" ]->Fill( MET, totalWeight );
+				histos1D_[ "METHT_cutBestPair" ]->Fill( MET/HT, totalWeight );
+				histos1D_[ "jetNum_cutBestPair" ]->Fill( numJets, totalWeight );
+				histos1D_[ "jet1Pt_cutBestPair" ]->Fill( JETS[0].p4.Pt(), totalWeight );
+				histos1D_[ "jet2Pt_cutBestPair" ]->Fill( JETS[1].p4.Pt(), totalWeight );
+				histos1D_[ "jet3Pt_cutBestPair" ]->Fill( JETS[2].p4.Pt(), totalWeight );
+				histos1D_[ "jet4Pt_cutBestPair" ]->Fill( JETS[3].p4.Pt(), totalWeight );
+				histos1D_[ "jet1QGL_cutBestPair" ]->Fill( qgl1, totalWeight );
+				histos1D_[ "jet2QGL_cutBestPair" ]->Fill( qgl2, totalWeight );
+				histos1D_[ "jet3QGL_cutBestPair" ]->Fill( qgl3, totalWeight );
+				histos1D_[ "jet4QGL_cutBestPair" ]->Fill( qgl4, totalWeight );
+				histos1D_[ "NPV_cutBestPair" ]->Fill( numPV, totalWeight );
 				for (int i = 0; i < numJets; i++) {
-					histos1D_[ "neutralHadronEnergy_cutBestPair" ]->Fill( JETS[i].nhf, puWeight );
-					histos1D_[ "neutralEmEnergy_cutBestPair" ]->Fill( JETS[i].nEMf, puWeight );
-					histos1D_[ "chargedHadronEnergy_cutBestPair" ]->Fill( JETS[i].chf, puWeight );
-					histos1D_[ "chargedEmEnergy_cutBestPair" ]->Fill( JETS[i].cEMf, puWeight );
-					histos1D_[ "numConst_cutBestPair" ]->Fill( JETS[i].numConst, puWeight );
-					histos1D_[ "chargedMultiplicity_cutBestPair" ]->Fill( JETS[i].chm, puWeight );
+					histos1D_[ "neutralHadronEnergy_cutBestPair" ]->Fill( JETS[i].nhf, totalWeight );
+					histos1D_[ "neutralEmEnergy_cutBestPair" ]->Fill( JETS[i].nEMf, totalWeight );
+					histos1D_[ "chargedHadronEnergy_cutBestPair" ]->Fill( JETS[i].chf, totalWeight );
+					histos1D_[ "chargedEmEnergy_cutBestPair" ]->Fill( JETS[i].cEMf, totalWeight );
+					histos1D_[ "numConst_cutBestPair" ]->Fill( JETS[i].numConst, totalWeight );
+					histos1D_[ "chargedMultiplicity_cutBestPair" ]->Fill( JETS[i].chm, totalWeight );
 				}
 
-				histos1D_[ "massAve_cutBestPair" ]->Fill( avgMass, puWeight );
-				histos1D_[ "massAsym_cutBestPair" ]->Fill( massAsym, puWeight );
-				histos1D_[ "deltaEta_cutBestPair" ]->Fill( deltaEta, puWeight );
-				histos1D_[ "minDeltaR_cutBestPair" ]->Fill( minDeltaR , puWeight );
-				histos1D_[ "deltaR_cutBestPair" ]->Fill( deltaR , puWeight );
-				histos1D_[ "cosThetaStar1_cutBestPair" ]->Fill( cosThetaStar1 , puWeight );
-				histos1D_[ "cosThetaStar2_cutBestPair" ]->Fill( cosThetaStar2 , puWeight );
-				histos2D_[ "deltavsMassAve_cutBestPair" ]->Fill( avgMass, delta1 , puWeight );
-				histos2D_[ "deltavsMassAve_cutBestPair" ]->Fill( avgMass, delta2 , puWeight );
-				histos2D_[ "dijetsEta_cutBestPair" ]->Fill( eta1, eta2, puWeight );
+				histos1D_[ "massAve_cutBestPair" ]->Fill( avgMass, totalWeight );
+				histos1D_[ "massAsym_cutBestPair" ]->Fill( massAsym, totalWeight );
+				histos1D_[ "deltaEta_cutBestPair" ]->Fill( deltaEta, totalWeight );
+				histos1D_[ "minDeltaR_cutBestPair" ]->Fill( minDeltaR , totalWeight );
+				histos1D_[ "deltaR_cutBestPair" ]->Fill( deltaR , totalWeight );
+				histos1D_[ "cosThetaStar1_cutBestPair" ]->Fill( cosThetaStar1 , totalWeight );
+				histos1D_[ "cosThetaStar2_cutBestPair" ]->Fill( cosThetaStar2 , totalWeight );
+				histos2D_[ "deltavsMassAve_cutBestPair" ]->Fill( avgMass, delta1 , totalWeight );
+				histos2D_[ "deltavsMassAve_cutBestPair" ]->Fill( avgMass, delta2 , totalWeight );
+				histos2D_[ "dijetsEta_cutBestPair" ]->Fill( eta1, eta2, totalWeight );
 
 				if ( massAsym < cutMassAsym ) { 
-					cutmap["MassAsym"] += puWeight;
-					histos1D_[ "HT_cutMassAsym" ]->Fill( HT, puWeight );
-					histos1D_[ "jetNum_cutMassAsym" ]->Fill( numJets, puWeight );
-					histos1D_[ "jet1Pt_cutMassAsym" ]->Fill( JETS[0].p4.Pt(), puWeight );
-					histos1D_[ "jet2Pt_cutMassAsym" ]->Fill( JETS[1].p4.Pt(), puWeight );
-					histos1D_[ "jet3Pt_cutMassAsym" ]->Fill( JETS[2].p4.Pt(), puWeight );
-					histos1D_[ "jet4Pt_cutMassAsym" ]->Fill( JETS[3].p4.Pt(), puWeight );
-					histos1D_[ "massAve_cutMassAsym" ]->Fill( avgMass, puWeight );
-					histos1D_[ "massAsym_cutMassAsym" ]->Fill( massAsym, puWeight );
-					histos1D_[ "deltaEta_cutMassAsym" ]->Fill( deltaEta, puWeight );
-					histos1D_[ "minDeltaR_cutMassAsym" ]->Fill( minDeltaR , puWeight );
-					histos2D_[ "deltavsMassAve_cutMassAsym" ]->Fill( avgMass, delta1 , puWeight );
-					histos2D_[ "deltavsMassAve_cutMassAsym" ]->Fill( avgMass, delta2 , puWeight );
-					histos2D_[ "dijetsEta_cutMassAsym" ]->Fill( eta1, eta2, puWeight );
+					cutmap["MassAsym"] += totalWeight;
+					histos1D_[ "HT_cutMassAsym" ]->Fill( HT, totalWeight );
+					histos1D_[ "jetNum_cutMassAsym" ]->Fill( numJets, totalWeight );
+					histos1D_[ "jet1Pt_cutMassAsym" ]->Fill( JETS[0].p4.Pt(), totalWeight );
+					histos1D_[ "jet2Pt_cutMassAsym" ]->Fill( JETS[1].p4.Pt(), totalWeight );
+					histos1D_[ "jet3Pt_cutMassAsym" ]->Fill( JETS[2].p4.Pt(), totalWeight );
+					histos1D_[ "jet4Pt_cutMassAsym" ]->Fill( JETS[3].p4.Pt(), totalWeight );
+					histos1D_[ "massAve_cutMassAsym" ]->Fill( avgMass, totalWeight );
+					histos1D_[ "massAsym_cutMassAsym" ]->Fill( massAsym, totalWeight );
+					histos1D_[ "deltaEta_cutMassAsym" ]->Fill( deltaEta, totalWeight );
+					histos1D_[ "minDeltaR_cutMassAsym" ]->Fill( minDeltaR , totalWeight );
+					histos2D_[ "deltavsMassAve_cutMassAsym" ]->Fill( avgMass, delta1 , totalWeight );
+					histos2D_[ "deltavsMassAve_cutMassAsym" ]->Fill( avgMass, delta2 , totalWeight );
+					histos2D_[ "dijetsEta_cutMassAsym" ]->Fill( eta1, eta2, totalWeight );
 				
 					if ( TMath::Abs(eta1 - eta2) <  cutDEta ) {
-						cutmap["DEta"] += puWeight;
-						histos1D_[ "HT_cutDEta" ]->Fill( HT, puWeight );
-						histos1D_[ "jetNum_cutDEta" ]->Fill( numJets, puWeight );
-						histos1D_[ "jet1Pt_cutDEta" ]->Fill( JETS[0].p4.Pt(), puWeight );
-						histos1D_[ "jet2Pt_cutDEta" ]->Fill( JETS[1].p4.Pt(), puWeight );
-						histos1D_[ "jet3Pt_cutDEta" ]->Fill( JETS[2].p4.Pt(), puWeight );
-						histos1D_[ "jet4Pt_cutDEta" ]->Fill( JETS[3].p4.Pt(), puWeight );
-						histos1D_[ "massAve_cutDEta" ]->Fill( avgMass, puWeight );
-						histos1D_[ "massAsym_cutDEta" ]->Fill( massAsym, puWeight );
-						histos1D_[ "deltaEta_cutDEta" ]->Fill( deltaEta, puWeight );
-						histos1D_[ "minDEtaR_cutDEta" ]->Fill( minDeltaR , puWeight );
-						histos2D_[ "deltavsMassAve_cutDEta" ]->Fill( avgMass, delta1 , puWeight );
-						histos2D_[ "deltavsMassAve_cutDEta" ]->Fill( avgMass, delta2 , puWeight );
-						histos2D_[ "dijetsEta_cutDEta" ]->Fill( eta1, eta2, puWeight );
+						cutmap["DEta"] += totalWeight;
+						histos1D_[ "HT_cutDEta" ]->Fill( HT, totalWeight );
+						histos1D_[ "jetNum_cutDEta" ]->Fill( numJets, totalWeight );
+						histos1D_[ "jet1Pt_cutDEta" ]->Fill( JETS[0].p4.Pt(), totalWeight );
+						histos1D_[ "jet2Pt_cutDEta" ]->Fill( JETS[1].p4.Pt(), totalWeight );
+						histos1D_[ "jet3Pt_cutDEta" ]->Fill( JETS[2].p4.Pt(), totalWeight );
+						histos1D_[ "jet4Pt_cutDEta" ]->Fill( JETS[3].p4.Pt(), totalWeight );
+						histos1D_[ "massAve_cutDEta" ]->Fill( avgMass, totalWeight );
+						histos1D_[ "massAsym_cutDEta" ]->Fill( massAsym, totalWeight );
+						histos1D_[ "deltaEta_cutDEta" ]->Fill( deltaEta, totalWeight );
+						histos1D_[ "minDEtaR_cutDEta" ]->Fill( minDeltaR , totalWeight );
+						histos2D_[ "deltavsMassAve_cutDEta" ]->Fill( avgMass, delta1 , totalWeight );
+						histos2D_[ "deltavsMassAve_cutDEta" ]->Fill( avgMass, delta2 , totalWeight );
+						histos2D_[ "dijetsEta_cutDEta" ]->Fill( eta1, eta2, totalWeight );
 						
 						if ( ( delta1 > cutDelta ) && ( delta2  > cutDelta ) ) {
-							cutmap["Delta"] += puWeight;
-							histos1D_[ "HT_cutDelta" ]->Fill( HT, puWeight );
-							histos1D_[ "jetNum_cutDelta" ]->Fill( numJets, puWeight );
-							histos1D_[ "jet1Pt_cutDelta" ]->Fill( JETS[0].p4.Pt(), puWeight );
-							histos1D_[ "jet2Pt_cutDelta" ]->Fill( JETS[1].p4.Pt(), puWeight );
-							histos1D_[ "jet3Pt_cutDelta" ]->Fill( JETS[2].p4.Pt(), puWeight );
-							histos1D_[ "jet4Pt_cutDelta" ]->Fill( JETS[3].p4.Pt(), puWeight );
-							histos1D_[ "massAve_cutDelta" ]->Fill( avgMass, puWeight );
-							histos1D_[ "massAsym_cutDelta" ]->Fill( massAsym, puWeight );
-							histos1D_[ "deltaEta_cutDelta" ]->Fill( deltaEta, puWeight );
-							histos1D_[ "minDeltaR_cutDelta" ]->Fill( minDeltaR , puWeight );
-							histos2D_[ "deltavsMassAve_cutDelta" ]->Fill( avgMass, delta1 , puWeight );
-							histos2D_[ "deltavsMassAve_cutDelta" ]->Fill( avgMass, delta2 , puWeight );
-							histos2D_[ "dijetsEta_cutDelta" ]->Fill( eta1, eta2, puWeight );
+							cutmap["Delta"] += totalWeight;
+							histos1D_[ "HT_cutDelta" ]->Fill( HT, totalWeight );
+							histos1D_[ "jetNum_cutDelta" ]->Fill( numJets, totalWeight );
+							histos1D_[ "jet1Pt_cutDelta" ]->Fill( JETS[0].p4.Pt(), totalWeight );
+							histos1D_[ "jet2Pt_cutDelta" ]->Fill( JETS[1].p4.Pt(), totalWeight );
+							histos1D_[ "jet3Pt_cutDelta" ]->Fill( JETS[2].p4.Pt(), totalWeight );
+							histos1D_[ "jet4Pt_cutDelta" ]->Fill( JETS[3].p4.Pt(), totalWeight );
+							histos1D_[ "massAve_cutDelta" ]->Fill( avgMass, totalWeight );
+							histos1D_[ "massAsym_cutDelta" ]->Fill( massAsym, totalWeight );
+							histos1D_[ "deltaEta_cutDelta" ]->Fill( deltaEta, totalWeight );
+							histos1D_[ "minDeltaR_cutDelta" ]->Fill( minDeltaR , totalWeight );
+							histos2D_[ "deltavsMassAve_cutDelta" ]->Fill( avgMass, delta1 , totalWeight );
+							histos2D_[ "deltavsMassAve_cutDelta" ]->Fill( avgMass, delta2 , totalWeight );
+							histos2D_[ "dijetsEta_cutDelta" ]->Fill( eta1, eta2, totalWeight );
 						}
 					}
 				}
@@ -695,6 +700,7 @@ void RUNAnalysis::beginJob() {
 	RUNAtree->Branch( "numJets", &numJets, "numJets/I" );
 	RUNAtree->Branch( "numPV", &numPV, "numPV/I" );
 	RUNAtree->Branch( "puWeight", &puWeight, "puWeight/F" );
+	RUNAtree->Branch( "lumiWeight", &lumiWeight, "lumiWeight/F" );
 	RUNAtree->Branch( "genWeight", &genWeight, "genWeight/F" );
 	RUNAtree->Branch( "HT", &HT, "HT/F" );
 	RUNAtree->Branch( "mass1", &mass1, "mass1/F" );
@@ -960,6 +966,7 @@ void RUNAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descriptions
 	desc.add<double>("cutDeltaR", 1);
 	desc.add<bool>("bjSample", false);
 	desc.add<bool>("isData", false);
+	desc.add<double>("scale", 1);
 	desc.add<string>("dataPUFile", "supportFiles/PileupData2015D_JSON_10-23-2015.root");
 	desc.add<string>("jecVersion", "supportFiles/Summer15_25nsV6");
 	desc.add<string>("systematics", "None");
