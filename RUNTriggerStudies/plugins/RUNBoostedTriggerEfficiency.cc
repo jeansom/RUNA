@@ -777,66 +777,66 @@ void RUNBoostedTriggerEfficiency::beginJob() {
 	histos1D_[ "jet1SoftDropMassPassing_cutDijet" ] = fs_->make< TH1D >( "jet1SoftDropMassPassing_cutDijet", "jet1SoftDropMassPassing_cutDijet", 60, 0., 600. );
 	histos1D_[ "jet1SoftDropMassPassing_cutDijet" ]->Sumw2();
 
-	histos1D_[ "jet1PtDenom_cutDijet" ] = fs_->make< TH1D >( "jet1PtDenom_cutDijet", "jet1PtDenom_cutDijet", 100, 0., 1000. );
+	histos1D_[ "jet1PtDenom_cutDijet" ] = fs_->make< TH1D >( "jet1PtDenom_cutDijet", "jet1PtDenom_cutDijet", 150, 0., 1500. );
 	histos1D_[ "jet1PtDenom_cutDijet" ]->Sumw2();
-	histos1D_[ "jet1PtPassing_cutDijet" ] = fs_->make< TH1D >( "jet1PtPassing_cutDijet", "jet1PtPassing_cutDijet", 100, 0., 1000. );
+	histos1D_[ "jet1PtPassing_cutDijet" ] = fs_->make< TH1D >( "jet1PtPassing_cutDijet", "jet1PtPassing_cutDijet", 150, 0., 1500. );
 	histos1D_[ "jet1PtPassing_cutDijet" ]->Sumw2();
 
-	histos1D_[ "jet2PtDenom_cutDijet" ] = fs_->make< TH1D >( "jet2PtDenom_cutDijet", "jet2PtDenom_cutDijet", 100, 0., 1000. );
+	histos1D_[ "jet2PtDenom_cutDijet" ] = fs_->make< TH1D >( "jet2PtDenom_cutDijet", "jet2PtDenom_cutDijet", 150, 0., 1500. );
 	histos1D_[ "jet2PtDenom_cutDijet" ]->Sumw2();
-	histos1D_[ "jet2PtPassing_cutDijet" ] = fs_->make< TH1D >( "jet2PtPassing_cutDijet", "jet2PtPassing_cutDijet", 100, 0., 1000. );
+	histos1D_[ "jet2PtPassing_cutDijet" ] = fs_->make< TH1D >( "jet2PtPassing_cutDijet", "jet2PtPassing_cutDijet", 150, 0., 1500. );
 	histos1D_[ "jet2PtPassing_cutDijet" ]->Sumw2();
 
-	histos2D_[ "jet1PtHTDenom_cutDijet" ] = fs_->make< TH2D >( "jet1PtHTDenom_cutDijet", "HT vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtHTDenom_cutDijet" ] = fs_->make< TH2D >( "jet1PtHTDenom_cutDijet", "HT vs Leading Jet Pt", 150, 0., 1500., 150, 0., 1500.);
 	histos2D_[ "jet1PtHTDenom_cutDijet" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jet1PtHTDenom_cutDijet" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtHTDenom_cutDijet" ]->Sumw2();
-	histos2D_[ "jet1PtHTPassing_cutDijet" ] = fs_->make< TH2D >( "jet1PtHTPassing_cutDijet", "HT vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtHTPassing_cutDijet" ] = fs_->make< TH2D >( "jet1PtHTPassing_cutDijet", "HT vs Leading Jet Pt", 150, 0., 1500., 150, 0., 1500.);
 	histos2D_[ "jet1PtHTPassing_cutDijet" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jet1PtHTPassing_cutDijet" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtHTPassing_cutDijet" ]->Sumw2();
 
-	histos2D_[ "jet2PtHTDenom_cutDijet" ] = fs_->make< TH2D >( "jet2PtHTDenom_cutDijet", "HT vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet2PtHTDenom_cutDijet" ] = fs_->make< TH2D >( "jet2PtHTDenom_cutDijet", "HT vs Leading Jet Pt", 150, 0., 1500., 150, 0., 1500.);
 	histos2D_[ "jet2PtHTDenom_cutDijet" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jet2PtHTDenom_cutDijet" ]->SetXTitle( "2nd Leading Jet Pt [GeV]" );
 	histos2D_[ "jet2PtHTDenom_cutDijet" ]->Sumw2();
-	histos2D_[ "jet2PtHTPassing_cutDijet" ] = fs_->make< TH2D >( "jet2PtHTPassing_cutDijet", "HT vs 2nd Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet2PtHTPassing_cutDijet" ] = fs_->make< TH2D >( "jet2PtHTPassing_cutDijet", "HT vs 2nd Leading Jet Pt", 150, 0., 1500., 150, 0., 1500.);
 	histos2D_[ "jet2PtHTPassing_cutDijet" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jet2PtHTPassing_cutDijet" ]->SetXTitle( "2nd Leading Jet Pt [GeV]" );
 	histos2D_[ "jet2PtHTPassing_cutDijet" ]->Sumw2();
 
-	histos2D_[ "jet1PtPrunedMassDenom_cutDijet" ] = fs_->make< TH2D >( "jet1PtPrunedMassDenom_cutDijet", "Leading Jet Pruned Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtPrunedMassDenom_cutDijet" ] = fs_->make< TH2D >( "jet1PtPrunedMassDenom_cutDijet", "Leading Jet Pruned Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtPrunedMassDenom_cutDijet" ]->SetYTitle( "Leading Jet Pruned Mass [GeV]" );
 	histos2D_[ "jet1PtPrunedMassDenom_cutDijet" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtPrunedMassDenom_cutDijet" ]->Sumw2();
-	histos2D_[ "jet1PtPrunedMassPassing_cutDijet" ] = fs_->make< TH2D >( "jet1PtPrunedMassPassing_cutDijet", "Leading Jet Pruned Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtPrunedMassPassing_cutDijet" ] = fs_->make< TH2D >( "jet1PtPrunedMassPassing_cutDijet", "Leading Jet Pruned Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtPrunedMassPassing_cutDijet" ]->SetYTitle( "Leading Jet Pruned Mass [GeV]" );
 	histos2D_[ "jet1PtPrunedMassPassing_cutDijet" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtPrunedMassPassing_cutDijet" ]->Sumw2();
 
-	histos2D_[ "jet2PtPrunedMassDenom_cutDijet" ] = fs_->make< TH2D >( "jet2PtPrunedMassDenom_cutDijet", "Leading Jet Pruned Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet2PtPrunedMassDenom_cutDijet" ] = fs_->make< TH2D >( "jet2PtPrunedMassDenom_cutDijet", "Leading Jet Pruned Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet2PtPrunedMassDenom_cutDijet" ]->SetYTitle( "2nd Leading Jet Pruned Mass [GeV]" );
 	histos2D_[ "jet2PtPrunedMassDenom_cutDijet" ]->SetXTitle( "2nd Leading Jet Pt [GeV]" );
 	histos2D_[ "jet2PtPrunedMassDenom_cutDijet" ]->Sumw2();
-	histos2D_[ "jet2PtPrunedMassPassing_cutDijet" ] = fs_->make< TH2D >( "jet2PtPrunedMassPassing_cutDijet", "Leading Jet Pruned Mass vs 2nd Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet2PtPrunedMassPassing_cutDijet" ] = fs_->make< TH2D >( "jet2PtPrunedMassPassing_cutDijet", "Leading Jet Pruned Mass vs 2nd Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet2PtPrunedMassPassing_cutDijet" ]->SetYTitle( "2nd Leading Jet Pruned Mass [GeV]" );
 	histos2D_[ "jet2PtPrunedMassPassing_cutDijet" ]->SetXTitle( "2nd Leading Jet Pt [GeV]" );
 	histos2D_[ "jet2PtPrunedMassPassing_cutDijet" ]->Sumw2();
 
-	histos2D_[ "jet1PtSoftDropMassDenom_cutDijet" ] = fs_->make< TH2D >( "jet1PtSoftDropMassDenom_cutDijet", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtSoftDropMassDenom_cutDijet" ] = fs_->make< TH2D >( "jet1PtSoftDropMassDenom_cutDijet", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtSoftDropMassDenom_cutDijet" ]->SetYTitle( "Leading Jet SoftDrop Mass [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassDenom_cutDijet" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassDenom_cutDijet" ]->Sumw2();
-	histos2D_[ "jet1PtSoftDropMassPassing_cutDijet" ] = fs_->make< TH2D >( "jet1PtSoftDropMassPassing_cutDijet", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtSoftDropMassPassing_cutDijet" ] = fs_->make< TH2D >( "jet1PtSoftDropMassPassing_cutDijet", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtSoftDropMassPassing_cutDijet" ]->SetYTitle( "Leading Jet SoftDrop Mass [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassPassing_cutDijet" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassPassing_cutDijet" ]->Sumw2();
 
-	histos2D_[ "jet2PtSoftDropMassDenom_cutDijet" ] = fs_->make< TH2D >( "jet2PtSoftDropMassDenom_cutDijet", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet2PtSoftDropMassDenom_cutDijet" ] = fs_->make< TH2D >( "jet2PtSoftDropMassDenom_cutDijet", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet2PtSoftDropMassDenom_cutDijet" ]->SetYTitle( "2nd Leading Jet SoftDrop Mass [GeV]" );
 	histos2D_[ "jet2PtSoftDropMassDenom_cutDijet" ]->SetXTitle( "2nd Leading Jet Pt [GeV]" );
 	histos2D_[ "jet2PtSoftDropMassDenom_cutDijet" ]->Sumw2();
-	histos2D_[ "jet2PtSoftDropMassPassing_cutDijet" ] = fs_->make< TH2D >( "jet2PtSoftDropMassPassing_cutDijet", "Leading Jet SoftDrop Mass vs 2nd Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet2PtSoftDropMassPassing_cutDijet" ] = fs_->make< TH2D >( "jet2PtSoftDropMassPassing_cutDijet", "Leading Jet SoftDrop Mass vs 2nd Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet2PtSoftDropMassPassing_cutDijet" ]->SetYTitle( "2nd Leading Jet SoftDrop Mass [GeV]" );
 	histos2D_[ "jet2PtSoftDropMassPassing_cutDijet" ]->SetXTitle( "2nd Leading Jet Pt [GeV]" );
 	histos2D_[ "jet2PtSoftDropMassPassing_cutDijet" ]->Sumw2();
@@ -909,66 +909,66 @@ void RUNBoostedTriggerEfficiency::beginJob() {
 	histos1D_[ "jet1SoftDropMassPassing_cutHT" ] = fs_->make< TH1D >( "jet1SoftDropMassPassing_cutHT", "jet1SoftDropMassPassing_cutHT", 60, 0., 600. );
 	histos1D_[ "jet1SoftDropMassPassing_cutHT" ]->Sumw2();
 
-	histos1D_[ "jet1PtDenom_cutHT" ] = fs_->make< TH1D >( "jet1PtDenom_cutHT", "jet1PtDenom_cutHT", 100, 0., 1000. );
+	histos1D_[ "jet1PtDenom_cutHT" ] = fs_->make< TH1D >( "jet1PtDenom_cutHT", "jet1PtDenom_cutHT", 150, 0., 1500. );
 	histos1D_[ "jet1PtDenom_cutHT" ]->Sumw2();
-	histos1D_[ "jet1PtPassing_cutHT" ] = fs_->make< TH1D >( "jet1PtPassing_cutHT", "jet1PtPassing_cutHT", 100, 0., 1000. );
+	histos1D_[ "jet1PtPassing_cutHT" ] = fs_->make< TH1D >( "jet1PtPassing_cutHT", "jet1PtPassing_cutHT", 150, 0., 1500. );
 	histos1D_[ "jet1PtPassing_cutHT" ]->Sumw2();
 
-	histos1D_[ "jet2PtDenom_cutHT" ] = fs_->make< TH1D >( "jet2PtDenom_cutHT", "jet2PtDenom_cutHT", 100, 0., 1000. );
+	histos1D_[ "jet2PtDenom_cutHT" ] = fs_->make< TH1D >( "jet2PtDenom_cutHT", "jet2PtDenom_cutHT", 150, 0., 1500. );
 	histos1D_[ "jet2PtDenom_cutHT" ]->Sumw2();
-	histos1D_[ "jet2PtPassing_cutHT" ] = fs_->make< TH1D >( "jet2PtPassing_cutHT", "jet2PtPassing_cutHT", 100, 0., 1000. );
+	histos1D_[ "jet2PtPassing_cutHT" ] = fs_->make< TH1D >( "jet2PtPassing_cutHT", "jet2PtPassing_cutHT", 150, 0., 1500. );
 	histos1D_[ "jet2PtPassing_cutHT" ]->Sumw2();
 
-	histos2D_[ "jet1PtHTDenom_cutHT" ] = fs_->make< TH2D >( "jet1PtHTDenom_cutHT", "HT vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtHTDenom_cutHT" ] = fs_->make< TH2D >( "jet1PtHTDenom_cutHT", "HT vs Leading Jet Pt", 150, 0., 1500., 150, 0., 1500.);
 	histos2D_[ "jet1PtHTDenom_cutHT" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jet1PtHTDenom_cutHT" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtHTDenom_cutHT" ]->Sumw2();
-	histos2D_[ "jet1PtHTPassing_cutHT" ] = fs_->make< TH2D >( "jet1PtHTPassing_cutHT", "HT vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtHTPassing_cutHT" ] = fs_->make< TH2D >( "jet1PtHTPassing_cutHT", "HT vs Leading Jet Pt", 150, 0., 1500., 150, 0., 1500.);
 	histos2D_[ "jet1PtHTPassing_cutHT" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jet1PtHTPassing_cutHT" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtHTPassing_cutHT" ]->Sumw2();
 
-	histos2D_[ "jet2PtHTDenom_cutHT" ] = fs_->make< TH2D >( "jet2PtHTDenom_cutHT", "HT vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet2PtHTDenom_cutHT" ] = fs_->make< TH2D >( "jet2PtHTDenom_cutHT", "HT vs Leading Jet Pt", 150, 0., 1500., 150, 0., 1500.);
 	histos2D_[ "jet2PtHTDenom_cutHT" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jet2PtHTDenom_cutHT" ]->SetXTitle( "2nd Leading Jet Pt [GeV]" );
 	histos2D_[ "jet2PtHTDenom_cutHT" ]->Sumw2();
-	histos2D_[ "jet2PtHTPassing_cutHT" ] = fs_->make< TH2D >( "jet2PtHTPassing_cutHT", "HT vs 2nd Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet2PtHTPassing_cutHT" ] = fs_->make< TH2D >( "jet2PtHTPassing_cutHT", "HT vs 2nd Leading Jet Pt", 150, 0., 1500., 150, 0., 1500.);
 	histos2D_[ "jet2PtHTPassing_cutHT" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jet2PtHTPassing_cutHT" ]->SetXTitle( "2nd Leading Jet Pt [GeV]" );
 	histos2D_[ "jet2PtHTPassing_cutHT" ]->Sumw2();
 
-	histos2D_[ "jet1PtPrunedMassDenom_cutHT" ] = fs_->make< TH2D >( "jet1PtPrunedMassDenom_cutHT", "Leading Jet Pruned Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtPrunedMassDenom_cutHT" ] = fs_->make< TH2D >( "jet1PtPrunedMassDenom_cutHT", "Leading Jet Pruned Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtPrunedMassDenom_cutHT" ]->SetYTitle( "Leading Jet Pruned Mass [GeV]" );
 	histos2D_[ "jet1PtPrunedMassDenom_cutHT" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtPrunedMassDenom_cutHT" ]->Sumw2();
-	histos2D_[ "jet1PtPrunedMassPassing_cutHT" ] = fs_->make< TH2D >( "jet1PtPrunedMassPassing_cutHT", "Leading Jet Pruned Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtPrunedMassPassing_cutHT" ] = fs_->make< TH2D >( "jet1PtPrunedMassPassing_cutHT", "Leading Jet Pruned Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtPrunedMassPassing_cutHT" ]->SetYTitle( "Leading Jet Pruned Mass [GeV]" );
 	histos2D_[ "jet1PtPrunedMassPassing_cutHT" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtPrunedMassPassing_cutHT" ]->Sumw2();
 
-	histos2D_[ "jet2PtPrunedMassDenom_cutHT" ] = fs_->make< TH2D >( "jet2PtPrunedMassDenom_cutHT", "Leading Jet Pruned Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet2PtPrunedMassDenom_cutHT" ] = fs_->make< TH2D >( "jet2PtPrunedMassDenom_cutHT", "Leading Jet Pruned Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet2PtPrunedMassDenom_cutHT" ]->SetYTitle( "2nd Leading Jet Pruned Mass [GeV]" );
 	histos2D_[ "jet2PtPrunedMassDenom_cutHT" ]->SetXTitle( "2nd Leading Jet Pt [GeV]" );
 	histos2D_[ "jet2PtPrunedMassDenom_cutHT" ]->Sumw2();
-	histos2D_[ "jet2PtPrunedMassPassing_cutHT" ] = fs_->make< TH2D >( "jet2PtPrunedMassPassing_cutHT", "Leading Jet Pruned Mass vs 2nd Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet2PtPrunedMassPassing_cutHT" ] = fs_->make< TH2D >( "jet2PtPrunedMassPassing_cutHT", "Leading Jet Pruned Mass vs 2nd Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet2PtPrunedMassPassing_cutHT" ]->SetYTitle( "2nd Leading Jet Pruned Mass [GeV]" );
 	histos2D_[ "jet2PtPrunedMassPassing_cutHT" ]->SetXTitle( "2nd Leading Jet Pt [GeV]" );
 	histos2D_[ "jet2PtPrunedMassPassing_cutHT" ]->Sumw2();
 
-	histos2D_[ "jet1PtSoftDropMassDenom_cutHT" ] = fs_->make< TH2D >( "jet1PtSoftDropMassDenom_cutHT", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtSoftDropMassDenom_cutHT" ] = fs_->make< TH2D >( "jet1PtSoftDropMassDenom_cutHT", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtSoftDropMassDenom_cutHT" ]->SetYTitle( "Leading Jet SoftDrop Mass [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassDenom_cutHT" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassDenom_cutHT" ]->Sumw2();
-	histos2D_[ "jet1PtSoftDropMassPassing_cutHT" ] = fs_->make< TH2D >( "jet1PtSoftDropMassPassing_cutHT", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtSoftDropMassPassing_cutHT" ] = fs_->make< TH2D >( "jet1PtSoftDropMassPassing_cutHT", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtSoftDropMassPassing_cutHT" ]->SetYTitle( "Leading Jet SoftDrop Mass [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassPassing_cutHT" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassPassing_cutHT" ]->Sumw2();
 
-	histos2D_[ "jet2PtSoftDropMassDenom_cutHT" ] = fs_->make< TH2D >( "jet2PtSoftDropMassDenom_cutHT", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet2PtSoftDropMassDenom_cutHT" ] = fs_->make< TH2D >( "jet2PtSoftDropMassDenom_cutHT", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet2PtSoftDropMassDenom_cutHT" ]->SetYTitle( "2nd Leading Jet SoftDrop Mass [GeV]" );
 	histos2D_[ "jet2PtSoftDropMassDenom_cutHT" ]->SetXTitle( "2nd Leading Jet Pt [GeV]" );
 	histos2D_[ "jet2PtSoftDropMassDenom_cutHT" ]->Sumw2();
-	histos2D_[ "jet2PtSoftDropMassPassing_cutHT" ] = fs_->make< TH2D >( "jet2PtSoftDropMassPassing_cutHT", "Leading Jet SoftDrop Mass vs 2nd Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet2PtSoftDropMassPassing_cutHT" ] = fs_->make< TH2D >( "jet2PtSoftDropMassPassing_cutHT", "Leading Jet SoftDrop Mass vs 2nd Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet2PtSoftDropMassPassing_cutHT" ]->SetYTitle( "2nd Leading Jet SoftDrop Mass [GeV]" );
 	histos2D_[ "jet2PtSoftDropMassPassing_cutHT" ]->SetXTitle( "2nd Leading Jet Pt [GeV]" );
 	histos2D_[ "jet2PtSoftDropMassPassing_cutHT" ]->Sumw2();
@@ -1042,66 +1042,66 @@ void RUNBoostedTriggerEfficiency::beginJob() {
 	histos1D_[ "jet1SoftDropMassPassing_cutTriggerEff" ] = fs_->make< TH1D >( "jet1SoftDropMassPassing_cutTriggerEff", "jet1SoftDropMassPassing_cutTriggerEff", 60, 0., 600. );
 	histos1D_[ "jet1SoftDropMassPassing_cutTriggerEff" ]->Sumw2();
 
-	histos1D_[ "jet1PtDenom_cutTriggerEff" ] = fs_->make< TH1D >( "jet1PtDenom_cutTriggerEff", "jet1PtDenom_cutTriggerEff", 100, 0., 1000. );
+	histos1D_[ "jet1PtDenom_cutTriggerEff" ] = fs_->make< TH1D >( "jet1PtDenom_cutTriggerEff", "jet1PtDenom_cutTriggerEff", 150, 0., 1500. );
 	histos1D_[ "jet1PtDenom_cutTriggerEff" ]->Sumw2();
-	histos1D_[ "jet1PtPassing_cutTriggerEff" ] = fs_->make< TH1D >( "jet1PtPassing_cutTriggerEff", "jet1PtPassing_cutTriggerEff", 100, 0., 1000. );
+	histos1D_[ "jet1PtPassing_cutTriggerEff" ] = fs_->make< TH1D >( "jet1PtPassing_cutTriggerEff", "jet1PtPassing_cutTriggerEff", 150, 0., 1500. );
 	histos1D_[ "jet1PtPassing_cutTriggerEff" ]->Sumw2();
 
-	histos1D_[ "jet2PtDenom_cutTriggerEff" ] = fs_->make< TH1D >( "jet2PtDenom_cutTriggerEff", "jet2PtDenom_cutTriggerEff", 100, 0., 1000. );
+	histos1D_[ "jet2PtDenom_cutTriggerEff" ] = fs_->make< TH1D >( "jet2PtDenom_cutTriggerEff", "jet2PtDenom_cutTriggerEff", 150, 0., 1500. );
 	histos1D_[ "jet2PtDenom_cutTriggerEff" ]->Sumw2();
-	histos1D_[ "jet2PtPassing_cutTriggerEff" ] = fs_->make< TH1D >( "jet2PtPassing_cutTriggerEff", "jet2PtPassing_cutTriggerEff", 100, 0., 1000. );
+	histos1D_[ "jet2PtPassing_cutTriggerEff" ] = fs_->make< TH1D >( "jet2PtPassing_cutTriggerEff", "jet2PtPassing_cutTriggerEff", 150, 0., 1500. );
 	histos1D_[ "jet2PtPassing_cutTriggerEff" ]->Sumw2();
 
-	histos2D_[ "jet1PtHTDenom_cutTriggerEff" ] = fs_->make< TH2D >( "jet1PtHTDenom_cutTriggerEff", "HT vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtHTDenom_cutTriggerEff" ] = fs_->make< TH2D >( "jet1PtHTDenom_cutTriggerEff", "HT vs Leading Jet Pt", 150, 0., 1500., 150, 0., 1500.);
 	histos2D_[ "jet1PtHTDenom_cutTriggerEff" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jet1PtHTDenom_cutTriggerEff" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtHTDenom_cutTriggerEff" ]->Sumw2();
-	histos2D_[ "jet1PtHTPassing_cutTriggerEff" ] = fs_->make< TH2D >( "jet1PtHTPassing_cutTriggerEff", "HT vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtHTPassing_cutTriggerEff" ] = fs_->make< TH2D >( "jet1PtHTPassing_cutTriggerEff", "HT vs Leading Jet Pt", 150, 0., 1500., 150, 0., 1500.);
 	histos2D_[ "jet1PtHTPassing_cutTriggerEff" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jet1PtHTPassing_cutTriggerEff" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtHTPassing_cutTriggerEff" ]->Sumw2();
 
-	histos2D_[ "jet2PtHTDenom_cutTriggerEff" ] = fs_->make< TH2D >( "jet2PtHTDenom_cutTriggerEff", "HT vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet2PtHTDenom_cutTriggerEff" ] = fs_->make< TH2D >( "jet2PtHTDenom_cutTriggerEff", "HT vs Leading Jet Pt", 150, 0., 1500., 150, 0., 1500.);
 	histos2D_[ "jet2PtHTDenom_cutTriggerEff" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jet2PtHTDenom_cutTriggerEff" ]->SetXTitle( "2nd Leading Jet Pt [GeV]" );
 	histos2D_[ "jet2PtHTDenom_cutTriggerEff" ]->Sumw2();
-	histos2D_[ "jet2PtHTPassing_cutTriggerEff" ] = fs_->make< TH2D >( "jet2PtHTPassing_cutTriggerEff", "HT vs 2nd Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet2PtHTPassing_cutTriggerEff" ] = fs_->make< TH2D >( "jet2PtHTPassing_cutTriggerEff", "HT vs 2nd Leading Jet Pt", 150, 0., 1500., 150, 0., 1500.);
 	histos2D_[ "jet2PtHTPassing_cutTriggerEff" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jet2PtHTPassing_cutTriggerEff" ]->SetXTitle( "2nd Leading Jet Pt [GeV]" );
 	histos2D_[ "jet2PtHTPassing_cutTriggerEff" ]->Sumw2();
 
-	histos2D_[ "jet1PtPrunedMassDenom_cutTriggerEff" ] = fs_->make< TH2D >( "jet1PtPrunedMassDenom_cutTriggerEff", "Leading Jet Pruned Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtPrunedMassDenom_cutTriggerEff" ] = fs_->make< TH2D >( "jet1PtPrunedMassDenom_cutTriggerEff", "Leading Jet Pruned Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtPrunedMassDenom_cutTriggerEff" ]->SetYTitle( "Leading Jet Pruned Mass [GeV]" );
 	histos2D_[ "jet1PtPrunedMassDenom_cutTriggerEff" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtPrunedMassDenom_cutTriggerEff" ]->Sumw2();
-	histos2D_[ "jet1PtPrunedMassPassing_cutTriggerEff" ] = fs_->make< TH2D >( "jet1PtPrunedMassPassing_cutTriggerEff", "Leading Jet Pruned Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtPrunedMassPassing_cutTriggerEff" ] = fs_->make< TH2D >( "jet1PtPrunedMassPassing_cutTriggerEff", "Leading Jet Pruned Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtPrunedMassPassing_cutTriggerEff" ]->SetYTitle( "Leading Jet Pruned Mass [GeV]" );
 	histos2D_[ "jet1PtPrunedMassPassing_cutTriggerEff" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtPrunedMassPassing_cutTriggerEff" ]->Sumw2();
 
-	histos2D_[ "jet2PtPrunedMassDenom_cutTriggerEff" ] = fs_->make< TH2D >( "jet2PtPrunedMassDenom_cutTriggerEff", "Leading Jet Pruned Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet2PtPrunedMassDenom_cutTriggerEff" ] = fs_->make< TH2D >( "jet2PtPrunedMassDenom_cutTriggerEff", "Leading Jet Pruned Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet2PtPrunedMassDenom_cutTriggerEff" ]->SetYTitle( "2nd Leading Jet Pruned Mass [GeV]" );
 	histos2D_[ "jet2PtPrunedMassDenom_cutTriggerEff" ]->SetXTitle( "2nd Leading Jet Pt [GeV]" );
 	histos2D_[ "jet2PtPrunedMassDenom_cutTriggerEff" ]->Sumw2();
-	histos2D_[ "jet2PtPrunedMassPassing_cutTriggerEff" ] = fs_->make< TH2D >( "jet2PtPrunedMassPassing_cutTriggerEff", "Leading Jet Pruned Mass vs 2nd Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet2PtPrunedMassPassing_cutTriggerEff" ] = fs_->make< TH2D >( "jet2PtPrunedMassPassing_cutTriggerEff", "Leading Jet Pruned Mass vs 2nd Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet2PtPrunedMassPassing_cutTriggerEff" ]->SetYTitle( "2nd Leading Jet Pruned Mass [GeV]" );
 	histos2D_[ "jet2PtPrunedMassPassing_cutTriggerEff" ]->SetXTitle( "2nd Leading Jet Pt [GeV]" );
 	histos2D_[ "jet2PtPrunedMassPassing_cutTriggerEff" ]->Sumw2();
 
-	histos2D_[ "jet1PtSoftDropMassDenom_cutTriggerEff" ] = fs_->make< TH2D >( "jet1PtSoftDropMassDenom_cutTriggerEff", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtSoftDropMassDenom_cutTriggerEff" ] = fs_->make< TH2D >( "jet1PtSoftDropMassDenom_cutTriggerEff", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtSoftDropMassDenom_cutTriggerEff" ]->SetYTitle( "Leading Jet SoftDrop Mass [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassDenom_cutTriggerEff" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassDenom_cutTriggerEff" ]->Sumw2();
-	histos2D_[ "jet1PtSoftDropMassPassing_cutTriggerEff" ] = fs_->make< TH2D >( "jet1PtSoftDropMassPassing_cutTriggerEff", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtSoftDropMassPassing_cutTriggerEff" ] = fs_->make< TH2D >( "jet1PtSoftDropMassPassing_cutTriggerEff", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtSoftDropMassPassing_cutTriggerEff" ]->SetYTitle( "Leading Jet SoftDrop Mass [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassPassing_cutTriggerEff" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassPassing_cutTriggerEff" ]->Sumw2();
 
-	histos2D_[ "jet2PtSoftDropMassDenom_cutTriggerEff" ] = fs_->make< TH2D >( "jet2PtSoftDropMassDenom_cutTriggerEff", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet2PtSoftDropMassDenom_cutTriggerEff" ] = fs_->make< TH2D >( "jet2PtSoftDropMassDenom_cutTriggerEff", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet2PtSoftDropMassDenom_cutTriggerEff" ]->SetYTitle( "2nd Leading Jet SoftDrop Mass [GeV]" );
 	histos2D_[ "jet2PtSoftDropMassDenom_cutTriggerEff" ]->SetXTitle( "2nd Leading Jet Pt [GeV]" );
 	histos2D_[ "jet2PtSoftDropMassDenom_cutTriggerEff" ]->Sumw2();
-	histos2D_[ "jet2PtSoftDropMassPassing_cutTriggerEff" ] = fs_->make< TH2D >( "jet2PtSoftDropMassPassing_cutTriggerEff", "Leading Jet SoftDrop Mass vs 2nd Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet2PtSoftDropMassPassing_cutTriggerEff" ] = fs_->make< TH2D >( "jet2PtSoftDropMassPassing_cutTriggerEff", "Leading Jet SoftDrop Mass vs 2nd Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet2PtSoftDropMassPassing_cutTriggerEff" ]->SetYTitle( "2nd Leading Jet SoftDrop Mass [GeV]" );
 	histos2D_[ "jet2PtSoftDropMassPassing_cutTriggerEff" ]->SetXTitle( "2nd Leading Jet Pt [GeV]" );
 	histos2D_[ "jet2PtSoftDropMassPassing_cutTriggerEff" ]->Sumw2();
@@ -1167,34 +1167,34 @@ void RUNBoostedTriggerEfficiency::beginJob() {
 	histos1D_[ "jet1SoftDropMassPassing_cutJet" ] = fs_->make< TH1D >( "jet1SoftDropMassPassing_cutJet", "jet1SoftDropMassPassing_cutJet", 60, 0., 600. );
 	histos1D_[ "jet1SoftDropMassPassing_cutJet" ]->Sumw2();
 
-	histos1D_[ "jet1PtDenom_cutJet" ] = fs_->make< TH1D >( "jet1PtDenom_cutJet", "jet1PtDenom_cutJet", 100, 0., 1000. );
+	histos1D_[ "jet1PtDenom_cutJet" ] = fs_->make< TH1D >( "jet1PtDenom_cutJet", "jet1PtDenom_cutJet", 150, 0., 1500. );
 	histos1D_[ "jet1PtDenom_cutJet" ]->Sumw2();
-	histos1D_[ "jet1PtPassing_cutJet" ] = fs_->make< TH1D >( "jet1PtPassing_cutJet", "jet1PtPassing_cutJet", 100, 0., 1000. );
+	histos1D_[ "jet1PtPassing_cutJet" ] = fs_->make< TH1D >( "jet1PtPassing_cutJet", "jet1PtPassing_cutJet", 150, 0., 1500. );
 	histos1D_[ "jet1PtPassing_cutJet" ]->Sumw2();
 
-	histos2D_[ "jet1PtHTDenom_cutJet" ] = fs_->make< TH2D >( "jet1PtHTDenom_cutJet", "HT vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtHTDenom_cutJet" ] = fs_->make< TH2D >( "jet1PtHTDenom_cutJet", "HT vs Leading Jet Pt", 150, 0., 1500., 150, 0., 1500.);
 	histos2D_[ "jet1PtHTDenom_cutJet" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jet1PtHTDenom_cutJet" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtHTDenom_cutJet" ]->Sumw2();
-	histos2D_[ "jet1PtHTPassing_cutJet" ] = fs_->make< TH2D >( "jet1PtHTPassing_cutJet", "HT vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtHTPassing_cutJet" ] = fs_->make< TH2D >( "jet1PtHTPassing_cutJet", "HT vs Leading Jet Pt", 150, 0., 1500., 150, 0., 1500.);
 	histos2D_[ "jet1PtHTPassing_cutJet" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jet1PtHTPassing_cutJet" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtHTPassing_cutJet" ]->Sumw2();
 
-	histos2D_[ "jet1PtPrunedMassDenom_cutJet" ] = fs_->make< TH2D >( "jet1PtPrunedMassDenom_cutJet", "Leading Jet Pruned Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtPrunedMassDenom_cutJet" ] = fs_->make< TH2D >( "jet1PtPrunedMassDenom_cutJet", "Leading Jet Pruned Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtPrunedMassDenom_cutJet" ]->SetYTitle( "Leading Jet Pruned Mass [GeV]" );
 	histos2D_[ "jet1PtPrunedMassDenom_cutJet" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtPrunedMassDenom_cutJet" ]->Sumw2();
-	histos2D_[ "jet1PtPrunedMassPassing_cutJet" ] = fs_->make< TH2D >( "jet1PtPrunedMassPassing_cutJet", "Leading Jet Pruned Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtPrunedMassPassing_cutJet" ] = fs_->make< TH2D >( "jet1PtPrunedMassPassing_cutJet", "Leading Jet Pruned Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtPrunedMassPassing_cutJet" ]->SetYTitle( "Leading Jet Pruned Mass [GeV]" );
 	histos2D_[ "jet1PtPrunedMassPassing_cutJet" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtPrunedMassPassing_cutJet" ]->Sumw2();
 
-	histos2D_[ "jet1PtSoftDropMassDenom_cutJet" ] = fs_->make< TH2D >( "jet1PtSoftDropMassDenom_cutJet", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtSoftDropMassDenom_cutJet" ] = fs_->make< TH2D >( "jet1PtSoftDropMassDenom_cutJet", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtSoftDropMassDenom_cutJet" ]->SetYTitle( "Leading Jet SoftDrop Mass [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassDenom_cutJet" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassDenom_cutJet" ]->Sumw2();
-	histos2D_[ "jet1PtSoftDropMassPassing_cutJet" ] = fs_->make< TH2D >( "jet1PtSoftDropMassPassing_cutJet", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtSoftDropMassPassing_cutJet" ] = fs_->make< TH2D >( "jet1PtSoftDropMassPassing_cutJet", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtSoftDropMassPassing_cutJet" ]->SetYTitle( "Leading Jet SoftDrop Mass [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassPassing_cutJet" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassPassing_cutJet" ]->Sumw2();
@@ -1249,34 +1249,34 @@ void RUNBoostedTriggerEfficiency::beginJob() {
 	histos1D_[ "jet1SoftDropMassPassing_cutJetPt" ] = fs_->make< TH1D >( "jet1SoftDropMassPassing_cutJetPt", "jet1SoftDropMassPassing_cutJetPt", 60, 0., 600. );
 	histos1D_[ "jet1SoftDropMassPassing_cutJetPt" ]->Sumw2();
 
-	histos1D_[ "jet1PtDenom_cutJetPt" ] = fs_->make< TH1D >( "jet1PtDenom_cutJetPt", "jet1PtDenom_cutJetPt", 100, 0., 1000. );
+	histos1D_[ "jet1PtDenom_cutJetPt" ] = fs_->make< TH1D >( "jet1PtDenom_cutJetPt", "jet1PtDenom_cutJetPt", 150, 0., 1500. );
 	histos1D_[ "jet1PtDenom_cutJetPt" ]->Sumw2();
-	histos1D_[ "jet1PtPassing_cutJetPt" ] = fs_->make< TH1D >( "jet1PtPassing_cutJetPt", "jet1PtPassing_cutJetPt", 100, 0., 1000. );
+	histos1D_[ "jet1PtPassing_cutJetPt" ] = fs_->make< TH1D >( "jet1PtPassing_cutJetPt", "jet1PtPassing_cutJetPt", 150, 0., 1500. );
 	histos1D_[ "jet1PtPassing_cutJetPt" ]->Sumw2();
 
-	histos2D_[ "jet1PtHTDenom_cutJetPt" ] = fs_->make< TH2D >( "jet1PtHTDenom_cutJetPt", "HT vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtHTDenom_cutJetPt" ] = fs_->make< TH2D >( "jet1PtHTDenom_cutJetPt", "HT vs Leading Jet Pt", 150, 0., 1500., 150, 0., 1500.);
 	histos2D_[ "jet1PtHTDenom_cutJetPt" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jet1PtHTDenom_cutJetPt" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtHTDenom_cutJetPt" ]->Sumw2();
-	histos2D_[ "jet1PtHTPassing_cutJetPt" ] = fs_->make< TH2D >( "jet1PtHTPassing_cutJetPt", "HT vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtHTPassing_cutJetPt" ] = fs_->make< TH2D >( "jet1PtHTPassing_cutJetPt", "HT vs Leading Jet Pt", 150, 0., 1500., 150, 0., 1500.);
 	histos2D_[ "jet1PtHTPassing_cutJetPt" ]->SetYTitle( "HT [GeV]" );
 	histos2D_[ "jet1PtHTPassing_cutJetPt" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtHTPassing_cutJetPt" ]->Sumw2();
 
-	histos2D_[ "jet1PtPrunedMassDenom_cutJetPt" ] = fs_->make< TH2D >( "jet1PtPrunedMassDenom_cutJetPt", "Leading Jet Pruned Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtPrunedMassDenom_cutJetPt" ] = fs_->make< TH2D >( "jet1PtPrunedMassDenom_cutJetPt", "Leading Jet Pruned Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtPrunedMassDenom_cutJetPt" ]->SetYTitle( "Leading Jet Pruned Mass [GeV]" );
 	histos2D_[ "jet1PtPrunedMassDenom_cutJetPt" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtPrunedMassDenom_cutJetPt" ]->Sumw2();
-	histos2D_[ "jet1PtPrunedMassPassing_cutJetPt" ] = fs_->make< TH2D >( "jet1PtPrunedMassPassing_cutJetPt", "Leading Jet Pruned Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtPrunedMassPassing_cutJetPt" ] = fs_->make< TH2D >( "jet1PtPrunedMassPassing_cutJetPt", "Leading Jet Pruned Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtPrunedMassPassing_cutJetPt" ]->SetYTitle( "Leading Jet Pruned Mass [GeV]" );
 	histos2D_[ "jet1PtPrunedMassPassing_cutJetPt" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtPrunedMassPassing_cutJetPt" ]->Sumw2();
 
-	histos2D_[ "jet1PtSoftDropMassDenom_cutJetPt" ] = fs_->make< TH2D >( "jet1PtSoftDropMassDenom_cutJetPt", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtSoftDropMassDenom_cutJetPt" ] = fs_->make< TH2D >( "jet1PtSoftDropMassDenom_cutJetPt", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtSoftDropMassDenom_cutJetPt" ]->SetYTitle( "Leading Jet SoftDrop Mass [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassDenom_cutJetPt" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassDenom_cutJetPt" ]->Sumw2();
-	histos2D_[ "jet1PtSoftDropMassPassing_cutJetPt" ] = fs_->make< TH2D >( "jet1PtSoftDropMassPassing_cutJetPt", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 60, 0., 600., 150, 0., 1500.);
+	histos2D_[ "jet1PtSoftDropMassPassing_cutJetPt" ] = fs_->make< TH2D >( "jet1PtSoftDropMassPassing_cutJetPt", "Leading Jet SoftDrop Mass vs Leading Jet Pt", 150, 0., 1500., 60, 0., 600.);
 	histos2D_[ "jet1PtSoftDropMassPassing_cutJetPt" ]->SetYTitle( "Leading Jet SoftDrop Mass [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassPassing_cutJetPt" ]->SetXTitle( "Leading Jet Pt [GeV]" );
 	histos2D_[ "jet1PtSoftDropMassPassing_cutJetPt" ]->Sumw2();

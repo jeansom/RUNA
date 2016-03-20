@@ -156,6 +156,45 @@ process.BoostedTriggerEfficiencyAK8PFHT650Pt360PFHT7504Jets = process.BoostedTri
 process.BoostedTriggerEfficiencyAK8PFHT650Pt360PFHT7504JetsPFHT800 = process.BoostedTriggerEfficiency.clone( 
 		triggerPass = cms.vstring( ['HLT_AK8PFHT650_TrimR0p1PT0p03Mass50', 'HLT_AK8PFJet360_TrimMass30', 'HLT_PFHT750_4JetPt', 'PFHT800'] ) )
 
+process.BoostedTriggerEfficiencyPuppi = process.BoostedTriggerEfficiency.clone(
+		jetPt = cms.InputTag("jetsAK8Puppi:jetAK8PuppiPt"),
+		jetEta = cms.InputTag("jetsAK8Puppi:jetAK8PuppiEta"),
+		jetPhi = cms.InputTag("jetsAK8Puppi:jetAK8PuppiPhi"),
+		jetE = cms.InputTag("jetsAK8Puppi:jetAK8PuppiE"),
+		jetMass = cms.InputTag("jetsAK8Puppi:jetAK8PuppiMass"),
+		jetPrunedMass = cms.InputTag("jetsAK8Puppi:jetAK8PuppiprunedMass"),
+		jetFilteredMass = cms.InputTag("jetsAK8Puppi:jetAK8PuppifilteredMass"),
+		jetSoftDropMass = cms.InputTag("jetsAK8Puppi:jetAK8PuppisoftDropMass"),
+		jetTrimmedMass = cms.InputTag("jetsAK8Puppi:jetAK8PuppitrimmedMass"),
+		jetTau1 = cms.InputTag("jetsAK8Puppi:jetAK8Puppitau1"),
+		jetTau2 = cms.InputTag("jetsAK8Puppi:jetAK8Puppitau2"),
+		jetTau3 = cms.InputTag("jetsAK8Puppi:jetAK8Puppitau3"),
+		jetNSubjets = cms.InputTag("jetsAK8Puppi:jetAK8PuppinSubjets"),
+		jetSubjetIndex0 = cms.InputTag("jetsAK8Puppi:jetAK8PuppivSubjetIndex0"),
+		jetSubjetIndex1 = cms.InputTag("jetsAK8Puppi:jetAK8PuppivSubjetIndex1"),
+		jetSubjetIndex2 = cms.InputTag("jetsAK8Puppi:jetAK8PuppivSubjetIndex2"),
+		jetSubjetIndex3 = cms.InputTag("jetsAK8Puppi:jetAK8PuppivSubjetIndex3"),
+		jetKeys = cms.InputTag("jetKeysAK8Puppi"),
+		jetCSV = cms.InputTag("jetsAK8Puppi:jetAK8PuppiCSVv2"),
+		jecFactor = cms.InputTag("jetsAK8Puppi:jetAK8PuppijecFactor0"),
+		neutralHadronEnergy = cms.InputTag("jetsAK8Puppi:jetAK8PuppineutralHadronEnergy"),
+		neutralEmEnergy = cms.InputTag("jetsAK8Puppi:jetAK8PuppineutralEmEnergy"),
+		chargedEmEnergy = cms.InputTag("jetsAK8Puppi:jetAK8PuppichargedEmEnergy"),
+		muonEnergy = cms.InputTag("jetsAK8Puppi:jetAK8PuppiMuonEnergy"),
+		chargedHadronEnergy = cms.InputTag("jetsAK8Puppi:jetAK8PuppichargedHadronEnergy"),
+		chargedHadronMultiplicity = cms.InputTag("jetsAK8Puppi:jetAK8PuppiChargedHadronMultiplicity"),
+		neutralHadronMultiplicity = cms.InputTag("jetsAK8Puppi:jetAK8PuppineutralHadronMultiplicity"),
+		chargedMultiplicity = cms.InputTag("jetsAK8Puppi:jetAK8PuppichargedMultiplicity"),
+		)
+process.BoostedTriggerEfficiencyPuppiAK8PFHT650PFHT800 = process.BoostedTriggerEfficiencyPuppi.clone( 
+		triggerPass = cms.vstring( ['HLT_AK8PFHT650_TrimR0p1PT0p03Mass50', 'HLT_PFHT800'] ) )
+
+process.BoostedTriggerEfficiencyPuppiAK8PFHT650Pt360 = process.BoostedTriggerEfficiencyPuppi.clone( 
+		triggerPass = cms.vstring( ['HLT_AK8PFHT650_TrimR0p1PT0p03Mass50', 'HLT_AK8PFJet360_TrimMass30'] ) )
+
+process.BoostedTriggerEfficiencyPuppiAK8PFHT650Pt360PFHT800 = process.BoostedTriggerEfficiencyPuppi.clone( 
+		triggerPass = cms.vstring( ['HLT_AK8PFHT650_TrimR0p1PT0p03Mass50', 'HLT_AK8PFJet360_TrimMass30', 'HLT_PFHT800'] ) )
+
 
 if options.debug:
 	process.p = cms.Path( process.BoostedTriggerEfficiency )
@@ -164,15 +203,18 @@ else:
 	process.p = cms.Path( 
 		#process.BoostedTriggerEfficiency
 		#* process.BoostedTriggerEfficiencyPFHT800 
+		#* process.BoostedTriggerEfficiencyAK8PFHT650PFHT7504Jets
 		process.BoostedTriggerEfficiencyAK8PFHT650PFHT800 
 		* process.BoostedTriggerEfficiencyAK8PFHT650Pt360
-		#* process.BoostedTriggerEfficiencyAK8PFHT650PFHT7504Jets
 		* process.BoostedTriggerEfficiencyAK8PFHT650Pt360PFHT800
+		* process.BoostedTriggerEfficiencyPuppiAK8PFHT650PFHT800 
+		* process.BoostedTriggerEfficiencyPuppiAK8PFHT650Pt360
+		* process.BoostedTriggerEfficiencyPuppiAK8PFHT650Pt360PFHT800
 		#* process.BoostedTriggerEfficiencyAK8PFHT650Pt360PFHT7504Jets
 		#* process.BoostedTriggerEfficiencyAK8PFHT650Pt360PFHT7504JetsPFHT800
 		#* process.ResolvedTriggerEfficiency
 		#* process.ResolvedTriggerEfficiencyPFHT7504Jet
-		* process.ResolvedTriggerEfficiencyPFHT800PFHT7504Jet
+		#* process.ResolvedTriggerEfficiencyPFHT800PFHT7504Jet
 		)
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
