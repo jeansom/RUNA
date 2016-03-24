@@ -31,11 +31,7 @@ isMiniAOD = 0 #0 is true, 1 is false (nTuple)
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'output_'+events+'Events.root' ) )
 
 if isMiniAOD == 0:  
-<<<<<<< HEAD
 	process.demo = cms.EDAnalyzer("ConvertBtaggingSF",
-=======
-	process.demo = cms.EDAnalyzer("QCDAnalyzer",
->>>>>>> a8e3cf2987a77b68d1889cfdc6172b0716913784
 				      vertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
 				      muons = cms.InputTag("slimmedMuons"),
 				      electrons = cms.InputTag("slimmedElectrons"),
@@ -72,11 +68,7 @@ if isMiniAOD == 0:
 				      )
 	
 if isMiniAOD == 1:
-<<<<<<< HEAD
 	process.demo = cms.EDAnalyzer("ConvertBtaggingSF",
-=======
-	process.demo = cms.EDAnalyzer("QCDAnalyzer",
->>>>>>> a8e3cf2987a77b68d1889cfdc6172b0716913784
 				      vertices = cms.InputTag(""),
 				      muons = cms.InputTag(""),
 				      electrons = cms.InputTag(""),
