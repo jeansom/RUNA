@@ -6,7 +6,7 @@ import ROOT as rt
 from cuts import selection
 
 varLabels = {}
-varLabels[ 'massAsym' ] = 'Asym'
+varLabels[ 'prunedMassAsym' ] = 'Asym'
 varLabels[ 'deltaEtaDijet' ] = '| #eta_{j1} - #eta_{j2} |'
 varLabels[ 'jet1Tau21' ] = '#tau_{21}^{j1}'
 varLabels[ 'jet2Tau21' ] = '#tau_{21}^{j2}'
@@ -78,9 +78,10 @@ def labels( name, PU, camp, X=0.92, Y=0.50, align='right', listSel=[] ):
 def labelAxis(name, histo, Grom ):
 
 	if 'massAve' in name: 
-		if 'Trimmed' in Grom: histo.GetXaxis().SetTitle( 'Average Trimmed Mass [GeV]' )
-		elif 'Pruned' in Grom: histo.GetXaxis().SetTitle( 'Average Pruned Mass [GeV]' )
-		elif 'Filtered' in Grom: histo.GetXaxis().SetTitle( 'Average Filtered Mass [GeV]' )
+		if 'trimmed' in Grom: histo.GetXaxis().SetTitle( 'Average Trimmed Mass [GeV]' )
+		elif 'pruned' in Grom: histo.GetXaxis().SetTitle( 'Average Pruned Mass [GeV]' )
+		elif 'softDrop' in Grom: histo.GetXaxis().SetTitle( 'Average Soft Drop Mass [GeV]' )
+		elif 'filtered' in Grom: histo.GetXaxis().SetTitle( 'Average Filtered Mass [GeV]' )
 		else: histo.GetXaxis().SetTitle( 'Average Mass [GeV]' )
 	elif 'TrimmedMass' in name: histo.GetXaxis().SetTitle( 'Leading Trimmed Jet Mass [GeV]' )
 	elif 'massAsymmetry' in name: histo.GetXaxis().SetTitle( 'Mass Asymmetry (A)' )

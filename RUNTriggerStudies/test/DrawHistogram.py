@@ -146,7 +146,7 @@ def plotTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name
 	del can1
 
 
-def plot2DTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name, cut, Xmin, Xmax, rebinx, Ymin, Ymax, rebiny, labX, labY, version, PU ):
+def plot2DTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, name, cut, xlabel, ylabel, Xmin, Xmax, rebinx, Ymin, Ymax, rebiny, labX, labY, version, PU ):
 	"""docstring for plot"""
 
 	outputFileName = name+'_'+cut+'_'+triggerDenom+"_"+triggerPass+'_'+sample+'_'+version+'_TriggerEfficiency.'+ext
@@ -201,16 +201,15 @@ def plot2DTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, na
 	Efficiency.Divide( Passing, Denom, 1, 1, 'B' )
 
 
-	can = TCanvas('c1', 'c1',  10, 10, 750, 500 )
+	can = TCanvas('c1', 'c1',  10, 10, 1000, 750 )
 	gStyle.SetPaintTextFormat("4.2f")
 	Efficiency.Draw('colz')
 	Efficiency.Draw('same text')
 	Efficiency.GetYaxis().SetTitleOffset(1.0)
 	Efficiency.SetMarkerSize(2)
 	Efficiency.GetXaxis().SetRange( int(Xmin/(10.*rebinx)), int(Xmax/(10.*rebinx)) )
-	#Efficiency.GetXaxis().SetTitle( 'Leading Pruned Jet Mass [GeV]' )
-	Efficiency.GetXaxis().SetTitle( '4th leading jet p_{T} [GeV]' )
-	Efficiency.GetYaxis().SetTitle( 'H_{T} [GeV]' )
+	Efficiency.GetXaxis().SetTitle( xlabel )
+	Efficiency.GetYaxis().SetTitle( ylabel )
 	Efficiency.GetYaxis().SetRange( int(Ymin/(10.*rebiny)), int(Ymax/(10.*rebiny)) )
 
 	CMS_lumi.relPosX = 0.13
@@ -266,26 +265,15 @@ if __name__ == '__main__':
 	if 'Boosted' in version: tmpTrig = 'AK8PFHT700TrimMass50'
 	else: tmpTrig = 'PFHT800'
 
-	if '50ns' in PU:
-		CMS_lumi.lumi_13TeV = "44.9 pb^{-1}"
-		if 'MET' in process:
-			inputTrigger = TFile.Open('Rootfiles/RUNTriggerEfficiency_MET_Asympt50ns_v01p2_ts_v10.root')
-			SAMPLE = 'MET'
-			BASEDTrigger = 'PFMET170'
-		else:
-			inputTrigger = TFile.Open('Rootfiles/RUNTriggerEfficiency_JetHT_Run2015D-PromptReco-v4.root')
-			SAMPLE = 'JetHT_Run2015B'
-			BASEDTrigger = 'PFHT475'
+	CMS_lumi.lumi_13TeV = "2.6 fb^{-1}"
+	if 'MET' in process:
+		inputTrigger = TFile.Open('Rootfiles/RUNTriggerEfficiency_MET_Run2015C-PromptReco-v1.root')
+		SAMPLE = 'MET'
+		BASEDTrigger = 'PFMET170'
 	else:
-		CMS_lumi.lumi_13TeV = "1.26 fb^{-1}"
-		if 'MET' in process:
-			inputTrigger = TFile.Open('Rootfiles/RUNTriggerEfficiency_MET_Run2015C-PromptReco-v1.root')
-			SAMPLE = 'MET'
-			BASEDTrigger = 'PFMET170'
-		else:
-			inputTrigger = TFile.Open('Rootfiles/RUNTriggerEfficiency_JetHT_Run2015D-All_v02.root')
-			SAMPLE = 'JetHT_Run2015D'
-			BASEDTrigger = 'PFHT475'
+		inputTrigger = TFile.Open('Rootfiles/RUNTriggerStudies_JetHT_Run2015D-16Dec2015-v1_v76x_v1p0_v02.root')
+		SAMPLE = 'JetHT_Run2015D'
+		BASEDTrigger = 'PFHT475'
 
 	triggerlabX = 0.15
 	triggerlabY = 1.0
@@ -303,14 +291,13 @@ if __name__ == '__main__':
 	plotList = [ 
 
 		[ '1D', 'HT', HTMinX, HTMaxX, 5, triggerlabX, triggerlabY, True],
-		[ '1D', 'jet1Mass', 0, massMaxX, 1, triggerlabX, triggerlabY, True],
-		[ '1D', 'massAve', 0, massMaxX, 2, triggerlabX, triggerlabY, True],
+		[ '1D', 'prunedMassAve', 0, massMaxX, 2, triggerlabX, triggerlabY, True],
 		[ '1D', 'trimmedMass', massMinX, massMaxX, 2, triggerlabX, triggerlabY, True],
-		[ '1D', 'ak4HT', HTMinX, HTMaxX, 5, triggerlabX, triggerlabY, True],
+		#[ '1D', 'ak4HT', HTMinX, HTMaxX, 5, triggerlabX, triggerlabY, True],
 		[ '1D', 'jet1Pt', ptMinX, ptMaxX, 2, triggerlabX, triggerlabY, True],
 		[ '1D', 'jet2Pt', ptMinX, ptMaxX, 2, triggerlabX, triggerlabY, True],
-		[ '1D', 'jetTrimmedMass', 0, massMaxX, 1, triggerlabX, triggerlabY, True],
-		[ '1D', 'jetLeadMass', 0, massMaxX, 1, triggerlabX, triggerlabY, True],
+		[ '1D', 'jet1PrunedMass', 0, massMaxX, 1, triggerlabX, triggerlabY, True],
+		[ '1D', 'jet1SoftDropMass', 0, massMaxX, 1, triggerlabX, triggerlabY, True],
 		#[ '1D', 'jet3Pt', 0, 200, 1, triggerlabX, triggerlabY, True],
 		#[ '1D', 'jet4Pt', 0, 200, 1, triggerlabX, triggerlabY, True],
 
@@ -319,12 +306,18 @@ if __name__ == '__main__':
 		#[ '2D', 'jetMassHTDenom_triggerOne', 'Leading Trimmed Jet Mass [GeV]', 'H_{T} [GeV]', 0, 200, 2, 100, HTMaxX, 5, 0.85, 0.2],
 		#[ '2D', 'jetMassHTDenom_triggerTwo', 'Leading Trimmed Jet Mass [GeV]', 'H_{T} [GeV]', 0, 200, 2, 100, HTMaxX, 5, 0.85, 0.2],
 		#[ '2D', 'jetMassHTDenom_triggerOneAndTwo', 'Leading Trimmed Jet Mass [GeV]', 'H_{T} [GeV]', 0, 200, 2, 100, HTMaxX, 5, 0.85, 0.25],
-		[ '2D', 'jetMassHT', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
-		[ '2D', 'jet4PtHT', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
-		[ '2D', 'jet1PtHT', 100, 1000, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
-		[ '2D', 'jet2PtHT', 100, 1000, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
-		[ '2D', 'jetTrimmedMassHT', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
-		[ '2D', 'massAveHT', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'jetTrimmedMassHT', 'Leading Jet Trimmed Mass [GeV]', 'HT [GeV]', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'jetPrunedMassHT', 'Leading Jet Pruned Mass [GeV]', 'HT [GeV]', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'jetSoftDropMassHT', 'Leading Jet SoftDrop Mass [GeV]', 'HT [GeV]', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'jet1PtHT', 'Leading Jet Pt [GeV]', 'HT [GeV]', 150, 700, 5, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'jet1PtPrunedMass', 'Leading Jet Pt [GeV]', 'Leading Jet Pruned Mass [GeV]', 150, 700, 5, 20, 200, 2, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'jet1PtSoftDropMass', 'Leading Jet Pt [GeV]', 'Leading Jet SoftDrop Mass [GeV]', 150, 700, 5, 20, 200, 2, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'jet2PtHT', '2nd Leading Jet Pt [GeV]', 'HT [GeV]', 150, 700, 5, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'jet2PtPrunedMass', '2nd Leading Jet Pt [GeV]', '2nd Leading Jet Pruned Mass [GeV]', 150, 700, 5, 20, 200, 2, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'jet2PtSoftDropMass', '2nd Leading Jet Pt [GeV]', '2nd Leading Jet SoftDrop Mass [GeV]', 150, 700, 5, 20, 200, 2, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'prunedMassAveHT', 'Leading Jet Pruned Mass [GeV]', 'HT [GeV]', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
+		#[ '2D', 'jetMassHT', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
+		#[ '2D', 'jet4PtHT', 20, 200, 2, HTMinX, 1200, 10, jetMassHTlabX, jetMassHTlabY],
 		]
 
 	if 'all' in single: Plots = [ x[1:] for x in plotList if x[0] in process ]
@@ -338,7 +331,7 @@ if __name__ == '__main__':
 		if '1D' in process:
 			plotTriggerEfficiency( inputTrigger, SAMPLE, BASEDTrigger, triggerUsed, i[0], cut, i[1], i[2], i[3], i[4], i[5], i[6], version, PU )
 		elif '2D' in process:
-			plot2DTriggerEfficiency( inputTrigger, SAMPLE, BASEDTrigger, triggerUsed, i[0], cut, i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], version, PU )
+			plot2DTriggerEfficiency( inputTrigger, SAMPLE, BASEDTrigger, triggerUsed, i[0], cut, i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], version, PU )
 
 
 

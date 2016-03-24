@@ -107,6 +107,8 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 	    subjet21Pt = -999, subjet21Eta = -999, subjet21Phi = -999, subjet21E = -999, 
 	    subjet22Pt = -999, subjet22Eta = -999, subjet22Phi = -999, subjet22E = -999,
 	    massAve = -9999, massAsym = -9999, 
+	    jet1PrunedMass = -9999, jet2PrunedMass = -9999,
+	    jet1SoftDropMass = -9999, jet2SoftDropMass = -9999,
 	    trimmedMassAve = -9999, trimmedMassAsym = -9999, 
 	    prunedMassAve = -9999, prunedMassAsym = -9999, 
 	    filteredMassAve = -9999, filteredMassAsym = -9999, 
@@ -521,7 +523,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	vector< myJet > JETS;
 	vector< float > tmpTriggerMass;
 	bool cutHT = 0;
-	bool cutJetPt = 0;
+	//bool cutJetPt = 0;
 	//bool bTagCSV = 0;
 	int numberJets = 0;
 	HT = 0;
@@ -700,9 +702,9 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			}
 
 			// Cut Pt
-			if (( JETS[0].p4.Pt() > 500. ) && ( JETS[1].p4.Pt() > 450. ) ) cutJetPt = 1 ;
-
-			if ( cutHT && cutJetPt ) {
+			//if (( JETS[0].p4.Pt() > 500. ) && ( JETS[1].p4.Pt() > 450. ) ) cutJetPt = 1 ;
+			//if ( cutHT && cutJetPt ) {
+			if ( cutHT ) {
 
 				cutmap["HT"] += 1;
 
@@ -857,10 +859,14 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 				jet1Eta 	= JETS[0].p4.Eta();
 				jet1Phi 	= JETS[0].p4.Phi();
 				jet1E 		= JETS[0].p4.E();
+				jet1PrunedMass	= JETS[0].prunedMass;
+				jet1SoftDropMass	= JETS[0].softDropMass;
 				jet2Pt 		= JETS[1].p4.Pt();
 				jet2Eta 	= JETS[1].p4.Eta();
 				jet2Phi 	= JETS[1].p4.Phi();
 				jet2E 		= JETS[1].p4.E();
+				jet2PrunedMass	= JETS[1].prunedMass;
+				jet2SoftDropMass	= JETS[1].softDropMass;
 				subjet11Pt	= jet1SubjetsTLV[0].Pt();
 				subjet11Eta	= jet1SubjetsTLV[0].Eta();
 				subjet11Phi	= jet1SubjetsTLV[0].Phi();

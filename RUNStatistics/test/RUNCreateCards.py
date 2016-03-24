@@ -30,11 +30,12 @@ if os.access('RooPowerFunction.cxx', os.R_OK): ROOT.gROOT.ProcessLine('.L RooPow
 #line.SetLineColor(kRed)
 
 
-def shapeCards( process, isData, histosFile, signalSample, hist, signalMass, minMass, maxMass, jesValue, jerValue, lumiUnc, outputName ):
+def shapeCards( process, isData, datahistosFile, histosFile, signalHistosFile, signalSample, hist, signalMass, minMass, maxMass, jesValue, jerValue, lumiUnc, outputName ):
 	"""function to run Roofit and save workspace for RooStats"""
 	warnings.filterwarnings( action='ignore', category=RuntimeWarning, message='.*class stack<RooAbsArg\*,deque<RooAbsArg\*> >' )
 	
-	hSignal = histosFile.Get(hist+'_'+signalSample+'_A')
+	hSignal = signalHistosFile.Get(hist+'_'+signalSample)
+	hSignal.Rebin(10)
 	htmpSignal = hSignal.Clone()
 	#htmpSignal.Scale(100)
 	signalXS = search(dictXS, 'RPVStopStopToJets_UDD312_M-'+str(signalMass) )
@@ -50,7 +51,7 @@ def shapeCards( process, isData, histosFile, signalSample, hist, signalMass, min
         #if args.fitBonly: signal_norm.setConstant()
         signal_norm.Print()
 
-	hBkg = histosFile.Get(hist+'_DATA_BCD')
+	hBkg = datahistosFile.Get('massAve_prunedMassAsymVsdeltaEtaDijet_DATA_ABCDProj')
 	#hBkg = histosFile.Get(hist+'_QCDPtAll_BCD')
 	bkgAcc = round(hBkg.Integral( hBkg.GetXaxis().FindBin( minMass ), hBkg.GetXaxis().FindBin( maxMass )))
 	#hBkg.Scale(1/hBkg.Integral())
@@ -82,9 +83,10 @@ def shapeCards( process, isData, histosFile, signalSample, hist, signalMass, min
 		#hPseudo.Scale(1/hPseudo.Integral())
 
 	#hData = histosFile.Get(hist+'_DATA_A')
-	hData = histosFile.Get(hist+'_DATA_BCD')
+	hData = histosFile.Get('massAve_prunedMassAsymVsdeltaEtaDijet_ABCDProj')
+	#hData = datahistosFile.Get('massAve_prunedMassAsymVsdeltaEtaDijet_DATA_ABCDProj')
 	#hData = histosFile.Get(hist+'_QCDPtAll_A')
-	hData.Add(htmpSignal)
+	#hData.Add(htmpSignal)
 	#hData.Scale(1/hData.Integral())
         rooDataHist = RooDataHist('rooDatahist','rooDatahist',RooArgList(massAve), hData if isData else hPseudo )
         rooDataHist.Print()
@@ -212,6 +214,8 @@ if __name__ == '__main__':
     	parser.add_argument('-s', "--jesUnc", dest="jesUnc", type=bool, default=False, help="Relative uncertainty in the jet energy scale")
     	parser.add_argument('-r', "--jerUnc", dest="jerUnc", type=bool, default=False, help="Relative uncertainty in the jet resolution")
 	parser.add_argument('-u', '--unc', dest='unc', type=bool, default=False, help='Luminosity, example: 1.' )
+	parser.add_argument('-g', '--grom', action='store', default='pruned', dest='grooming', help='Grooming Algorithm, example: Pruned, Filtered.' )
+	parser.add_argument('-b', '--decay', action='store', default='UDD312', dest='decay', help='Decay, example: UDD312, UDD323.' )
 
 	try:
 		args = parser.parse_args()
@@ -223,28 +227,41 @@ if __name__ == '__main__':
 		args.lumiUnc = True
 		args.jesUnc = True
 		args.jerUnc = True
-		args.normUnc = True
+		#args.normUnc = True
 
 	###### Input parameters
 	masses = {}
-	masses[ 100 ] = 'massAve_massAsymVsdeltaEtaDijet'
-	#masses[ 200 ] = 'massAve_massAsymVsdeltaEtaDijet'
+	masses[ 110 ] = 'massAve_deltaEtaDijet'
+	masses[ 120 ] = 'massAve_deltaEtaDijet'
+	masses[ 130 ] = 'massAve_deltaEtaDijet'
+	masses[ 140 ] = 'massAve_deltaEtaDijet'
+	masses[ 170 ] = 'massAve_deltaEtaDijet'
+	masses[ 180 ] = 'massAve_deltaEtaDijet'
+	masses[ 190 ] = 'massAve_deltaEtaDijet'
+	masses[ 210 ] = 'massAve_deltaEtaDijet'
+	masses[ 220 ] = 'massAve_deltaEtaDijet'
+	masses[ 230 ] = 'massAve_deltaEtaDijet'
+	masses[ 240 ] = 'massAve_deltaEtaDijet'
 	jesValue = 0.05
 	jerValue = 0.1
-	lumiUnc = 1.12
-	lumi = 2476
+	lumiUnc = 1.027
+	lumi = 2606
 	minMass = 0 
-	maxMass = 600 
+	maxMass = 500 
 
 	for mass in masses:
-		signalSample = 'RPVSt'+str(mass)
-		fileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+signalSample+'_allHistos_v7.root'
-		if args.unc: outputName = signalSample+'_v7'
-		else: outputName = signalSample+'_NOSys_v7'
+		signalSample = 'RPVStopStopToJets_UDD312_M-'+str(mass)
+		if mass < 150: RANGE='low'
+		else: RANGE='high'
+		dataFileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNBkgEstimation_DATA_'+args.grooming+'_'+RANGE+'_v2.root'
+		bkgFileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNBkgEstimation_QCDHTAll_'+args.grooming+'_'+RANGE+'_v2.root'
+		signalFileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_v2.root'
+		if args.unc: outputName = signalSample+'_v2'
+		else: outputName = signalSample+'_NOSys_v2'
 
 		print '#'*50 
 		print ' |----> Creating datacard and workspace for RPV St', str(mass)
 		print '#'*50 
-		p = Process( target=shapeCards, args=( args.process, args.isData, TFile.Open(fileHistos), signalSample, masses[ mass ], mass, minMass, maxMass, jesValue, jerValue, lumiUnc, outputName ) )
+		p = Process( target=shapeCards, args=( args.process, args.isData, TFile(dataFileHistos), TFile(bkgFileHistos), TFile(signalFileHistos), signalSample, masses[ mass ], mass, minMass, maxMass, jesValue, jerValue, lumiUnc, outputName ) )
 		p.start()
 		p.join()
