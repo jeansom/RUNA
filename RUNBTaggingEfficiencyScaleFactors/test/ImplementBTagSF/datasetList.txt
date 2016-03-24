@@ -1,0 +1,3 @@
+# Signal
+# Dataset_name                                                                                                                                                                                                  Unit(lumi:1,event:0)   Total_units   Number_of_jobs   Run_selection   Lumi_mask   Scheduler   Use_server             DBS_instance   Publication_name PyCfg_parameters (optional)
+/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/dsheffie-RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09-6cd9a37acb7fba8686d9247b86713620/USER                      0            12                -               -           -      condor            0   phys03                  -		  wantSummary=True
