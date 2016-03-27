@@ -18,14 +18,13 @@ if 'some' in events:
 
 	process.source = cms.Source("PoolSource",
 	    fileNames = cms.untracked.vstring(
-			'file:///eos/uscms/store/user/dgsheffi/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_RUNA_Asympt25ns_v09/151116_211916/0000/RUNtuple_504.root', 
-			#'file:///eos/uscms/store/user/morris17/RunIISpring15DR74_MiniAOD/150616_165451/0000/Sig_500SbtoWSt_100RPVSttojb_RUNA_v741p1_MiniAOD_Asympt25ns_210.root',	    
+			'root://cmseos.fnal.gov//store/user/jsomalwa/RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15DR76_MiniAOD_Asympt25ns/160202_114630/0000/RPVStopStopToJets_UDD323_M-100-madgraph_MiniAOD_Asympt25ns_986.root'
 			 )
 				    )
 
 if 'ttbar' in events : process.load("Test.MiniAnalyzer.ttbar_cfi")
 
-isMiniAOD = 1 #0 is true, 1 is false (nTuple)
+isMiniAOD = 0 #0 is true, 1 is false (nTuple)
 
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'output_'+events+'Events.root' ) )
 
