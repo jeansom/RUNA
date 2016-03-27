@@ -14,8 +14,9 @@ https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation74X50ns
 ### Step 1: Finding the appropriate Delta R cut for your sample
 
 1. Run
-      ./createCrabJobs.py -w CRAB_Jobs -c bTaggingSFConverter_cfg.py -t crab_template.py
-      
+	./createCrabJobs.py -w CRAB_Jobs -d datasetList.txt -c bTaggingSFConverter_cfg.py -t crab_template.py      
+	to create the CRAB jobs
+	
       After the CRAB jobs have been created, copy the directory JECs into CRAB_Jobs
 
       Enter the CRAB_Jobs/cfg_files directory.
