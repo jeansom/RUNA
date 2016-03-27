@@ -20,7 +20,7 @@ https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation74X50ns
       After the CRAB jobs have been created, copy the directory JECs into CRAB_Jobs
 
       Enter the CRAB_Jobs/cfg_files directory.
-      Open the CRAB cfg file, crabConfig.py, and make any changes needed to fit your analysis
+      Open the CRAB cfg file and make any changes needed to fit your analysis
       If you are running over an Ntuple:
       	 Open CMSSW_cfg.py and change the value of the variable isMiniAOD on line 25 to 1
 	
