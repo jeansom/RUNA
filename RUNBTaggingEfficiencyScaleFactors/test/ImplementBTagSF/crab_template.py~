@@ -22,7 +22,7 @@ config.JobType.pluginName = 'Analysis'
 config.JobType.pyCfgParams = ['CFG_PARAMETERS']
 
 ### Input Files
-config.JobType.inputFiles = [ 'EfficiencyMaps.root', 'CSVv2.csv', 'JECs' ]
+config.JobType.inputFiles = [ 'EfficiencyMapsAK4.root', 'CSVv2.csv', 'JECs' ]
 ### The output files (comma separated list)
 #config.JobType.outputFiles = 'OUTPUT_FILES'
 

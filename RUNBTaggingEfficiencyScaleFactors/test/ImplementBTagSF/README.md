@@ -13,7 +13,7 @@ Currently, the most up-to-date file is CSVv2.csv.
 
    ./createCrabJobs.py -w CRAB_Jobs -d datasetList.txt -c ImplementBtaggingSF_cfg.py -t crab_template.py
       
-   B) After the CRAB jobs have been created, enter the CRAB_Jobs/cfg_files directory. Open the CRAB cfg file, crabConfig.py, and edit it to fit your analysis 
+   B) After the CRAB jobs have been created, enter the CRAB_Jobs/cfg_files directory. Open the CRAB cfg file and edit it to fit your analysis 
       1. If you are running over an Ntuple:
             Open the file CMSSW_cfg.py and change the value of the variable isMiniAOD on line 28 to 1 
 
@@ -22,7 +22,7 @@ Currently, the most up-to-date file is CSVv2.csv.
   
    D) From the CRAB_Jobs directory, run
       
-      crab submit -c cfg_files/crabConfig.py
+      crab submit -c cfg_files/CONFIGFILENAME.py
       
    E) Use crab status to check how the job is doing
    

@@ -33,6 +33,7 @@ Currently, the most up-to-date file is CSVv2.csv.
    G) Go into the results directory in your crab directory and run
       
       hadd RESULTNAME.root result1.root result2.root ... 
+      
       where RESULTNAME.root is whatever name you want for the final output and result1.root ... are the root files in the results folder
 
 
