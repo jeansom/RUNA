@@ -10,26 +10,30 @@ Currently, the most up-to-date file is CSVv2.csv.
 ## 1) Instructions for producing scale factor corrected plots
 
    A) Run
-      ./createCrabJobs.py -w CRAB_Jobs -d datasetList.txt -c ImplementBtaggingSF_cfg.py -t crab_template.py
+
+   ./createCrabJobs.py -w CRAB_Jobs -d datasetList.txt -c ImplementBtaggingSF_cfg.py -t crab_template.py
       
-      After the CRAB jobs have been created, enter the CRAB_Jobs/cfg_files directory.
-      Open the CRAB cfg file, crabConfig.py, and edit it to fit your analysis 
-      If you are running over an Ntuple:
+   B) After the CRAB jobs have been created, enter the CRAB_Jobs/cfg_files directory. Open the CRAB cfg file, crabConfig.py, and edit it to fit your analysis 
+      1. If you are running over an Ntuple:
             Open the file CMSSW_cfg.py and change the value of the variable isMiniAOD on line 28 to 1 
 
-      Put your efficiency map file in the CRAB_Jobs directory. Make sure it is listed in your cfg file as an external file.
+   C) Put your efficiency map file in the CRAB_Jobs directory. Make sure it is listed in your cfg file as an external file.
       Do the same with the CSVv2.csv file and the directory JECs
   
-   B) From the CRAB_Jobs directory, run
+   D) From the CRAB_Jobs directory, run
+      
       crab submit -c cfg_files/crabConfig.py
-      Use crab status to check how the job is doing
+      
+   E) Use crab status to check how the job is doing
    
-   C) When the job is done, run
+   F) When the job is done, run
       crab getouput
       to get the output
 
-      Go into the results directory in your crab directory and run
-      hadd RESULTNAME.root result1.root result2.root ... where RESULTNAME.root is whatever name you want for the final output and result1.root ... are the root files in the results folder
+   G) Go into the results directory in your crab directory and run
+      
+      hadd RESULTNAME.root result1.root result2.root ... 
+      where RESULTNAME.root is whatever name you want for the final output and result1.root ... are the root files in the results folder
 
 
 ## 2) Instructions for adding errors to the bjet_pt_wt plot
@@ -42,7 +46,7 @@ Currently, the most up-to-date file is CSVv2.csv.
    C) Run the command
       .x addErrors.cc
 
-      The errors should be approximately sqrt(N)
-      You need to rerun this every time you reopen the RESULTNAME.root file
+   The errors should be approximately sqrt(N)
+   You need to rerun this every time you reopen the RESULTNAME.root file
 
           
