@@ -90,7 +90,6 @@ class ImplementBtaggingSF : public EDAnalyzer {
 
   EDGetTokenT<double> rhoToken_;
 
-
   int isMiniAOD;
 
       TH2D * h2_EffMapB = (TH2D*)f_EffMap->Get("efficiency_b"); //Name of the b efficiency map

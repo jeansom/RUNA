@@ -35,7 +35,7 @@ https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation74X50ns
    
 3. When the job is done, run
 
-      crab getouput
+      crab getoutput
 
       to get the output
 
