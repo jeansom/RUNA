@@ -14,6 +14,7 @@ https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation74X50ns
 ### Step 1: Finding the appropriate Delta R cut for your sample
 
 1. Run
+
 	./createCrabJobs.py -w CRAB_Jobs -d datasetList.txt -c bTaggingSFConverter_cfg.py -t crab_template.py      
 	to create the CRAB jobs
 	
@@ -26,12 +27,16 @@ https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation74X50ns
 	
  
 2.  From the ConvertAK4BTaggingSFtoAK8BTaggingSF directory, run
+
     ./checkCrabJobs.py -w CRAB_Jobs -s
     to submit the jobs
+
     Use crab status to check how the job is doing
    
 3. When the job is done, run
+
       crab getouput
+
       to get the output
 
       Go into the results directory in your crab directory and run
@@ -60,8 +65,11 @@ https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation74X50ns
 8. Run
    
    cd $CMSSW_BASE/src/
+
    scram b -j 18
+
    cd CMSSW_7_6_3_patch2/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/
+
    cmsenv
 
 9. Rerun steps 1, 2, and 3 under the category step 1
