@@ -58,7 +58,7 @@ https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation74X50ns
 
 5. Open the pdf "h_delta_r_2nd_min.pdf". Look at the bins close to delta R = 0 that have no entries. Find the maximum of these (should be around delta R = .3). This will be your delta R cut.
 
-6. Enter the directory CMSSW_7_6_3_patch2/src/RUNA/RUNBTaggingEfficiencyScaleFactors/plugins and open the file QCDAnalyzer.cc
+6. Enter the directory CMSSW_7_6_3_patch2/src/RUNA/RUNBTaggingEfficiencyScaleFactors/plugins and open the file ConvertBtaggingSF.cc
 
 7. Change the number on line 462 from .3 to whatever delta R cut you found in step 5
 
