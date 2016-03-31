@@ -58,7 +58,7 @@ https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation74X50ns
 7. Change the number on line 462 from .3 to whatever delta R cut you found in step 5
 
 8. Run
-   
+
    cd $CMSSW_BASE/src/
    scram b -j 18
    cd CMSSW_7_6_3_patch2/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/

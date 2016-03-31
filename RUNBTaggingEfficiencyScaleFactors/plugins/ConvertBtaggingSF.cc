@@ -351,7 +351,7 @@ ConvertBtaggingSF::analyze(const Event& iEvent, const EventSetup& iSetup)
 	  if( isMiniAOD == 0 ) csvAK4 = (*jets)[i].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
 	  if( isMiniAOD == 1 ) csvAK4 = (*jetCSV)[i];
 
-	  h_eta_all_true_bjet_AK4->Fill(AK4.Eta());
+	  h_csv_all_true_bjet_AK4->Fill(csvAK4());
 	  h_eta_all_true_bjet_AK4->Fill(AK4.Eta());
 	  h_pt_all_true_bjet_AK4->Fill(AK4.Pt());
 	}
@@ -464,7 +464,11 @@ ConvertBtaggingSF::analyze(const Event& iEvent, const EventSetup& iSetup)
 		}
 		
 		//Find number of jet matches for each AK8 jet
+<<<<<<< HEAD
 		if( AK8.DeltaR(AK4) < .3 ) numMatches++;
+=======
+		if( AK8.DeltaR(AK4) < .1 ) numMatches++;
+>>>>>>> 2ef47c5b9dfdc57c8af4c0a1f9df88293bfdd788
 	
 		//Fill Delta R plot
 		h_delta_r->Fill(AK8.DeltaR(AK4));
