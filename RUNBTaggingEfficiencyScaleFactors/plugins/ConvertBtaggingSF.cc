@@ -351,7 +351,7 @@ ConvertBtaggingSF::analyze(const Event& iEvent, const EventSetup& iSetup)
 	  if( isMiniAOD == 0 ) csvAK4 = (*jets)[i].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
 	  if( isMiniAOD == 1 ) csvAK4 = (*jetCSV)[i];
 
-	  h_eta_all_true_bjet_AK4->Fill(AK4.Eta());
+	  h_csv_all_true_bjet_AK4->Fill(csvAK4);
 	  h_eta_all_true_bjet_AK4->Fill(AK4.Eta());
 	  h_pt_all_true_bjet_AK4->Fill(AK4.Pt());
 	}
