@@ -39,6 +39,9 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
+#include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+
 using namespace edm;
 using namespace std;
 
@@ -68,6 +71,7 @@ class BTaggingEffAnalyzer : public EDAnalyzer {
   EDGetTokenT<pat::JetCollection> jetToken_;
   EDGetTokenT<vector<float>> jetPt_;
   EDGetTokenT<vector<float>> jetEta_;
+  EDGetTokenT<vector<float>> jetPhi_;
   EDGetTokenT<vector<float>> jetPartonFlavor_;
   EDGetTokenT<vector<float>> jetCSV_;
   EDGetTokenT<vector<float>> jetArea_;
@@ -92,7 +96,8 @@ class BTaggingEffAnalyzer : public EDAnalyzer {
       vector<float> *jetPt = new std::vector<float>();
       vector<float> *jetEta = new std::vector<float>();
       vector<float> *jetCSV = new std::vector<float>();
- 
+      vector<float> *jetPhi = new std::vector<float>();
+    
       int     Njets = 0;
       Service<TFileService>  fs;
       TH2D * h2_BTaggingEff_Denom_b;
@@ -120,6 +125,7 @@ BTaggingEffAnalyzer::BTaggingEffAnalyzer(const ParameterSet& iConfig) :
   jetToken_(consumes<pat::JetCollection>(iConfig.getParameter<InputTag>("JetsTag"))),
   jetPt_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetPtTag"))),
   jetEta_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetEtaTag"))),
+  jetPhi_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetPhiTag"))),
   jetPartonFlavor_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetPartonFlavorTag"))),
   jetCSV_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetCSVTag")))
  {
@@ -144,11 +150,11 @@ BTaggingEffAnalyzer::BTaggingEffAnalyzer(const ParameterSet& iConfig) :
 
    //Jet Correction Files
    vector<string> jecPayloadNames_;
-   jecAK8PayloadNames_.push_back("JECs/Summer15_25nsV6_MC_L1FastJet_AK4PFchs.txt");
-   jecAK8PayloadNames_.push_back("JECs/Summer15_25nsV6_MC_L2Relative_AK4PFchs.txt");
-   jecAK8PayloadNames_.push_back("JECs/Summer15_25nsV6_MC_L3Absolute_AK4PFchs.txt");
+   jecPayloadNames_.push_back("JECs/Summer15_25nsV6_MC_L1FastJet_AK4PFchs.txt");
+   jecPayloadNames_.push_back("JECs/Summer15_25nsV6_MC_L2Relative_AK4PFchs.txt");
+   jecPayloadNames_.push_back("JECs/Summer15_25nsV6_MC_L3Absolute_AK4PFchs.txt");
    
-   for ( vector<string>::const_iterator payloadBegin = jecAK4PayloadNames_.begin(), payloadEnd = jecAK4PayloadNames_.end(), ipayload = payloadBegin; ipayload != payloadEnd; ++ipayload ) {
+   for ( vector<string>::const_iterator payloadBegin = jecPayloadNames_.begin(), payloadEnd = jecPayloadNames_.end(), ipayload = payloadBegin; ipayload != payloadEnd; ++ipayload ) {
      JetCorrectorParameters pars(*ipayload);
      jetPar.push_back(pars);
    }
@@ -177,6 +183,7 @@ BTaggingEffAnalyzer::analyze(const Event& iEvent, const EventSetup& iSetup)
   Handle<pat::JetCollection> jets;
   Handle<vector<float> > jetPt;
   Handle<vector<float> > jetEta;
+  Handle<vector<float> > jetPhi;
   Handle<vector<float> > jetPartonFlavor;
   Handle<vector<float> > jetCSV;
   Handle<double> rho;  
@@ -188,6 +195,7 @@ BTaggingEffAnalyzer::analyze(const Event& iEvent, const EventSetup& iSetup)
   if( isMiniAOD == 1 ) {
     iEvent.getByToken(jetPt_, jetPt);
     iEvent.getByToken(jetEta_, jetEta);
+    iEvent.getByToken(jetPhi_, jetPhi);
     iEvent.getByToken(jetPartonFlavor_, jetPartonFlavor);
     iEvent.getByToken(jetCSV_, jetCSV);
     Njets = jetPt->size();
