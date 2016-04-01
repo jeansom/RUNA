@@ -68,6 +68,7 @@ class BTaggingEffAnalyzer : public EDAnalyzer {
       virtual void endLuminosityBlock(LuminosityBlock const&, EventSetup const&);
 
       // ----------member data ---------------------------
+  EDGetTokenT<reco::VertexCollection> vtxToken_;
   EDGetTokenT<pat::JetCollection> jetToken_;
   EDGetTokenT<vector<float>> jetPt_;
   EDGetTokenT<vector<float>> jetEta_;
@@ -75,6 +76,7 @@ class BTaggingEffAnalyzer : public EDAnalyzer {
   EDGetTokenT<vector<float>> jetPartonFlavor_;
   EDGetTokenT<vector<float>> jetCSV_;
   EDGetTokenT<vector<float>> jetArea_;
+  EDGetTokenT<vector<float>> jetMass_;
 
   EDGetTokenT<double> rhoToken_;
 
@@ -121,13 +123,14 @@ typedef std::vector<pat::Jet> PatJetCollection;
 // constructors and destructor
 //
 BTaggingEffAnalyzer::BTaggingEffAnalyzer(const ParameterSet& iConfig) :
-
+  vtxToken_(consumes<reco::VertexCollection>(iConfig.getParameter<InputTag>("vertices"))),
   jetToken_(consumes<pat::JetCollection>(iConfig.getParameter<InputTag>("JetsTag"))),
   jetPt_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetPtTag"))),
   jetEta_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetEtaTag"))),
   jetPhi_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetPhiTag"))),
   jetPartonFlavor_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetPartonFlavorTag"))),
-  jetCSV_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetCSVTag")))
+  jetCSV_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetCSVTag"))),
+  jetMass_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetMassTag")))
  {
      //now do what ever initialization is needed
   
@@ -180,14 +183,17 @@ BTaggingEffAnalyzer::~BTaggingEffAnalyzer()
 void
 BTaggingEffAnalyzer::analyze(const Event& iEvent, const EventSetup& iSetup)
 {
+  Handle<reco::VertexCollection> vertices;
   Handle<pat::JetCollection> jets;
   Handle<vector<float> > jetPt;
   Handle<vector<float> > jetEta;
   Handle<vector<float> > jetPhi;
   Handle<vector<float> > jetPartonFlavor;
   Handle<vector<float> > jetCSV;
+  Handle<vector<float> > jetMass;
   Handle<double> rho;  
   if( isMiniAOD == 0 ) {
+    iEvent.getByToken(vtxToken_, vertices);
     iEvent.getByToken(jetToken_, jets);
     Njets = jets->size();
     iEvent.getByToken( rhoToken_, rho );
@@ -198,6 +204,7 @@ BTaggingEffAnalyzer::analyze(const Event& iEvent, const EventSetup& iSetup)
     iEvent.getByToken(jetPhi_, jetPhi);
     iEvent.getByToken(jetPartonFlavor_, jetPartonFlavor);
     iEvent.getByToken(jetCSV_, jetCSV);
+    iEvent.getByToken(jetMass_, jetMass);
     Njets = jetPt->size();
   }
 

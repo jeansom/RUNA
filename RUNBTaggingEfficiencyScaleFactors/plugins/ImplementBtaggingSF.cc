@@ -404,7 +404,7 @@ ImplementBtaggingSF::analyze(const Event& iEvent, const EventSetup& iSetup)
 	    JetCorrector->setJetE( RawJet.E() );
 	    JetCorrector->setRho( *rho );
 	    JetCorrector->setNPV( vertices->size() );
-	    JetCorrector->setJetA((*ak8jets)[i].jetArea());
+	    JetCorrector->setJetA((*jets)[i].jetArea());
 	    
 	    JEC = JetCorrector->getCorrection();
 	  }
