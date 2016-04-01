@@ -21,6 +21,9 @@ config.JobType.pluginName = 'Analysis'
 ### Parameters to be passed to the python config file
 config.JobType.pyCfgParams = ['CFG_PARAMETERS']
 
+### Input Files
+config.JobType.inputFiles = [ 'JECs' ]
+
 ### The output files (comma separated list)
 #config.JobType.outputFiles = 'OUTPUT_FILES'
 

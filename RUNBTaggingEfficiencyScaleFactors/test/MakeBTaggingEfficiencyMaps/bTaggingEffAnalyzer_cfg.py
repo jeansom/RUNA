@@ -53,6 +53,7 @@ process.TFileService = cms.Service('TFileService',
 )
 if( isMiniAOD == 0 ):
     process.bTaggingEffAnalyzerAK8PF = cms.EDAnalyzer('BTaggingEffAnalyzer',
+        vertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
         JetsTag            = cms.InputTag('slimmedJets'),
         rho                = cms.InputTag("fixedRhoFastjetCentralNeutral"),
         JetPtTag           = cms.InputTag(''),
@@ -73,6 +74,7 @@ if( isMiniAOD == 0 ):
         )
 if( isMiniAOD == 1 ):
     process.bTaggingEffAnalyzerAK8PF = cms.EDAnalyzer('BTaggingEffAnalyzer',
+        vertices = cms.InputTag(""),
         JetsTag            = cms.InputTag(''),
         rho                = cms.InputTag(''),
         JetPtTag           = cms.InputTag('jetsAK4:jetAK4Pt'),
