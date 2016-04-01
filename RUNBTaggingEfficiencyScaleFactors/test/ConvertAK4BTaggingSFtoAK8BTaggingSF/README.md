@@ -4,7 +4,7 @@ This file gives a short overview of the steps necessary to convert AK4 B-Tagging
 
 The code assumes CSVM, but this can be changed. 
 
-The code implements JECs for AK8 Jets only. 
+The code implements JECs for ONLY AK8 Jets in MiniAODs. 
 
 The .csv files containing the scale factors can be found at: 
 https://twiki.cern.ch/twiki/bin/view/CMS/BTagCalibration or in the 8TeV_SF or 13TeV_SF directory. 

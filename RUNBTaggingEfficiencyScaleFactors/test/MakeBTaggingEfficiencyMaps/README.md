@@ -8,7 +8,7 @@ The analysis consists of counting the total number of jets and the number of jet
 that are b-tagged in different jet Pt and eta bins. The jet collection, b-tagging algorithms, operating point, as well
 as the Pt and eta bining are all configurable parameters defined in the bTaggingEffAnalyzer_cfg.py cfg file.
 
-The code implements JECs. You need to change lines 147-149 in BTaggingEffAnalyzer.cc to use the JECs you want.
+The code implements JECs for ONLY MiniAODs. You need to change lines 147-149 in BTaggingEffAnalyzer.cc to use the JECs you want.
 
 ## 1) Instructions for producing b-tagging efficiency maps:
 
