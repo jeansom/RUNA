@@ -28,18 +28,18 @@ dictXS = {
 		'2400to3200' : 0.006829 ,
 		'3200toInf' : 0.00016544 ,
 		# QCD HT
-		'500to700' : 29370. ,
-		'700to1000' : 6524. , 
-		'1000to1500' : 1064.,
-		'1500to2000' : 121.5 ,
-		'2000toInf' : 25.42 ,
+		'500to700' : 29370. , # 31630
+		'700to1000' : 6524. , # 6802
+		'1000to1500' : 1064., # 1206
+		'1500to2000' : 121.5 , # 120.4
+		'2000toInf' : 25.42 , # 25.25
 		#### TTJets
-		'TTJets' : 831.76,
-		'TTJets_TuneCUETP8M1' : 831.76,
-		'TTJets_HT-600to800' : 1.61, 
-		'TTJets_HT-80to1200' : 0.663, 
-		'TTJets_HT-1200to2500' : 0.12, 
-		'TTJets_HT-2500toInf' : 0.00143, 
+		'TTJets' : 831.76,  # 502.2
+		#'TTJets_TuneCUETP8M1' : 831.76,
+		#'TTJets_HT-600to800' : 1.61, 
+		#'TTJets_HT-80to1200' : 0.663, 
+		#'TTJets_HT-1200to2500' : 0.12, 
+		#'TTJets_HT-2500toInf' : 0.00143, 
 		#### W
 		'WJetsToQQ' : 95.14,
 		'WWTo4Q' : 51.723,
@@ -177,7 +177,7 @@ dictEvents = {
 		'RPVStopStopToJets_UDD312_M-120' :	[ 1207148., 	6896552.],
 		'RPVStopStopToJets_UDD312_M-130' :	[ 839743., 	4971098.],
 		'RPVStopStopToJets_UDD312_M-140' :	[ 688756.,	4267516.],
-		'RPVStopStopToJets_UDD312_M-150' :	[ 	2530864.],
+		'RPVStopStopToJets_UDD312_M-150' :	[ 396234., 	2530864.],
 		'RPVStopStopToJets_UDD312_M-160' :	[ 	2171053.],
 		'RPVStopStopToJets_UDD312_M-170' :	[ 266931., 	1845638.],
 		'RPVStopStopToJets_UDD312_M-180' :	[ 155560., 	1094891.],
@@ -191,7 +191,7 @@ dictEvents = {
 		'RPVStopStopToJets_UDD312_M-300' :	[ 	763359.],
 		'RPVStopStopToJets_UDD312_M-350' :	[ 	813008.],
 		'RPVStopStopToJets_UDD312_M-400' :	[ 	813008.],
-		'RPVStopStopToJets_UDD312_M-450' :	[ 	1098901.],
+		'RPVStopStopToJets_UDD312_M-450' :	[ 115357., 	1098901.],
 		'RPVStopStopToJets_UDD312_M-500' :	[ 	458716.],
 		'RPVStopStopToJets_UDD312_M-550' :	[ 	476190.],
 		'RPVStopStopToJets_UDD312_M-600' :	[ 	495050.],

@@ -27,8 +27,8 @@ gROOT.SetBatch()
 ######################################
 def myAnalyzer( dictSamples, listCuts, signalName, RANGE ):
 
-	if (( len(dictSamples) == 1 ) and ( signalName not in ['RPVStopStopToJets_'+args.decay+'_M-'+str(mass)] )): outputFileName = 'Rootfiles/RUNMiniBoostedAnalysis_'+grooming+'_'+signalName+'_'+RANGE+'_v2p1.root' 
-	else: outputFileName = 'Rootfiles/RUNMiniBoostedAnalysis_'+grooming+'_'+signalName+'_v2p1.root' 
+	if (( len(dictSamples) == 1 ) and ( signalName not in ['RPVStopStopToJets_'+args.decay+'_M-'+str(mass)] )): outputFileName = 'Rootfiles/RUNMiniBoostedAnalysis_'+grooming+'_'+signalName+'_'+RANGE+'_v03.root' 
+	else: outputFileName = 'Rootfiles/RUNMiniBoostedAnalysis_'+grooming+'_'+signalName+'_v03.root' 
 	outputFile = TFile( outputFileName, 'RECREATE' )
 
 	###################################### output Tree
@@ -158,7 +158,8 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE ):
 			dijetCut =  ( numJets > 1 )
 			jetPtCut =  ( jet1Pt > 500 ) and ( jet2Pt > 450 )
 			
-			if HTCut and dijetCut and jetPtCut:
+			#if HTCut and dijetCut and jetPtCut:
+			if HTCut and dijetCut :
 				cutFlowList[ 'Preselection' ] += 1
 				sigCutsList = []
 				allHistos[ "HT_"+sam ].Fill( HT, scale )
@@ -317,17 +318,17 @@ if __name__ == '__main__':
 
 	if 'RPV' in samples: samples = 'RPVStopStopToJets_'+args.decay+'_M-'+str(mass)
 	allSamples = {}
-	allSamples[ 'DATA' ] = 'Rootfiles/RUNAnalysis_JetHT_Run2015D-16Dec2015-v1_v76x_v1p0_v02.root'
+	allSamples[ 'DATA' ] = 'Rootfiles/RUNAnalysis_JetHT_Run2015D-16Dec2015-v1_v76x_v1p0_v03.root'
 	#if not 'Dibosons' in mass: allSamples[ 'RPVStopStopToJets_'+args.decay+'_M-'+str(mass) ] = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v1p0_v01.root'
-	allSamples[ 'RPVStopStopToJets_'+args.decay+'_M-'+str(mass) ] = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v1p0_v02.root'
-	allSamples[ 'QCDHTAll' ] = 'Rootfiles/RUNAnalysis_QCDHTAll_RunIIFall15MiniAODv2_v76x_v1p0_v02.root'
-	allSamples[ 'QCDPtAll' ] = 'Rootfiles/RUNAnalysis_QCDPtAll_RunIIFall15MiniAODv2_v76x_v1p0_v02.root'
-	allSamples[ 'TTJets' ] = 'Rootfiles/RUNAnalysis_TTJets_RunIIFall15MiniAODv2_v76x_v1p0_v02.root'
-	allSamples[ 'WJetsToQQ' ] = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIIFall15MiniAODv2_v76x_v1p0_v02.root'
+	allSamples[ 'RPVStopStopToJets_'+args.decay+'_M-'+str(mass) ] = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
+	allSamples[ 'QCDHTAll' ] = 'Rootfiles/RUNAnalysis_QCDHTAll_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
+	allSamples[ 'QCDPtAll' ] = 'Rootfiles/RUNAnalysis_QCDPtAll_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
+	allSamples[ 'TTJets' ] = 'Rootfiles/RUNAnalysis_TTJets_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
+	allSamples[ 'WJetsToQQ' ] = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
 	#allSamples[ 'ZJetsToQQ' ] = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
-	allSamples[ 'WWTo4Q' ] = 'Rootfiles/RUNAnalysis_WWTo4Q_RunIIFall15MiniAODv2_v76x_v1p0_v02.root'
-	allSamples[ 'ZZTo4Q' ] = 'Rootfiles/RUNAnalysis_ZZTo4Q_RunIIFall15MiniAODv2_v76x_v1p0_v02.root'
-	allSamples[ 'WZ' ] = 'Rootfiles/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v1p0_v02.root'
+	allSamples[ 'WWTo4Q' ] = 'Rootfiles/RUNAnalysis_WWTo4Q_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
+	allSamples[ 'ZZTo4Q' ] = 'Rootfiles/RUNAnalysis_ZZTo4Q_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
+	allSamples[ 'WZ' ] = 'Rootfiles/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
 
 	cutList = ( 'Dibosons' if 'Dibosons' in mass else 'RPVStopStopToJets_'+args.decay+'_M-'+mass )
 	try: cuts = selection[ cutList ]

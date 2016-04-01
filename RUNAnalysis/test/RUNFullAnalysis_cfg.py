@@ -100,14 +100,7 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 		fileNames = cms.untracked.vstring(
-			'/store/user/algomez/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X__b2ganafw763_v01/160219_084716/0000/B2GEDMNtuple_1.root',
-			'/store/user/algomez/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X__b2ganafw763_v01/160219_084716/0000/B2GEDMNtuple_10.root',
-			'/store/user/algomez/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X__b2ganafw763_v01/160219_084716/0000/B2GEDMNtuple_100.root',
-			'/store/user/algomez/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15MiniAODv1-PU25nsData2015v1_76X__b2ganafw763_v01/160219_084716/0000/B2GEDMNtuple_101.root',
-			#'/store/user/algomez/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v1p0/160222_145142/0000/B2GEDMNtuple_1.root',
-			#'/store/user/algomez/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v1p0/160222_145142/0000/B2GEDMNtuple_10.root',
-			#'/store/user/algomez/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v1p0/160222_145142/0000/B2GEDMNtuple_100.root',
-			#'/store/user/algomez/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v1p0/160222_145142/0000/B2GEDMNtuple_101.root',
+			'/store/user/algomez/RPVStopStopToJets_UDD312_M-150_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0/160331_081614/0000/B2GEDMNtuple_1.root',
 	    )
 	)
 
