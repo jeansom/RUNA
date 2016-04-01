@@ -90,6 +90,11 @@ class ImplementBtaggingSF : public EDAnalyzer {
 
   EDGetTokenT<double> rhoToken_;
 
+  //Jet Corrector  
+  vector<JetCorrectorParameters> jetPar;
+  FactorizedJetCorrector * JetCorrector;
+
+
   int isMiniAOD;
 
       TH2D * h2_EffMapB = (TH2D*)f_EffMap->Get("efficiency_b"); //Name of the b efficiency map
@@ -120,6 +125,18 @@ ImplementBtaggingSF::ImplementBtaggingSF(const ParameterSet& iConfig):
   rhoToken_(consumes<double>(iConfig.getParameter<InputTag>("rho")))
 {
   isMiniAOD = iConfig.getParameter<int>("isMiniAOD");
+
+  //Jet Correction Files
+  vector<string> jecPayloadNames_;
+  jecAK4PayloadNames_.push_back("JECs/Summer15_25nsV6_MC_L1FastJet_AK4PFchs.txt");
+  jecAK4PayloadNames_.push_back("JECs/Summer15_25nsV6_MC_L2Relative_AK4PFchs.txt");
+  jecAK4PayloadNames_.push_back("JECs/Summer15_25nsV6_MC_L3Absolute_AK4PFchs.txt");
+
+  for ( vector<string>::const_iterator payloadBegin = jecPayloadNames_.begin(), payloadEnd = jecPayloadNames_.end(), ipayload = payloadBegin; ipayload != payloadEnd; ++ipayload ) {
+    JetCorrectorParameters pars(*ipayload);
+    jetPar.push_back(pars);
+  }
+  JetCorrector = new FactorizedJetCorrector(jetPar);
 }
 
 ImplementBtaggingSF::~ImplementBtaggingSF()
@@ -234,22 +251,41 @@ ImplementBtaggingSF::analyze(const Event& iEvent, const EventSetup& iSetup)
 
     for ( size_t i = 0; i < sizeJets; i++ ) {
 
+      TLorentzVector RawJet;
+      
+      if(isMiniAOD == 0) RawJet.SetPtEtaPhiM((*jets)[i].pt(), (*jets)[i].eta(), (*jets)[i].phi(), (*jets)[i].mass());
+      if(isMiniAOD == 1) RawJet.SetPtEtaPhiM((*jetPt)[i],(*jetEta)[i],(*jetPhi)[i],(*jetMass)[i]);
+
+      //Add JECs to jets
+      double JEC = 1;
+      if( isMiniAOD == 0 ) {
+	JetCorrector->setJetPt( RawJet.Pt());
+	JetCorrector->setJetEta( RawJet.Eta() );
+	JetCorrector->setJetPhi( RawJet.Phi() );
+	JetCorrector->setJetE( RawJet.E() );
+	JetCorrector->setRho( *rho );
+	JetCorrector->setNPV( vertices->size() );
+	JetCorrector->setJetA((*jets)[i].jetArea());
+	
+	JEC = JetCorrector->getCorrection();
+      }
+      
+      TLorentzVector Jet = RawJet*JEC;
+
+
       float csv = -1000;
       int partonFlavor = -10;
-      float eta = -1000;
-      float pt = -1000;
+      float eta = Jet.Eta();
+      float pt = Jet.Pt();
       if( isMiniAOD == 0 ) {
 	csv = (*jets)[i].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
 	partonFlavor = abs((*jets)[i].partonFlavour());
-	eta = fabs((*jets)[i].eta());
-        pt = (*jets)[i].pt();
       }
       if( isMiniAOD == 1 ) {
 	csv = (*jetCSV)[i];
 	partonFlavor = abs((*jetPartonFlavour)[i]);
-	eta = fabs((*jetEta)[i]);
-	pt = (*jetPt)[i];
       }
+      
       if( eta>2.4) continue;
       if( partonFlavor==0) continue; //for jets with flavor 0, we ignore.
       if( csv >= 1 || csv < 0 ) continue;
@@ -354,10 +390,32 @@ ImplementBtaggingSF::analyze(const Event& iEvent, const EventSetup& iSetup)
     for ( size_t i = 0; i < sizeJets; i++ ) {
       if( isMiniAOD == 0 ) {
 	if(  (*jets)[i].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > .8 && !(fabs((*jets)[i].eta()) > 2.4) && (*jets)[i].bDiscriminator("pfCombinedIncludsiveSecondaryVertexV2BJetTags") <= 1 ) {
-	  h_bjet_pt->Fill((*jets)[i].pt());
-	  h_bjet_pt_wt->Fill((*jets)[i].pt(),wtbtag);
-	  h_bjet_pt_wt_plus_err->Fill((*jets)[i].pt(),wtbtag+wtbtagError);
-	  h_bjet_pt_wt_minus_err->Fill((*jets)[i].pt(),wtbtag-wtbtagError);
+
+	  TLorentzVector RawJet;
+	  if(isMiniAOD == 0) RawJet.SetPtEtaPhiM((*jets)[i].pt(), (*jets)[i].eta(), (*jets)[i].phi(), (*jets)[i].mass());
+	  if(isMiniAOD == 1) RawJet.SetPtEtaPhiM((*jetPt)[i],(*jetEta)[i],(*jetPhi)[i],(*jetMass)[i]);
+
+
+	  double JEC = 1;
+	  if( isMiniAOD == 0 ) {
+	    JetCorrector->setJetPt(RawJet.Pt());
+	    JetCorrector->setJetEta( RawJet.Eta() );
+	    JetCorrector->setJetPhi( RawJet.Phi() );
+	    JetCorrector->setJetE( RawJet.E() );
+	    JetCorrector->setRho( *rho );
+	    JetCorrector->setNPV( vertices->size() );
+	    JetCorrector->setJetA((*ak8jets)[i].jetArea());
+	    
+	    JEC = JetCorrector->getCorrection();
+	  }
+	  
+	  TLorentzVector Jet = RawJet*JEC;
+
+
+	  h_bjet_pt->Fill(Jet.Pt());
+	  h_bjet_pt_wt->Fill(Jet.Pt(),wtbtag);
+	  h_bjet_pt_wt_plus_err->Fill(Jet.Pt(),wtbtag+wtbtagError);
+	  h_bjet_pt_wt_minus_err->Fill(Jet.Pt(),wtbtag-wtbtagError);
 	}
       }
       if( isMiniAOD == 1 ) {

@@ -366,19 +366,6 @@ ConvertBtaggingSF::analyze(const Event& iEvent, const EventSetup& iSetup)
 	
 	if( partonFlavour == 5 ) {
 	  nAK8bjets++;
-
-	  TLorentzVector AK8;
-	  if(isMiniAOD == 0) AK8.SetPtEtaPhiM((*ak8jets)[i].pt(), (*ak8jets)[i].eta(), (*ak8jets)[i].phi(), (*ak8jets)[i].mass());
-	  if(isMiniAOD == 1) AK8.SetPtEtaPhiM((*jetAK8Pt)[i],(*jetAK8Eta)[i],(*jetAK8Phi)[i],(*jetAK8Mass)[i]);
-
-	  float csvAK8 = -10;
-	  if( isMiniAOD == 0 ) csvAK8 = (*ak8jets)[i].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-	  if( isMiniAOD == 1 ) csvAK8 = (*jetAK8CSV)[i];
-
-	  h_eta_all_true_bjet_AK8->Fill(AK8.Eta());
-	  h_csv_all_true_bjet_AK8->Fill(csvAK8);
-	  h_pt_all_true_bjet_AK8->Fill(AK8.Pt());
-
 	}
     }
 
@@ -421,6 +408,11 @@ ConvertBtaggingSF::analyze(const Event& iEvent, const EventSetup& iSetup)
 	  }
 	  
 	  TLorentzVector AK8 = AK8Raw*JEC;
+
+	  h_eta_all_true_bjet_AK8->Fill(AK8.Eta());
+	  h_csv_all_true_bjet_AK8->Fill(csvAK8);
+	  h_pt_all_true_bjet_AK8->Fill(AK8.Pt());
+
 
 	  //Intilize AK4 variables
 	  float deltaRMin = 1000;

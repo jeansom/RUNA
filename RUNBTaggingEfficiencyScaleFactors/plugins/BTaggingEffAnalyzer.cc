@@ -70,6 +70,9 @@ class BTaggingEffAnalyzer : public EDAnalyzer {
   EDGetTokenT<vector<float>> jetEta_;
   EDGetTokenT<vector<float>> jetPartonFlavor_;
   EDGetTokenT<vector<float>> jetCSV_;
+  EDGetTokenT<vector<float>> jetArea_;
+
+  EDGetTokenT<double> rhoToken_;
 
       std::string   discriminatorTag;
       double  discriminatorValue;
@@ -79,6 +82,11 @@ class BTaggingEffAnalyzer : public EDAnalyzer {
       int     etaNBins;
       double  etaMin;
       double  etaMax;
+
+      //Jet Corrector  
+      vector<JetCorrectorParameters> jetPar;
+      FactorizedJetCorrector * JetCorrector;
+
  
       int     isMiniAOD;
       vector<float> *jetPt = new std::vector<float>();
@@ -115,10 +123,8 @@ BTaggingEffAnalyzer::BTaggingEffAnalyzer(const ParameterSet& iConfig) :
   jetPartonFlavor_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetPartonFlavorTag"))),
   jetCSV_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetCSVTag")))
  {
-   cout << "e" << endl;
-   //now do what ever initialization is needed
-   cout << "f" << endl;
-
+     //now do what ever initialization is needed
+  
    isMiniAOD = iConfig.getParameter<int>("isMiniAOD");
    discriminatorTag = iConfig.getParameter<std::string>("DiscriminatorTag");
    discriminatorValue = iConfig.getParameter<double>("DiscriminatorValue");
@@ -128,14 +134,25 @@ BTaggingEffAnalyzer::BTaggingEffAnalyzer(const ParameterSet& iConfig) :
    etaNBins = iConfig.getParameter<int>("EtaNBins");
    etaMin = iConfig.getParameter<double>("EtaMin");
    etaMax = iConfig.getParameter<double>("EtaMax");
-   cout << "g" << endl;
-   
+     
    h2_BTaggingEff_Denom_b    = fs->make<TH2D>("h2_BTaggingEff_Denom_b", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
    h2_BTaggingEff_Denom_c    = fs->make<TH2D>("h2_BTaggingEff_Denom_c", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
    h2_BTaggingEff_Denom_udsg = fs->make<TH2D>("h2_BTaggingEff_Denom_udsg", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
    h2_BTaggingEff_Num_b    = fs->make<TH2D>("h2_BTaggingEff_Num_b", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
    h2_BTaggingEff_Num_c    = fs->make<TH2D>("h2_BTaggingEff_Num_c", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
    h2_BTaggingEff_Num_udsg = fs->make<TH2D>("h2_BTaggingEff_Num_udsg", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
+
+   //Jet Correction Files
+   vector<string> jecPayloadNames_;
+   jecAK8PayloadNames_.push_back("JECs/Summer15_25nsV6_MC_L1FastJet_AK4PFchs.txt");
+   jecAK8PayloadNames_.push_back("JECs/Summer15_25nsV6_MC_L2Relative_AK4PFchs.txt");
+   jecAK8PayloadNames_.push_back("JECs/Summer15_25nsV6_MC_L3Absolute_AK4PFchs.txt");
+   
+   for ( vector<string>::const_iterator payloadBegin = jecAK4PayloadNames_.begin(), payloadEnd = jecAK4PayloadNames_.end(), ipayload = payloadBegin; ipayload != payloadEnd; ++ipayload ) {
+     JetCorrectorParameters pars(*ipayload);
+     jetPar.push_back(pars);
+   }
+   JetCorrector = new FactorizedJetCorrector(jetPar);
 
 }
 
@@ -162,10 +179,11 @@ BTaggingEffAnalyzer::analyze(const Event& iEvent, const EventSetup& iSetup)
   Handle<vector<float> > jetEta;
   Handle<vector<float> > jetPartonFlavor;
   Handle<vector<float> > jetCSV;
-  
+  Handle<double> rho;  
   if( isMiniAOD == 0 ) {
     iEvent.getByToken(jetToken_, jets);
     Njets = jets->size();
+    iEvent.getByToken( rhoToken_, rho );
   }
   if( isMiniAOD == 1 ) {
     iEvent.getByToken(jetPt_, jetPt);
@@ -178,22 +196,39 @@ BTaggingEffAnalyzer::analyze(const Event& iEvent, const EventSetup& iSetup)
   // loop over jets
   for( int i = 0; i < Njets; i++)
   {
+    TLorentzVector RawJet;
+    
+    if(isMiniAOD == 0) RawJet.SetPtEtaPhiM((*jets)[i].pt(), (*jets)[i].eta(), (*jets)[i].phi(), (*jets)[i].mass());
+    if(isMiniAOD == 1) RawJet.SetPtEtaPhiM((*jetPt)[i],(*jetEta)[i],(*jetPhi)[i],(*jetMass)[i]);
+    
+    //Add JECs to jets
+    double JEC = 1;
+    if( isMiniAOD == 0 ) {
+      JetCorrector->setJetPt( RawJet.Pt());
+      JetCorrector->setJetEta( RawJet.Eta() );
+      JetCorrector->setJetPhi( RawJet.Phi() );
+      JetCorrector->setJetE( RawJet.E() );
+      JetCorrector->setRho( *rho );
+      JetCorrector->setNPV( vertices->size() );
+      JetCorrector->setJetA((*jets)[i].jetArea());
+      
+      JEC = JetCorrector->getCorrection();
+    }
+    
+    TLorentzVector Jet = RawJet*JEC;
+    
     int partonFlavor = -10;
-    float pt = -1000;
-    float eta = -1000;
+    float pt = Jet.Pt();
+    float eta = Jet.Eta();
     float csv = -1000;
 
 
     if( isMiniAOD == 0 ){
       partonFlavor = (*jets)[i].partonFlavour();
-      pt = (*jets)[i].pt();
-      eta = (*jets)[i].eta();
       csv = (*jets)[i].bDiscriminator(discriminatorTag.c_str());
     }
     if( isMiniAOD == 1) {
       partonFlavor = (*jetPartonFlavor)[i];
-      pt = (*jetPt)[i];
-      eta = (*jetEta)[i];
       csv = (*jetCSV)[i];
     }
 

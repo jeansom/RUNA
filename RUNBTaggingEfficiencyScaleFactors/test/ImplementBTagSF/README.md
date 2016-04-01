@@ -1,7 +1,9 @@
 # Implementing B-Tagging Efficiency Scale Factors
 This file gives a short overview of the steps necessary to implement b-tagging efficiency scale factors.
 
-The code assumes CSVM, but this can be changed. 
+The code assumes CSVv2M, but this can be changed. 
+
+The code implements JECs. You need to change lines 131-133 of ImplementBtaggingSF.cc in the plugins directory to use the JECs you want.
 
 The .csv files containing the scale factors can be found at: 
 https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation76X#Boosted_event_topologies or in the 8TeV_SF or 13TeV_SF directory. 
@@ -18,7 +20,7 @@ Currently, the most up-to-date file is CSVv2.csv.
             Open the file CMSSW_cfg.py and change the value of the variable isMiniAOD on line 28 to 1 
 
    C) Put your efficiency map file in the CRAB_Jobs directory. Make sure it is listed in your cfg file as an external file.
-      Do the same with the CSVv2.csv file and the directory JECs
+      Do the same with the CSVv2.csv (In the directory 13TeV_SF) file and the directory JECs
   
    D) From the CRAB_Jobs directory, run
       

@@ -8,6 +8,8 @@ The analysis consists of counting the total number of jets and the number of jet
 that are b-tagged in different jet Pt and eta bins. The jet collection, b-tagging algorithms, operating point, as well
 as the Pt and eta bining are all configurable parameters defined in the bTaggingEffAnalyzer_cfg.py cfg file.
 
+The code implements JECs. You need to change lines 147-149 in BTaggingEffAnalyzer.cc to use the JECs you want.
+
 ## 1) Instructions for producing b-tagging efficiency maps:
 
 A) Create a dataset list file containing a list of MC datasets you would like to process. Once the file is ready,
@@ -18,6 +20,8 @@ A) Create a dataset list file containing a list of MC datasets you would like to
    After the CRAB jobs have been created, open CRAB_Jobs/cfg_files/CMSSW_cfg.py and move to the line defining the variable 'isMiniAOD'
    Change the value of isMiniAOD to 0 if you are running on a MiniAOD
    Change the value of isMiniAOD to 1 if you are running on a Ntuple
+
+   Copy the directory JECs into your CRAB_Jobs directory.
 
    Submit the jobs using the checkCrabJobs.py script
 
