@@ -130,7 +130,8 @@ BTaggingEffAnalyzer::BTaggingEffAnalyzer(const ParameterSet& iConfig) :
   jetPhi_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetPhiTag"))),
   jetPartonFlavor_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetPartonFlavorTag"))),
   jetCSV_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetCSVTag"))),
-  jetMass_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetMassTag")))
+  jetMass_(consumes<vector<float>>(iConfig.getParameter<InputTag>("JetMassTag"))),
+  rhoToken_(consumes<double>(iConfig.getParameter<InputTag>("rho")))
  {
      //now do what ever initialization is needed
   
