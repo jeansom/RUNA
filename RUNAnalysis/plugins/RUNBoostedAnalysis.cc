@@ -72,7 +72,8 @@ class RUNBoostedAnalysis : public EDAnalyzer {
       //virtual void endLuminosityBlock(LuminosityBlock const&, EventSetup const&) override;
 
       // ----------member data ---------------------------
-      PUReweighter PUWeight_;
+      string PUMethod;
+      //PUReweighter PUWeight_;
       int lhaPdfId ;
       
       Service<TFileService> fs_;
@@ -259,6 +260,7 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 	bjSample 	= iConfig.getParameter<bool>("bjSample");
 	isData 		= iConfig.getParameter<bool>("isData");
 	dataPUFile 	= iConfig.getParameter<string>("dataPUFile");
+	PUMethod 	= iConfig.getParameter<string>("PUMethod");
 	jecVersion 	= iConfig.getParameter<string>("jecVersion");
 	systematics 	= iConfig.getParameter<string>("systematics");
 	triggerPass 	= iConfig.getParameter<vector<string>>("triggerPass");
@@ -270,10 +272,10 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 
 	// all jet
 	vector<string> jecAK8PayloadNames_;
-	jecAK8PayloadNames_.push_back(prefix + "L1FastJet_AK8PFchs.txt");
-	jecAK8PayloadNames_.push_back(prefix + "L2Relative_AK8PFchs.txt");
-	jecAK8PayloadNames_.push_back(prefix + "L3Absolute_AK8PFchs.txt");
-	if (isData) jecAK8PayloadNames_.push_back(prefix + "L2L3Residual_AK8PFchs.txt");
+	jecAK8PayloadNames_.push_back(prefix + "L1FastJet_AK8PF"+PUMethod+".txt");
+	jecAK8PayloadNames_.push_back(prefix + "L2Relative_AK8PF"+PUMethod+".txt");
+	jecAK8PayloadNames_.push_back(prefix + "L3Absolute_AK8PF"+PUMethod+".txt");
+	if (isData) jecAK8PayloadNames_.push_back(prefix + "L2L3Residual_AK8PF"+PUMethod+".txt");
 
 	for ( vector<string>::const_iterator payloadBegin = jecAK8PayloadNames_.begin(), payloadEnd = jecAK8PayloadNames_.end(), ipayload = payloadBegin; ipayload != payloadEnd; ++ipayload ) {
 		JetCorrectorParameters pars(*ipayload);
@@ -283,9 +285,9 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 
 	// jet mass
 	vector<string> massjecAK8PayloadNames_;
-	massjecAK8PayloadNames_.push_back(prefix + "L2Relative_AK8PFchs.txt");
-	massjecAK8PayloadNames_.push_back(prefix + "L3Absolute_AK8PFchs.txt");
-	if (isData) massjecAK8PayloadNames_.push_back(prefix + "L2L3Residual_AK8PFchs.txt");
+	massjecAK8PayloadNames_.push_back(prefix + "L2Relative_AK8PF"+PUMethod+".txt");
+	massjecAK8PayloadNames_.push_back(prefix + "L3Absolute_AK8PF"+PUMethod+".txt");
+	if (isData) massjecAK8PayloadNames_.push_back(prefix + "L2L3Residual_AK8PF"+PUMethod+".txt");
 
 	for ( vector<string>::const_iterator payloadBegin = massjecAK8PayloadNames_.begin(), payloadEnd = massjecAK8PayloadNames_.end(), ipayload = payloadBegin; ipayload != payloadEnd; ++ipayload ) {
 		JetCorrectorParameters massPars(*ipayload);
@@ -294,7 +296,7 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 	massJECAK8 = new FactorizedJetCorrector(massPar);
 
 	// jec uncertainty
-	JetCorrectorParameters jecUncParam( prefix + "Uncertainty_AK8PFchs.txt");
+	JetCorrectorParameters jecUncParam( prefix + "Uncertainty_AK8PF"+PUMethod+".txt");
 	jetCorrUnc  = new JetCorrectionUncertainty( jecUncParam );
 	////////////////////////////////////////////////////
 }
@@ -501,8 +503,9 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	////////////////////////////////////////////////////
 	
 	////////// PU Reweight
-	if ( isData ) puWeight = 1;
-	else puWeight = PUWeight_.getPUWeight( *trueNInt, *bunchCross );
+	//if ( isData ) puWeight = 1;
+	//else puWeight = PUWeight_.getPUWeight( *trueNInt, *bunchCross );
+	puWeight = 1;
 	histos1D_[ "PUWeight" ]->Fill( puWeight );
 	lumiWeight = scale;
 	double totalWeight = puWeight * lumiWeight;
@@ -942,7 +945,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 void RUNBoostedAnalysis::beginJob() {
 
 	// Calculate PUWeight
-	if ( !isData ) PUWeight_.generateWeights( dataPUFile );
+	//if ( !isData ) PUWeight_.generateWeights( dataPUFile );
 
 	RUNAtree = fs_->make< TTree >("RUNATree", "RUNATree"); 
 	RUNAtree->Branch( "run", &run, "run/I" );
@@ -1232,6 +1235,7 @@ void RUNBoostedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descr
 	desc.add<string>("dataPUFile", "supportFiles/PileupData2015D_JSON_10-23-2015.root");
 	desc.add<string>("jecVersion", "supportFiles/Summer15_25nsV6");
 	desc.add<string>("systematics", "None");
+	desc.add<string>("PUMethod", "chs");
 	desc.add<double>("scale", 1);
 	vector<string> HLTPass;
 	HLTPass.push_back("HLT_AK8PFHT700_TrimR0p1PT0p03Mass50");

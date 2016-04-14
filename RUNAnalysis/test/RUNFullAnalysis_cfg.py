@@ -38,6 +38,13 @@ options.register('jecVersion',
 		VarParsing.varType.string,
 		"Version of the analysis to run. (Full, Resolved, Boosted)"
 		)
+options.register('namePUFile', 
+		'supportFiles/PileupData2015D_JSON_latest.root',
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.string,
+		"namePUFile"
+		)
+
 
 
 ### Resolved Analysis Options
@@ -80,13 +87,6 @@ options.register('btag',
 		VarParsing.varType.float,
 		"Btag cut"
 		)
-options.register('namePUFile', 
-		'supportFiles/PileupData2015D_JSON_10-28-2015.root',
-		VarParsing.multiplicity.singleton,
-		VarParsing.varType.string,
-		"namePUFile"
-		)
-
 
 options.parseArguments()
 
@@ -100,7 +100,10 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 		fileNames = cms.untracked.vstring(
-			'/store/user/algomez/RPVStopStopToJets_UDD312_M-150_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0/160331_081614/0000/B2GEDMNtuple_1.root',
+			#'/store/user/algomez/RPVStopStopToJets_UDD312_M-150_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0/160331_081614/0000/B2GEDMNtuple_1.root',
+			'/store/user/algomez/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v1p0/160310_090317/0000/B2GEDMNtuple_1.root',
+			#'/store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_100723/0000/B2GEDMNtuple_1.root',
+
 	    )
 	)
 
@@ -131,6 +134,24 @@ process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 		dataPUFile		= cms.string( options.namePUFile  ),
 		jecVersion		= cms.string( options.jecVersion ),
 		isData			= cms.bool( isData ),
+		### temporary
+		jetPt 			= cms.InputTag('jetsAK4:jetAK4Pt'),
+		jetEta			= cms.InputTag('jetsAK4:jetAK4Eta'),
+		jetPhi 			= cms.InputTag('jetsAK4:jetAK4Phi'),
+		jetE 			= cms.InputTag('jetsAK4:jetAK4E'),
+		jetMass 		= cms.InputTag('jetsAK4:jetAK4Mass'),
+		jetQGL 		= cms.InputTag('jetsAK4:jetAK4QGL'),
+		jetCSV	 		= cms.InputTag('jetsAK4:jetAK4CSVv2'),
+		jetArea 		= cms.InputTag('jetsAK4:jetAK4jetArea'),
+		jecFactor 		= cms.InputTag('jetsAK4:jetAK4jecFactor0'),
+		neutralHadronEnergy 		= cms.InputTag('jetsAK4:jetAK4neutralHadronEnergy'),
+		neutralEmEnergy 		= cms.InputTag('jetsAK4:jetAK4neutralEmEnergy'),
+		chargedEmEnergy 		= cms.InputTag('jetsAK4:jetAK4chargedEmEnergy'),
+		muonEnergy 			= cms.InputTag('jetsAK4:jetAK4MuonEnergy'),
+		chargedHadronEnergy 		= cms.InputTag('jetsAK4:jetAK4chargedHadronEnergy'),
+		chargedHadronMultiplicity 	= cms.InputTag('jetsAK4:jetAK4ChargedHadronMultiplicity'),
+		neutralHadronMultiplicity 	= cms.InputTag('jetsAK4:jetAK4neutralHadronMultiplicity'),
+		chargedMultiplicity 		= cms.InputTag('jetsAK4:jetAK4chargedMultiplicity'),
 )
 process.ResolvedAnalysisPlotsJESUp = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JESUp' ) )
 process.ResolvedAnalysisPlotsJESDown = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JESDown' ) )
@@ -143,12 +164,57 @@ process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		jecVersion		= cms.string( options.jecVersion ),
 		isData			= cms.bool( isData ),
 		scale 			= cms.double( SF ),
+		### temporary
+		jetAK4Pt 			= cms.InputTag('jetsAK4:jetAK4Pt'),
+		jetAK4Eta			= cms.InputTag('jetsAK4:jetAK4Eta'),
+		jetAK4Phi 			= cms.InputTag('jetsAK4:jetAK4Phi'),
+		jetAK4E 			= cms.InputTag('jetsAK4:jetAK4E'),
+		jetPt 			= cms.InputTag('jetsAK8:jetAK8Pt'),
+		jetEta			= cms.InputTag('jetsAK8:jetAK8Eta'),
+		jetPhi 			= cms.InputTag('jetsAK8:jetAK8Phi'),
+		jetE 			= cms.InputTag('jetsAK8:jetAK8E'),
+		jetMass 		= cms.InputTag('jetsAK8:jetAK8Mass'),
+		jetTrimmedMass 		= cms.InputTag('jetsAK8:jetAK8trimmedMass'),
+		jetPrunedMass 		= cms.InputTag('jetsAK8:jetAK8prunedMass'),
+		jetFilteredMass 	= cms.InputTag('jetsAK8:jetAK8filteredMass'),
+		jetSoftDropMass		= cms.InputTag('jetsAK8:jetAK8softDropMass'),
+		jetTau1 		= cms.InputTag('jetsAK8:jetAK8tau1'),
+		jetTau2 		= cms.InputTag('jetsAK8:jetAK8tau2'),
+		jetTau3 		= cms.InputTag('jetsAK8:jetAK8tau3'),
+		jetNSubjets 		= cms.InputTag('jetsAK8:jetAK8nSubJets'),
+		jetSubjetIndex0 	= cms.InputTag('jetsAK8:jetAK8vSubjetIndex0'),
+		jetSubjetIndex1 	= cms.InputTag('jetsAK8:jetAK8vSubjetIndex1'),
+		jetSubjetIndex2 	= cms.InputTag('jetsAK8:jetAK8vSubjetIndex0'),
+		jetSubjetIndex3 	= cms.InputTag('jetsAK8:jetAK8vSubjetIndex1'),
+		jetKeys 		= cms.InputTag('jetKeysAK8'),
+		jetCSV	 		= cms.InputTag('jetsAK8:jetAK8CSVv2'),
+		jetArea 		= cms.InputTag('jetsAK8:jetAK8jetArea'),
+		jetGenPt 		= cms.InputTag('jetsAK8:jetAK8GenJetPt'),
+		jetGenEta		= cms.InputTag('jetsAK8:jetAK8GenJetEta'),
+		jetGenPhi 		= cms.InputTag('jetsAK8:jetAK8GenJetPhi'),
+		jetGenE 		= cms.InputTag('jetsAK8:jetAK8GenJetE'),
+		jecFactor 		= cms.InputTag('jetsAK8:jetAK8jecFactor0'),
+		neutralHadronEnergy 		= cms.InputTag('jetsAK8:jetAK8neutralHadronEnergy'),
+		neutralEmEnergy 		= cms.InputTag('jetsAK8:jetAK8neutralEmEnergy'),
+		chargedEmEnergy 		= cms.InputTag('jetsAK8:jetAK8chargedEmEnergy'),
+		muonEnergy 			= cms.InputTag('jetsAK8:jetAK8MuonEnergy'),
+		chargedHadronEnergy 		= cms.InputTag('jetsAK8:jetAK8chargedHadronEnergy'),
+		chargedHadronMultiplicity 	= cms.InputTag('jetsAK8:jetAK8ChargedHadronMultiplicity'),
+		neutralHadronMultiplicity 	= cms.InputTag('jetsAK8:jetAK8neutralHadronMultiplicity'),
+		chargedMultiplicity 		= cms.InputTag('jetsAK8:jetAK8chargedMultiplicity'),
+		#### Subjets
+		subjetPt 		= cms.InputTag('subjetsAK8:subjetAK8Pt'),
+		subjetEta 		= cms.InputTag('subjetsAK8:subjetAK8Eta'),
+		subjetPhi 		= cms.InputTag('subjetsAK8:subjetAK8Phi'),
+		subjetE 		= cms.InputTag('subjetsAK8:subjetAK8E'),
+		subjetMass 		= cms.InputTag('subjetsAK8:subjetAK8Mass'),
 )
 
 process.BoostedAnalysisPlotsJESUp = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JESUp' ) )
 process.BoostedAnalysisPlotsJESDown = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JESDown' ) )
 
 process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone( 
+		PUMethod		= cms.string('Puppi'),
 		jetPt 			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiPt'),
 		jetEta			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiEta'),
 		jetPhi 			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiPhi'),

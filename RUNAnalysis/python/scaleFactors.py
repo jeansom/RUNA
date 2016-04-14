@@ -172,7 +172,7 @@ dictEvents = {
 		##### Centrally produced
 		'RPVStopStopToJets_UDD312_M-80' :	[ 	22624434.],
 		'RPVStopStopToJets_UDD312_M-90' :	[ 3441909., 	17412935.],
-		'RPVStopStopToJets_UDD312_M-100' :	[ 	11557789.],
+		'RPVStopStopToJets_UDD312_M-100' :	[ 2221211., 	11557789.],
 		'RPVStopStopToJets_UDD312_M-110' :	[ 1753868.,  	9562842.],
 		'RPVStopStopToJets_UDD312_M-120' :	[ 1207148., 	6896552.],
 		'RPVStopStopToJets_UDD312_M-130' :	[ 839743., 	4971098.],
