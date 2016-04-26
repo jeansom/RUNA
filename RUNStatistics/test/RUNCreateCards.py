@@ -82,9 +82,8 @@ def shapeCards( process, isData, datahistosFile, histosFile, signalHistosFile, s
 		hPseudo.FillRandom( hBkg, newNumEvents ) 
 		#hPseudo.Scale(1/hPseudo.Integral())
 
-	#hData = histosFile.Get(hist+'_DATA_A')
-	hData = histosFile.Get('massAve_prunedMassAsymVsdeltaEtaDijet_ABCDProj')
-	#hData = datahistosFile.Get('massAve_prunedMassAsymVsdeltaEtaDijet_DATA_ABCDProj')
+	#hData = histosFile.Get('massAve_prunedMassAsymVsdeltaEtaDijet_ABCDProj')
+	hData = datahistosFile.Get('massAve_prunedMassAsymVsdeltaEtaDijet_DATA_ABCDProj')
 	#hData = histosFile.Get(hist+'_QCDPtAll_A')
 	#hData.Add(htmpSignal)
 	#hData.Scale(1/hData.Integral())
@@ -231,10 +230,12 @@ if __name__ == '__main__':
 
 	###### Input parameters
 	masses = {}
+	masses[ 100 ] = 'massAve_deltaEtaDijet'
 	masses[ 110 ] = 'massAve_deltaEtaDijet'
 	masses[ 120 ] = 'massAve_deltaEtaDijet'
 	masses[ 130 ] = 'massAve_deltaEtaDijet'
 	masses[ 140 ] = 'massAve_deltaEtaDijet'
+	masses[ 150 ] = 'massAve_deltaEtaDijet'
 	masses[ 170 ] = 'massAve_deltaEtaDijet'
 	masses[ 180 ] = 'massAve_deltaEtaDijet'
 	masses[ 190 ] = 'massAve_deltaEtaDijet'
@@ -242,7 +243,7 @@ if __name__ == '__main__':
 	masses[ 220 ] = 'massAve_deltaEtaDijet'
 	masses[ 230 ] = 'massAve_deltaEtaDijet'
 	masses[ 240 ] = 'massAve_deltaEtaDijet'
-	jesValue = 0.05
+	jesValue = 0.02
 	jerValue = 0.1
 	lumiUnc = 1.027
 	lumi = 2606
@@ -253,11 +254,11 @@ if __name__ == '__main__':
 		signalSample = 'RPVStopStopToJets_UDD312_M-'+str(mass)
 		if mass < 150: RANGE='low'
 		else: RANGE='high'
-		dataFileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNBkgEstimation_DATA_'+args.grooming+'_'+RANGE+'_v2.root'
-		bkgFileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNBkgEstimation_QCDHTAll_'+args.grooming+'_'+RANGE+'_v2.root'
-		signalFileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_v2.root'
-		if args.unc: outputName = signalSample+'_v2'
-		else: outputName = signalSample+'_NOSys_v2'
+		dataFileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_DATA_'+RANGE+'_v03.root'
+		bkgFileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_QCDHTAll_'+RANGE+'_v03.root'
+		signalFileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_v03.root'
+		if args.unc: outputName = signalSample+'_v03'
+		else: outputName = signalSample+'_NOSys_v03'
 
 		print '#'*50 
 		print ' |----> Creating datacard and workspace for RPV St', str(mass)

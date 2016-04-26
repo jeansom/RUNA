@@ -59,14 +59,16 @@ def plotLimits( listMasses  ):
 		xs_theory.append( XS )
 		masses.append( mass )
 		masses_exp.append( mass )
-		tmpFile, tmpTree, tmpEntries = getTree( "higgsCombineRPVSt.Asymptotic.mH"+str(mass)+".root", "limit" )
+		tmpFile, tmpTree, tmpEntries = getTree( "higgsCombineUDD312RPVSt_M-"+str(mass)+".Asymptotic.mH120.root", "limit" )
 		for i in xrange(tmpEntries):
 			tmpTree.GetEntry(i)
 			tmp = round( tmpTree.quantileExpected, 2)
 			if tmp == 0.03: xs_exp_limits_2sigma.append( tmpTree.limit * XS )
 			if tmp == 0.16: xs_exp_limits_1sigma.append( tmpTree.limit * XS )
 			if tmp == 0.5: xs_exp_limits.append( tmpTree.limit * XS )
-			if tmp == 0.84: xs_exp_limits_1sigma_up.append( tmpTree.limit * XS )
+			if tmp == 0.84: 
+				print 'yes', mass, tmpTree.limit * XS
+				xs_exp_limits_1sigma_up.append( tmpTree.limit * XS )
 			if tmp == 0.98: xs_exp_limits_2sigma_up.append( tmpTree.limit * XS ) 
 			if tmp == -1: xs_obs_limits.append( tmpTree.limit * XS )
 
@@ -101,7 +103,7 @@ def plotLimits( listMasses  ):
 	c = TCanvas("c", "",800,800)
 	c.cd()
 
-	legend = TLegend(.60,.55,.90,.70)
+	legend = TLegend(.55,.70,.90,.90)
 	legend.SetBorderSize(0)
 	legend.SetFillColor(0)
 	legend.SetFillStyle(0)
@@ -112,7 +114,7 @@ def plotLimits( listMasses  ):
 	graph_exp_2sigma.GetXaxis().SetTitle("Resonance mass [GeV]")
 	graph_exp_2sigma.GetYaxis().SetTitle("#sigma #times #it{B} [pb]")
 	graph_exp_2sigma.GetYaxis().SetTitleOffset(1.1)
-	graph_exp_2sigma.GetYaxis().SetRangeUser(1,1e+05)
+	graph_exp_2sigma.GetYaxis().SetRangeUser(1,1e+04)
 	#graph_exp_2sigma.GetXaxis().SetNdivisions(1005)
 
 	graph_exp_2sigma.Draw("AF")
@@ -121,7 +123,7 @@ def plotLimits( listMasses  ):
 	#graph_obs.Draw("LP")
         graph_xs_th.Draw("L")
 
-        legend.AddEntry(graph_xs_th,"Theory","l")
+        legend.AddEntry(graph_xs_th,"RPV Stop #lambda_{312} (#tilde{t} #rightarrow qq)","l")
 	#legend.AddEntry(graph_obs,"Observed","lp")
 	legend.AddEntry(graph_exp,"Expected","lp")
 	legend.AddEntry(graph_exp_1sigma,"#pm 1#sigma","F")
@@ -155,7 +157,7 @@ if __name__ == '__main__':
 
 	
 	CMS_lumi.extraText = "Preliminary"
-	lumi = 2431.937
-	CMS_lumi.lumi_13TeV = "2.43 fb^{-1}"
+	lumi = 2606
+	CMS_lumi.lumi_13TeV = "2.6 fb^{-1}"
 
-	plotLimits( range(100,300,100) )
+	plotLimits( [ 100, 110, 120, 130, 140, 150, 170, 180, 190, 210, 220, 230, 240] )
