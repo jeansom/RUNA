@@ -106,8 +106,8 @@ class RUNBoostedTriggerEfficiency : public EDAnalyzer {
       EDGetTokenT<vector<float>> jetSubjetIndex2_;
       EDGetTokenT<vector<float>> jetSubjetIndex3_;
       EDGetTokenT<vector<vector<int>>> jetKeys_;
-      EDGetTokenT<vector<float>> jetCSV_;
-      EDGetTokenT<vector<float>> jetCSVV1_;
+      EDGetTokenT<vector<float>> jetCSVv2_;
+      EDGetTokenT<vector<float>> jetCSVv2V1_;
       EDGetTokenT<int> NPV_;
       EDGetTokenT<unsigned int> lumi_;
       EDGetTokenT<unsigned int> run_;
@@ -164,7 +164,7 @@ RUNBoostedTriggerEfficiency::RUNBoostedTriggerEfficiency(const ParameterSet& iCo
 	jetSubjetIndex2_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetSubjetIndex2"))),
 	jetSubjetIndex3_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetSubjetIndex3"))),
 	jetKeys_(consumes<vector<vector<int>>>(iConfig.getParameter<InputTag>("jetKeys"))),
-	jetCSV_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetCSV"))),
+	jetCSVv2_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetCSVv2"))),
 	NPV_(consumes<int>(iConfig.getParameter<InputTag>("NPV"))),
 	lumi_(consumes<unsigned int>(iConfig.getParameter<InputTag>("Lumi"))),
 	run_(consumes<unsigned int>(iConfig.getParameter<InputTag>("Run"))),
@@ -274,8 +274,8 @@ void RUNBoostedTriggerEfficiency::analyze(const Event& iEvent, const EventSetup&
 	Handle<vector<vector<int> > > jetKeys;
 	iEvent.getByToken(jetKeys_, jetKeys);
 
-	Handle<vector<float> > jetCSV;
-	iEvent.getByToken(jetCSV_, jetCSV);
+	Handle<vector<float> > jetCSVv2;
+	iEvent.getByToken(jetCSVv2_, jetCSVv2);
 
 	Handle<int> NPV;
 	iEvent.getByToken(NPV_, NPV);
@@ -347,7 +347,7 @@ void RUNBoostedTriggerEfficiency::analyze(const Event& iEvent, const EventSetup&
 	vector< myJet > JETS;
 	vector< float > tmpTriggerMass;
 	vector< float > tmpMass;
-	bool bTagCSV = 0;
+	bool bTagCSVv2 = 0;
 	float HT = 0;
 
 	for (size_t i = 0; i < jetPt->size(); i++) {
@@ -383,10 +383,10 @@ void RUNBoostedTriggerEfficiency::analyze(const Event& iEvent, const EventSetup&
 				} //else tmpSubjet1 = tmpZeros ; 
 			}
 
-			//if ( (*jetCSV)[i] > 0.244 ) bTagCSV = 1; 	// CSVL
-			if ( (*jetCSV)[i] > 0.679 ) bTagCSV = 1; 	// CSVM
-			//if ( (*jetCSVV1)[i] > 0.405 ) bTagCSV = 1; 	// CSVV1L
-			//if ( (*jetCSVV1)[i] > 0.783 ) bTagCSV = 1; 	// CSVV1M
+			//if ( (*jetCSVv2)[i] > 0.244 ) bTagCSVv2 = 1; 	// CSVv2L
+			if ( (*jetCSVv2)[i] > 0.679 ) bTagCSVv2 = 1; 	// CSVv2M
+			//if ( (*jetCSVv2V1)[i] > 0.405 ) bTagCSVv2 = 1; 	// CSVv2V1L
+			//if ( (*jetCSVv2V1)[i] > 0.783 ) bTagCSVv2 = 1; 	// CSVv2V1M
 
 			myJet tmpJET;
 			tmpJET.p4 = tmpJet;
@@ -400,7 +400,7 @@ void RUNBoostedTriggerEfficiency::analyze(const Event& iEvent, const EventSetup&
 			tmpJET.tau1 = (*jetTau1)[i];
 			tmpJET.tau2 = (*jetTau2)[i];
 			tmpJET.tau3 = (*jetTau3)[i];
-			tmpJET.btagCSV = bTagCSV;
+			tmpJET.btagCSVv2 = bTagCSVv2;
 			JETS.push_back( tmpJET );
 	   
 		}
@@ -1358,7 +1358,7 @@ void RUNBoostedTriggerEfficiency::fillDescriptions(edm::ConfigurationDescription
 	desc.add<InputTag>("jetSubjetIndex2", 	InputTag("jetsAK8:jetAK8vSubjetIndex2"));
 	desc.add<InputTag>("jetSubjetIndex3", 	InputTag("jetsAK8:jetAK8vSubjetIndex3"));
 	desc.add<InputTag>("jetKeys", 	InputTag("jetKeysAK8"));
-	desc.add<InputTag>("jetCSV", 	InputTag("jetsAK8:jetAK8CSVv2"));
+	desc.add<InputTag>("jetCSVv2", 	InputTag("jetsAK8:jetAK8CSVv2"));
 	// JetID
 	desc.add<InputTag>("jecFactor", 		InputTag("jetsAK8:jetAK8jecFactor0"));
 	desc.add<InputTag>("neutralHadronEnergy", 	InputTag("jetsAK8:jetAK8neutralHadronEnergy"));
