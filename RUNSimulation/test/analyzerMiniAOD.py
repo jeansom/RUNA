@@ -8,7 +8,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         #'/store/cmst3/user/gpetrucc/miniAOD/v1/TT_Tune4C_13TeV-pythia8-tauola_PU_S14_PAT.root'
-        'file:RPVSt200tojj_13TeV_PU20bx25_MiniAOD.root'
+        'file:EXO-RunIIFall15MiniAODv1-01658.root'
     )
 )
 

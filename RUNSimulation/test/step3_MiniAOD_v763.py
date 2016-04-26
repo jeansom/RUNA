@@ -22,13 +22,19 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1920)
+    input = cms.untracked.int32(100)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
-     fileNames = cms.untracked.vstring('file:inputFile.root'),
-#    fileNames = cms.untracked.vstring('/store/mc/RunIIFall15DR76/HSCPgluino_M-1800_TuneCUETP8M1_13TeV-pythia8/AODSIM/PU25nsData2015v1_HSCP_customise_76X_mcRun2_asymptotic_v12-v1/10000/14777FDA-D2BA-E511-AF3F-141877410316.root', 
+#     fileNames = cms.untracked.vstring('file:inputFile.root'),
+    fileNames = cms.untracked.vstring(
+	    '/store/user/jsomalwa/RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15DR76_RAW_AODSIM_Asympt25ns/160131_123741/0000/RPVStopStopToJets_UDD323_M-100-madgraph_AODSIM_Asympt25ns_1.root',
+	    '/store/user/jsomalwa/RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15DR76_RAW_AODSIM_Asympt25ns/160131_123741/0000/RPVStopStopToJets_UDD323_M-100-madgraph_AODSIM_Asympt25ns_10.root',
+	    '/store/user/jsomalwa/RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15DR76_RAW_AODSIM_Asympt25ns/160131_123741/0000/RPVStopStopToJets_UDD323_M-100-madgraph_AODSIM_Asympt25ns_100.root',
+	    '/store/user/jsomalwa/RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15DR76_RAW_AODSIM_Asympt25ns/160131_123741/0000/RPVStopStopToJets_UDD323_M-100-madgraph_AODSIM_Asympt25ns_101.root',
+							     #       '/store/user/jsomalwa/RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15DR76_MiniAOD_Asympt25ns/160202_114630/0001/RPVStopStopToJets_UDD323_M-100-madgraph_MiniAOD_Asympt25ns_1000.root'
+#	    '/store/mc/RunIIFall15DR76/HSCPgluino_M-1800_TuneCUETP8M1_13TeV-pythia8/AODSIM/PU25nsData2015v1_HSCP_customise_76X_mcRun2_asymptotic_v12-v1/10000/14777FDA-D2BA-E511-AF3F-141877410316.root', 
 #        '/store/mc/RunIIFall15DR76/HSCPgluino_M-1800_TuneCUETP8M1_13TeV-pythia8/AODSIM/PU25nsData2015v1_HSCP_customise_76X_mcRun2_asymptotic_v12-v1/10000/5235A78B-D5BA-E511-B7E2-002590A3C95E.root', 
 #        '/store/mc/RunIIFall15DR76/HSCPgluino_M-1800_TuneCUETP8M1_13TeV-pythia8/AODSIM/PU25nsData2015v1_HSCP_customise_76X_mcRun2_asymptotic_v12-v1/10000/5A2FE875-D5BA-E511-BDFC-0025905C9742.root', 
 #        '/store/mc/RunIIFall15DR76/HSCPgluino_M-1800_TuneCUETP8M1_13TeV-pythia8/AODSIM/PU25nsData2015v1_HSCP_customise_76X_mcRun2_asymptotic_v12-v1/10000/76CD8462-B0BA-E511-BC90-141877410E71.root', 
@@ -37,7 +43,8 @@ process.source = cms.Source("PoolSource",
 #        '/store/mc/RunIIFall15DR76/HSCPgluino_M-1800_TuneCUETP8M1_13TeV-pythia8/AODSIM/PU25nsData2015v1_HSCP_customise_76X_mcRun2_asymptotic_v12-v1/10000/A2985106-94BA-E511-8470-001EC94BE81B.root', 
 #        '/store/mc/RunIIFall15DR76/HSCPgluino_M-1800_TuneCUETP8M1_13TeV-pythia8/AODSIM/PU25nsData2015v1_HSCP_customise_76X_mcRun2_asymptotic_v12-v1/10000/BAF48A7F-A9BA-E511-8AAF-90B11C0BE662.root', 
 #        '/store/mc/RunIIFall15DR76/HSCPgluino_M-1800_TuneCUETP8M1_13TeV-pythia8/AODSIM/PU25nsData2015v1_HSCP_customise_76X_mcRun2_asymptotic_v12-v1/10000/C815F53B-A9BA-E511-9DF6-00266CF94A84.root', 
-#        '/store/mc/RunIIFall15DR76/HSCPgluino_M-1800_TuneCUETP8M1_13TeV-pythia8/AODSIM/PU25nsData2015v1_HSCP_customise_76X_mcRun2_asymptotic_v12-v1/10000/CE3108E8-A9BA-E511-B14A-14187733AD81.root'),
+#        '/store/mc/RunIIFall15DR76/HSCPgluino_M-1800_TuneCUETP8M1_13TeV-pythia8/AODSIM/PU25nsData2015v1_HSCP_customise_76X_mcRun2_asymptotic_v12-v1/10000/CE3108E8-A9BA-E511-B14A-14187733AD81.root'
+),
     secondaryFileNames = cms.untracked.vstring()
 )
 

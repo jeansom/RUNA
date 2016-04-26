@@ -44,16 +44,20 @@ import random
 
 #AK8 Jets label and Handles
 ### MiniAOD
-#h_jetsAK8 = Handle("vector<pat::Jet>")
-#l_jetsAK8 = ("slimmedJetsAK8" ) 
+h_jetsAK4 = Handle("vector<pat::Jet>")
+l_jetsAK4 = ("slimmedJets" ) 
+h_jetsAK8 = Handle("vector<pat::Jet>")
+l_jetsAK8 = ("slimmedJetsAK8" ) 
 ### AOD
+#h_jetsAK4 = Handle("vector<reco::PFJet>")
+#l_jetsAK4 = ("ak4PFJetsCHS" ) 
 #h_jetsAK8 = Handle("vector<reco::PFJet>")
 #l_jetsAK8 = ("ak8PFJetsCHS" ) 
 ## RAW
-h_jetsAK8 = Handle("vector<reco::GenJet>")
-l_jetsAK8 = ("ak8GenJets" ) 
-h_jetsAK4 = Handle("vector<reco::GenJet>")
-l_jetsAK4 = ("ak4GenJets" ) 
+#h_jetsAK8 = Handle("vector<reco::GenJet>")
+#l_jetsAK8 = ("ak8GenJets" ) 
+#h_jetsAK4 = Handle("vector<reco::GenJet>")
+#l_jetsAK4 = ("ak4GenJets" ) 
 #
 
 
@@ -88,15 +92,22 @@ h_HTAK4_wocutPt = ROOT.TH2F("h_HTAK4_wocutPt", "AK4_wocutPt HT;HT (GeV)", 300, 0
 #EVENT LOOP
 
 nevents = 0
-filesModule = __import__( options.files  )#'RPVSt100tojj_13TeV_RunIISpring15DR74_MiniAOD_cfi')
-filesraw = filesModule.readFiles  #[ options.files ]
+#filesModule = __import__( options.files  )#'RPVSt100tojj_13TeV_RunIISpring15DR74_MiniAOD_cfi')
+#filesraw = filesModule.readFiles  #[ options.files ]
 #filesModule = __import__( 'RPVSt200tojj_13TeV_RunIISpring15DR74_RAW_cfi')
-##filesraw = [ options.files ]
+#filesraw = [ options.files ]
+filesraw = [ 
+		'/store/mc/RunIIFall15MiniAODv2/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/50000/044FEF18-28CC-E511-B230-002590E50602.root',
+		'/store/mc/RunIIFall15MiniAODv2/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/50000/06C089EF-2FCC-E511-9946-1CC1DE1CF69A.root',
+#		'/store/mc/RunIIFall15MiniAODv2/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/50000/06E8C5FF-29CC-E511-BFFE-0CC47A124334.root',
+#		'/store/mc/RunIIFall15MiniAODv2/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/50000/0AF00BFD-2ACC-E511-8219-0CC47A124334.root',
+#		'/store/mc/RunIIFall15MiniAODv2/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/50000/1607B795-23CC-E511-BD4F-002590E50602.root',
+		]
 files = []
 for ifile in filesraw :
     if len( ifile ) > 2 : 
         s = 'root://cmsxrootd.fnal.gov/' + ifile.rstrip()
-#        #s = ifile.rstrip()
+        #s = ifile.rstrip()
         files.append( s )
         print 'Added ' + s
 
