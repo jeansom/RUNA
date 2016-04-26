@@ -57,7 +57,11 @@ class myJet {
 	public:
 		TLorentzVector p4;
 		TLorentzVector subjet0;
+		double subjet0BtagCSVv2;
+		double subjet0BtagCMVAv2;
 		TLorentzVector subjet1;
+		double subjet1BtagCSVv2;
+		double subjet1BtagCMVAv2;
 		double mass;
 		double trimmedMass;
 		double prunedMass;
@@ -67,7 +71,9 @@ class myJet {
 		double tau1;
 		double tau2;
 		double tau3;
-		double btagCSV;
+		double btagCSVv2;
+		double btagCMVAv2;
+		double btagDoubleB;
 		double nhf;
 		double nEMf;
 		double chf;

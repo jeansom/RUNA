@@ -107,6 +107,8 @@ class RUNAnalysis : public EDAnalyzer {
       vector<float> *jetsPhi = new std::vector<float>();
       vector<float> *jetsE = new std::vector<float>();
       vector<float> *jetsQGL = new std::vector<float>();
+      vector<float> *jetsCSVv2 = new std::vector<float>();
+      vector<float> *jetsCMVAv2 = new std::vector<float>();
       ULong64_t event = 0;
       int numJets = 0, numPV = 0;
       unsigned int lumi = 0, run=0;
@@ -122,7 +124,8 @@ class RUNAnalysis : public EDAnalyzer {
       EDGetTokenT<vector<float>> jetE_;
       EDGetTokenT<vector<float>> jetQGL_;
       EDGetTokenT<vector<float>> jetMass_;
-      EDGetTokenT<vector<float>> jetCSV_;
+      EDGetTokenT<vector<float>> jetCSVv2_;
+      EDGetTokenT<vector<float>> jetCMVAv2_;
       EDGetTokenT<vector<float>> jetArea_;
       EDGetTokenT<int> NPV_;
       EDGetTokenT<vector<float>> metPt_;
@@ -170,7 +173,8 @@ RUNAnalysis::RUNAnalysis(const ParameterSet& iConfig):
 	jetE_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetE"))),
 	jetQGL_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetQGL"))),
 	jetMass_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetMass"))),
-	jetCSV_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetCSV"))),
+	jetCSVv2_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetCSVv2"))),
+	jetCMVAv2_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetCMVAv2"))),
 	jetArea_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetArea"))),
 	NPV_(consumes<int>(iConfig.getParameter<InputTag>("NPV"))),
 	metPt_(consumes<vector<float>>(iConfig.getParameter<InputTag>("metPt"))),
@@ -275,8 +279,11 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 	Handle<vector<float> > jetMass;
 	iEvent.getByToken(jetMass_, jetMass);
 
-	Handle<vector<float> > jetCSV;
-	iEvent.getByToken(jetCSV_, jetCSV);
+	Handle<vector<float> > jetCSVv2;
+	iEvent.getByToken(jetCSVv2_, jetCSVv2);
+
+	Handle<vector<float> > jetCMVAv2;
+	iEvent.getByToken(jetCMVAv2_, jetCMVAv2);
 
 	Handle<vector<float> > jetArea;
 	iEvent.getByToken(jetArea_, jetArea);
@@ -376,7 +383,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 	vector< float > tmpTriggerMass;
 	int numberJets = 0;
 	double rawHT = 0;
-	//bool bTagCSV = 0;
+	//bool bTagCSVv2 = 0;
 	HT = 0;
 
 	for (size_t i = 0; i < jetPt->size(); i++) {
@@ -409,10 +416,10 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 			HT += corrJet.Pt();
 			++numberJets;
-			//if ( (*jetCSV)[i] > 0.244 ) bTagCSV = 1; 	// CSVL
-			//if ( (*jetCSV)[i] > 0.679 ) bTagCSV = 1; 	// CSVM
-			//if ( (*jetCSVV1)[i] > 0.405 ) bTagCSV = 1; 	// CSVV1L
-			//if ( (*jetCSVV1)[i] > 0.783 ) bTagCSV = 1; 	// CSVV1M
+			//if ( (*jetCSVv2)[i] > 0.244 ) bTagCSVv2 = 1; 	// CSVv2L
+			//if ( (*jetCSVv2)[i] > 0.679 ) bTagCSVv2 = 1; 	// CSVv2M
+			//if ( (*jetCSVv2V1)[i] > 0.405 ) bTagCSVv2 = 1; 	// CSVv2V1L
+			//if ( (*jetCSVv2V1)[i] > 0.783 ) bTagCSVv2 = 1; 	// CSVv2V1M
 			double jec = 1. / ( rawJet.E() ); //(*jecFactor)[i] * (*jetE)[i] );
 			histos1D_[ "jetPt" ]->Fill( corrJet.Pt() , totalWeight );
 			histos1D_[ "jetEta" ]->Fill( corrJet.Eta() , totalWeight );
@@ -425,7 +432,8 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 			myJet tmpJET;
 			tmpJET.p4 = corrJet;
-			tmpJET.btagCSV = (*jetCSV)[i];
+			tmpJET.btagCSVv2 = (*jetCSVv2)[i];
+			tmpJET.btagCMVAv2 = (*jetCMVAv2)[i];
 			tmpJET.qgl = (*jetQGL)[i];
 			tmpJET.nhf = (*neutralHadronEnergy)[i] * jec;
 			tmpJET.nEMf = (*neutralEmEnergy)[i] * jec;
@@ -680,6 +688,16 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 							histos2D_[ "dijetsEta_cutDelta" ]->Fill( eta1, eta2, totalWeight );
 						}
 					}
+				}
+			}
+
+			if ( numJets > 4 ){
+				for (unsigned int ijet = 4; ijet < JETS.size(); ijet++) {
+					jetsPt->push_back( JETS[ ijet ].p4.Pt() );
+					jetsEta->push_back( JETS[ ijet ].p4.Eta() );
+					jetsPhi->push_back( JETS[ ijet ].p4.Phi() );
+					jetsE->push_back( JETS[ ijet ].p4.E() );
+					jetsQGL->push_back( JETS[ ijet ].qgl );
 				}
 			}
 		}
@@ -990,7 +1008,8 @@ void RUNAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descriptions
 	desc.add<InputTag>("jetE", 	InputTag("jetsAK4CHS:jetAK4CHSE"));
 	desc.add<InputTag>("jetQGL", 	InputTag("jetsAK4CHS:jetAK4CHSQGL"));
 	desc.add<InputTag>("jetMass", 	InputTag("jetsAK4CHS:jetAK4CHSMass"));
-	desc.add<InputTag>("jetCSV", 	InputTag("jetsAK4CHS:jetAK4CHSCSVv2"));
+	desc.add<InputTag>("jetCSVv2", 	InputTag("jetsAK4CHS:jetAK4CHSCSVv2"));
+	desc.add<InputTag>("jetCMVAv2", 	InputTag("jetsAK4CHS:jetAK4CHSCMVAv2"));
 	desc.add<InputTag>("jetArea", 	InputTag("jetsAK4CHS:jetAK4CHSjetArea"));
 	desc.add<InputTag>("NPV", 	InputTag("eventUserData:npv"));
 	desc.add<InputTag>("metPt", 	InputTag("metFull:metFullPt"));

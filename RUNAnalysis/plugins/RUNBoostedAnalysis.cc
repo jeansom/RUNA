@@ -101,12 +101,12 @@ class RUNBoostedAnalysis : public EDAnalyzer {
       int numJets = 0, numPV = 0;
       unsigned int lumi = 0, run=0;
       float AK4HT = 0, HT = 0, trimmedMass = -999, puWeight = -999, genWeight = -999, lumiWeight = -999, MET = -999,
-	    jet1Pt = -999, jet1Eta = -999, jet1Phi = -999, jet1E = -999, jet1btagCSV = -9999,
-	    jet2Pt = -999, jet2Eta = -999, jet2Phi = -999, jet2E = -999, jet2btagCSV = -9999,
-	    subjet11Pt = -999, subjet11Eta = -999, subjet11Phi = -999, subjet11E = -999, 
-	    subjet12Pt = -999, subjet12Eta = -999, subjet12Phi = -999, subjet12E = -999, 
-	    subjet21Pt = -999, subjet21Eta = -999, subjet21Phi = -999, subjet21E = -999, 
-	    subjet22Pt = -999, subjet22Eta = -999, subjet22Phi = -999, subjet22E = -999,
+	    jet1Pt = -999, jet1Eta = -999, jet1Phi = -999, jet1E = -999, jet1btagCSVv2 = -9999, jet1btagCMVAv2 = -9999, jet1btagDoubleB = -9999,
+	    jet2Pt = -999, jet2Eta = -999, jet2Phi = -999, jet2E = -999, jet2btagCSVv2 = -9999, jet2btagCMVAv2 = -9999, jet2btagDoubleB = -9999,
+	    subjet11Pt = -999, subjet11Eta = -999, subjet11Phi = -999, subjet11E = -999, subjet11btagCSVv2 = -9999, subjet11btagCMVAv2 = -9999, 
+	    subjet12Pt = -999, subjet12Eta = -999, subjet12Phi = -999, subjet12E = -999, subjet12btagCSVv2 = -9999, subjet12btagCMVAv2 = -9999, 
+	    subjet21Pt = -999, subjet21Eta = -999, subjet21Phi = -999, subjet21E = -999, subjet21btagCSVv2 = -9999, subjet21btagCMVAv2 = -9999, 
+	    subjet22Pt = -999, subjet22Eta = -999, subjet22Phi = -999, subjet22E = -999, subjet22btagCSVv2 = -9999, subjet22btagCMVAv2 = -9999,
 	    massAve = -9999, massAsym = -9999, 
 	    jet1PrunedMass = -9999, jet2PrunedMass = -9999,
 	    jet1SoftDropMass = -9999, jet2SoftDropMass = -9999,
@@ -146,7 +146,9 @@ class RUNBoostedAnalysis : public EDAnalyzer {
       EDGetTokenT<vector<float>> jetSubjetIndex2_;
       EDGetTokenT<vector<float>> jetSubjetIndex3_;
       EDGetTokenT<vector<vector<int>>> jetKeys_;
-      EDGetTokenT<vector<float>> jetCSV_;
+      EDGetTokenT<vector<float>> jetCSVv2_;
+      EDGetTokenT<vector<float>> jetCMVAv2_;
+      EDGetTokenT<vector<float>> jetDoubleB_;
       EDGetTokenT<vector<float>> jetArea_;
       EDGetTokenT<vector<float>> jetGenPt_;
       EDGetTokenT<vector<float>> jetGenEta_;
@@ -185,6 +187,8 @@ class RUNBoostedAnalysis : public EDAnalyzer {
       EDGetTokenT<vector<float>> subjetPhi_;
       EDGetTokenT<vector<float>> subjetE_;
       EDGetTokenT<vector<float>> subjetMass_;
+      EDGetTokenT<vector<float>> subjetCSVv2_;
+      EDGetTokenT<vector<float>> subjetCMVAv2_;
 
 };
 
@@ -218,7 +222,9 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 	jetSubjetIndex2_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetSubjetIndex2"))),
 	jetSubjetIndex3_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetSubjetIndex3"))),
 	jetKeys_(consumes<vector<vector<int>>>(iConfig.getParameter<InputTag>("jetKeys"))),
-	jetCSV_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetCSV"))),
+	jetCSVv2_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetCSVv2"))),
+	jetCMVAv2_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetCMVAv2"))),
+	jetDoubleB_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetDoubleB"))),
 	jetArea_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetArea"))),
 	jetGenPt_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetGenPt"))),
 	jetGenEta_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetGenEta"))),
@@ -253,7 +259,9 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 	subjetEta_(consumes<vector<float>>(iConfig.getParameter<InputTag>("subjetEta"))),
 	subjetPhi_(consumes<vector<float>>(iConfig.getParameter<InputTag>("subjetPhi"))),
 	subjetE_(consumes<vector<float>>(iConfig.getParameter<InputTag>("subjetE"))),
-	subjetMass_(consumes<vector<float>>(iConfig.getParameter<InputTag>("subjetMass")))
+	subjetMass_(consumes<vector<float>>(iConfig.getParameter<InputTag>("subjetMass"))),
+	subjetCSVv2_(consumes<vector<float>>(iConfig.getParameter<InputTag>("subjetCSVv2"))),
+	subjetCMVAv2_(consumes<vector<float>>(iConfig.getParameter<InputTag>("subjetCMVAv2")))
 {
 	consumes<LHERunInfoProduct,edm::InRun> (edm::InputTag("externalLHEProducer"));
 	scale 		= iConfig.getParameter<double>("scale");
@@ -385,8 +393,14 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	Handle<vector<vector<int> > > jetKeys;
 	iEvent.getByToken(jetKeys_, jetKeys);
 
-	Handle<vector<float> > jetCSV;
-	iEvent.getByToken(jetCSV_, jetCSV);
+	Handle<vector<float> > jetCSVv2;
+	iEvent.getByToken(jetCSVv2_, jetCSVv2);
+
+	Handle<vector<float> > jetCMVAv2;
+	iEvent.getByToken(jetCMVAv2_, jetCMVAv2);
+
+	Handle<vector<float> > jetDoubleB;
+	iEvent.getByToken(jetDoubleB_, jetDoubleB);
 
 	Handle<vector<float> > jetArea;
 	iEvent.getByToken(jetArea_, jetArea);
@@ -481,6 +495,12 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	Handle<vector<float> > subjetMass;
 	iEvent.getByToken(subjetMass_, subjetMass);
 
+	Handle<vector<float> > subjetCSVv2;
+	iEvent.getByToken(subjetCSVv2_, subjetCSVv2);
+
+	Handle<vector<float> > subjetCMVAv2;
+	iEvent.getByToken(subjetCMVAv2_, subjetCMVAv2);
+
 	if ( !isData ) {
 
 		// all this section is based on https://github.com/jkarancs/B2GTTrees/blob/master/plugins/B2GEdmExtraVarProducer.cc#L215-L281
@@ -527,7 +547,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	vector< float > tmpTriggerMass;
 	bool cutHT = 0;
 	//bool cutJetPt = 0;
-	//bool bTagCSV = 0;
+	//bool bTagCSVv2 = 0;
 	int numberJets = 0;
 	HT = 0;
 
@@ -571,23 +591,28 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 
 			/// Vector of zeros
 			TLorentzVector tmpSubjet0, tmpSubjet1, tmpZeros;
+			double tmpSubjet0BtagCSVv2 = -999, tmpSubjet0BtagCMVAv2 = -999, tmpSubjet1BtagCSVv2 = -999, tmpSubjet1BtagCMVAv2 = -999;
 			tmpZeros.SetPtEtaPhiE( 0, 0, 0, 0 );
 
 			for (size_t j = 0; j < subjetPt->size(); j++) {
 				if( j == (*jetSubjetIndex0)[i] ) {
 					//LogWarning("subjets0") << j << " " << (*jetSubjetIndex0)[i] << " " <<  subjetPt->size() << " " << (*subjetPt)[j];
 					tmpSubjet0.SetPtEtaPhiE( (*subjetPt)[j], (*subjetEta)[j], (*subjetPhi)[j], (*subjetE)[j] );
+					tmpSubjet0BtagCSVv2 = (*subjetCSVv2)[j];
+					tmpSubjet0BtagCMVAv2 = (*subjetCMVAv2)[j];
 				} //else tmpSubjet0 = tmpZeros ; 
 					
 				if( j == (*jetSubjetIndex1)[i] ) {
 					tmpSubjet1.SetPtEtaPhiE( (*subjetPt)[j], (*subjetEta)[j], (*subjetPhi)[j], (*subjetE)[j] );
+					tmpSubjet1BtagCSVv2 = (*subjetCSVv2)[j];
+					tmpSubjet1BtagCMVAv2 = (*subjetCMVAv2)[j];
 				} //else tmpSubjet1 = tmpZeros ; 
 			}
 
-			//if ( (*jetCSV)[i] > 0.244 ) bTagCSV = 1; 	// CSVL
-			//if ( (*jetCSV)[i] > 0.679 ) bTagCSV = 1; 	// CSVM
-			//if ( (*jetCSVV1)[i] > 0.405 ) bTagCSV = 1; 	// CSVV1L
-			//if ( (*jetCSVV1)[i] > 0.783 ) bTagCSV = 1; 	// CSVV1M
+			//if ( (*jetCSVv2)[i] > 0.244 ) bTagCSVv2 = 1; 	// CSVv2L
+			//if ( (*jetCSVv2)[i] > 0.679 ) bTagCSVv2 = 1; 	// CSVv2M
+			//if ( (*jetCSVv2V1)[i] > 0.405 ) bTagCSVv2 = 1; 	// CSVv2V1L
+			//if ( (*jetCSVv2V1)[i] > 0.783 ) bTagCSVv2 = 1; 	// CSVv2V1M
 			
 			double jec = 1. / ( rawJet.E() ); //(*jecFactor)[i] * (*jetE)[i] );
 			histos1D_[ "oldJetPt" ]->Fill( (*jetPt)[i], totalWeight );
@@ -613,7 +638,11 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			myJet tmpJET;
 			tmpJET.p4 = tmpJet;
 			tmpJET.subjet0 = tmpSubjet0;
+			tmpJET.subjet0BtagCSVv2 = tmpSubjet0BtagCSVv2;
+			tmpJET.subjet0BtagCMVAv2 = tmpSubjet0BtagCMVAv2;
 			tmpJET.subjet1 = tmpSubjet1;
+			tmpJET.subjet1BtagCSVv2 = tmpSubjet1BtagCSVv2;
+			tmpJET.subjet1BtagCMVAv2 = tmpSubjet1BtagCMVAv2;
 			tmpJET.mass = corrMass;
 			tmpJET.trimmedMass = corrTrimmedMass;
 			tmpJET.prunedMass = corrPrunedMass;
@@ -622,7 +651,9 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			tmpJET.tau1 = (*jetTau1)[i];
 			tmpJET.tau2 = (*jetTau2)[i];
 			tmpJET.tau3 = (*jetTau3)[i];
-			tmpJET.btagCSV = (*jetCSV)[i];
+			tmpJET.btagCSVv2 = (*jetCSVv2)[i];
+			tmpJET.btagCMVAv2 = (*jetCMVAv2)[i];
+			tmpJET.btagDoubleB = (*jetDoubleB)[i];
 			tmpJET.nhf = (*neutralHadronEnergy)[i] * jec;
 			tmpJET.nEMf = (*neutralEmEnergy)[i] * jec;
 			tmpJET.chf = (*chargedHadronEnergy)[i] * jec;
@@ -725,8 +756,12 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 				//////////////////////////////////////////////////////////////////////////
 				
 				// Btag
-				jet1btagCSV = JETS[0].btagCSV;
-				jet2btagCSV = JETS[1].btagCSV;
+				jet1btagCSVv2 = JETS[0].btagCSVv2;
+				jet2btagCSVv2 = JETS[1].btagCSVv2;
+				jet1btagCMVAv2 = JETS[0].btagCMVAv2;
+				jet2btagCMVAv2 = JETS[1].btagCMVAv2;
+				jet1btagDoubleB = JETS[0].btagDoubleB;
+				jet2btagDoubleB = JETS[1].btagDoubleB;
 
 				// Dijet eta
 				deltaEtaDijet = deltaValue( JETS[0].p4.Eta(), JETS[1].p4.Eta() );
@@ -870,22 +905,30 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 				jet2E 		= JETS[1].p4.E();
 				jet2PrunedMass	= JETS[1].prunedMass;
 				jet2SoftDropMass	= JETS[1].softDropMass;
-				subjet11Pt	= jet1SubjetsTLV[0].Pt();
-				subjet11Eta	= jet1SubjetsTLV[0].Eta();
-				subjet11Phi	= jet1SubjetsTLV[0].Phi();
-				subjet11E	= jet1SubjetsTLV[0].E();
-				subjet12Pt	= jet1SubjetsTLV[1].Pt();
-				subjet12Eta	= jet1SubjetsTLV[1].Eta();
-				subjet12Phi	= jet1SubjetsTLV[1].Phi();
-				subjet12E	= jet1SubjetsTLV[1].E();
-				subjet21Pt	= jet2SubjetsTLV[0].Pt();
-				subjet21Eta	= jet2SubjetsTLV[0].Eta();
-				subjet21Phi	= jet2SubjetsTLV[0].Phi();
-				subjet21E	= jet2SubjetsTLV[0].E();
-				subjet22Pt	= jet2SubjetsTLV[1].Pt();
-				subjet22Eta	= jet2SubjetsTLV[1].Eta();
-				subjet22Phi	= jet2SubjetsTLV[1].Phi();
-				subjet22E	= jet2SubjetsTLV[1].E();
+				subjet11Pt	= JETS[0].subjet0.Pt();
+				subjet11Eta	= JETS[0].subjet0.Eta();
+				subjet11Phi	= JETS[0].subjet0.Phi();
+				subjet11E	= JETS[0].subjet0.E();
+				subjet11btagCSVv2 = JETS[0].subjet0BtagCSVv2;
+				subjet11btagCMVAv2 = JETS[0].subjet0BtagCMVAv2;
+				subjet12Pt	= JETS[0].subjet1.Pt();
+				subjet12Eta	= JETS[0].subjet1.Eta();
+				subjet12Phi	= JETS[0].subjet1.Phi();
+				subjet12E	= JETS[0].subjet1.E();
+				subjet12btagCSVv2 = JETS[0].subjet1BtagCSVv2;
+				subjet12btagCMVAv2 = JETS[0].subjet1BtagCMVAv2;
+				subjet21Pt	= JETS[1].subjet0.Pt();
+				subjet21Eta	= JETS[1].subjet0.Eta();
+				subjet21Phi	= JETS[1].subjet0.Phi();
+				subjet21E	= JETS[1].subjet0.E();
+				subjet21btagCSVv2 = JETS[1].subjet0BtagCSVv2;
+				subjet21btagCMVAv2 = JETS[1].subjet0BtagCMVAv2;
+				subjet22Pt	= JETS[1].subjet1.Pt();
+				subjet22Eta	= JETS[1].subjet1.Eta();
+				subjet22Phi	= JETS[1].subjet1.Phi();
+				subjet22E	= JETS[1].subjet1.E();
+				subjet22btagCSVv2 = JETS[1].subjet1BtagCSVv2;
+				subjet22btagCMVAv2 = JETS[1].subjet1BtagCMVAv2;
 				RUNAtree->Fill();  
 
 				histos1D_[ "HT_cutEffTrigger" ]->Fill( HT, totalWeight );
@@ -964,28 +1007,44 @@ void RUNBoostedAnalysis::beginJob() {
 	RUNAtree->Branch( "jet1Eta", &jet1Eta, "jet1Eta/F" );
 	RUNAtree->Branch( "jet1Phi", &jet1Phi, "jet1Phi/F" );
 	RUNAtree->Branch( "jet1E", &jet1E, "jet1E/F" );
-	RUNAtree->Branch( "jet1btagCSV", &jet1btagCSV, "jet1btagCSV/F" );
+	RUNAtree->Branch( "jet1PrunedMass", &jet1PrunedMass, "jet1PrunedMass/F" );
+	RUNAtree->Branch( "jet1SoftDropMass", &jet1SoftDropMass, "jet1SoftDropMass/F" );
+	RUNAtree->Branch( "jet1btagCSVv2", &jet1btagCSVv2, "jet1btagCSVv2/F" );
+	RUNAtree->Branch( "jet1btagCMVAv2", &jet1btagCMVAv2, "jet1btagCMVAv2/F" );
+	RUNAtree->Branch( "jet1btagDoubleB", &jet1btagDoubleB, "jet1btagDoubleB/F" );
 	RUNAtree->Branch( "jet2Pt", &jet2Pt, "jet2Pt/F" );
 	RUNAtree->Branch( "jet2Eta", &jet2Eta, "jet2Eta/F" );
 	RUNAtree->Branch( "jet2Phi", &jet2Phi, "jet2Phi/F" );
 	RUNAtree->Branch( "jet2E", &jet2E, "jet2E/F" );
-	RUNAtree->Branch( "jet2btagCSV", &jet2btagCSV, "jet2btagCSV/F" );
+	RUNAtree->Branch( "jet2PrunedMass", &jet2PrunedMass, "jet2PrunedMass/F" );
+	RUNAtree->Branch( "jet2SoftDropMass", &jet2SoftDropMass, "jet2SoftDropMass/F" );
+	RUNAtree->Branch( "jet2btagCSVv2", &jet2btagCSVv2, "jet2btagCSVv2/F" );
+	RUNAtree->Branch( "jet2btagCMVAv2", &jet2btagCMVAv2, "jet2btagCMVAv2/F" );
+	RUNAtree->Branch( "jet2btagDoubleB", &jet2btagDoubleB, "jet2btagDoubleB/F" );
 	RUNAtree->Branch( "subjet11Pt", &subjet11Pt, "subjet11Pt/F" );
 	RUNAtree->Branch( "subjet11Eta", &subjet11Eta, "subjet11Eta/F" );
 	RUNAtree->Branch( "subjet11Phi", &subjet11Phi, "subjet11Phi/F" );
 	RUNAtree->Branch( "subjet11E", &subjet11E, "subjet11E/F" );
+	RUNAtree->Branch( "subjet11btagCSVv2", &subjet11btagCSVv2, "subjet11btagCSVv2/F" );
+	RUNAtree->Branch( "subjet11btagCMVAv2", &subjet11btagCMVAv2, "subjet11btagCMVAv2/F" );
 	RUNAtree->Branch( "subjet12Pt", &subjet12Pt, "subjet12Pt/F" );
 	RUNAtree->Branch( "subjet12Eta", &subjet12Eta, "subjet12Eta/F" );
 	RUNAtree->Branch( "subjet12Phi", &subjet12Phi, "subjet12Phi/F" );
 	RUNAtree->Branch( "subjet12E", &subjet12E, "subjet12E/F" );
+	RUNAtree->Branch( "subjet12btagCSVv2", &subjet12btagCSVv2, "subjet12btagCSVv2/F" );
+	RUNAtree->Branch( "subjet12btagCMVAv2", &subjet12btagCMVAv2, "subjet12btagCMVAv2/F" );
 	RUNAtree->Branch( "subjet21Pt", &subjet21Pt, "subjet21Pt/F" );
 	RUNAtree->Branch( "subjet21Eta", &subjet21Eta, "subjet21Eta/F" );
 	RUNAtree->Branch( "subjet21Phi", &subjet21Phi, "subjet21Phi/F" );
 	RUNAtree->Branch( "subjet21E", &subjet21E, "subjet21E/F" );
+	RUNAtree->Branch( "subjet21btagCSVv2", &subjet21btagCSVv2, "subjet21btagCSVv2/F" );
+	RUNAtree->Branch( "subjet21btagCMVAv2", &subjet21btagCMVAv2, "subjet21btagCMVAv2/F" );
 	RUNAtree->Branch( "subjet22Pt", &subjet22Pt, "subjet22Pt/F" );
 	RUNAtree->Branch( "subjet22Eta", &subjet22Eta, "subjet22Eta/F" );
 	RUNAtree->Branch( "subjet22Phi", &subjet22Phi, "subjet22Phi/F" );
 	RUNAtree->Branch( "subjet22E", &subjet22E, "subjet22E/F" );
+	RUNAtree->Branch( "subjet22btagCSVv2", &subjet22btagCSVv2, "subjet22btagCSVv2/F" );
+	RUNAtree->Branch( "subjet22btagCMVAv2", &subjet22btagCMVAv2, "subjet22btagCMVAv2/F" );
 	RUNAtree->Branch( "massAve", &massAve, "massAve/F" );
 	RUNAtree->Branch( "massAsym", &massAsym, "massAsym/F" );
 	RUNAtree->Branch( "trimmedMassAve", &trimmedMassAve, "trimmedMassAve/F" );
@@ -1273,7 +1332,9 @@ void RUNBoostedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descr
 	desc.add<InputTag>("jetSubjetIndex2", 	InputTag("jetsAK8CHS:jetAK8CHSvSubjetIndex2"));
 	desc.add<InputTag>("jetSubjetIndex3", 	InputTag("jetsAK8CHS:jetAK8CHSvSubjetIndex3"));
 	desc.add<InputTag>("jetKeys", 	InputTag("jetKeysAK8CHS"));
-	desc.add<InputTag>("jetCSV", 	InputTag("jetsAK8CHS:jetAK8CHSCSVv2"));
+	desc.add<InputTag>("jetCSVv2", 	InputTag("jetsAK8CHS:jetAK8CHSCSVv2"));
+	desc.add<InputTag>("jetCMVAv2", 	InputTag("jetsAK8CHS:jetAK8CHSCMVAv2"));
+	desc.add<InputTag>("jetDoubleB", 	InputTag("jetsAK8CHS:jetAK8CHSDoubleB"));
 	desc.add<InputTag>("jetArea", 	InputTag("jetsAK8CHS:jetAK8CHSjetArea"));
 	desc.add<InputTag>("jetGenPt", 	InputTag("jetsAK8CHS:jetAK8CHSGenJetPt"));
 	desc.add<InputTag>("jetGenEta", 	InputTag("jetsAK8CHS:jetAK8CHSGenJetEta"));
@@ -1299,6 +1360,8 @@ void RUNBoostedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descr
 	desc.add<InputTag>("subjetPhi", 	InputTag("subjetsAK8CHS:subjetAK8CHSPhi"));
 	desc.add<InputTag>("subjetE", 	InputTag("subjetsAK8CHS:subjetAK8CHSE"));
 	desc.add<InputTag>("subjetMass", 	InputTag("subjetsAK8CHS:subjetAK8CHSMass"));
+	desc.add<InputTag>("subjetCSVv2", 	InputTag("subjetsAK8CHS:subjetAK8CHSCSVv2"));
+	desc.add<InputTag>("subjetCMVAv2", 	InputTag("subjetsAK8CHS:subjetAK8CHSCMVAv2"));
 	descriptions.addDefault(desc);
 }
       

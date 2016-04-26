@@ -25,6 +25,9 @@ selection[ 'RPVStopStopToJets_UDD312_M-130' ] = [
 selection[ 'RPVStopStopToJets_UDD312_M-140' ] = [ 
 		[ 'jet1Tau21', 0.5 ], [ 'jet2Tau21', 0.5 ], [ 'jet1Tau31', 0.3 ], [ 'jet2Tau31', 0.3 ], [ 'prunedMassAsym', 0.20 ], [ 'deltaEtaDijet', 0.7 ]  #v7
 		]
+selection[ 'RPVStopStopToJets_UDD312_M-150' ] = [ 
+		[ 'jet1Tau21', 0.5 ], [ 'jet2Tau21', 0.5 ], [ 'jet1Tau31', 0.3 ], [ 'jet2Tau31', 0.3 ], [ 'prunedMassAsym', 0.20 ], [ 'deltaEtaDijet', 0.7 ]  #v7
+		]
 
 selection[ 'RPVStopStopToJets_UDD312_M-170' ] = [ 
 		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 0.6 ] # v2

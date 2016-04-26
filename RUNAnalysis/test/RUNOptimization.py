@@ -140,7 +140,7 @@ def calcROCs( BkgSamples, SigSamples, treename, varList, mass, window, cutsList 
 
 			allROCs[ var[0]+"_"+bkgSample+"_ROC" ] = [ BkgROCValues, SigROCValues, SigROCBins, SigROCLowEdge ]
 
-	outputTextFile = 'ROCfiles/ROC'+version+'Values_'+signalName+'_cut'+str(len(cuts))+'.txt'
+	outputTextFile = 'ROCfiles/ROC'+version+'Values_QCD'+qcd+'_'+signalName+'_cut'+str(len(cuts))+'.txt'
 	print '--- Creating ', outputTextFile 
 	print >> open(outputTextFile, 'w+'), allROCs
 	outputFile.Write()
@@ -181,20 +181,22 @@ def makeROCs( textFile, variables, bkgSamples, perVariable, cutsList, printValue
 		if perVariable:
 			for var in variables:
 				dictVariables = { rocs: dictROC[ rocs ] for rocs in dictROC if var[0] in rocs }
-				plotROC( var[0], dictVariables, len(cutsList) )
+				plotROC( var[0], var[0], dictVariables, len(cutsList) )
 		else: 
 			for bkg in bkgSamples: 
 				dictBkg = { rocs: dictROC[ rocs ] for rocs in dictROC if bkg in rocs }
-				plotROC( bkg, dictBkg, len(cutsList) )
+				plotROC( bkg, bkg, dictBkg, len(cutsList) )
 
-def plotROC( name, dictROC, numCuts ):
+def plotROC( name, sample, dictROC, numCuts ):
 	"""docstring for plotROC"""
-	
+
 	f1 = TF1("f1","x",0,1)
 	f1.SetLineColor(1)
 	f1.SetLineStyle(3)
 	can = TCanvas('c1', 'c1',  10, 10, 1000, 750 )
 	can.SetGrid()
+	
+	PT = TText(0.1, 0.1, sample )
 	multiGraph = TMultiGraph()
 	legend=TLegend(0.70,0.60,0.90,0.90)
 	legend.SetFillStyle(0)
@@ -210,15 +212,15 @@ def plotROC( name, dictROC, numCuts ):
 		dictROC[h].SetMarkerStyle(4)
 		multiGraph.Add( dictROC[h] )
 	multiGraph.Draw("ALP")
+	PT.Draw()
 	multiGraph.GetXaxis().SetRangeUser(-0.05,1.05)
 	multiGraph.GetYaxis().SetRangeUser(-0.05,1.05)
 	multiGraph.GetXaxis().SetTitle('Signal efficiency')
 	multiGraph.GetYaxis().SetTitle('Bkg rejection')
 	multiGraph.GetYaxis().SetTitleOffset(0.95)
-	multiGraph.SetTitle( name )
 	f1.Draw("same")
 	legend.Draw()
-	can.SaveAs('Plots/'+name+'_'+version+signalName+'_ROC_cut'+str(numCuts)+'.png')
+	can.SaveAs('Plots/'+name+'_'+version+signalName+'_QCD'+qcd+'_ROC_cut'+str(numCuts)+'.'+args.ext)
 	del can
 
 #----------------------------------------------------------------------
@@ -425,6 +427,8 @@ if __name__ == '__main__':
 	parser.add_argument( '-p', '--process', action='store',  dest='process', default='Simple', help='Process: simple or TMVA' )
 	parser.add_argument( '-v', '--version', action='store',  dest='version', default='Boosted', help='Variable to optimize, as histogram in rootfile.' )
 	parser.add_argument( '-e', '--eff', action='store', dest='effS', type=int, default=0, help='Mass of the Stop' )
+	parser.add_argument('-Q', '--QCD', action='store', default='Pt', help='Type of QCD binning, example: HT.' )
+	parser.add_argument('-E', '--extension', action='store', dest='ext', default='png', help='Extension of plots.' )
 
 	try:
 		args = parser.parse_args()
@@ -440,18 +444,19 @@ if __name__ == '__main__':
 	quantity = args.quantity
 	printValue = args.printValue
 	effS = args.effS
+	qcd = args.QCD
 
 	bkgSamples = {}
-	bkgSamples[ 'QCDHTAll' ] = 'Rootfiles/RUNAnalysis_QCDHTAll_RunIIFall15MiniAODv2_v76x_v1p0_v02.root'
-	bkgSamples[ 'TTJets' ] = 'Rootfiles/RUNAnalysis_TTJets_RunIIFall15MiniAODv2_v76x_v1p0_v02.root'
-	bkgSamples[ 'WJetsToQQ' ] = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIIFall15MiniAODv2_v76x_v1p0_v02.root'
+	bkgSamples[ 'QCD'+qcd+'All' ] = 'Rootfiles/RUNAnalysis_QCD'+qcd+'All_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
+	bkgSamples[ 'TTJets' ] = 'Rootfiles/RUNAnalysis_TTJets_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
+	bkgSamples[ 'WJetsToQQ' ] = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
 	#bkgSamples[ 'ZJetsToQQ' ] = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
-	bkgSamples[ 'WWTo4Q' ] = 'Rootfiles/RUNAnalysis_WWTo4Q_RunIIFall15MiniAODv2_v76x_v1p0_v02.root'
-	bkgSamples[ 'ZZTo4Q' ] = 'Rootfiles/RUNAnalysis_ZZTo4Q_RunIIFall15MiniAODv2_v76x_v1p0_v02.root'
-	bkgSamples[ 'WZ' ] = 'Rootfiles/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v1p0_v02.root'
+	bkgSamples[ 'WWTo4Q' ] = 'Rootfiles/RUNAnalysis_WWTo4Q_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
+	bkgSamples[ 'ZZTo4Q' ] = 'Rootfiles/RUNAnalysis_ZZTo4Q_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
+	bkgSamples[ 'WZ' ] = 'Rootfiles/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
 
 	sigSamples = {}
-	sigSamples[ 'RPVSt'+str(mass) ] = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v1p0_v02.root'
+	sigSamples[ 'RPVSt'+str(mass) ] = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
 	#sigSamples[ 'WWTo4Q' ] = 'Rootfiles/RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 	#sigSamples[ 'ZZTo4Q' ] = 'Rootfiles/RUNAnalysis_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 	#sigSamples[ 'WZ' ] = 'Rootfiles/RUNAnalysis_WZ_TuneCUETP8M1_13TeV-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
@@ -474,16 +479,28 @@ if __name__ == '__main__':
 		#[ 'Resolved', 'xi1', 20, 0., 1., True, 0, 0.6 ],
 		#[ 'Resolved', 'xi2', 20, 0., 1., True , 0, 0.6],
 		##### RPV St 100
-		[ 'Boosted', "prunedMassAsym", 20, 0., 1., True, 0.2, 0.9 ],
+#		[ 'Boosted', "prunedMassAsym", 20, 0., 1., True, 0.2, 0.9 ],
+#		[ 'Boosted', "jet1CosThetaStar", 20, 0., 1, True, 0., 0.8 ],
+#		[ 'Boosted', "jet2CosThetaStar", 20, 0., 1, True, 0., 0.8 ],
+#		[ 'Boosted', "jet1Tau21", 20, 0., 1., True, 0.5, 0.8  ],
+#		[ 'Boosted', "jet2Tau21", 20, 0., 1., True, 0.5, 0.80 ],
+#		[ 'Boosted', "jet1Tau31", 20, 0., 1., True, 0.3, 0.7 ],
+#		[ 'Boosted', "jet2Tau31", 20, 0., 1., True, 0.3, 0.7 ],
+#		[ 'Boosted', "jet1Tau32", 20, 0., 1., True, 0., 0  ],
+#		[ 'Boosted', "jet2Tau32", 20, 0., 1., True, 0., 0  ],
+#		[ 'Boosted', "deltaEtaDijet", 50, 0., 5., True, 0.4, 0.6 ],
+#		[ 'Boosted', "jet1SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
+#		[ 'Boosted', "jet2SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
+		[ 'Boosted', "prunedMassAsym", 20, 0., 1., True, 0.1, 0.9 ],
 		[ 'Boosted', "jet1CosThetaStar", 20, 0., 1, True, 0., 0.8 ],
 		[ 'Boosted', "jet2CosThetaStar", 20, 0., 1, True, 0., 0.8 ],
-		[ 'Boosted', "jet1Tau21", 20, 0., 1., True, 0.5, 0.8  ],
-		[ 'Boosted', "jet2Tau21", 20, 0., 1., True, 0.5, 0.80 ],
-		[ 'Boosted', "jet1Tau31", 20, 0., 1., True, 0.3, 0.7 ],
-		[ 'Boosted', "jet2Tau31", 20, 0., 1., True, 0.3, 0.7 ],
+		[ 'Boosted', "jet1Tau21", 20, 0., 1., True, 0.45, 0.8  ],
+		[ 'Boosted', "jet2Tau21", 20, 0., 1., True, 0.45, 0.80 ],
+		[ 'Boosted', "jet1Tau31", 20, 0., 1., True, 0., 0.7 ],
+		[ 'Boosted', "jet2Tau31", 20, 0., 1., True, 0., 0.7 ],
 		[ 'Boosted', "jet1Tau32", 20, 0., 1., True, 0., 0  ],
 		[ 'Boosted', "jet2Tau32", 20, 0., 1., True, 0., 0  ],
-		[ 'Boosted', "deltaEtaDijet", 50, 0., 5., True, 0.4, 0.6 ],
+		[ 'Boosted', "deltaEtaDijet", 50, 0., 5., True, 0.6, 0.6 ],
 		[ 'Boosted', "jet1SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
 		[ 'Boosted', "jet2SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
 	]
@@ -499,8 +516,8 @@ if __name__ == '__main__':
 		variables = [ x[1:] for x in var if ( ( version in x[0] ) and ( x[6]==x[3] ) ) ]
 		cuts = [ x[1:] for x in var if ( ( version in x[0] ) and ( x[6]!=x[3] ) ) ]
 		for q in sigSamples: signalName = ( q )
-		if printValue: 	makeROCs( 'ROCfiles/ROC'+version+'Values_'+signalName+'_cut'+str(len(cuts)-1)+'.txt', cuts, bkgSamples, True if 'var' in typeROC else False, cuts, printValue, quantity )
-		else: makeROCs( 'ROCfiles/ROC'+version+'Values_'+signalName+'_cut'+str(len(cuts))+'.txt', variables, bkgSamples, True if 'var' in typeROC else False, cuts, printValue, quantity )
+		if printValue: 	makeROCs( 'ROCfiles/ROC'+version+'Values_QCD'+qcd+'_'+signalName+'_QCD'+qcd+'_cut'+str(len(cuts)-1)+'.txt', cuts, bkgSamples, True if 'var' in typeROC else False, cuts, printValue, quantity )
+		else: makeROCs( 'ROCfiles/ROC'+version+'Values_QCD'+qcd+'_'+signalName+'_cut'+str(len(cuts))+'.txt', variables, bkgSamples, True if 'var' in typeROC else False, cuts, printValue, quantity )
 
 	elif 'TMVA' in process:
 		variables = [ x[1] for x in var if ( version in x[0] ) ]
