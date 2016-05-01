@@ -1334,7 +1334,7 @@ void RUNBoostedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descr
 	desc.add<InputTag>("jetKeys", 	InputTag("jetKeysAK8CHS"));
 	desc.add<InputTag>("jetCSVv2", 	InputTag("jetsAK8CHS:jetAK8CHSCSVv2"));
 	desc.add<InputTag>("jetCMVAv2", 	InputTag("jetsAK8CHS:jetAK8CHSCMVAv2"));
-	desc.add<InputTag>("jetDoubleB", 	InputTag("jetsAK8CHS:jetAK8CHSDoubleB"));
+	desc.add<InputTag>("jetDoubleB", 	InputTag("jetsAK8CHS:jetAK8CHSDoubleBAK8"));
 	desc.add<InputTag>("jetArea", 	InputTag("jetsAK8CHS:jetAK8CHSjetArea"));
 	desc.add<InputTag>("jetGenPt", 	InputTag("jetsAK8CHS:jetAK8CHSGenJetPt"));
 	desc.add<InputTag>("jetGenEta", 	InputTag("jetsAK8CHS:jetAK8CHSGenJetEta"));

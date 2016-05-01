@@ -25,10 +25,9 @@ except ImportError:
 
 gROOT.SetBatch()
 ######################################
-def myAnalyzer( dictSamples, listCuts, signalName, RANGE ):
+def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 
-	if (( len(dictSamples) == 1 ) and ( signalName not in ['RPVStopStopToJets_'+args.decay+'_M-'+str(mass)] )): outputFileName = 'Rootfiles/RUNMiniBoostedAnalysis_'+grooming+'_'+signalName+'_'+RANGE+'_v03p1.root' 
-	else: outputFileName = 'Rootfiles/RUNMiniBoostedAnalysis_'+grooming+'_'+signalName+'_v03p1.root' 
+	outputFileName = 'Rootfiles/RUNMiniBoostedAnalysis_'+grooming+'_'+signalName+UNC+'_'+RANGE+'_v04.root' 
 	outputFile = TFile( outputFileName, 'RECREATE' )
 
 	###################################### output Tree
@@ -67,6 +66,18 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE ):
 		allHistos[ "jet1Tau32_"+sam ].Sumw2()
 		allHistos[ "jet2Tau32_"+sam ] = TH1F( "jet2Tau32_"+sam, "jet2Tau32_"+sam, 20, 0., 1 )
 		allHistos[ "jet2Tau32_"+sam ].Sumw2()
+		allHistos[ "jet1RhoDDT_"+sam ] = TH1F( "jet1RhoDDT_"+sam, "jet1RhoDDT_"+sam, 200, -10, 10 )
+		allHistos[ "jet1RhoDDT_"+sam ].Sumw2()
+		allHistos[ "jet2RhoDDT_"+sam ] = TH1F( "jet2RhoDDT_"+sam, "jet2RhoDDT_"+sam, 200, -10, 10 )
+		allHistos[ "jet2RhoDDT_"+sam ].Sumw2()
+		allHistos[ "jet1Tau21VsRhoDDT_"+sam ] = TH2F( "jet1Tau21VsRhoDDT_"+sam, "jet1Tau21VsRhoDDT_"+sam, 20, 0., 1., 200, -10, 10 )
+		allHistos[ "jet1Tau21VsRhoDDT_"+sam ].Sumw2()
+		allHistos[ "jet2Tau21VsRhoDDT_"+sam ] = TH2F( "jet2Tau21VsRhoDDT_"+sam, "jet2Tau21VsRhoDDT_"+sam, 20, 0., 1., 200, -10, 10 )
+		allHistos[ "jet2Tau21VsRhoDDT_"+sam ].Sumw2()
+		allHistos[ "jet1Tau21DDT_"+sam ] = TH1F( "jet1Tau21DDT_"+sam, "jet1Tau21DDT_"+sam, 30, -1, 2 )
+		allHistos[ "jet1Tau21DDT_"+sam ].Sumw2()
+		allHistos[ "jet2Tau21DDT_"+sam ] = TH1F( "jet2Tau21DDT_"+sam, "jet2Tau21DDT_"+sam, 30, -1, 2 )
+		allHistos[ "jet2Tau21DDT_"+sam ].Sumw2()
 		if 'high' in args.RANGE:
 			allHistos[ "jet1Tau31_"+sam ] = TH1F( "jet1Tau31_"+sam, "jet1Tau31_"+sam, 20, 0., 1 )
 			allHistos[ "jet1Tau31_"+sam ].Sumw2()
@@ -145,7 +156,7 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE ):
 	for sample in dictSamples:
 
 		####### Get GenTree 
-		inputFile, events, numEntries = getTree( dictSamples[ sample ], ('BoostedAnalysisPlotsPuppi/RUNATree' if 'Puppi' in args.grooming else 'BoostedAnalysisPlots/RUNATree' ) )
+		inputFile, events, numEntries = getTree( dictSamples[ sample ], ('BoostedAnalysisPlotsPuppi'+UNC+'/RUNATree' if 'Puppi' in args.grooming else 'BoostedAnalysisPlots'+UNC+'/RUNATree' ) )
 		print '-'*40
 		print '------> ', sample
 		print '------> Number of events: '+str(numEntries)
@@ -173,6 +184,8 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE ):
 			MET		= events.MET
 			numJets		= events.numJets
 			massAve		= getattr( events, (args.grooming+"MassAve").replace('Puppi','') )
+			jet1Mass	= getattr( events, 'jet1'+(args.grooming+"Mass").replace('pruned','Pruned').replace('soft','Soft').replace('Puppi',''))
+			jet2Mass	= getattr( events, 'jet2'+(args.grooming+"Mass").replace('pruned','Pruned').replace('soft','Soft').replace('Puppi',''))
 			jet1Pt          = events.jet1Pt
 			jet2Pt          = events.jet2Pt
 			jet1Eta          = events.jet1Eta
@@ -187,13 +200,11 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE ):
 			#else: scale = puWeight 
 			cutFlowList[ 'Process' ] += scale
 
-			#### test
-			#if ( jet1Mass > 400 ) or ( jet2Mass > 400 ): print 'Entry ', Run, ':', Lumi, ':', NumEvent
-			#if ( Lumi != tmpLumi ):
-			#	newLumi += Lumi
-			#	tmpLumi == Lumi
-			#print Run/float(Lumi), Run, Lumi, Run/float(newLumi)
-			
+			########## DDT
+			jet1RhoDDT = TMath.Log( jet1Mass*jet1Mass/jet1Pt )
+			jet2RhoDDT = TMath.Log( jet2Mass*jet2Mass/jet2Pt )
+			jet1Tau21DDT = events.jet1Tau21 - (-0.063 * jet1RhoDDT )
+			jet2Tau21DDT = events.jet2Tau21 - (-0.063 * jet2RhoDDT )
 			
 			#### Pre-selection
 			HTCut = ( HT > 900 )
@@ -210,6 +221,12 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE ):
 				allHistos[ "numJets_"+sam ].Fill( numJets, scale )
 				allHistos[ "jet1Pt_"+sam ].Fill( jet1Pt, scale )
 				allHistos[ "jet2Pt_"+sam ].Fill( jet2Pt, scale )
+				allHistos[ "jet1RhoDDT_"+sam ].Fill( jet1RhoDDT, scale )
+				allHistos[ "jet2RhoDDT_"+sam ].Fill( jet2RhoDDT, scale )
+				allHistos[ "jet1Tau21VsRhoDDT_"+sam ].Fill( events.jet1Tau21, jet1RhoDDT, scale )
+				allHistos[ "jet2Tau21VsRhoDDT_"+sam ].Fill( events.jet2Tau21, jet2RhoDDT, scale )
+				allHistos[ "jet1Tau21DDT_"+sam ].Fill( jet1Tau21DDT, scale )
+				allHistos[ "jet2Tau21DDT_"+sam ].Fill( jet2Tau21DDT, scale )
 				allHistos[ "prunedMassAsym_"+sam ].Fill( events.prunedMassAsym, scale )
 				allHistos[ "deltaEtaDijet_"+sam ].Fill( events.deltaEtaDijet, scale )
 				allHistos[ "jet1CosThetaStar_"+sam ].Fill( jet1CosThetaStar, scale )
@@ -341,6 +358,8 @@ if __name__ == '__main__':
 	parser.add_argument( '-d', '--decay', action='store',  dest='decay', default='UDD312', help='Decay: UDD312 or UDD323.' )
 	parser.add_argument( '-s', '--sample', action='store',   dest='samples', default='RPV', help='Type of sample' )
 	parser.add_argument( '-r', '--range', action='store',  dest='RANGE', default='low', help='Range: low, med, high.' )
+	parser.add_argument( '-u', '--unc', action='store',  dest='unc', type=bool, default=False, help='Process: all or single.' )
+	parser.add_argument( '-b', '--batchSys', action='store',  dest='batchSys', type=bool, default=False, help='Process: all or single.' )
 
 	try:
 		args = parser.parse_args()
@@ -353,19 +372,21 @@ if __name__ == '__main__':
 	grooming = args.grooming
 	samples = args.samples
 
-	if 'RPV' in samples: samples = 'RPVStopStopToJets_'+args.decay+'_M-'+str(mass)
+	if args.batchSys: folder = '/cms/gomez/archiveEOS/Archive/763patch2/v4/'
+	else: folder = 'Rootfiles/'
+
 	allSamples = {}
-	allSamples[ 'DATA' ] = 'Rootfiles/RUNAnalysis_JetHT_Run2015D-16Dec2015-v1_v76x_v1p0_v03.root'
-	#if not 'Dibosons' in mass: allSamples[ 'RPVStopStopToJets_'+args.decay+'_M-'+str(mass) ] = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v1p0_v01.root'
-	allSamples[ 'RPVStopStopToJets_'+args.decay+'_M-'+str(mass) ] = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
-	allSamples[ 'QCDHTAll' ] = 'Rootfiles/RUNAnalysis_QCDHTAll_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
-	allSamples[ 'QCDPtAll' ] = 'Rootfiles/RUNAnalysis_QCDPtAll_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
-	allSamples[ 'TTJets' ] = 'Rootfiles/RUNAnalysis_TTJets_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
-	allSamples[ 'WJetsToQQ' ] = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
-	#allSamples[ 'ZJetsToQQ' ] = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
-	allSamples[ 'WWTo4Q' ] = 'Rootfiles/RUNAnalysis_WWTo4Q_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
-	allSamples[ 'ZZTo4Q' ] = 'Rootfiles/RUNAnalysis_ZZTo4Q_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
-	allSamples[ 'WZ' ] = 'Rootfiles/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
+	allSamples[ 'DATA' ] = folder+'/RUNAnalysis_JetHT_Run2015D-16Dec2015-v1_v76x_v2p0_v04.root'
+	#if not 'Dibosons' in mass: allSamples[ 'RPVStopStopToJets_'+args.decay+'_M-'+str(mass) ] = folder+'/RUNAnalysis_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v2p0_v01.root'
+	allSamples[ 'RPVStopStopToJets_'+args.decay+'_M-'+str(mass) ] = folder+'/RUNAnalysis_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
+	allSamples[ 'QCDHTAll' ] = folder+'/RUNAnalysis_QCDHTAll_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
+	allSamples[ 'QCDPtAll' ] = folder+'/RUNAnalysis_QCDPtAll_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
+	allSamples[ 'TTJets' ] = folder+'/RUNAnalysis_TTJets_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
+	allSamples[ 'WJetsToQQ' ] = folder+'/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
+	#allSamples[ 'ZJetsToQQ' ] = folder+'/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v04.root'
+	allSamples[ 'WWTo4Q' ] = folder+'/RUNAnalysis_WWTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
+	allSamples[ 'ZZTo4Q' ] = folder+'/RUNAnalysis_ZZTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
+	allSamples[ 'WZ' ] = folder+'/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
 
 	cutList = ( 'Dibosons' if 'Dibosons' in mass else 'RPVStopStopToJets_'+args.decay+'_M-'+mass )
 	try: cuts = selection[ cutList ]
@@ -373,6 +394,7 @@ if __name__ == '__main__':
 		print 'Mass', mass, 'not in list.'
 		sys.exit(0)
 		
+	if 'RPV' in samples: samples = 'RPVStopStopToJets_'+args.decay+'_M-'+str(mass)
 	if 'single' in process: 
 		for q in allSamples:
 			if q in samples:
@@ -383,6 +405,12 @@ if __name__ == '__main__':
 		signalSample = 'RPVStopStopToJets_'+args.decay+'_M-'+mass+'_All'
 	allHistos = {}
 
-	p = Process( target=myAnalyzer, args=( dictSamples, cuts, signalSample, args.RANGE ) )
-	p.start()
-	p.join()
+	if ('RPV' in samples) and args.unc:
+		for uncType in [ 'JESUp', 'JESDown' ]: 
+			p = Process( target=myAnalyzer, args=( dictSamples, cuts, signalSample, args.RANGE, uncType ) )
+			p.start()
+			p.join()
+	else:
+		p = Process( target=myAnalyzer, args=( dictSamples, cuts, signalSample, args.RANGE, '' ) )
+		p.start()
+		p.join()
