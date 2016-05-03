@@ -158,7 +158,7 @@ dictEvents = {
 #		'TTJets_HT-2500toInf' :	[  	507842. 	 ],
 		'WJetsToQQ' : 	[  		1025100. 	 ],
 		'WWTo4Q' : 	[  		29626134. 	 ],
-		'ZJetsToQQ' : 	[  		982095. 	 ],
+		'ZJetsToQQ' : 	[  		949380. 	 ],
 		'ZZTo4Q' : 	[  		30707868. 	 ],
 		'WZ' : 	[  		1000000. 	 ],
 
@@ -168,7 +168,7 @@ dictEvents = {
 		#'RPVStopStopToJets_UDD312_M-200' :  	[ 0., 	138907. 	],	
 		#'RPVStopStopToJets_UDD312_M-350' :  	[ 0., 	11293. 	],	
 		#'RPVStopStopToJets_UDD312_M-800' :  	[ 0., 	4784. 	],	
-		'RPVStopStopToJets_UDD323_M-100' :	[ 	19285.],
+		'RPVStopStopToJets_UDD323_M-100' :	[ 	116223.],
 		##### Centrally produced
 		'RPVStopStopToJets_UDD312_M-80' :	[ 	22624434.],
 		'RPVStopStopToJets_UDD312_M-90' :	[ 3441909., 	17412935.],

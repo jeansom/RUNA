@@ -78,6 +78,10 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 		allHistos[ "jet1Tau21DDT_"+sam ].Sumw2()
 		allHistos[ "jet2Tau21DDT_"+sam ] = TH1F( "jet2Tau21DDT_"+sam, "jet2Tau21DDT_"+sam, 30, -1, 2 )
 		allHistos[ "jet2Tau21DDT_"+sam ].Sumw2()
+		allHistos[ "jet1Tau21DDTVsRhoDDT_"+sam ] = TH2F( "jet1Tau21DDTVsRhoDDT_"+sam, "jet1Tau21DDTVsRhoDDT_"+sam, 20, 0., 1., 200, -10, 10 )
+		allHistos[ "jet1Tau21DDTVsRhoDDT_"+sam ].Sumw2()
+		allHistos[ "jet2Tau21DDTVsRhoDDT_"+sam ] = TH2F( "jet2Tau21DDTVsRhoDDT_"+sam, "jet2Tau21DDTVsRhoDDT_"+sam, 20, 0., 1., 200, -10, 10 )
+		allHistos[ "jet2Tau21DDTVsRhoDDT_"+sam ].Sumw2()
 		if 'high' in args.RANGE:
 			allHistos[ "jet1Tau31_"+sam ] = TH1F( "jet1Tau31_"+sam, "jet1Tau31_"+sam, 20, 0., 1 )
 			allHistos[ "jet1Tau31_"+sam ].Sumw2()
@@ -203,8 +207,8 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 			########## DDT
 			jet1RhoDDT = TMath.Log( jet1Mass*jet1Mass/jet1Pt )
 			jet2RhoDDT = TMath.Log( jet2Mass*jet2Mass/jet2Pt )
-			jet1Tau21DDT = events.jet1Tau21 - (-0.063 * jet1RhoDDT )
-			jet2Tau21DDT = events.jet2Tau21 - (-0.063 * jet2RhoDDT )
+			jet1Tau21DDT = events.jet1Tau21 + 0.063 * jet1RhoDDT 
+			jet2Tau21DDT = events.jet2Tau21 + 0.063 * jet2RhoDDT 
 			
 			#### Pre-selection
 			HTCut = ( HT > 900 )
@@ -227,6 +231,8 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 				allHistos[ "jet2Tau21VsRhoDDT_"+sam ].Fill( events.jet2Tau21, jet2RhoDDT, scale )
 				allHistos[ "jet1Tau21DDT_"+sam ].Fill( jet1Tau21DDT, scale )
 				allHistos[ "jet2Tau21DDT_"+sam ].Fill( jet2Tau21DDT, scale )
+				allHistos[ "jet1Tau21DDTVsRhoDDT_"+sam ].Fill( jet1Tau21DDT, jet1RhoDDT, scale )
+				allHistos[ "jet2Tau21DDTVsRhoDDT_"+sam ].Fill( jet2Tau21DDT, jet2RhoDDT, scale )
 				allHistos[ "prunedMassAsym_"+sam ].Fill( events.prunedMassAsym, scale )
 				allHistos[ "deltaEtaDijet_"+sam ].Fill( events.deltaEtaDijet, scale )
 				allHistos[ "jet1CosThetaStar_"+sam ].Fill( jet1CosThetaStar, scale )

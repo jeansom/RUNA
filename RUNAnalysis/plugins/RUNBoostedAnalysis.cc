@@ -546,8 +546,6 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	vector< myJet > JETS;
 	vector< float > tmpTriggerMass;
 	bool cutHT = 0;
-	//bool cutJetPt = 0;
-	//bool bTagCSVv2 = 0;
 	int numberJets = 0;
 	HT = 0;
 
@@ -735,160 +733,187 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 				histos1D_[ "chargedMultiplicity_cutDijet" ]->Fill( JETS[k].chm, totalWeight );
 			}
 
+
+			// Mass average and asymmetry
+			massAve = massAverage( JETS[0].mass, JETS[1].mass );
+			massAsym = massAsymmetry( JETS[0].mass, JETS[1].mass );
+			trimmedMassAve = massAverage( JETS[0].trimmedMass, JETS[1].trimmedMass );
+			trimmedMassAsym = massAsymmetry( JETS[0].trimmedMass, JETS[1].trimmedMass );
+			prunedMassAve = massAverage( JETS[0].prunedMass, JETS[1].prunedMass );
+			prunedMassAsym = massAsymmetry( JETS[0].prunedMass, JETS[1].prunedMass );
+			filteredMassAve = massAverage( JETS[0].filteredMass, JETS[1].filteredMass );
+			filteredMassAsym = massAsymmetry( JETS[0].filteredMass, JETS[1].filteredMass );
+			softDropMassAve = massAverage( JETS[0].softDropMass, JETS[1].softDropMass );
+			softDropMassAsym = massAsymmetry( JETS[0].softDropMass, JETS[1].softDropMass );
+			//////////////////////////////////////////////////////////////////////////
+			
+			// Btag
+			jet1btagCSVv2 = JETS[0].btagCSVv2;
+			jet2btagCSVv2 = JETS[1].btagCSVv2;
+			jet1btagCMVAv2 = JETS[0].btagCMVAv2;
+			jet2btagCMVAv2 = JETS[1].btagCMVAv2;
+			jet1btagDoubleB = JETS[0].btagDoubleB;
+			jet2btagDoubleB = JETS[1].btagDoubleB;
+
+			// Dijet eta
+			deltaEtaDijet = deltaValue( JETS[0].p4.Eta(), JETS[1].p4.Eta() );
+
+			// Cos theta star
+			jet1CosThetaStar = calculateCosThetaStar( JETS[0].p4, JETS[1].p4 ) ;
+			jet2CosThetaStar = calculateCosThetaStar( JETS[1].p4, JETS[0].p4 ) ;
+
+			// Nsubjetiness
+			jet1Tau21 = JETS[0].tau2 / JETS[0].tau1;
+			jet1Tau31 = JETS[0].tau3 / JETS[0].tau1;
+			jet1Tau32 = JETS[0].tau3 / JETS[0].tau2;
+			jet2Tau21 = JETS[1].tau2 / JETS[1].tau1;
+			jet2Tau31 = JETS[1].tau3 / JETS[1].tau1;
+			jet2Tau32 = JETS[1].tau3 / JETS[1].tau2;
+			////////////////////////////////////////////////////////////////////////////////
+
+
+			// Subjet variables
+			jet1SubjetsTLV.push_back( JETS[0].subjet0 );
+			jet1SubjetsTLV.push_back( JETS[0].subjet1 );
+			//LogWarning("subjet0") <<  jet1SubjetsTLV[0].M() << " " <<  jet1SubjetsTLV[1].M();
+			sort(jet1SubjetsTLV.begin(), jet1SubjetsTLV.end(), [](const TLorentzVector &p1, const TLorentzVector &p2) { return p1.M() > p2.M(); }); 
+			//LogWarning("subjet0") <<  jet1SubjetsTLV[0].M() << " " <<  jet1SubjetsTLV[1].M();
+			jet2SubjetsTLV.push_back( JETS[1].subjet0 );
+			jet2SubjetsTLV.push_back( JETS[1].subjet1 );
+			sort(jet2SubjetsTLV.begin(), jet2SubjetsTLV.end(), [](const TLorentzVector &p1, const TLorentzVector &p2) { return p1.M() > p2.M(); }); 
+			if( ( jet1SubjetsTLV.size() > 0 ) && ( jet2SubjetsTLV.size() > 0 ) ) {
+
+				// Subjet Pt ratio, subjet mass ratio 
+				//LogWarning("subjet0") <<  jet1SubjetsTLV[0].Pt() << " " <<  jet1SubjetsTLV[1].Pt();
+				jet1SubjetPtRatio = min( jet1SubjetsTLV[0].Pt(), jet1SubjetsTLV[1].Pt() ) / max( jet1SubjetsTLV[0].Pt(), jet1SubjetsTLV[1].Pt() );
+				/*jet1SubjetMass21Ratio =  jet1SubjetsTLV[1].M() / jet1SubjetsTLV[0].M() ;
+				jet1Subjet112MassRatio = jet1SubjetsTLV[0].M() / ( jet1SubjetsTLV[0] + jet1SubjetsTLV[1] ).M();
+				jet1Subjet1JetMassRatio = jet1SubjetsTLV[0].M() /JETS[0].mass;
+				jet1Subjet212MassRatio = jet1SubjetsTLV[1].M() / ( jet1SubjetsTLV[0] + jet1SubjetsTLV[1] ).M();
+				jet1Subjet2JetMassRatio = jet1SubjetsTLV[1].M() /JETS[0].mass;
+				*/
+
+				jet2SubjetPtRatio = min( jet2SubjetsTLV[0].Pt(), jet2SubjetsTLV[1].Pt() ) / max( jet2SubjetsTLV[0].Pt(), jet2SubjetsTLV[1].Pt() );
+				/*jet2SubjetMass21Ratio =  jet2SubjetsTLV[1].M()/jet2SubjetsTLV[0].M();
+				jet2Subjet112MassRatio = jet2SubjetsTLV[0].M()/ ( jet2SubjetsTLV[0] + jet2SubjetsTLV[1] ).M();
+				jet2Subjet1JetMassRatio = jet2SubjetsTLV[0].M()/JETS[1].mass;
+				jet2Subjet212MassRatio = jet2SubjetsTLV[1].M()/ ( jet2SubjetsTLV[0] + jet2SubjetsTLV[1] ).M();
+				jet2Subjet2JetMassRatio = jet2SubjetsTLV[1].M()/JETS[1].mass;
+				/////////////////////////////////////////////////////////////////////////////////*/
+
+			
+				/*/ SUbjet Polarization angle & dalitz variables
+				double m1 = jet1SubjetsTLV[0].M();
+				double m2 = jet1SubjetsTLV[1].M();
+				double m3 = jet2SubjetsTLV[0].M();
+				double m4 = jet2SubjetsTLV[1].M();
+
+				double m12 = ( jet1SubjetsTLV[0] + jet1SubjetsTLV[1] ).M() ;
+				double m34 = ( jet2SubjetsTLV[0] + jet2SubjetsTLV[1] ).M() ;
+				double m134 = ( jet1SubjetsTLV[0] + jet2SubjetsTLV[0] + jet2SubjetsTLV[1] ).M() ;
+				double m123 = ( jet1SubjetsTLV[0] + jet1SubjetsTLV[1] + jet2SubjetsTLV[0] ).M() ;
+				double m124 = ( jet1SubjetsTLV[0] + jet1SubjetsTLV[1] + jet2SubjetsTLV[1] ).M() ;
+				double m234 = ( jet1SubjetsTLV[1] + jet2SubjetsTLV[0] + jet2SubjetsTLV[1] ).M() ;
+				double m1234 = ( jet1SubjetsTLV[0] + jet1SubjetsTLV[1] + jet2SubjetsTLV[0] + jet2SubjetsTLV[1] ).M() ;
+				
+				// subjet polarization angles
+				double tmpX1 = pow(m1234,2) * ( ( 2 * ( pow(m12,2) + pow(m1,2) ) ) - pow(m2,2) ) ;
+				double tmpX2 = pow(m12,2) * ( pow(m134,2) - pow(m34,2) - pow(m1,2) );
+				double tmpX3 = pow(m1234,4) - ( pow(m12,2) * pow(m34,2) ) ; 
+				double tmpX4 = ( 2 * ( pow(m12,2) + pow(m1,2) ) ) - pow(m2,2);
+				double tmpX5 = pow(m12,2) * pow(m1,2);
+				double tmpx1 = tmpX1 - (tmpX2/2);
+				double tmpx2 = tmpX3 * ( pow(tmpX4,2) - tmpX5 );
+				cosPhi13412 = TMath::Abs( tmpx1 / TMath::Sqrt( tmpx2 ) );
+
+				double tmpY1 = pow(m1234,2) * ( ( 2 * ( pow(m34,2) + pow(m3,2) ) ) - pow(m4,2) ) ;
+				double tmpY2 = pow(m34,2) * ( pow(m123,2) - pow(m12,2) - pow(m3,2) );
+				double tmpY3 = pow(m1234,4) - ( pow(m12,2) * pow(m34,2) ) ; 
+				double tmpY4 = ( 2 * ( pow(m34,2) + pow(m3,2) ) ) - pow(m4,2);
+				double tmpY5 = pow(m34,2) * pow(m3,2);
+				double tmpy1 = tmpY1 - (tmpY2/2);
+				double tmpy2 = tmpY3 * ( pow(tmpY4,2) - tmpY5 );
+				cosPhi31234 = TMath::Abs( tmpy1 / TMath::Sqrt( tmpy2 ) );
+
+				// dalitz
+				double tmptilde1 = pow( m1, 2 ) + pow( m2, 2) + pow( m34, 2 ) + pow( m1234, 2);
+				double mtilde12 = pow( m12, 2 ) / tmptilde1;
+				double mtilde134 = pow( m134, 2 ) / tmptilde1;
+				double mtilde234 = pow( m234, 2 ) / tmptilde1;
+				//double tmpMtilde = mtilde12 + mtilde134 + mtilde234;
+				//LogWarning("dalitz0") << tmpMtilde << " " << mtilde12 << " " << mtilde134 << " " <<  mtilde234;
+				dalitz1.push_back( mtilde12 );
+				dalitz1.push_back( mtilde134 );
+				dalitz1.push_back( mtilde234 );
+				sort( dalitz1.begin(), dalitz1.end(), [](const double &p1, const double &p2) { return p1 > p2; }); 
+				//LogWarning("dalitz1") << dalitz1[0] << " " << dalitz1[1] << " " << dalitz1[2];
+
+				dalitzX1 = ( dalitz1[1] + ( 2 * dalitz1[0] ) ) / TMath::Sqrt(3);
+				//LogWarning("X1") << dalitzX1 << " " << dalitz1[1] ;
+				dalitzX2 = ( dalitz1[2] + ( 2 * dalitz1[0] ) ) / TMath::Sqrt(3);
+				//LogWarning("X2") << dalitzX2 << " " << dalitz1[2] ;
+				dalitzX3 = ( dalitz1[0] + ( 2 * dalitz1[1] ) ) / TMath::Sqrt(3);
+				//LogWarning("X3") << dalitzX3 << " " << dalitz1[0] ;
+				dalitzX4 = ( dalitz1[2] + ( 2 * dalitz1[1] ) ) / TMath::Sqrt(3);
+				//LogWarning("X4") << dalitzX4 << " " << dalitz1[2] ;
+				dalitzX5 = ( dalitz1[0] + ( 2 * dalitz1[2] ) ) / TMath::Sqrt(3);
+				//LogWarning("X5") << dalitzX5 << " " << dalitz1[0] ;
+				dalitzX6 = ( dalitz1[1] + ( 2 * dalitz1[2] ) ) / TMath::Sqrt(3);
+				//LogWarning("X6") << dalitzX6 << " " << dalitz1[1] ;
+
+
+				double tmptilde2 = pow( m3, 2 ) + pow( m4, 2) + pow( m12, 2 ) + pow( m1234, 2);
+				double mtilde34 = pow( m34, 2 ) / tmptilde2;
+				double mtilde123 = pow( m123, 2 ) / tmptilde2;
+				double mtilde124 = pow( m124, 2 ) / tmptilde2;
+				dalitz2.push_back( mtilde34 );
+				dalitz2.push_back( mtilde123 );
+				dalitz2.push_back( mtilde124 );
+				sort( dalitz2.begin(), dalitz2.end(), [](const double &p1, const double &p2) { return p1 > p2; }); 
+
+				dalitzY1 = ( dalitz2[1] + ( 2 * dalitz2[0] ) ) / TMath::Sqrt(3);
+				dalitzY2 = ( dalitz2[2] + ( 2 * dalitz2[0] ) ) / TMath::Sqrt(3);
+				dalitzY3 = ( dalitz2[0] + ( 2 * dalitz2[1] ) ) / TMath::Sqrt(3);
+				dalitzY4 = ( dalitz2[2] + ( 2 * dalitz2[1] ) ) / TMath::Sqrt(3);
+				dalitzY5 = ( dalitz2[0] + ( 2 * dalitz2[2] ) ) / TMath::Sqrt(3);
+				dalitzY6 = ( dalitz2[1] + ( 2 * dalitz2[2] ) ) / TMath::Sqrt(3);
+				//////////////////////////////////////////////////////////////////////////////////////*/
+
+			}
+
+
+			////////// Closure test for Data
+			if ( isData ){
+				if ( ( HT > 600 ) && ( HT < 900 ) ) {
+					if ( ( jet1Tau21 < 0.5 ) && ( jet2Tau21 < 0.5 ) && ( jet1Tau31 < 0.3 ) && ( jet2Tau31 < 0.3 ) ) {
+						//LogWarning("test") << HT << " " << jet1Tau21 << " " << jet2Tau21 << " " << jet1Tau31 << " " << jet2Tau31 ;
+						if ( ( prunedMassAsym < 0.2 ) && ( deltaEtaDijet < 0.7 ) ) {
+							histos1D_[ "prunedMassAve_A" ]->Fill( prunedMassAve, scale );
+							histos2D_[ "prunedMassAsymVsdeltaEtaDijet_A" ]->Fill( prunedMassAsym, deltaEtaDijet, scale );
+							//LogWarning("testA") << prunedMassAsym << " " << deltaEtaDijet;
+						} else if ( ( prunedMassAsym < 0.2 ) && ( deltaEtaDijet > 0.7 ) ){ 
+							histos1D_[ "prunedMassAve_B" ]->Fill( prunedMassAve, scale );
+							histos2D_[ "prunedMassAsymVsdeltaEtaDijet_B" ]->Fill( prunedMassAsym, deltaEtaDijet, scale );
+							//LogWarning("testB") << prunedMassAsym << " " << deltaEtaDijet;
+						} else if ( ( prunedMassAsym > 0.2 ) && ( deltaEtaDijet < 0.7 ) ){ 
+							histos1D_[ "prunedMassAve_C" ]->Fill( prunedMassAve, scale );
+							histos2D_[ "prunedMassAsymVsdeltaEtaDijet_C" ]->Fill( prunedMassAsym, deltaEtaDijet, scale );
+							//LogWarning("testC") << prunedMassAsym << " " << deltaEtaDijet;
+						} else { 
+							histos1D_[ "prunedMassAve_D" ]->Fill( prunedMassAve, scale );
+							histos2D_[ "prunedMassAsymVsdeltaEtaDijet_D" ]->Fill( prunedMassAsym, deltaEtaDijet, scale );
+							//LogWarning("testD") << prunedMassAsym << " " << deltaEtaDijet;
+						}
+					}
+				}
+			}
+			/////////////////////////////////////////////////////////
 			// Cut Pt
 			//if (( JETS[0].p4.Pt() > 500. ) && ( JETS[1].p4.Pt() > 450. ) ) cutJetPt = 1 ;
 			//if ( cutHT && cutJetPt ) {
 			if ( cutHT ) {
 
 				cutmap["HT"] += 1;
-
-				// Mass average and asymmetry
-				massAve = massAverage( JETS[0].mass, JETS[1].mass );
-				massAsym = massAsymmetry( JETS[0].mass, JETS[1].mass );
-				trimmedMassAve = massAverage( JETS[0].trimmedMass, JETS[1].trimmedMass );
-				trimmedMassAsym = massAsymmetry( JETS[0].trimmedMass, JETS[1].trimmedMass );
-				prunedMassAve = massAverage( JETS[0].prunedMass, JETS[1].prunedMass );
-				prunedMassAsym = massAsymmetry( JETS[0].prunedMass, JETS[1].prunedMass );
-				filteredMassAve = massAverage( JETS[0].filteredMass, JETS[1].filteredMass );
-				filteredMassAsym = massAsymmetry( JETS[0].filteredMass, JETS[1].filteredMass );
-				softDropMassAve = massAverage( JETS[0].softDropMass, JETS[1].softDropMass );
-				softDropMassAsym = massAsymmetry( JETS[0].softDropMass, JETS[1].softDropMass );
-				//////////////////////////////////////////////////////////////////////////
-				
-				// Btag
-				jet1btagCSVv2 = JETS[0].btagCSVv2;
-				jet2btagCSVv2 = JETS[1].btagCSVv2;
-				jet1btagCMVAv2 = JETS[0].btagCMVAv2;
-				jet2btagCMVAv2 = JETS[1].btagCMVAv2;
-				jet1btagDoubleB = JETS[0].btagDoubleB;
-				jet2btagDoubleB = JETS[1].btagDoubleB;
-
-				// Dijet eta
-				deltaEtaDijet = deltaValue( JETS[0].p4.Eta(), JETS[1].p4.Eta() );
-
-				// Cos theta star
-				jet1CosThetaStar = calculateCosThetaStar( JETS[0].p4, JETS[1].p4 ) ;
-				jet2CosThetaStar = calculateCosThetaStar( JETS[1].p4, JETS[0].p4 ) ;
-
-				// Nsubjetiness
-				jet1Tau21 = JETS[0].tau2 / JETS[0].tau1;
-				jet1Tau31 = JETS[0].tau3 / JETS[0].tau1;
-				jet1Tau32 = JETS[0].tau3 / JETS[0].tau2;
-				jet2Tau21 = JETS[1].tau2 / JETS[1].tau1;
-				jet2Tau31 = JETS[1].tau3 / JETS[1].tau1;
-				jet2Tau32 = JETS[1].tau3 / JETS[1].tau2;
-				////////////////////////////////////////////////////////////////////////////////
-
-
-				// Subjet variables
-				jet1SubjetsTLV.push_back( JETS[0].subjet0 );
-				jet1SubjetsTLV.push_back( JETS[0].subjet1 );
-				//LogWarning("subjet0") <<  jet1SubjetsTLV[0].M() << " " <<  jet1SubjetsTLV[1].M();
-				sort(jet1SubjetsTLV.begin(), jet1SubjetsTLV.end(), [](const TLorentzVector &p1, const TLorentzVector &p2) { return p1.M() > p2.M(); }); 
-				//LogWarning("subjet0") <<  jet1SubjetsTLV[0].M() << " " <<  jet1SubjetsTLV[1].M();
-				jet2SubjetsTLV.push_back( JETS[1].subjet0 );
-				jet2SubjetsTLV.push_back( JETS[1].subjet1 );
-				sort(jet2SubjetsTLV.begin(), jet2SubjetsTLV.end(), [](const TLorentzVector &p1, const TLorentzVector &p2) { return p1.M() > p2.M(); }); 
-				if( ( jet1SubjetsTLV.size() > 0 ) && ( jet2SubjetsTLV.size() > 0 ) ) {
-
-					// Subjet Pt ratio, subjet mass ratio 
-					//LogWarning("subjet0") <<  jet1SubjetsTLV[0].Pt() << " " <<  jet1SubjetsTLV[1].Pt();
-					jet1SubjetPtRatio = min( jet1SubjetsTLV[0].Pt(), jet1SubjetsTLV[1].Pt() ) / max( jet1SubjetsTLV[0].Pt(), jet1SubjetsTLV[1].Pt() );
-					/*jet1SubjetMass21Ratio =  jet1SubjetsTLV[1].M() / jet1SubjetsTLV[0].M() ;
-					jet1Subjet112MassRatio = jet1SubjetsTLV[0].M() / ( jet1SubjetsTLV[0] + jet1SubjetsTLV[1] ).M();
-					jet1Subjet1JetMassRatio = jet1SubjetsTLV[0].M() /JETS[0].mass;
-					jet1Subjet212MassRatio = jet1SubjetsTLV[1].M() / ( jet1SubjetsTLV[0] + jet1SubjetsTLV[1] ).M();
-					jet1Subjet2JetMassRatio = jet1SubjetsTLV[1].M() /JETS[0].mass;
-					*/
-
-					jet2SubjetPtRatio = min( jet2SubjetsTLV[0].Pt(), jet2SubjetsTLV[1].Pt() ) / max( jet2SubjetsTLV[0].Pt(), jet2SubjetsTLV[1].Pt() );
-					/*jet2SubjetMass21Ratio =  jet2SubjetsTLV[1].M()/jet2SubjetsTLV[0].M();
-					jet2Subjet112MassRatio = jet2SubjetsTLV[0].M()/ ( jet2SubjetsTLV[0] + jet2SubjetsTLV[1] ).M();
-					jet2Subjet1JetMassRatio = jet2SubjetsTLV[0].M()/JETS[1].mass;
-					jet2Subjet212MassRatio = jet2SubjetsTLV[1].M()/ ( jet2SubjetsTLV[0] + jet2SubjetsTLV[1] ).M();
-					jet2Subjet2JetMassRatio = jet2SubjetsTLV[1].M()/JETS[1].mass;
-					/////////////////////////////////////////////////////////////////////////////////*/
-
-				
-					/*/ SUbjet Polarization angle & dalitz variables
-					double m1 = jet1SubjetsTLV[0].M();
-					double m2 = jet1SubjetsTLV[1].M();
-					double m3 = jet2SubjetsTLV[0].M();
-					double m4 = jet2SubjetsTLV[1].M();
-
-					double m12 = ( jet1SubjetsTLV[0] + jet1SubjetsTLV[1] ).M() ;
-					double m34 = ( jet2SubjetsTLV[0] + jet2SubjetsTLV[1] ).M() ;
-					double m134 = ( jet1SubjetsTLV[0] + jet2SubjetsTLV[0] + jet2SubjetsTLV[1] ).M() ;
-					double m123 = ( jet1SubjetsTLV[0] + jet1SubjetsTLV[1] + jet2SubjetsTLV[0] ).M() ;
-					double m124 = ( jet1SubjetsTLV[0] + jet1SubjetsTLV[1] + jet2SubjetsTLV[1] ).M() ;
-					double m234 = ( jet1SubjetsTLV[1] + jet2SubjetsTLV[0] + jet2SubjetsTLV[1] ).M() ;
-					double m1234 = ( jet1SubjetsTLV[0] + jet1SubjetsTLV[1] + jet2SubjetsTLV[0] + jet2SubjetsTLV[1] ).M() ;
-					
-					// subjet polarization angles
-					double tmpX1 = pow(m1234,2) * ( ( 2 * ( pow(m12,2) + pow(m1,2) ) ) - pow(m2,2) ) ;
-					double tmpX2 = pow(m12,2) * ( pow(m134,2) - pow(m34,2) - pow(m1,2) );
-					double tmpX3 = pow(m1234,4) - ( pow(m12,2) * pow(m34,2) ) ; 
-					double tmpX4 = ( 2 * ( pow(m12,2) + pow(m1,2) ) ) - pow(m2,2);
-					double tmpX5 = pow(m12,2) * pow(m1,2);
-					double tmpx1 = tmpX1 - (tmpX2/2);
-					double tmpx2 = tmpX3 * ( pow(tmpX4,2) - tmpX5 );
-					cosPhi13412 = TMath::Abs( tmpx1 / TMath::Sqrt( tmpx2 ) );
-
-					double tmpY1 = pow(m1234,2) * ( ( 2 * ( pow(m34,2) + pow(m3,2) ) ) - pow(m4,2) ) ;
-					double tmpY2 = pow(m34,2) * ( pow(m123,2) - pow(m12,2) - pow(m3,2) );
-					double tmpY3 = pow(m1234,4) - ( pow(m12,2) * pow(m34,2) ) ; 
-					double tmpY4 = ( 2 * ( pow(m34,2) + pow(m3,2) ) ) - pow(m4,2);
-					double tmpY5 = pow(m34,2) * pow(m3,2);
-					double tmpy1 = tmpY1 - (tmpY2/2);
-					double tmpy2 = tmpY3 * ( pow(tmpY4,2) - tmpY5 );
-					cosPhi31234 = TMath::Abs( tmpy1 / TMath::Sqrt( tmpy2 ) );
-
-					// dalitz
-					double tmptilde1 = pow( m1, 2 ) + pow( m2, 2) + pow( m34, 2 ) + pow( m1234, 2);
-					double mtilde12 = pow( m12, 2 ) / tmptilde1;
-					double mtilde134 = pow( m134, 2 ) / tmptilde1;
-					double mtilde234 = pow( m234, 2 ) / tmptilde1;
-					//double tmpMtilde = mtilde12 + mtilde134 + mtilde234;
-					//LogWarning("dalitz0") << tmpMtilde << " " << mtilde12 << " " << mtilde134 << " " <<  mtilde234;
-					dalitz1.push_back( mtilde12 );
-					dalitz1.push_back( mtilde134 );
-					dalitz1.push_back( mtilde234 );
-					sort( dalitz1.begin(), dalitz1.end(), [](const double &p1, const double &p2) { return p1 > p2; }); 
-					//LogWarning("dalitz1") << dalitz1[0] << " " << dalitz1[1] << " " << dalitz1[2];
-
-					dalitzX1 = ( dalitz1[1] + ( 2 * dalitz1[0] ) ) / TMath::Sqrt(3);
-					//LogWarning("X1") << dalitzX1 << " " << dalitz1[1] ;
-					dalitzX2 = ( dalitz1[2] + ( 2 * dalitz1[0] ) ) / TMath::Sqrt(3);
-					//LogWarning("X2") << dalitzX2 << " " << dalitz1[2] ;
-					dalitzX3 = ( dalitz1[0] + ( 2 * dalitz1[1] ) ) / TMath::Sqrt(3);
-					//LogWarning("X3") << dalitzX3 << " " << dalitz1[0] ;
-					dalitzX4 = ( dalitz1[2] + ( 2 * dalitz1[1] ) ) / TMath::Sqrt(3);
-					//LogWarning("X4") << dalitzX4 << " " << dalitz1[2] ;
-					dalitzX5 = ( dalitz1[0] + ( 2 * dalitz1[2] ) ) / TMath::Sqrt(3);
-					//LogWarning("X5") << dalitzX5 << " " << dalitz1[0] ;
-					dalitzX6 = ( dalitz1[1] + ( 2 * dalitz1[2] ) ) / TMath::Sqrt(3);
-					//LogWarning("X6") << dalitzX6 << " " << dalitz1[1] ;
-
-
-					double tmptilde2 = pow( m3, 2 ) + pow( m4, 2) + pow( m12, 2 ) + pow( m1234, 2);
-					double mtilde34 = pow( m34, 2 ) / tmptilde2;
-					double mtilde123 = pow( m123, 2 ) / tmptilde2;
-					double mtilde124 = pow( m124, 2 ) / tmptilde2;
-					dalitz2.push_back( mtilde34 );
-					dalitz2.push_back( mtilde123 );
-					dalitz2.push_back( mtilde124 );
-					sort( dalitz2.begin(), dalitz2.end(), [](const double &p1, const double &p2) { return p1 > p2; }); 
-
-					dalitzY1 = ( dalitz2[1] + ( 2 * dalitz2[0] ) ) / TMath::Sqrt(3);
-					dalitzY2 = ( dalitz2[2] + ( 2 * dalitz2[0] ) ) / TMath::Sqrt(3);
-					dalitzY3 = ( dalitz2[0] + ( 2 * dalitz2[1] ) ) / TMath::Sqrt(3);
-					dalitzY4 = ( dalitz2[2] + ( 2 * dalitz2[1] ) ) / TMath::Sqrt(3);
-					dalitzY5 = ( dalitz2[0] + ( 2 * dalitz2[2] ) ) / TMath::Sqrt(3);
-					dalitzY6 = ( dalitz2[1] + ( 2 * dalitz2[2] ) ) / TMath::Sqrt(3);
-					//////////////////////////////////////////////////////////////////////////////////////*/
-
-				}
-
 				///// Variables for tree
 				event		= *ievent;
 				run		= *Run;
@@ -1261,6 +1286,22 @@ void RUNBoostedAnalysis::beginJob() {
 	histos1D_[ "numConst_cutEffTrigger" ] = fs_->make< TH1D >( "numConst_cutEffTrigger", "numConst", 100, 0., 100. );
 	histos1D_[ "numConst_cutEffTrigger" ]->Sumw2();
 
+	histos1D_[ "prunedMassAve_A" ] = fs_->make< TH1D >( "prunedMassAve_A", "prunedMassAve_A", 600, 0., 600. );
+	histos1D_[ "prunedMassAve_A" ]->Sumw2();
+	histos2D_[ "prunedMassAsymVsdeltaEtaDijet_A" ] = fs_->make< TH2D >( "prunedMassAsymVsdeltaEtaDijet_A", "prunedMassAsymVsdeltaEtaDijet_A", 20, 0., 1., 50, 0., 5. );
+	histos2D_[ "prunedMassAsymVsdeltaEtaDijet_A" ]->Sumw2();
+	histos1D_[ "prunedMassAve_B" ] = fs_->make< TH1D >( "prunedMassAve_B", "prunedMassAve_B", 600, 0., 600. );
+	histos1D_[ "prunedMassAve_B" ]->Sumw2();
+	histos2D_[ "prunedMassAsymVsdeltaEtaDijet_B" ] = fs_->make< TH2D >( "prunedMassAsymVsdeltaEtaDijet_B", "prunedMassAsymVsdeltaEtaDijet_B", 20, 0., 1., 50, 0., 5. );
+	histos2D_[ "prunedMassAsymVsdeltaEtaDijet_B" ]->Sumw2();
+	histos1D_[ "prunedMassAve_C" ] = fs_->make< TH1D >( "prunedMassAve_C", "prunedMassAve_C", 600, 0., 600. );
+	histos1D_[ "prunedMassAve_C" ]->Sumw2();
+	histos2D_[ "prunedMassAsymVsdeltaEtaDijet_C" ] = fs_->make< TH2D >( "prunedMassAsymVsdeltaEtaDijet_C", "prunedMassAsymVsdeltaEtaDijet_C", 20, 0., 1., 50, 0., 5. );
+	histos2D_[ "prunedMassAsymVsdeltaEtaDijet_C" ]->Sumw2();
+	histos1D_[ "prunedMassAve_D" ] = fs_->make< TH1D >( "prunedMassAve_D", "prunedMassAve_D", 600, 0., 600. );
+	histos1D_[ "prunedMassAve_D" ]->Sumw2();
+	histos2D_[ "prunedMassAsymVsdeltaEtaDijet_D" ] = fs_->make< TH2D >( "prunedMassAsymVsdeltaEtaDijet_D", "prunedMassAsymVsdeltaEtaDijet_D", 20, 0., 1., 50, 0., 5. );
+	histos2D_[ "prunedMassAsymVsdeltaEtaDijet_D" ]->Sumw2();
 
 	cutLabels.push_back("Processed");
 	cutLabels.push_back("Trigger");

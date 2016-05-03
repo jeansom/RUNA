@@ -14,17 +14,19 @@ import argparse
 from collections import OrderedDict
 try:
 	from RUNA.RUNAnalysis.histoLabels import labels, labelAxis, finalLabels, setSelection
-	from RUNA.RUNAnalysis.scaleFactors import scaleFactor as SF
+	from RUNA.RUNAnalysis.scaleFactors import * #scaleFactor as SF
 	from RUNA.RUNAnalysis.cuts import selection 
 	import RUNA.RUNAnalysis.CMS_lumi as CMS_lumi 
 	import RUNA.RUNAnalysis.tdrstyle as tdrstyle
 except ImportError:
 	sys.path.append('../python')
 	from histoLabels import labels, labelAxis, finalLabels
-	from scaleFactors import scaleFactor as SF
+	from scaleFactors import * #scaleFactor as SF
 	from cuts import selection 
 	import CMS_lumi as CMS_lumi 
 	import tdrstyle as tdrstyle
+
+
 
 
 gROOT.Reset()
@@ -44,7 +46,7 @@ jetMassHTlabX = 0.85
 def plotSignalBkg( signalFiles, bkgFiles, Groom, nameInRoot, name, xmin, xmax, rebinX, labX, labY, log, PU, version, Norm=False ):
 	"""docstring for plot"""
 
-	outputFileName = name+'_'+Groom+'_'+args.decay+'RPVSt'+mass+'_PlusBkg'+args.RANGE+'_'+version+'AnalysisPlots.'+ext 
+	outputFileName = name+'_'+Groom+'_'+args.decay+'RPVSt'+mass+'_PlusBkgQCD'+qcd+'_'+args.RANGE+'_'+version+'AnalysisPlots.'+ext 
 	print 'Processing.......', outputFileName
 
 	legend=TLegend(0.60,0.60,0.90,0.87)
@@ -210,20 +212,22 @@ def plot2DSignalBkg( bkgFiles, Groom, nameInRoot, name, titleXAxis, titleXAxis2,
 	print 'Processing.......', outputFileName
 
 	bkgHistos = OrderedDict()
+	bkgHistosProfile = OrderedDict()
 	tmpText = ''
 	if len(bkgFiles) > 0:
 		for bkgSamples in bkgFiles:
 			tmpText = bkgSamples
 			bkgHistos[ bkgSamples ] =  bkgFiles[ bkgSamples ][0].Get( nameInRoot+'_'+bkgSamples+'_Bkg' )
 			bkgHistos[ bkgSamples ] = Rebin2D( bkgHistos[ bkgSamples ], rebinx, rebiny )
+			bkgHistosProfile[ bkgSamples ] = bkgHistos[ bkgSamples ].ProfileY( bkgSamples, Ymin, Ymax ) 
 			if bkgFiles[ bkgSamples ][1] != 1: bkgHistos[ bkgSamples ].Scale( bkgFiles[ bkgSamples ][1] ) 
 
 	CMS_lumi.extraText = "Preliminary Simulation"
-	if 'QCD' in tmpText: 
-		hBkg = bkgHistos[ 'QCDHT500to700' ].Clone()
-		for samples in bkgHistos:
-			if 'QCDHT500to700' not in samples: hBkg.Add( bkgHistos[ samples ].Clone() )
-	else: hBkg = bkgHistos[ tmpText ].Clone()
+	#if 'QCD' in tmpText: 
+	#	hBkg = bkgHistos[ 'QCDHT500to700' ].Clone()
+	#	for samples in bkgHistos:
+	#		if 'QCDHT500to700' not in samples: hBkg.Add( bkgHistos[ samples ].Clone() )
+	#else: hBkg = bkgHistos[ tmpText ].Clone()
 
 	hBkg.GetXaxis().SetTitle( titleXAxis )
 	hBkg.GetYaxis().SetTitleOffset( 0.9 )
@@ -284,8 +288,10 @@ def plot2D( inFiles, sample, Groom, nameInRoot, name, titleXAxis, titleXAxis2, X
 
 	outputFileName = name+'_'+Groom+'_'+sample+'_'+camp+'_'+PU+'_'+version+'AnalysisPlots.'+ext 
 	print 'Processing.......', outputFileName
-	for samples in inFiles:
-		h1 = inFiles[ samples ][0].Get( nameInRoot )
+	#for samples in inFiles:
+		#h1 = inFiles[ samples ][0].Get( nameInRoot+'_'+sample if 'RPV' in sample else nameInRoot+'_'+samples )
+		#h1 = inFiles[ samples ][0].Get( nameInRoot )
+	h1 = inFiles.Get( nameInRoot+'_'+sample  )
 	#h1 = inFile.Get( 'AnalysisPlots'+Groom+'/'+name )
 	#h1 = inFile.Get( 'TriggerEfficiency'+Groom+'/'+name )
 	tmph1 = h1.Clone()
@@ -317,7 +323,7 @@ def plot2D( inFiles, sample, Groom, nameInRoot, name, titleXAxis, titleXAxis2, X
 			cu  = tmph1.GetBinContent(bin)
 			h1.AddBinContent(ibin,cu)
 
-	h1.Scale( inFiles[ samples ][1] )
+	#h1.Scale( inFiles[ samples ][1] )
 	h1.GetXaxis().SetTitle( titleXAxis )
 	h1.GetYaxis().SetTitleOffset( 1.0 )
 	h1.GetYaxis().SetTitle( titleXAxis2 )
@@ -811,20 +817,22 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 		if rebinX > 1: 
 			for k in histos: histos[ k ].Rebin( rebinX )
 
-		gausNom = TF1("gaus", "gaus", int(xmass)-50, int(xmass)+50)
+		gausNom = TF1("gaus", "gaus", int(xmass)-30, int(xmass)+30)
 		gausNom.SetParameter(1, xmass)
-		histos[ 'Nominal' ].Fit(gausNom)
-		gausUp = TF1("gaus", "gaus", int(xmass)-50, int(xmass)+50)
+		histos[ 'Nominal' ].Fit(gausNom, 'MEIRLLF' )
+		gausUp = TF1("gaus", "gaus", int(xmass)-30, int(xmass)+30)
 		gausUp.SetParameter(1, xmass)
-		histos[ 'Up' ].Fit(gausUp)
-		gausDown = TF1("gaus", "gaus", int(xmass)-50, int(xmass)+50)
+		histos[ 'Up' ].Fit(gausUp, 'MEIRLLF')
+		gausDown = TF1("gaus", "gaus", int(xmass)-30, int(xmass)+30)
 		gausDown.SetParameter(1, xmass)
-		histos[ 'Down' ].Fit(gausDown)
-		nomArray.append( gausNom.GetParameter(0) )
-		upArray.append( gausUp.GetParameter(0) )
-		downArray.append( gausDown.GetParameter(0) )
-		upOverNomArray.append(  gausUp.GetParameter(0) / gausNom.GetParameter(0) )
-		downOverNomArray.append(  gausDown.GetParameter(0) / gausNom.GetParameter(0) )
+		histos[ 'Down' ].Fit(gausDown, 'MEIRLLF')
+
+		totalNumber = search( dictEvents, 'RPVStopStopToJets_UDD312_M-'+str(xmass) )[0]
+		nomArray.append( gausNom.Integral( int(xmass)-30, int(xmass)+30 ) / totalNumber )
+		upArray.append( gausUp.Integral( int(xmass)-30, int(xmass)+30 ) / totalNumber )
+		downArray.append( gausDown.Integral( int(xmass)-30, int(xmass)+30 ) / totalNumber )
+		upOverNomArray.append( ( gausUp.Integral( int(xmass)-30, int(xmass)+30 ) - gausNom.Integral( int(xmass)-30, int(xmass)+30 ) ) / gausNom.Integral( int(xmass)-30, int(xmass)+30 ) )
+		downOverNomArray.append( ( gausDown.Integral( int(xmass)-30, int(xmass)+30 ) - gausNom.Integral( int(xmass)-30, int(xmass)+30 ) ) / gausNom.Integral( int(xmass)-30, int(xmass)+30 ) )
 
 		binWidth = histos['Nominal'].GetBinWidth(1)
 
@@ -925,11 +933,12 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 	multiGraphRatio.Add( downOverNomGraph )
 
 	multiGraphRatio.Draw("AP")
-	multiGraphRatio.GetYaxis().SetRangeUser(0.8,1.2)
+	multiGraphRatio.GetYaxis().SetRangeUser(-0.1,0.1)
+	multiGraphRatio.GetYaxis().SetNdivisions(505)
 	multiGraphRatio.GetXaxis().SetTitle('Average pruned mass [GeV]')
 	multiGraphRatio.GetXaxis().SetLabelSize(0.12)
 	multiGraphRatio.GetXaxis().SetTitleSize(0.12)
-	multiGraphRatio.GetYaxis().SetTitle('Up(Down)/Nominal')
+	multiGraphRatio.GetYaxis().SetTitle('(Up(Down)-Nom)/Nom')
 	#multiGraphRatio.GetYaxis().SetTitleOffset(0.95)
 	multiGraphRatio.GetYaxis().SetLabelSize(0.12)
 	multiGraphRatio.GetYaxis().SetTitleSize(0.12)
@@ -1220,6 +1229,92 @@ def plotBkgEstimation( dataFile, bkgFiles, signalFiles, Groom, nameInRoot, xmin,
 	can.SaveAs( 'Plots/'+ outputFileName )
 	del can
 
+def tmpPlotBkgEstimation( dataFile, Groom, nameInRoot, xmin, xmax, rebinX, labX, labY, log, PU, version, Norm=False ):
+	"""docstring for tmpPlotBkgEstimation"""
+
+	hData_A =  dataFile.Get( 'BoostedAnalysisPlots/'+nameInRoot+'_A' )
+	hData_A.Rebin( rebinX )
+	hData_B =  dataFile.Get( 'BoostedAnalysisPlots/'+nameInRoot+'_B' )
+	hData_B.Rebin( rebinX )
+	hData_C =  dataFile.Get( 'BoostedAnalysisPlots/'+nameInRoot+'_C' )
+	hData_C.Rebin( rebinX )
+	hData_D =  dataFile.Get( 'BoostedAnalysisPlots/'+nameInRoot+'_D' )
+	hData_D.Rebin( rebinX )
+	
+	tmpBC = hData_B.Clone()
+	tmpBC.Reset()
+	tmpBC.Multiply( hData_B, hData_C, 1, 1, '')
+	tmpBCD = hData_B.Clone()
+	tmpBCD.Reset()
+	tmpBCD.Divide( tmpBC, hData_D, 1, 1, '')
+
+	tmphSignalCR = hData_A.Clone()
+	tmphSignalCR.Reset()
+	tmphSignalCR.Divide( hData_A, tmpBCD, 1., 1., '' )
+
+	binWidth = hData_A.GetBinWidth(1)
+
+	legend3=TLegend(0.55,0.75,0.90,0.87)
+	legend3.SetFillStyle(0)
+	legend3.SetTextSize(0.03)
+	legend3.AddEntry( hData_A, 'DATA - SR' , 'l' )
+	legend3.AddEntry( tmpBCD, 'DATA - ABCD Proj', 'pl' )
+
+	hData_A.SetLineColor(kRed-4)
+	hData_A.SetLineWidth(2)
+	hData_A.GetYaxis().SetTitle('Events / '+str(binWidth))
+	hData_A.GetXaxis().SetRangeUser( 0, 350 )
+	hData_A.SetMaximum( 1.2* max( hData_A.GetMaximum(), tmpBCD.GetMaximum() ) )
+	tmpBCD.SetLineColor(kBlue-4)
+	tmpBCD.SetLineWidth(2)
+	tmpBCD.SetLineStyle(2)
+
+	tdrStyle.SetPadRightMargin(0.05)
+	tdrStyle.SetPadLeftMargin(0.15)
+	can = TCanvas('c1', 'c1',  10, 10, 750, 750 )
+	pad1 = TPad("pad1", "Fit",0,0.207,1.00,1.00,-1)
+	pad2 = TPad("pad2", "Pull",0,0.00,1.00,0.30,-1);
+	pad1.Draw()
+	pad2.Draw()
+
+	pad1.cd()
+	pad1.SetGrid()
+	#if log: pad1.SetLogy() 	
+	hData_A.Draw("histe")
+	tmpBCD.Draw('histe same')
+
+	CMS_lumi.extraText = "Preliminary"
+	CMS_lumi.relPosX = 0.13
+	CMS_lumi.CMS_lumi(pad1, 4, 0)
+	legend3.Draw()
+	#if not (labX and labY): labels( name, '', '' )
+	#labels( name1, '', '' ) #, labX, labY )
+
+	pad2.cd()
+	pad2.SetGrid()
+	pad2.SetTopMargin(0)
+	pad2.SetBottomMargin(0.3)
+	
+	labelAxis( nameInRoot, hData_A, Groom )
+	tmphSignalCR.GetXaxis().SetRangeUser( 0, 350 )
+	tmphSignalCR.SetMarkerStyle(8)
+	tmphSignalCR.GetXaxis().SetTitleOffset(1.1)
+	tmphSignalCR.GetXaxis().SetLabelSize(0.12)
+	tmphSignalCR.GetXaxis().SetTitleSize(0.12)
+	tmphSignalCR.GetYaxis().SetTitle("SR/ABCD Proj")
+	tmphSignalCR.GetYaxis().SetLabelSize(0.12)
+	tmphSignalCR.GetYaxis().SetTitleSize(0.12)
+	tmphSignalCR.GetYaxis().SetTitleOffset(0.55)
+	tmphSignalCR.SetMaximum( 2. )
+	tmphSignalCR.SetMinimum( 0. )
+	tmphSignalCR.GetYaxis().SetNdivisions(505)
+	tmphSignalCR.Draw()
+	line.Draw("same")
+
+	outputFileName = nameInRoot+'_BkgPlusRPVSt'+str(mass)+'_'+Groom+'_'+args.RANGE+'_QCD'+qcd+'_bkgShapeEstimation'+version+'Plots.'+ext
+	print 'Processing.......', outputFileName
+	can.SaveAs( 'Plots/'+ outputFileName )
+	del can
 def plot2DBkgEstimation( rootFile, sample, Groom, nameInRoot, titleXAxis, titleXAxis2, Xmin, Xmax, rebinx, Ymin, Ymax, rebiny, legX, legY, PU, version ):
 	"""docstring for plot"""
 
@@ -1381,19 +1476,7 @@ if __name__ == '__main__':
 		bkgLabel='(w QCD madgraphMLM+pythia8)'
 		QCDSF = 1.05
 
-	if process in [ 'mini', '2Dmini', 'qual', 'bkgEst', '2DbkgEst', 'CF', 'Norm' ]:
-		dataFile = TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_DATA_'+args.RANGE+'_v03.root')
-		signalFiles[ 'Signal' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_'+args.RANGE+'_v03.root'), 1, args.decay+' RPV #tilde{t} '+str(mass)+' GeV', kRed-4]
-		bkgFiles[ 'QCD'+qcd+'All' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_QCD'+qcd+'All_'+args.RANGE+'_v03.root'), QCDSF, 'QCD', kBlue-4 ]
-		bkgFiles[ 'TTJets' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_TTJets_'+args.RANGE+'_v03.root'),	1, 't #bar{t} + Jets', kGreen ]
-#		bkgFiles[ 'ZJetsToQQ' ] = [ TFile.Open('Rootfiles/RUNMiniResolvedAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv03-74X_Asympt25ns_v09_v03.root'), 1., 'Z + Jets', kOrange ]
-		bkgFiles[ 'WJetsToQQ' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_WJetsToQQ_'+args.RANGE+'_v03.root'), 1., 'W + Jets', kMagenta ]
-		bkgFiles[ 'WWTo4Q' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_WWTo4Q_'+args.RANGE+'_v03.root'), 1 , 'WW (had)', kMagenta+2 ]
-		bkgFiles[ 'ZZTo4Q' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_ZZTo4Q_'+args.RANGE+'_v03.root'), 1, 'ZZ (had)', kOrange+2 ]
-		bkgFiles[ 'WZ' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_WZ_'+args.RANGE+'_v03.root'), 1, 'WZ', kCyan ]
-		#bkgFiles[ 'QCDPtAll' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_QCDPtAll_'+args.RANGE+'_v03.root'), QCDSF, 'QCD', kBlue-4 ]
-
-	else:
+	if process in [ 'jetIDQual' ]:
 		dataFile = TFile.Open('Rootfiles/RUNAnalysis_JetHT_Run2015D-16Dec2015-v1_v76x_v1p0_v03.root')
 		signalFiles[ 'Signal' ] = [ TFile.Open('Rootfiles/RUNAnalysis_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'), lumi, args.decay+' RPV #tilde{t} '+str(mass)+' GeV', kRed-4]
 		#bkgFiles[ 'QCDHTAll' ] = [ TFile.Open('Rootfiles/RUNAnalysis_QCDHTAll_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'), lumi*1.05, 'QCDHT', kBlue-4 ]
@@ -1404,6 +1487,18 @@ if __name__ == '__main__':
 		#bkgFiles[ 'ZJets' ] = [ TFile.Open('Rootfiles/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'), lumi, 'Z + Jets', kOrange ]
 		bkgFiles[ 'ZZTo4Q' ] = [ TFile.Open('Rootfiles/RUNAnalysis_ZZTo4Q_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'), lumi, 'ZZ (had)', kOrange+2 ]
 		bkgFiles[ 'WZ' ] = [ TFile.Open('Rootfiles/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'), lumi, 'WZ', kCyan ]
+	else:
+		dataFile = TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_DATA_'+args.RANGE+'_v03.root')
+		signalFiles[ 'Signal' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_'+args.RANGE+'_v04.root'), 1, args.decay+' RPV #tilde{t} '+str(mass)+' GeV', kRed-4]
+		bkgFiles[ 'QCD'+qcd+'All' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_QCD'+qcd+'All_'+args.RANGE+'_v04.root'), QCDSF, 'QCD', kBlue-4 ]
+		bkgFiles[ 'TTJets' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_TTJets_'+args.RANGE+'_v04.root'),	1, 't #bar{t} + Jets', kGreen ]
+		bkgFiles[ 'ZJetsToQQ' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_ZJetsToQQ_'+args.RANGE+'_v04.root'), 1., 'Z + Jets', kOrange]
+		bkgFiles[ 'WJetsToQQ' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_WJetsToQQ_'+args.RANGE+'_v04.root'), 1., 'W + Jets', kMagenta ]
+		bkgFiles[ 'WWTo4Q' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_WWTo4Q_'+args.RANGE+'_v04.root'), 1 , 'WW (had)', kMagenta+2 ]
+		bkgFiles[ 'ZZTo4Q' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_ZZTo4Q_'+args.RANGE+'_v04.root'), 1, 'ZZ (had)', kOrange+2 ]
+		bkgFiles[ 'WZ' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_WZ_'+args.RANGE+'_v04.root'), 1, 'WZ', kCyan ]
+		#bkgFiles[ 'QCDPtAll' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_QCDPtAll_'+args.RANGE+'_v04.root'), QCDSF, 'QCD', kBlue-4 ]
+
 			
 
 	dijetlabX = 0.85
@@ -1432,6 +1527,8 @@ if __name__ == '__main__':
 		[ '2D', 'Boosted', 'leadMassHT', 'Leading Jet Mass [GeV]', 'HT [GeV]', 0, massMaxX, 1, 100, HTMaxX, 1, jetMassHTlabX, jetMassHTlabY],
 
 		[ '2D', 'Boosted', 'leadMassHT_cutTrigger', 'Leading Jet Mass [GeV]', 'HT [GeV]', 0, massMaxX, 1, 100, HTMaxX, 1, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'Boosted', 'jet1Tau21VsRhoDDT', 'Leading jet #tau_{21}', 'Leading jet #rho\'', 0, 1, 1, -6, 10, 1, jetMassHTlabX, jetMassHTlabY],
+		[ '2D', 'Boosted', 'jet2Tau21VsRhoDDT', '2nd Leading jet #tau_{21}', '2nd Leading jet #rho\'', 0, 1, 1, -6, 10, 1, jetMassHTlabX, jetMassHTlabY],
 
 		[ '1D', 'Boosted', 'jet1Pt', 100, 1500, 1, '', '', False],
 		[ '1D', 'Boosted', 'jet1Eta', -3, 3, 1, '', '', False],
@@ -1525,6 +1622,10 @@ if __name__ == '__main__':
 		#[ 'Norm', 'Boosted', 'jet1Tau1', '', '', 1, taulabX, taulabY, False],
 		#[ 'Norm', 'Boosted', 'jet1Tau2', '', '', 1, taulabX, taulabY, False],
 		#[ 'Norm', 'Boosted', 'jet1Tau3', '', '', 1, taulabX, taulabY, False],
+		[ 'Norm', 'Boosted', 'jet1RhoDDT', -6, 10, 5, taulabX, taulabY, False],
+		[ 'Norm', 'Boosted', 'jet2RhoDDT', -6, 10, 5, taulabX, taulabY, False],
+		[ 'Norm', 'Boosted', 'jet1Tau21DDT', 0, 1.3, 1, taulabX, taulabY, False],
+		[ 'Norm', 'Boosted', 'jet2Tau21DDT', 0, 1.3, 1, taulabX, taulabY, False],
 		[ 'Norm', 'Boosted', 'jet1Tau21', '', '', 1, taulabX, taulabY, False],
 		[ 'Norm', 'Boosted', 'jet2Tau21', '', '', 1, taulabX, taulabY, False],
 		[ 'Norm', 'Boosted', 'jet2Tau31', '', '', 1, taulabX, taulabY, False],
@@ -1587,6 +1688,8 @@ if __name__ == '__main__':
 		[ '2Dmini', 'Boosted', 'deltaEtaDijetVsjet2Tau21', '| #eta_{j1} - #eta_{j2} |', '2nd Leading jet #tau_{21} |', 0, 5, 1, 0, 1, 1, jetMassHTlabX, jetMassHTlabY],
 		[ '2Dmini', 'Boosted', 'deltaEtaDijetVsjet1Tau31', '| #eta_{j1} - #eta_{j2} |', 'Leading jet #tau_{31} |', 0, 5, 1, 0, 1, 1, jetMassHTlabX, jetMassHTlabY],
 		[ '2Dmini', 'Boosted', 'deltaEtaDijetVsjet2Tau31', '| #eta_{j1} - #eta_{j2} |', '2nd Leading jet #tau_{31} |', 0, 5, 1, 0, 1, 1, jetMassHTlabX, jetMassHTlabY],
+		[ '2Dmini', 'Boosted', 'jet1Tau21VsRhoDDT', 'Leading jet #tau_{21}', 'Leading jet #rho\'', 0, 1, 1, -6, 10, 1, jetMassHTlabX, jetMassHTlabY],
+		[ '2Dmini', 'Boosted', 'jet2Tau21VsRhoDDT', '2nd Leading jet #tau_{21}', '2nd Leading jet #rho\'', 0, 1, 1, -6, 10, 1, jetMassHTlabX, jetMassHTlabY],
 		[ 'bkgEst', version, 'massAve', 0, massMaxX, 10, '', '', False],
 		[ '2DbkgEst', 'Boosted', 'prunedMassAsymVsdeltaEtaDijet', 'Mass Asymmetry', '| #eta_{j1} - #eta_{j2} |', 0, 1, 1, 0, 5, 1, jetMassHTlabX, jetMassHTlabY],
 
@@ -1608,13 +1711,19 @@ if __name__ == '__main__':
 	if 'CF' in process:
 		plotCutFlow( signalFiles, bkgFiles, args.grooming, 'cutflow', 8, True, PU, True )
 	elif 'tmp' in process:
-		tmpplotDiffSample( '74X', '76X', '', 'massAve_deltaEtaDijet_TTJets', 500, '', '', False, '74Xvs76X' )
+		#tmpplotDiffSample( '74X', '76X', '', 'massAve_deltaEtaDijet_TTJets', 500, '', '', False, '74Xvs76X' )
+		tmpPlotBkgEstimation( TFile.Open( 'Rootfiles/RUNAnalysis_JetHT_Run2015D-16Dec2015-v1_v76x_v2p0_v04_BkgEst.root' ), 'pruned', 'prunedMassAve', 0, 350, 10, '', '', False, PU, version )
 
 	for i in Plots:
 		for optGroom in Groommers:
 			if process in '2D': 
-				plot2D( signalFiles, 'RPVSt'+str(mass), optGroom, version+'AnalysisPlots'+Groom+'/'+[0], i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
-				plot2D( bkgFiles, 'QCD', optGroom, version+'AnalysisPlots'+Groom+'/'+[0], i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
+				#plot2D( signalFiles, 'RPVSt'+str(mass), optGroom, version+'AnalysisPlots'+Groom+'/'+[0], i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
+				#plot2D( bkgFiles, 'QCD', optGroom, version+'AnalysisPlots'+Groom+'/'+[0], i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
+				#plot2D( inputFileTTJets, 'TTJets', optGroom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
+				#plot2D( inputFileWJetsToQQ, 'WJets', optGroom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
+				#plot2D( inputFileZJetsToQQ, 'ZJets', optGroom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
+				for bkg in signalFiles: plot2D( signalFiles[ bkg ][0], 'RPVStopStopToJets_'+args.decay+'_M-'+str(mass), optGroom, i[0], i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
+				for bkg in bkgFiles: plot2D( bkgFiles[ bkg ][0], bkg, optGroom, i[0], i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
 				#plot2D( inputFileTTJets, 'TTJets', optGroom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
 				#plot2D( inputFileWJetsToQQ, 'WJets', optGroom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
 				#plot2D( inputFileZJetsToQQ, 'ZJets', optGroom, i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
@@ -1634,7 +1743,7 @@ if __name__ == '__main__':
 			
 			elif 'mini' in process:
 				for cut1 in listCuts:
-					if '2D' in process: plot2DSignalBkg( signalFiles, bkgFiles, optGroom, i[0], i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], PU, version )
+					if '2D' in process: plot2DSignalBkg( signalFiles, optGroom, i[0], i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], PU, version )
 					else: plotSignalBkg( signalFiles, bkgFiles, optGroom, i[0]+cut1, i[0]+cut1, i[1], i[2], i[3], i[4], i[5], i[6], PU, version )
 			
 			elif 'Norm' in process:
@@ -1649,7 +1758,7 @@ if __name__ == '__main__':
 				plotSimple( inputFileZJetsToQQ, 'ZJets', optGroom, i[0], i[1], i[2], i[3], i[4], PU )
 			
 			elif 'sys' in process:
-				for cut in listCuts: plotSystematics( 'Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_'+args.RANGE+'_v03.root', optGroom, i[0]+cut, i[1], i[2], i[3], i[4], i[5], i[6], version, process )
+				for cut in listCuts: plotSystematics( 'Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_'+args.RANGE+'_v04.root', optGroom, i[0]+cut, i[1], i[2], i[3], i[4], i[5], i[6], version, process )
 			
 			elif 'bkgEst' in process:
 				if '2D' in process: 
