@@ -365,6 +365,7 @@ def plotCutFlow( signalFiles, bkgFiles, Groom, name, xmax, log, PU, Norm=False )
 	if len(bkgFiles) > 0:
 		for samples in bkgFiles:
 			dummy += 1
+			print samples
 			histos[ samples ] = bkgFiles[ samples ][0].Get(name+'_'+samples)
 			if bkgFiles[ samples ][1] != 1: histos[ samples ].Scale( bkgFiles[ samples ][1] ) 
 			if (dummy == 1): hBkg = histos[ samples ].Clone()
@@ -374,7 +375,7 @@ def plotCutFlow( signalFiles, bkgFiles, Groom, name, xmax, log, PU, Norm=False )
 	hTTJets = histos[ 'TTJets' ].Clone()
 	hWJetsToQQ = histos[ 'WJetsToQQ' ].Clone()
 	hWWTo4Q = histos[ 'WWTo4Q' ].Clone()
-	#hZJets = histos[ 'ZJets' ].Clone()
+	hZJetsToQQ = histos[ 'ZJetsToQQ' ].Clone()
 	hZZTo4Q = histos[ 'ZZTo4Q' ].Clone()
 	hWZ = histos[ 'WZ' ].Clone()
 
@@ -389,8 +390,8 @@ def plotCutFlow( signalFiles, bkgFiles, Groom, name, xmax, log, PU, Norm=False )
 		hWJetsToQQ.SetBinError(bin, 0.)
 		hWWTo4Q.SetBinContent(bin, 0.)
 		hWWTo4Q.SetBinError(bin, 0.)
-		#hZJets.SetBinContent(bin, 0.)
-		#hZJets.SetBinError(bin, 0.)
+		hZJetsToQQ.SetBinContent(bin, 0.)
+		hZJetsToQQ.SetBinError(bin, 0.)
 		hZZTo4Q.SetBinContent(bin, 0.)
 		hZZTo4Q.SetBinError(bin, 0.)
 		hWZ.SetBinContent(bin, 0.)
@@ -401,7 +402,7 @@ def plotCutFlow( signalFiles, bkgFiles, Groom, name, xmax, log, PU, Norm=False )
 	totalEventsTTJets = histos[ 'TTJets' ].GetBinContent(1)
 	totalEventsWJetsToQQ = histos[ 'WJetsToQQ' ].GetBinContent(1)
 	totalEventsWWTo4Q = histos[ 'WWTo4Q' ].GetBinContent(1)
-	#totalEventsZJets = histos[ 'ZJets' ].GetBinContent(1)
+	totalEventsZJetsToQQ = histos[ 'ZJetsToQQ' ].GetBinContent(1)
 	totalEventsZZTo4Q = histos[ 'ZZTo4Q' ].GetBinContent(1)
 	totalEventsWZ = histos[ 'WZ' ].GetBinContent(1)
 	#print totalEventsSignal, totalEventsQCD
@@ -411,7 +412,7 @@ def plotCutFlow( signalFiles, bkgFiles, Groom, name, xmax, log, PU, Norm=False )
 	cutFlowTTJetsList = []
 	cutFlowWJetsToQQList = []
 	cutFlowWWTo4QList = []
-	#cutFlowZJetsList = []
+	cutFlowZJetsToQQList = []
 	cutFlowZZTo4QList = []
 	cutFlowWZList = []
 
@@ -422,7 +423,7 @@ def plotCutFlow( signalFiles, bkgFiles, Groom, name, xmax, log, PU, Norm=False )
 		cutFlowTTJetsList.append( histos[ 'TTJets' ].GetBinContent(ibin) )
 		cutFlowWJetsToQQList.append( histos[ 'WJetsToQQ' ].GetBinContent(ibin) )
 		cutFlowWWTo4QList.append( histos[ 'WWTo4Q' ].GetBinContent(ibin) )
-		#cutFlowZJetsList.append( histos[ 'ZJets' ].GetBinContent(ibin) )
+		cutFlowZJetsToQQList.append( histos[ 'ZJetsToQQ' ].GetBinContent(ibin) )
 		cutFlowZZTo4QList.append( histos[ 'ZZTo4Q' ].GetBinContent(ibin) )
 		cutFlowWZList.append( histos[ 'WZ' ].GetBinContent(ibin) )
 
@@ -431,7 +432,7 @@ def plotCutFlow( signalFiles, bkgFiles, Groom, name, xmax, log, PU, Norm=False )
 		hTTJets.SetBinContent( ibin , histos[ 'TTJets' ].GetBinContent(ibin) / totalEventsTTJets )
 		hWJetsToQQ.SetBinContent( ibin , histos[ 'WJetsToQQ' ].GetBinContent(ibin) / totalEventsWJetsToQQ )
 		hWWTo4Q.SetBinContent( ibin , histos[ 'WWTo4Q' ].GetBinContent(ibin) / totalEventsWWTo4Q )
-		#hZJets.SetBinContent( ibin , histos[ 'ZJets' ].GetBinContent(ibin) / totalEventsZJets )
+		hZJetsToQQ.SetBinContent( ibin , histos[ 'ZJetsToQQ' ].GetBinContent(ibin) / totalEventsZJetsToQQ )
 		hZZTo4Q.SetBinContent( ibin , histos[ 'ZZTo4Q' ].GetBinContent(ibin) / totalEventsZZTo4Q )
 		hWZ.SetBinContent( ibin , histos[ 'WZ' ].GetBinContent(ibin) / totalEventsWZ )
 		
@@ -440,7 +441,7 @@ def plotCutFlow( signalFiles, bkgFiles, Groom, name, xmax, log, PU, Norm=False )
 	hBkg.Add( hTTJets )
 	hBkg.Add( hWJetsToQQ )
 	hBkg.Add( hWWTo4Q )
-	#hBkg.Add( hZJets )
+	hBkg.Add( hZJetsToQQ )
 	hBkg.Add( hZZTo4Q )
 	hBkg.Add( hWZ )
 	hSB.Divide( hBkg )
@@ -450,11 +451,10 @@ def plotCutFlow( signalFiles, bkgFiles, Groom, name, xmax, log, PU, Norm=False )
 	print "TTJets", cutFlowTTJetsList
 	print "WJetsToQQ", cutFlowWJetsToQQList
 	print "WWTo4Q", cutFlowWWTo4QList
-	#print "ZJets", cutFlowZJetsList
+	print "ZJetsToQQ", cutFlowZJetsToQQList
 	print "ZZTo4Q", cutFlowZZTo4QList
 	print "WZ", cutFlowWZList
-	#print 'total', [ cutFlowQCDList[i] + cutFlowTTJetsList[i] +cutFlowWJetsToQQList[i] + cutFlowWWTo4QList[i] + cutFlowZJetsList[i] + cutFlowZZTo4QList[i] + cutFlowWZList[i]  for i in range(len(cutFlowQCDList))]
-	print 'total', [ cutFlowQCDList[i] + cutFlowTTJetsList[i] +cutFlowWJetsToQQList[i] + cutFlowWWTo4QList[i] + cutFlowZZTo4QList[i] + cutFlowWZList[i]  for i in range(len(cutFlowQCDList))]
+	print 'total', [ cutFlowQCDList[i] + cutFlowTTJetsList[i] +cutFlowWJetsToQQList[i] + cutFlowWWTo4QList[i] + cutFlowZJetsToQQList[i] + cutFlowZZTo4QList[i] + cutFlowWZList[i]  for i in range(len(cutFlowQCDList))]
 
 	#hSB = hSignal.Clone()
 	#hSB.Divide( hQCD )
@@ -1471,7 +1471,7 @@ if __name__ == '__main__':
 	
 	if 'Pt' in qcd: 
 		bkgLabel='(w QCD pythia8)'
-		QCDSF = 1 #0.88
+		QCDSF = 0.88
 	else: 
 		bkgLabel='(w QCD madgraphMLM+pythia8)'
 		QCDSF = 1.05
@@ -1484,19 +1484,19 @@ if __name__ == '__main__':
 		bkgFiles[ 'TTJets' ] = [ TFile.Open('Rootfiles/RUNAnalysis_TTJets_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'),	lumi, 't #bar{t} + Jets', kGreen ]
 		bkgFiles[ 'WJets' ] = [ TFile.Open('Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'), lumi , 'W + Jets', kMagenta ]
 		bkgFiles[ 'WWTo4Q' ] = [ TFile.Open('Rootfiles/RUNAnalysis_WWTo4Q_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'), lumi , 'WW (had)', kMagenta+2 ]
-		#bkgFiles[ 'ZJets' ] = [ TFile.Open('Rootfiles/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'), lumi, 'Z + Jets', kOrange ]
+		bkgFiles[ 'ZJets' ] = [ TFile.Open('Rootfiles/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'), lumi, 'Z + Jets', kOrange ]
 		bkgFiles[ 'ZZTo4Q' ] = [ TFile.Open('Rootfiles/RUNAnalysis_ZZTo4Q_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'), lumi, 'ZZ (had)', kOrange+2 ]
 		bkgFiles[ 'WZ' ] = [ TFile.Open('Rootfiles/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'), lumi, 'WZ', kCyan ]
 	else:
 		dataFile = TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_DATA_'+args.RANGE+'_v03.root')
 		signalFiles[ 'Signal' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_'+args.RANGE+'_v04.root'), 1, args.decay+' RPV #tilde{t} '+str(mass)+' GeV', kRed-4]
-		bkgFiles[ 'QCD'+qcd+'All' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_QCD'+qcd+'All_'+args.RANGE+'_v04.root'), QCDSF, 'QCD', kBlue-4 ]
 		bkgFiles[ 'TTJets' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_TTJets_'+args.RANGE+'_v04.root'),	1, 't #bar{t} + Jets', kGreen ]
 		bkgFiles[ 'ZJetsToQQ' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_ZJetsToQQ_'+args.RANGE+'_v04.root'), 1., 'Z + Jets', kOrange]
 		bkgFiles[ 'WJetsToQQ' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_WJetsToQQ_'+args.RANGE+'_v04.root'), 1., 'W + Jets', kMagenta ]
 		bkgFiles[ 'WWTo4Q' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_WWTo4Q_'+args.RANGE+'_v04.root'), 1 , 'WW (had)', kMagenta+2 ]
 		bkgFiles[ 'ZZTo4Q' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_ZZTo4Q_'+args.RANGE+'_v04.root'), 1, 'ZZ (had)', kOrange+2 ]
 		bkgFiles[ 'WZ' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_WZ_'+args.RANGE+'_v04.root'), 1, 'WZ', kCyan ]
+		bkgFiles[ 'QCD'+qcd+'All' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_QCD'+qcd+'All_'+args.RANGE+'_v04.root'), QCDSF, 'QCD', kBlue-4 ]
 		#bkgFiles[ 'QCDPtAll' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_QCDPtAll_'+args.RANGE+'_v04.root'), QCDSF, 'QCD', kBlue-4 ]
 
 			
