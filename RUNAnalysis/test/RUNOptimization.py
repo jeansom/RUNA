@@ -13,6 +13,7 @@ from string import *
 from array import array
 import argparse
 from ROOT import * 
+from collections import OrderedDict
 from multiprocessing import Process
 import numpy as np
 try: 
@@ -60,8 +61,8 @@ def calcROCs( BkgSamples, SigSamples, treename, varList, mass, window, cutsList 
 			fraction = 10.*i/(1.*sigNumEntries)
 			if TMath.FloorNint(fraction) > d: print str(10*TMath.FloorNint(fraction))+'%' 
 			d = TMath.FloorNint(fraction)
-			#if i > 1000000: break
 			sigCutsList = []
+			sigSF = sigEvents.lumiWeight * sigEvents.puWeight
 			sigMassAve = ( sigEvents.prunedMassAve if 'Boosted' in version else sigEvents.avgMass  )
 			if ( ( sigMassAve > int(mass)-window ) and ( sigMassAve < int(mass)+window  ) ): 
 				if len(cutsList) > 0:
@@ -69,13 +70,13 @@ def calcROCs( BkgSamples, SigSamples, treename, varList, mass, window, cutsList 
 						if cutVar[4]: sigCutsList.append( True ) if ( getattr( sigEvents, cutVar[0] ) < cutVar[5] ) else sigCutsList.append( False )
 						else: sigCutsList.append( True ) if ( getattr( sigEvents, cutVar[0] ) > cutVar[5] ) else sigCutsList.append( False )
 				if all( sigCutsList ): 
-					for sigVar in varList: allHistos[ sigVar[0]+"_Sig" ].Fill( getattr( sigEvents, sigVar[0] ) )
+					for sigVar in varList: allHistos[ sigVar[0]+"_Sig" ].Fill( getattr( sigEvents, sigVar[0] ), sigSF )
 		
 	allROCs = {}
 	for bkgSample in BkgSamples: 
 		print '-'*40
 		print '---- ', bkgSample
-		BkgFile, bkgEvents, bkgNumEntries = getTree( BkgSamples[ bkgSample ], treename )
+		BkgFile, bkgEvents, bkgNumEntries = getTree( BkgSamples[ bkgSample ][0], treename )
 		print '---- ', bkgNumEntries
 		d = 0
 		for i in xrange(bkgNumEntries):
@@ -84,9 +85,10 @@ def calcROCs( BkgSamples, SigSamples, treename, varList, mass, window, cutsList 
 			fraction = 10.*i/(1.*bkgNumEntries)
 			if TMath.FloorNint(fraction) > d: print str(10*TMath.FloorNint(fraction))+'%' 
 			d = TMath.FloorNint(fraction)
-			#if i > 1000000: break
+			#if i > 100000: break
 
 			bkgCutsList = []
+			bkgSF = sigEvents.lumiWeight * sigEvents.puWeight
 			bkgMassAve = ( bkgEvents.massAve if 'Boosted' in version else bkgEvents.avgMass  )
 			if ( ( bkgMassAve > int(mass)-window ) and ( bkgMassAve < int(mass)+window  ) ): 
 				if len(cutsList) > 0:
@@ -94,7 +96,7 @@ def calcROCs( BkgSamples, SigSamples, treename, varList, mass, window, cutsList 
 						if cutVar[4]: bkgCutsList.append( True ) if ( getattr( bkgEvents, cutVar[0] ) < cutVar[5] ) else bkgCutsList.append( False )
 						else: bkgCutsList.append( True ) if ( getattr( bkgEvents, cutVar[0] ) > cutVar[5] ) else bkgCutsList.append( False )
 				if all( bkgCutsList ): 
-					for bkgVar in varList: allHistos[ bkgVar[0]+'_'+bkgSample ].Fill( getattr( bkgEvents, bkgVar[0] ) )
+					for bkgVar in varList: allHistos[ bkgVar[0]+'_'+bkgSample ].Fill( getattr( bkgEvents, bkgVar[0] ), bkgSF )
 
 		for var in varList:
 			BkgHisto = allHistos[ var[0]+"_"+bkgSample ]
@@ -107,7 +109,9 @@ def calcROCs( BkgSamples, SigSamples, treename, varList, mass, window, cutsList 
 			#if ( len( var ) > 2 ): ibinCut = SigHisto.GetXaxis().FindBin( var[2] )
 
 			BkgROCValues = []	
+			BkgNumValues = []	
 			SigROCValues = []	
+			SigNumValues = []	
 			SigROCBins = []	
 			SigROCLowEdge = []	
 			firstBin =  SigHisto.FindFirstBinAbove( 0, 1 )
@@ -119,6 +123,7 @@ def calcROCs( BkgSamples, SigSamples, treename, varList, mass, window, cutsList 
 					except ZeroDivisionError: effBkg = 1
 					allHistos[ var[0]+"_"+bkgSample+"_BkgROC" ].SetBinContent( ibin, effBkg )
 					BkgROCValues.append( effBkg )
+					BkgNumValues.append( BkgHisto.Integral( firstBin, ibin ) )
 
 					try: effSig = SigHisto.Integral( firstBin, ibin ) / SigTotal 
 					except ZeroDivisionError: effSig = 0
@@ -126,19 +131,22 @@ def calcROCs( BkgSamples, SigSamples, treename, varList, mass, window, cutsList 
 					SigROCValues.append( effSig )
 					SigROCBins.append( ibin )
 					SigROCLowEdge.append( SigHisto.GetXaxis().GetBinLowEdge(ibin+1) )
+					SigNumValues.append( SigHisto.Integral( firstBin, ibin ) )
 
 				else:
 					effBkg = 1 - BkgHisto.Integral( ibin, lastBin ) / BkgTotal 
 					allHistos[ var[0]+"_"+bkgSample+"_BkgROC" ].SetBinContent( ibin, effBkg )
 					BkgROCValues.append( effBkg )
+					BkgNumValues.append( BkgHisto.Integral( ibin, lastBin ) )
 
 					effSig = SigHisto.Integral( ibin, lastBin ) / SigTotal 
 					allHistos[ var[0]+"_"+bkgSample+"_SigROC" ].SetBinContent( ibin, effSig )
 					SigROCValues.append( effSig )
 					SigROCBins.append( ibin )
 					SigROCLowEdge.append( SigHisto.GetXaxis().GetBinLowEdge(ibin+1) )
+					SigNumValues.append( SigHisto.Integral( ibin, lastBin ) )
 
-			allROCs[ var[0]+"_"+bkgSample+"_ROC" ] = [ BkgROCValues, SigROCValues, SigROCBins, SigROCLowEdge ]
+			allROCs[ var[0]+"_"+bkgSample+"_ROC" ] = [ BkgROCValues, SigROCValues, SigROCBins, SigROCLowEdge, BkgNumValues, SigNumValues ]
 
 	outputTextFile = 'ROCfiles/ROC'+version+'Values_QCD'+qcd+'_'+signalName+'_cut'+str(len(cuts))+'.txt'
 	print '--- Creating ', outputTextFile 
@@ -152,20 +160,24 @@ def makeROCs( textFile, variables, bkgSamples, perVariable, cutsList, printValue
 	f = open( textFile, 'r' )
 	tmpDictVar = eval( f.read() )
 
-	dictVar = {}
+	dictVar = OrderedDict()
 	for q in tmpDictVar:
 		for tmpVar in variables:
 			if tmpVar[0] in q: 
 				dictVar[ q ] = tmpDictVar[ q ]
 
-	dictROC = {}
+	dictROC = OrderedDict()
+	dictNumEvents = {}
 	for varROC in dictVar:
 		BkgROCArray = np.asarray( dictVar[ varROC ][0] )
 		SigROCArray = np.asarray( dictVar[ varROC ][1] )
 		SigROCBinsArray = np.asarray( dictVar[ varROC ][2] )
 		SigROCLowEdgeArray = np.asarray( dictVar[ varROC ][3] )
+		BkgNumArray = np.asarray( dictVar[ varROC ][4] )
+		SigNumArray = np.asarray( dictVar[ varROC ][5] )
 		ROC = TGraph( len( BkgROCArray ), SigROCArray, BkgROCArray )		
 		dictROC[ varROC ] = ROC
+		dictNumEvents[ varROC ] = [ BkgNumArray, SigNumArray, SigROCLowEdgeArray ]
 		if (printValue and ( printVar in varROC )):
 			'''
 			if var[0] in varROC:
@@ -179,15 +191,27 @@ def makeROCs( textFile, variables, bkgSamples, perVariable, cutsList, printValue
 
 	if not printValue:
 		if perVariable:
+			dictNumVar = OrderedDict()
 			for var in variables:
 				dictVariables = { rocs: dictROC[ rocs ] for rocs in dictROC if var[0] in rocs }
-				plotROC( var[0], var[0], dictVariables, len(cutsList) )
+				plotROC( var[0], var[0], dictVariables, len(cutsList), True, False )
+				dictVariablesNum = { rocs: dictNumEvents[ rocs ] for rocs in dictNumEvents if var[0] in rocs }
+
+				totalBkg = np.zeros( len( dictVariablesNum[ var[0]+'_QCD'+qcd+'All_ROC' ][1] ) )
+				totalSig = dictVariablesNum[ var[0]+'_QCD'+qcd+'All_ROC' ][1]
+				for bkg in dictVariablesNum: totalBkg += dictVariablesNum[ bkg ][0]
+				#sigOverBkg = np.divide( totalSig, totalBkg )
+				sigOverSqrtSigBkg = np.divide( totalSig, np.sqrt( totalSig+totalBkg ) )
+				SOB = TGraph( len(totalSig), ( (dictVariablesNum[ var[0]+'_QCD'+qcd+'All_ROC' ][2])/5. if 'deltaEta' in var[0] else (dictVariablesNum[ var[0]+'_QCD'+qcd+'All_ROC' ][2]) ), sigOverSqrtSigBkg ) # sigOverBkg )
+				dictNumVar[ var[0] ] = SOB 
+
+			plotROC( 'SOB', '', dictNumVar, len(cutsList), False, True )
 		else: 
 			for bkg in bkgSamples: 
 				dictBkg = { rocs: dictROC[ rocs ] for rocs in dictROC if bkg in rocs }
-				plotROC( bkg, bkg, dictBkg, len(cutsList) )
+				plotROC( bkg, bkg, dictBkg, len(cutsList), False, False )
 
-def plotROC( name, sample, dictROC, numCuts ):
+def plotROC( name, sample, dictROC, numCuts, varOrbkg, SOB ):
 	"""docstring for plotROC"""
 
 	f1 = TF1("f1","x",0,1)
@@ -196,31 +220,53 @@ def plotROC( name, sample, dictROC, numCuts ):
 	can = TCanvas('c1', 'c1',  10, 10, 1000, 750 )
 	can.SetGrid()
 	
-	PT = TText(0.1, 0.1, sample )
+	PT = TText(0.6, 0.05, sample )
 	multiGraph = TMultiGraph()
-	legend=TLegend(0.70,0.60,0.90,0.90)
+	legend=TLegend(0.15,0.15,0.45,0.45)
 	legend.SetFillStyle(0)
 	legend.SetTextSize(0.03)
-	dummyColor = 0
 	for h in dictROC:
-		dummyColor += 1
-		if (dummyColor == 10): dummyColor = 40
 		tmpName = h.replace( name+'_', '' ).replace( '_ROC', '' )
 		legend.AddEntry( dictROC[ h ], tmpName, 'l' )
-		dictROC[h].SetLineColor( dummyColor )
+		for var in variables:
+			if var[0] in tmpName: varColor = var[7]
+		dictROC[h].SetLineColor( bkgSamples[ tmpName ][1] if varOrbkg else varColor )
 		dictROC[h].SetLineWidth( 2 )
 		dictROC[h].SetMarkerStyle(4)
 		multiGraph.Add( dictROC[h] )
 	multiGraph.Draw("ALP")
 	PT.Draw()
-	multiGraph.GetXaxis().SetRangeUser(-0.05,1.05)
-	multiGraph.GetYaxis().SetRangeUser(-0.05,1.05)
-	multiGraph.GetXaxis().SetTitle('Signal efficiency')
-	multiGraph.GetYaxis().SetTitle('Bkg rejection')
+	if SOB:
+		multiGraph.GetXaxis().SetTitle( 'A.U.' )
+		multiGraph.GetYaxis().SetTitle('S/#sqrt{S+B}')
+	else:
+		multiGraph.GetXaxis().SetRangeUser(-0.05,1.05)
+		multiGraph.GetYaxis().SetRangeUser(-0.05,1.05)
+		multiGraph.GetXaxis().SetTitle('Signal efficiency')
+		multiGraph.GetYaxis().SetTitle('Bkg rejection')
+		f1.Draw("same")
 	multiGraph.GetYaxis().SetTitleOffset(0.95)
-	f1.Draw("same")
 	legend.Draw()
 	can.SaveAs('Plots/'+name+'_'+version+signalName+'_QCD'+qcd+'_ROC_cut'+str(numCuts)+'.'+args.ext)
+	del can
+
+def plotSigOverBkg( name, sample, dictNum, numCuts ):
+	"""docstring for plotROC"""
+
+	can = TCanvas('c1', 'c1',  10, 10, 1000, 750 )
+	can.SetGrid()
+
+	PT = TText(0.7, 1.10, sample )
+	#legend=TLegend(0.15,0.15,0.45,0.45)
+	#legend.SetFillStyle(0)
+	#legend.SetTextSize(0.03)
+	SOB.SetLineWidth( 2 )
+	SOB.SetMarkerStyle(4)
+	SOB.Draw("ALP")
+	PT.Draw()
+	SOB.GetYaxis().SetTitleOffset(0.95)
+	#legend.Draw()
+	can.SaveAs('Plots/'+name+'_'+version+signalName+'_QCD'+qcd+'_SOB_cut'+str(numCuts)+'.'+args.ext)
 	del can
 
 #----------------------------------------------------------------------
@@ -446,17 +492,17 @@ if __name__ == '__main__':
 	effS = args.effS
 	qcd = args.QCD
 
-	bkgSamples = {}
-	bkgSamples[ 'QCD'+qcd+'All' ] = 'Rootfiles/RUNAnalysis_QCD'+qcd+'All_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
-	bkgSamples[ 'TTJets' ] = 'Rootfiles/RUNAnalysis_TTJets_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
-	bkgSamples[ 'WJetsToQQ' ] = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
-	#bkgSamples[ 'ZJetsToQQ' ] = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
-	bkgSamples[ 'WWTo4Q' ] = 'Rootfiles/RUNAnalysis_WWTo4Q_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
-	bkgSamples[ 'ZZTo4Q' ] = 'Rootfiles/RUNAnalysis_ZZTo4Q_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
-	bkgSamples[ 'WZ' ] = 'Rootfiles/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
+	bkgSamples = OrderedDict()
+	bkgSamples[ 'QCD'+qcd+'All' ] = [ 'Rootfiles/RUNAnalysis_QCD'+qcd+'All_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kBlue-4 ]
+	bkgSamples[ 'TTJets' ] = [ 'Rootfiles/RUNAnalysis_TTJets_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kGreen ]
+	bkgSamples[ 'WJetsToQQ' ] = [ 'Rootfiles/RUNAnalysis_WJetsToQQ_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kMagenta ]
+	bkgSamples[ 'ZJetsToQQ' ] = [ 'Rootfiles/RUNAnalysis_ZJetsToQQ_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kOrange ]
+	bkgSamples[ 'WWTo4Q' ] = [ 'Rootfiles/RUNAnalysis_WWTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kMagenta+2 ]
+	bkgSamples[ 'ZZTo4Q' ] = [ 'Rootfiles/RUNAnalysis_ZZTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kOrange+2 ]
+	bkgSamples[ 'WZ' ] = [ 'Rootfiles/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kCyan ]
 
 	sigSamples = {}
-	sigSamples[ 'RPVSt'+str(mass) ] = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v1p0_v03.root'
+	sigSamples[ 'RPVSt'+str(mass) ] = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
 	#sigSamples[ 'WWTo4Q' ] = 'Rootfiles/RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 	#sigSamples[ 'ZZTo4Q' ] = 'Rootfiles/RUNAnalysis_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 	#sigSamples[ 'WZ' ] = 'Rootfiles/RUNAnalysis_WZ_TuneCUETP8M1_13TeV-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
@@ -491,18 +537,18 @@ if __name__ == '__main__':
 #		[ 'Boosted', "deltaEtaDijet", 50, 0., 5., True, 0.4, 0.6 ],
 #		[ 'Boosted', "jet1SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
 #		[ 'Boosted', "jet2SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
-		[ 'Boosted', "prunedMassAsym", 20, 0., 1., True, 0.1, 0.9 ],
-		[ 'Boosted', "jet1CosThetaStar", 20, 0., 1, True, 0., 0.8 ],
-		[ 'Boosted', "jet2CosThetaStar", 20, 0., 1, True, 0., 0.8 ],
-		[ 'Boosted', "jet1Tau21", 20, 0., 1., True, 0.45, 0.8  ],
-		[ 'Boosted', "jet2Tau21", 20, 0., 1., True, 0.45, 0.80 ],
-		[ 'Boosted', "jet1Tau31", 20, 0., 1., True, 0., 0.7 ],
-		[ 'Boosted', "jet2Tau31", 20, 0., 1., True, 0., 0.7 ],
-		[ 'Boosted', "jet1Tau32", 20, 0., 1., True, 0., 0  ],
-		[ 'Boosted', "jet2Tau32", 20, 0., 1., True, 0., 0  ],
-		[ 'Boosted', "deltaEtaDijet", 50, 0., 5., True, 0.6, 0.6 ],
-		[ 'Boosted', "jet1SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
-		[ 'Boosted', "jet2SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
+		[ 'Boosted', "prunedMassAsym", 20, 0., 1., True, 0., 0., 1 ],
+		[ 'Boosted', "jet1CosThetaStar", 20, 0., 1, True, 0., 0.8, 2 ],
+		[ 'Boosted', "jet2CosThetaStar", 20, 0., 1, True, 0., 0.8, 3 ],
+		[ 'Boosted', "jet1Tau21", 20, 0., 1., True, 0., 0.8 , 4 ],
+		[ 'Boosted', "jet2Tau21", 20, 0., 1., True, 0., 0.80, 5 ],
+		[ 'Boosted', "jet1Tau31", 20, 0., 1., True, 0., 0.7, 6 ],
+		[ 'Boosted', "jet2Tau31", 20, 0., 1., True, 0., 0.7, 7 ],
+		[ 'Boosted', "jet1Tau32", 20, 0., 1., True, 0., 0 , 8 ],
+		[ 'Boosted', "jet2Tau32", 20, 0., 1., True, 0., 0 , 9 ],
+		[ 'Boosted', "deltaEtaDijet", 50, 0., 5., True, 0., 0.6, 11 ],
+		[ 'Boosted', "jet1SubjetPtRatio", 20, 0., 1., True, 0., 0 , 12 ],
+		[ 'Boosted', "jet2SubjetPtRatio", 20, 0., 1., True, 0., 0 , 13 ],
 	]
 
 	if 'calcROC' in process: 
@@ -516,7 +562,7 @@ if __name__ == '__main__':
 		variables = [ x[1:] for x in var if ( ( version in x[0] ) and ( x[6]==x[3] ) ) ]
 		cuts = [ x[1:] for x in var if ( ( version in x[0] ) and ( x[6]!=x[3] ) ) ]
 		for q in sigSamples: signalName = ( q )
-		if printValue: 	makeROCs( 'ROCfiles/ROC'+version+'Values_QCD'+qcd+'_'+signalName+'_QCD'+qcd+'_cut'+str(len(cuts)-1)+'.txt', cuts, bkgSamples, True if 'var' in typeROC else False, cuts, printValue, quantity )
+		if printValue: 	makeROCs( 'ROCfiles/ROC'+version+'Values_QCD'+qcd+'_'+signalName+'_cut'+str(len(cuts)-1)+'.txt', cuts, bkgSamples, True if 'var' in typeROC else False, cuts, printValue, quantity )
 		else: makeROCs( 'ROCfiles/ROC'+version+'Values_QCD'+qcd+'_'+signalName+'_cut'+str(len(cuts))+'.txt', variables, bkgSamples, True if 'var' in typeROC else False, cuts, printValue, quantity )
 
 	elif 'TMVA' in process:
