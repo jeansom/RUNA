@@ -475,6 +475,7 @@ if __name__ == '__main__':
 	parser.add_argument( '-e', '--eff', action='store', dest='effS', type=int, default=0, help='Mass of the Stop' )
 	parser.add_argument('-Q', '--QCD', action='store', default='Pt', help='Type of QCD binning, example: HT.' )
 	parser.add_argument('-E', '--extension', action='store', dest='ext', default='png', help='Extension of plots.' )
+	parser.add_argument( '-b', '--batchSys', action='store',  dest='batchSys', type=bool, default=False, help='Process: all or single.' )
 
 	try:
 		args = parser.parse_args()
@@ -492,25 +493,28 @@ if __name__ == '__main__':
 	effS = args.effS
 	qcd = args.QCD
 
+	if args.batchSys: folder = '/cms/gomez/archiveEOS/Archive/763patch2/v4/'
+	else: folder = 'Rootfiles/'
+
 	bkgSamples = OrderedDict()
-	bkgSamples[ 'QCD'+qcd+'All' ] = [ 'Rootfiles/RUNAnalysis_QCD'+qcd+'All_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kBlue-4 ]
-	bkgSamples[ 'TTJets' ] = [ 'Rootfiles/RUNAnalysis_TTJets_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kGreen ]
-	bkgSamples[ 'WJetsToQQ' ] = [ 'Rootfiles/RUNAnalysis_WJetsToQQ_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kMagenta ]
-	bkgSamples[ 'ZJetsToQQ' ] = [ 'Rootfiles/RUNAnalysis_ZJetsToQQ_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kOrange ]
-	bkgSamples[ 'WWTo4Q' ] = [ 'Rootfiles/RUNAnalysis_WWTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kMagenta+2 ]
-	bkgSamples[ 'ZZTo4Q' ] = [ 'Rootfiles/RUNAnalysis_ZZTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kOrange+2 ]
-	bkgSamples[ 'WZ' ] = [ 'Rootfiles/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kCyan ]
+	bkgSamples[ 'QCD'+qcd+'All' ] = [ folder+'/RUNAnalysis_QCD'+qcd+'All_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kBlue-4 ]
+	bkgSamples[ 'TTJets' ] = [ folder+'/RUNAnalysis_TTJets_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kGreen ]
+	bkgSamples[ 'WJetsToQQ' ] = [ folder+'/RUNAnalysis_WJetsToQQ_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kMagenta ]
+	bkgSamples[ 'ZJetsToQQ' ] = [ folder+'/RUNAnalysis_ZJetsToQQ_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kOrange ]
+	bkgSamples[ 'WWTo4Q' ] = [ folder+'/RUNAnalysis_WWTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kMagenta+2 ]
+	bkgSamples[ 'ZZTo4Q' ] = [ folder+'/RUNAnalysis_ZZTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kOrange+2 ]
+	bkgSamples[ 'WZ' ] = [ folder+'/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kCyan ]
 
 	sigSamples = {}
-	sigSamples[ 'RPVSt'+str(mass) ] = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
-	#sigSamples[ 'WWTo4Q' ] = 'Rootfiles/RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
-	#sigSamples[ 'ZZTo4Q' ] = 'Rootfiles/RUNAnalysis_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
-	#sigSamples[ 'WZ' ] = 'Rootfiles/RUNAnalysis_WZ_TuneCUETP8M1_13TeV-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
-	#sigSamples[ 'TTJets' ] = 'Rootfiles/RUNAnalysis_TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
-	#sigSamples[ 'WJetsToQQ' ] = 'Rootfiles/RUNAnalysis_WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
-	#sigSamples[ 'ZJetsToQQ' ] = 'Rootfiles/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	sigSamples[ 'RPVSt'+str(mass) ] = folder+'/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
+	#sigSamples[ 'WWTo4Q' ] = folder+'/RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	#sigSamples[ 'ZZTo4Q' ] = folder+'/RUNAnalysis_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	#sigSamples[ 'WZ' ] = folder+'/RUNAnalysis_WZ_TuneCUETP8M1_13TeV-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	#sigSamples[ 'TTJets' ] = folder+'/RUNAnalysis_TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	#sigSamples[ 'WJetsToQQ' ] = folder+'/RUNAnalysis_WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	#sigSamples[ 'ZJetsToQQ' ] = folder+'/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 
-	SigSample = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(mass)+'-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
+	SigSample = folder+'/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(mass)+'-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 	treename = "ResolvedAnalysisPlots/RUNATree" if ( 'Resolved' in version ) else 'BoostedAnalysisPlots/RUNATree'
 
 	var = [
@@ -537,7 +541,7 @@ if __name__ == '__main__':
 #		[ 'Boosted', "deltaEtaDijet", 50, 0., 5., True, 0.4, 0.6 ],
 #		[ 'Boosted', "jet1SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
 #		[ 'Boosted', "jet2SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
-		[ 'Boosted', "prunedMassAsym", 20, 0., 1., True, 0., 0., 1 ],
+		[ 'Boosted', "prunedMassAsym", 20, 0., 1., True, 0., 0.2, 1 ],
 		[ 'Boosted', "jet1CosThetaStar", 20, 0., 1, True, 0., 0.8, 2 ],
 		[ 'Boosted', "jet2CosThetaStar", 20, 0., 1, True, 0., 0.8, 3 ],
 		[ 'Boosted', "jet1Tau21", 20, 0., 1., True, 0., 0.8 , 4 ],
