@@ -121,15 +121,15 @@ void RUNTriggerValAndEff::analyze(const edm::Event& iEvent, const edm::EventSetu
 
 			if ((++k)==1){
 				histos1D_[ "jet1Mass" ]->Fill( jet.mass() );
-				histos1D_[ "jet1TrimmedMass" ]->Fill( jet.userFloat( "ak8PFJetsCHSTrimmedMass" ) );
+				histos1D_[ "jet1PrunedMass" ]->Fill( jet.userFloat( "ak8PFJetsCHSPrunedMass" ) );
 				histos1D_[ "jet1Pt" ]->Fill( jet.pt() );
 			}
 
 			if ( baseTrigger ) {
-				histos1D_[ "trimmedMassDenom_cutDijet" ]->Fill( jet.userFloat( "ak8PFJetsCHSTrimmedMass" ) );
+				histos1D_[ "prunedMassDenom_cutDijet" ]->Fill( jet.userFloat( "ak8PFJetsCHSPrunedMass" ) );
 
 				if ( ORTriggers ){
-					histos1D_[ "trimmedMassPassing_cutDijet" ]->Fill( jet.userFloat( "ak8PFJetsCHSTrimmedMass" ) );
+					histos1D_[ "prunedMassPassing_cutDijet" ]->Fill( jet.userFloat( "ak8PFJetsCHSPrunedMass" ) );
 				}
 			}
 		}
@@ -147,8 +147,8 @@ void RUNTriggerValAndEff::beginJob() {
 	histos1D_[ "hltHT" ]->Sumw2();
 	histos1D_[ "jet1Mass" ] = fs_->make< TH1D >( "jet1Mass", "jet1Mass", 100, 0., 1000. );
 	histos1D_[ "jet1Mass" ]->Sumw2();
-	histos1D_[ "jet1TrimmedMass" ] = fs_->make< TH1D >( "jet1TrimmedMass", "jet1TrimmedMass", 100, 0., 1000. );
-	histos1D_[ "jet1TrimmedMass" ]->Sumw2();
+	histos1D_[ "jet1PrunedMass" ] = fs_->make< TH1D >( "jet1PrunedMass", "jet1PrunedMass", 100, 0., 1000. );
+	histos1D_[ "jet1PrunedMass" ]->Sumw2();
 	histos1D_[ "jet1Pt" ] = fs_->make< TH1D >( "jet1Pt", "jet1Pt", 100, 0., 1000. );
 	histos1D_[ "jet1Pt" ]->Sumw2();
 	histos1D_[ "HT" ] = fs_->make< TH1D >( "HT", "HT", 100, 0., 2000. );
@@ -157,10 +157,10 @@ void RUNTriggerValAndEff::beginJob() {
 	histos2D_[ "hltTrimmedMassvsHT" ] = fs_->make< TH2D >( "hltTrimmedMassvsHT", "hltTrimmedMassvsHT", 100, 0., 1000., 100, 0., 2000. );
 	histos2D_[ "hltTrimmedMassvsHT" ]->Sumw2();
 
-	histos1D_[ "trimmedMassDenom_cutDijet" ] = fs_->make< TH1D >( "trimmedMassDenom_cutDijet", "trimmedMassDenom_cutDijet", 100, 0., 1000. );
-	histos1D_[ "trimmedMassDenom_cutDijet" ]->Sumw2();
-	histos1D_[ "trimmedMassPassing_cutDijet" ] = fs_->make< TH1D >( "trimmedMassPassing_cutDijet", "trimmedMassPassing_cutDijet", 100, 0., 1000. );
-	histos1D_[ "trimmedMassPassing_cutDijet" ]->Sumw2();
+	histos1D_[ "prunedMassDenom_cutDijet" ] = fs_->make< TH1D >( "prunedMassDenom_cutDijet", "prunedMassDenom_cutDijet", 100, 0., 1000. );
+	histos1D_[ "prunedMassDenom_cutDijet" ]->Sumw2();
+	histos1D_[ "prunedMassPassing_cutDijet" ] = fs_->make< TH1D >( "prunedMassPassing_cutDijet", "prunedMassPassing_cutDijet", 100, 0., 1000. );
+	histos1D_[ "prunedMassPassing_cutDijet" ]->Sumw2();
 }
 
 void RUNTriggerValAndEff::fillDescriptions(edm::ConfigurationDescriptions & descriptions) {

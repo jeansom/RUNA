@@ -35,7 +35,7 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 	   fileNames = cms.untracked.vstring(
-		   '/store/mc/RunIIFall15MiniAODv1/RPVStopStopToJets_UDD312_M-110_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/60000/0EB8FA1A-C5DB-E511-B188-0CC47A4DEDA2.root',
+		   '/store/data/Run2016B/JetHT/MINIAOD/PromptReco-v2/000/273/150/00000/66051AAF-D819-E611-BD3D-02163E011D55.root',
 		   ##### 76X samples
 		   #'/store/mc/RunIISpring15DR74/QCD_Pt-15to3000_TuneCUETP8M1_Flat_13TeV_pythia8/MINIAODSIM/HFscaleFlat10to30Asympt25ns_MCRUN2_74_V9-v1/10000/00060131-045F-E511-949D-0CC47A6B5B20.root',
 		   #'/store/mc/RunIISpring15DR74/QCD_Pt-15to3000_TuneCUETP8M1_Flat_13TeV_pythia8/MINIAODSIM/HFscaleFlat10to30Asympt25ns_MCRUN2_74_V9-v1/10000/0082C690-035F-E511-952B-002618943886.root',
