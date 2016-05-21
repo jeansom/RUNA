@@ -59,7 +59,7 @@ def plotLimits( listMasses  ):
 		xs_theory.append( XS )
 		masses.append( mass )
 		masses_exp.append( mass )
-		tmpFile, tmpTree, tmpEntries = getTree( "higgsCombineUDD312RPVSt_M-"+str(mass)+".Asymptotic.mH120.root", "limit" )
+		tmpFile, tmpTree, tmpEntries = getTree( "higgsCombineUDD312RPVSt_M-"+str(mass)+args.sys+".Asymptotic.mH120.root", "limit" )
 		for i in xrange(tmpEntries):
 			tmpTree.GetEntry(i)
 			tmp = round( tmpTree.quantileExpected, 2)
@@ -130,13 +130,13 @@ def plotLimits( listMasses  ):
 	legend.AddEntry(graph_exp_2sigma,"#pm 2#sigma","F")
     	legend.Draw()
 
-	CMS_lumi.relPosX = 0.14
+	CMS_lumi.relPosX = 0.10
 	CMS_lumi.CMS_lumi(c, 4, 0)
 	gPad.RedrawAxis()
 
 	c.SetLogy()
 	#fileName = 'xs_limit_%s_%s.%s'%(args.method,args.final_state + ( ('_' + args.postfix) if args.postfix != '' else '' ), args.fileFormat.lower())
-	fileName = 'xs_limit_RPVStop_UDD312_Boosted.'+args.ext
+	fileName = 'xs_limit_RPVStop_UDD312_Boosted'+args.sys+'_v04.'+args.ext
 	c.SaveAs( 'Plots/'+fileName )
 	print 'Processing.......', fileName
 
@@ -148,6 +148,7 @@ if __name__ == '__main__':
 	parser.add_argument('-v', '--version', dest='version', action='store', default='Boosted', help='Boosted or non version, example: Boosted' )
 	parser.add_argument('-l', '--lumi', dest='lumi', action='store', type=float, default=149.9, help='Luminosity, example: 1.' )
 	parser.add_argument('-e', '--extension', dest='ext', action='store', default='png', help='Extension of plots.' )
+	parser.add_argument('-s', '--sys', dest='sys', action='store', default='_NOSys', help='Decay, example: jj, bj.' )
 
 	try:
 		args = parser.parse_args()

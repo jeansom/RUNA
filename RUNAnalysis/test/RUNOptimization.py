@@ -541,7 +541,7 @@ if __name__ == '__main__':
 #		[ 'Boosted', "deltaEtaDijet", 50, 0., 5., True, 0.4, 0.6 ],
 #		[ 'Boosted', "jet1SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
 #		[ 'Boosted', "jet2SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
-		[ 'Boosted', "prunedMassAsym", 20, 0., 1., True, 0., 0.2, 1 ],
+		[ 'Boosted', "prunedMassAsym", 20, 0., 1., True, 0.1, 0.2, 1 ],
 		[ 'Boosted', "jet1CosThetaStar", 20, 0., 1, True, 0., 0.8, 2 ],
 		[ 'Boosted', "jet2CosThetaStar", 20, 0., 1, True, 0., 0.8, 3 ],
 		[ 'Boosted', "jet1Tau21", 20, 0., 1., True, 0., 0.8 , 4 ],

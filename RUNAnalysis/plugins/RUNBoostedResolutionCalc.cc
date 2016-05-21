@@ -94,7 +94,7 @@ class RUNBoostedResolutionCalc : public EDAnalyzer {
       string jecVersion;
       TString systematics;
 
-      vector<string> triggerPass;
+      //vector<string> triggerPass;
       vector<JetCorrectorParameters> jetPar;
       FactorizedJetCorrector * jetJECAK8;
       vector<JetCorrectorParameters> massPar;
@@ -157,8 +157,8 @@ class RUNBoostedResolutionCalc : public EDAnalyzer {
       EDGetTokenT<LHEEventProduct> extLHEProducer_;
 
       // Trigger
-      EDGetTokenT<vector<float>> triggerBit_;
-      EDGetTokenT<vector<string>> triggerName_;
+      //EDGetTokenT<vector<float>> triggerBit_;
+      //EDGetTokenT<vector<string>> triggerName_;
 
       //Jet ID
       EDGetTokenT<vector<float>> jecFactor_;
@@ -223,8 +223,8 @@ RUNBoostedResolutionCalc::RUNBoostedResolutionCalc(const ParameterSet& iConfig):
 	generator_(consumes<GenEventInfoProduct>(iConfig.getParameter<InputTag>("generator"))),
 	extLHEProducer_(consumes<LHEEventProduct>(iConfig.getParameter<InputTag>("extLHEProducer"))),
 	// Trigger
-	triggerBit_(consumes<vector<float>>(iConfig.getParameter<InputTag>("triggerBit"))),
-	triggerName_(consumes<vector<string>>(iConfig.getParameter<InputTag>("triggerName"))),
+	//triggerBit_(consumes<vector<float>>(iConfig.getParameter<InputTag>("triggerBit"))),
+	//triggerName_(consumes<vector<string>>(iConfig.getParameter<InputTag>("triggerName"))),
 	//Jet ID,
 	jecFactor_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jecFactor"))),
 	neutralHadronEnergy_(consumes<vector<float>>(iConfig.getParameter<InputTag>("neutralHadronEnergy"))),
@@ -257,7 +257,7 @@ RUNBoostedResolutionCalc::RUNBoostedResolutionCalc(const ParameterSet& iConfig):
 	PUMethod 	= iConfig.getParameter<string>("PUMethod");
 	jecVersion 	= iConfig.getParameter<string>("jecVersion");
 	systematics 	= iConfig.getParameter<string>("systematics");
-	triggerPass 	= iConfig.getParameter<vector<string>>("triggerPass");
+	//triggerPass 	= iConfig.getParameter<vector<string>>("triggerPass");
 
 	/////// JECs
 	string prefix;
@@ -400,12 +400,13 @@ void RUNBoostedResolutionCalc::analyze(const Event& iEvent, const EventSetup& iS
 	Handle<ULong64_t> ievent;
 	iEvent.getByToken(event_, ievent);
 
-	/// Trigger
+	/*// Trigger
 	Handle<vector<float> > triggerBit;
 	iEvent.getByToken(triggerBit_, triggerBit);
 
 	Handle<vector<string> > triggerName;
 	iEvent.getByToken(triggerName_, triggerName);
+	*/
 
 	/// Jet ID
 	Handle<vector<float> > jecFactor;
@@ -506,7 +507,7 @@ void RUNBoostedResolutionCalc::analyze(const Event& iEvent, const EventSetup& iS
 	       //LogWarning("test") << boostedStops.size();
 
 		////////// Check trigger fired
-		bool ORTriggers = checkORListOfTriggerBits( triggerName, triggerBit, triggerPass );
+		//bool ORTriggers = checkORListOfTriggerBits( triggerName, triggerBit, triggerPass );
 		////////////////////////////////////////////////////
 		
 		////////// PU Reweight
@@ -567,55 +568,54 @@ void RUNBoostedResolutionCalc::analyze(const Event& iEvent, const EventSetup& iS
 		if ( HT > 900. ) cutHT = 1;
 
 
-		if ( ORTriggers ) {
-			if ( JETS.size() > 1 ) {
+		//if ( ORTriggers ) {
+		if ( JETS.size() > 1 ) {
+			
+			double deltaRJet1 = boostedStops[0].DeltaR( JETS[0].p4 );
+			double deltaRJet2 = boostedStops[1].DeltaR( JETS[1].p4 );
+
+			if ( ( deltaRJet1 < 0.7 ) && ( deltaRJet2 < 0.7 ) ) {
+
+				// Mass average and asymmetry
+				massAve = massAverage( JETS[0].mass, JETS[1].mass );
+				massAsym = massAsymmetry( JETS[0].mass, JETS[1].mass );
+				//////////////////////////////////////////////////////////////////////////
 				
-				double deltaRJet1 = boostedStops[0].DeltaR( JETS[0].p4 );
-				double deltaRJet2 = boostedStops[1].DeltaR( JETS[1].p4 );
+				/*/ Btag
+				jet1btagCSVv2 = JETS[0].btagCSVv2;
+				jet2btagCSVv2 = JETS[1].btagCSVv2;
+				jet1btagCMVAv2 = JETS[0].btagCMVAv2;
+				jet2btagCMVAv2 = JETS[1].btagCMVAv2;
+				jet1btagDoubleB = JETS[0].btagDoubleB;
+				jet2btagDoubleB = JETS[1].btagDoubleB;
+				*/
 
-				if ( ( deltaRJet1 < 0.7 ) && ( deltaRJet2 < 0.7 ) ) {
+				// Dijet eta
+				deltaEtaDijet = deltaValue( JETS[0].p4.Eta(), JETS[1].p4.Eta() );
 
-					// Mass average and asymmetry
-					massAve = massAverage( JETS[0].mass, JETS[1].mass );
-					massAsym = massAsymmetry( JETS[0].mass, JETS[1].mass );
-					//////////////////////////////////////////////////////////////////////////
-					
-					/*/ Btag
-					jet1btagCSVv2 = JETS[0].btagCSVv2;
-					jet2btagCSVv2 = JETS[1].btagCSVv2;
-					jet1btagCMVAv2 = JETS[0].btagCMVAv2;
-					jet2btagCMVAv2 = JETS[1].btagCMVAv2;
-					jet1btagDoubleB = JETS[0].btagDoubleB;
-					jet2btagDoubleB = JETS[1].btagDoubleB;
-					*/
+				// Cos theta star
+				//jet1CosThetaStar = calculateCosThetaStar( JETS[0].p4, JETS[1].p4 ) ;
+				//jet2CosThetaStar = calculateCosThetaStar( JETS[1].p4, JETS[0].p4 ) ;
 
-					// Dijet eta
-					deltaEtaDijet = deltaValue( JETS[0].p4.Eta(), JETS[1].p4.Eta() );
+				// Nsubjetiness
+				jet1Tau21 = JETS[0].tau2 / JETS[0].tau1;
+				jet1Tau31 = JETS[0].tau3 / JETS[0].tau1;
+				//jet1Tau32 = JETS[0].tau3 / JETS[0].tau2;
+				jet2Tau21 = JETS[1].tau2 / JETS[1].tau1;
+				jet2Tau31 = JETS[1].tau3 / JETS[1].tau1;
+				//jet2Tau32 = JETS[1].tau3 / JETS[1].tau2;
+				////////////////////////////////////////////////////////////////////////////////
 
-					// Cos theta star
-					//jet1CosThetaStar = calculateCosThetaStar( JETS[0].p4, JETS[1].p4 ) ;
-					//jet2CosThetaStar = calculateCosThetaStar( JETS[1].p4, JETS[0].p4 ) ;
-
-					// Nsubjetiness
-					jet1Tau21 = JETS[0].tau2 / JETS[0].tau1;
-					jet1Tau31 = JETS[0].tau3 / JETS[0].tau1;
-					//jet1Tau32 = JETS[0].tau3 / JETS[0].tau2;
-					jet2Tau21 = JETS[1].tau2 / JETS[1].tau1;
-					jet2Tau31 = JETS[1].tau3 / JETS[1].tau1;
-					//jet2Tau32 = JETS[1].tau3 / JETS[1].tau2;
-					////////////////////////////////////////////////////////////////////////////////
-
-					if ( cutHT ) {
-						histos1D_[ "massAve_cutHT" ]->Fill( massAve, totalWeight );
-						if ( ( jet1Tau21 < cutTau21 ) && ( jet2Tau21 < cutTau21  ) ) {
-							histos1D_[ "massAve_cutTau21" ]->Fill( massAve, totalWeight );
-							if ( ( jet1Tau31 < cutTau31 ) && ( jet2Tau31 < cutTau31  ) ) {
-								histos1D_[ "massAve_cutTau31" ]->Fill( massAve, totalWeight );
-								if ( massAsym < cutMassAsym) {
-									histos1D_[ "massAve_cutMassAsym" ]->Fill( massAve, totalWeight );
-									if ( deltaEtaDijet < cutDeltaEtaDijet ) {
-										histos1D_[ "massAve_cutDeltaEtaDijet" ]->Fill( massAve, totalWeight );
-									}
+				if ( cutHT ) {
+					histos1D_[ "massAve_cutHT" ]->Fill( massAve, totalWeight );
+					if ( ( jet1Tau21 < cutTau21 ) && ( jet2Tau21 < cutTau21  ) ) {
+						histos1D_[ "massAve_cutTau21" ]->Fill( massAve, totalWeight );
+						if ( ( jet1Tau31 < cutTau31 ) && ( jet2Tau31 < cutTau31  ) ) {
+							histos1D_[ "massAve_cutTau31" ]->Fill( massAve, totalWeight );
+							if ( massAsym < cutMassAsym) {
+								histos1D_[ "massAve_cutMassAsym" ]->Fill( massAve, totalWeight );
+								if ( deltaEtaDijet < cutDeltaEtaDijet ) {
+									histos1D_[ "massAve_cutDeltaEtaDijet" ]->Fill( massAve, totalWeight );
 								}
 							}
 						}
@@ -670,9 +670,9 @@ void RUNBoostedResolutionCalc::fillDescriptions(edm::ConfigurationDescriptions &
 	desc.add<string>("systematics", "None");
 	desc.add<string>("PUMethod", "chs");
 	desc.add<double>("scale", 1);
-	vector<string> HLTPass;
-	HLTPass.push_back("HLT_AK8PFHT700_TrimR0p1PT0p03Mass50");
-	desc.add<vector<string>>("triggerPass",	HLTPass);
+	//vector<string> HLTPass;
+	//HLTPass.push_back("HLT_AK8PFHT700_TrimR0p1PT0p03Mass50");
+	//desc.add<vector<string>>("triggerPass",	HLTPass);
 
 	desc.add<InputTag>("Lumi", 	InputTag("eventInfo:evtInfoLumiBlock"));
 	desc.add<InputTag>("Run", 	InputTag("eventInfo:evtInfoRunNumber"));
@@ -716,8 +716,8 @@ void RUNBoostedResolutionCalc::fillDescriptions(edm::ConfigurationDescriptions &
 	desc.add<InputTag>("neutralHadronMultiplicity",	InputTag("jetsAK8CHS:jetAK8CHSneutralHadronMultiplicity"));
 	desc.add<InputTag>("chargedMultiplicity", 	InputTag("jetsAK8CHS:jetAK8CHSchargedMultiplicity"));
 	// Trigger
-	desc.add<InputTag>("triggerBit",		InputTag("TriggerUserData:triggerBitTree"));
-	desc.add<InputTag>("triggerName",		InputTag("TriggerUserData:triggerNameTree"));
+	//desc.add<InputTag>("triggerBit",		InputTag("TriggerUserData:triggerBitTree"));
+	//desc.add<InputTag>("triggerName",		InputTag("TriggerUserData:triggerNameTree"));
 	// GenInfo
 	desc.add<InputTag>("genPartID",		InputTag("genPart:genPartID"));
 	desc.add<InputTag>("genPartPt",		InputTag("genPart:genPartPt"));

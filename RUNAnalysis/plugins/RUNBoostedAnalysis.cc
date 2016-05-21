@@ -73,7 +73,7 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 
       // ----------member data ---------------------------
       string PUMethod;
-      //PUReweighter PUWeight_;
+      PUReweighter PUWeight_;
       int lhaPdfId ;
       
       Service<TFileService> fs_;
@@ -519,13 +519,14 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	}
 
 	////////// Check trigger fired
-	bool ORTriggers = checkORListOfTriggerBits( triggerName, triggerBit, triggerPass );
+	bool ORTriggers = false;
+	if ( isData ) ORTriggers = checkORListOfTriggerBits( triggerName, triggerBit, triggerPass );
+	else ORTriggers = true;
 	////////////////////////////////////////////////////
 	
 	////////// PU Reweight
-	//if ( isData ) puWeight = 1;
-	//else puWeight = PUWeight_.getPUWeight( *trueNInt, *bunchCross );
-	puWeight = 1;
+	if ( isData ) puWeight = 1;
+	else puWeight = PUWeight_.getPUWeight( *trueNInt, *bunchCross );
 	histos1D_[ "PUWeight" ]->Fill( puWeight );
 	lumiWeight = scale;
 	double totalWeight = puWeight * lumiWeight;
@@ -1013,7 +1014,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 void RUNBoostedAnalysis::beginJob() {
 
 	// Calculate PUWeight
-	//if ( !isData ) PUWeight_.generateWeights( dataPUFile );
+	if ( !isData ) PUWeight_.generateWeights( dataPUFile );
 
 	RUNAtree = fs_->make< TTree >("RUNATree", "RUNATree"); 
 	RUNAtree->Branch( "run", &run, "run/I" );
@@ -1332,8 +1333,8 @@ void RUNBoostedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descr
 	desc.add<double>("cutBtagvalue", 1);
 	desc.add<bool>("bjSample", false);
 	desc.add<bool>("isData", false);
-	desc.add<string>("dataPUFile", "supportFiles/PileupData2015D_JSON_10-23-2015.root");
-	desc.add<string>("jecVersion", "supportFiles/Summer15_25nsV6");
+	desc.add<string>("dataPUFile", "supportFiles/PileupData2015D_JSON_latest.root");
+	desc.add<string>("jecVersion", "supportFiles/Fall15_25nsV2");
 	desc.add<string>("systematics", "None");
 	desc.add<string>("PUMethod", "chs");
 	desc.add<double>("scale", 1);

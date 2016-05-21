@@ -204,7 +204,7 @@ void SimAnalyzer<Jet>::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 			histos1D_[ "dau_Eta" ]->Fill( dauPar1[0].Eta() );
 			histos1D_[ "dau_Eta" ]->Fill( dauPar1[1].Eta() );
 		}
-	} else LogWarning("GenParticles") << "This event have more than 2 quarks with 23 status.";
+	} else LogWarning("GenParticles") << "This event have more than 2 quarks with 23 status. " << dauPar1.size();
 
 	if ( dauPar2.size() == 2 ) {
 		tmpFromMom2 = ( dauPar2[0] + dauPar2[1] );
@@ -305,6 +305,8 @@ void SimAnalyzer<Jet>::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 	/// Matching GenJets
 	double tmpMinGenDeltaR = 999;
 	double tmp2MinGenDeltaR = 999;
+	//double tmp3MinGenDeltaR = 999;
+	//double tmp4MinGenDeltaR = 999;
 	int numBoostedGenJets = 0;
 	vector<TLorentzVector> boostedGenJets;
 	if ( boostedDaughters.size() > 1 ){

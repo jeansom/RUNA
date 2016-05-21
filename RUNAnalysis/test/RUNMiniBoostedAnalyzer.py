@@ -27,7 +27,7 @@ gROOT.SetBatch()
 ######################################
 def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 
-	outputFileName = 'Rootfiles/RUNMiniBoostedAnalysis_'+grooming+'_'+signalName+UNC+'_'+RANGE+'_v04.root' 
+	outputFileName = 'Rootfiles/RUNMiniBoostedAnalysis_'+grooming+'_'+signalName+UNC+'_'+RANGE+'_'+args.version+'.root' 
 	outputFile = TFile( outputFileName, 'RECREATE' )
 
 	###################################### output Tree
@@ -290,7 +290,7 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 					tmpSigCutsList = [ x for i,x in enumerate(sigCutsList) if i not in Ind ]
 					
 				##### Bkg estimation/ABCD method
-				if all(sigCutsList[:-2]): 
+				if ( all(sigCutsList[:-2]) ): # and ( getattr( events, listCuts[5][0] ) > (listCuts[5][1]*2) )): 
 					allHistos[ listCuts[-2][0]+'Vs'+listCuts[-1][0]+'_'+sample+'_Bkg' ].Fill( getattr( events, listCuts[0][0] ), getattr( events, listCuts[1][0] ), scale )
 					plotABCD( [ ( getattr( events, listCuts[-2][0] ) < listCuts[-2][1] ), ( getattr( events, listCuts[-1][0] ) < listCuts[-1][1] ) ], [ listCuts[-2][0], listCuts[-1][0] ], events, massAve, scale, sample )
 
@@ -364,8 +364,9 @@ if __name__ == '__main__':
 	parser.add_argument( '-d', '--decay', action='store',  dest='decay', default='UDD312', help='Decay: UDD312 or UDD323.' )
 	parser.add_argument( '-s', '--sample', action='store',   dest='samples', default='RPV', help='Type of sample' )
 	parser.add_argument( '-r', '--range', action='store',  dest='RANGE', default='low', help='Range: low, med, high.' )
-	parser.add_argument( '-u', '--unc', action='store',  dest='unc', type=bool, default=False, help='Process: all or single.' )
+	parser.add_argument( '-u', '--unc', action='store',  dest='unc', default='', help='Process: all or single.' )
 	parser.add_argument( '-b', '--batchSys', action='store',  dest='batchSys', type=bool, default=False, help='Process: all or single.' )
+	parser.add_argument( '-v', '--version', action='store', default='v05', dest='version', help='Version of the RUNAnalysis file.' )
 
 	try:
 		args = parser.parse_args()
@@ -382,17 +383,17 @@ if __name__ == '__main__':
 	else: folder = 'Rootfiles/'
 
 	allSamples = {}
-	allSamples[ 'DATA' ] = folder+'/RUNAnalysis_JetHT_Run2015D-16Dec2015-v1_v76x_v2p0_v04.root'
+	allSamples[ 'DATA' ] = folder+'/RUNAnalysis_JetHT_Run2015D-16Dec2015-v1_v76x_v2p0_'+args.version+'.root'
 	#if not 'Dibosons' in mass: allSamples[ 'RPVStopStopToJets_'+args.decay+'_M-'+str(mass) ] = folder+'/RUNAnalysis_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v2p0_v01.root'
-	allSamples[ 'RPVStopStopToJets_'+args.decay+'_M-'+str(mass) ] = folder+'/RUNAnalysis_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
-	allSamples[ 'QCDHTAll' ] = folder+'/RUNAnalysis_QCDHTAll_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
-	allSamples[ 'QCDPtAll' ] = folder+'/RUNAnalysis_QCDPtAll_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
-	allSamples[ 'TTJets' ] = folder+'/RUNAnalysis_TTJets_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
-	allSamples[ 'WJetsToQQ' ] = folder+'/RUNAnalysis_WJetsToQQ_HT-600ToInf_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
-	#allSamples[ 'ZJetsToQQ' ] = folder+'/RUNAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v04.root'
-	allSamples[ 'WWTo4Q' ] = folder+'/RUNAnalysis_WWTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
-	allSamples[ 'ZZTo4Q' ] = folder+'/RUNAnalysis_ZZTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
-	allSamples[ 'WZ' ] = folder+'/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
+	allSamples[ 'RPVStopStopToJets_'+args.decay+'_M-'+str(mass) ] = folder+'/RUNAnalysis_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v2p0_'+args.version+'.root'
+	allSamples[ 'QCDHTAll' ] = folder+'/RUNAnalysis_QCDHTAll_RunIIFall15MiniAODv2_v76x_v2p0_'+args.version+'.root'
+	allSamples[ 'QCDPtAll' ] = folder+'/RUNAnalysis_QCDPtAll_RunIIFall15MiniAODv2_v76x_v2p0_'+args.version+'.root'
+	allSamples[ 'TTJets' ] = folder+'/RUNAnalysis_TTJets_RunIIFall15MiniAODv2_v76x_v2p0_'+args.version+'.root'
+	allSamples[ 'WJetsToQQ' ] = folder+'/RUNAnalysis_WJetsToQQ_RunIIFall15MiniAODv2_v76x_v2p0_'+args.version+'.root'
+	allSamples[ 'ZJetsToQQ' ] = folder+'/RUNAnalysis_ZJetsToQQ_RunIIFall15MiniAODv2_v76x_v2p0_'+args.version+'.root'
+	allSamples[ 'WWTo4Q' ] = folder+'/RUNAnalysis_WWTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_'+args.version+'.root'
+	allSamples[ 'ZZTo4Q' ] = folder+'/RUNAnalysis_ZZTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_'+args.version+'.root'
+	allSamples[ 'WZ' ] = folder+'/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v2p0_'+args.version+'.root'
 
 	cutList = ( 'Dibosons' if 'Dibosons' in mass else 'RPVStopStopToJets_'+args.decay+'_M-'+mass )
 	try: cuts = selection[ cutList ]
@@ -412,7 +413,7 @@ if __name__ == '__main__':
 	allHistos = {}
 
 	if ('RPV' in samples) and args.unc:
-		for uncType in [ 'JESUp', 'JESDown' ]: 
+		for uncType in [ args.unc+'Up', args.unc+'Down' ]: 
 			p = Process( target=myAnalyzer, args=( dictSamples, cuts, signalSample, args.RANGE, uncType ) )
 			p.start()
 			p.join()

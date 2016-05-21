@@ -30,12 +30,12 @@ if os.access('RooPowerFunction.cxx', os.R_OK): ROOT.gROOT.ProcessLine('.L RooPow
 #line.SetLineColor(kRed)
 
 
-def shapeCards( process, isData, datahistosFile, histosFile, signalHistosFile, signalSample, hist, signalMass, minMass, maxMass, jesValue, jerValue, lumiUnc, outputName ):
+def shapeCards( process, isData, datahistosFile, histosFile, signalHistosFile, signalSample, hist, signalMass, minMass, maxMass, reBin, jesValue, jerValue, lumiUnc, outputName ):
 	"""function to run Roofit and save workspace for RooStats"""
 	warnings.filterwarnings( action='ignore', category=RuntimeWarning, message='.*class stack<RooAbsArg\*,deque<RooAbsArg\*> >' )
 	
 	hSignal = signalHistosFile.Get(hist+'_'+signalSample)
-	hSignal.Rebin(10)
+	hSignal.Rebin( reBin )
 	htmpSignal = hSignal.Clone()
 	#htmpSignal.Scale(100)
 	signalXS = search(dictXS, 'RPVStopStopToJets_UDD312_M-'+str(signalMass) )
@@ -52,8 +52,9 @@ def shapeCards( process, isData, datahistosFile, histosFile, signalHistosFile, s
         signal_norm.Print()
 
 	hBkg = datahistosFile.Get('massAve_prunedMassAsymVsdeltaEtaDijet_DATA_ABCDProj')
+	hBkg.Rebin( reBin )
 	#hBkg = histosFile.Get(hist+'_QCDPtAll_BCD')
-	bkgAcc = round(hBkg.Integral( hBkg.GetXaxis().FindBin( minMass ), hBkg.GetXaxis().FindBin( maxMass )))
+	bkgAcc = round(hBkg.Integral( hBkg.GetXaxis().FindBin( minMass ), hBkg.GetXaxis().FindBin( maxMass )), 2)
 	#hBkg.Scale(1/hBkg.Integral())
 	hPseudo = hBkg.Clone()
 	hPseudo.Reset()
@@ -84,6 +85,7 @@ def shapeCards( process, isData, datahistosFile, histosFile, signalHistosFile, s
 
 	#hData = histosFile.Get('massAve_prunedMassAsymVsdeltaEtaDijet_ABCDProj')
 	hData = datahistosFile.Get('massAve_prunedMassAsymVsdeltaEtaDijet_DATA_ABCDProj')
+	hData.Rebin( reBin )
 	#hData = histosFile.Get(hist+'_QCDPtAll_A')
 	#hData.Add(htmpSignal)
 	#hData.Scale(1/hData.Integral())
@@ -190,13 +192,15 @@ def shapeCards( process, isData, datahistosFile, histosFile, signalHistosFile, s
         datacard.write('bin          1          1\n')
         datacard.write('process      signal     background\n')
         datacard.write('process      0          1\n')
-        datacard.write('rate         -1         -1\n')
+        datacard.write('rate         -1         '+str(bkgAcc)+'\n')
         datacard.write('------------------------------\n')
 	if args.lumiUnc: datacard.write('lumi  lnN    %f         -\n'%(lumiUnc))
         if args.jesUnc: datacard.write('JES  shape   1          -\n')
 	if args.jerUnc: datacard.write('JER  shape   1          -\n')
         #flat parameters --- flat prior
-	if args.normUnc: datacard.write('background_norm  flatParam\n')
+	if args.normUnc: 
+		NcombineUnc = ( 1 / TMath.Sqrt( args.normUncValue / 100. ) ) - 1
+		datacard.write('background_norm  gmN '+str(int(round(NcombineUnc)))+'  -  '+str( round(bkgAcc/NcombineUnc,2) )+'\n')
         #datacard.write('p1  flatParam\n')
         datacard.close()
 	print ' |----> Datacard created:\n', dataCardName
@@ -207,14 +211,17 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-p', '--process', action='store', default='template', help='Process: template or fit.' )
 	parser.add_argument('-d', '--data', dest='isData', type=bool, default=True, help='Data: data or pseudoData.' )
+	parser.add_argument('-i', '--injSig', dest='signalInjec', type=bool, default=False, help='Signal injection test.' )
 	#parser.add_argument('-d', '--decay', action='store', default='jj', help='Decay, example: jj, bj.' )
 	parser.add_argument('-l', '--lumiUnc', dest='lumiUnc', type=bool, default=False, help='Luminosity, example: 1.' )
-	parser.add_argument('-n', '--normUnc', dest='normUnc', type=bool, default=False, help='Luminosity, example: 1.' )
+	parser.add_argument('-n', '--normUnc', dest='normUnc', type=bool, default=False, help='Normalization unc.' )
+	parser.add_argument('-nV', '--normUncValue', dest='normUncValue', type=int, default=50, help='Value for bkg nomralization uncertainty.' )
     	parser.add_argument('-s', "--jesUnc", dest="jesUnc", type=bool, default=False, help="Relative uncertainty in the jet energy scale")
     	parser.add_argument('-r', "--jerUnc", dest="jerUnc", type=bool, default=False, help="Relative uncertainty in the jet resolution")
 	parser.add_argument('-u', '--unc', dest='unc', type=bool, default=False, help='Luminosity, example: 1.' )
 	parser.add_argument('-g', '--grom', action='store', default='pruned', dest='grooming', help='Grooming Algorithm, example: Pruned, Filtered.' )
 	parser.add_argument('-b', '--decay', action='store', default='UDD312', dest='decay', help='Decay, example: UDD312, UDD323.' )
+	parser.add_argument('-R', '--rebin', dest='reBin', type=int, default=10, help='Data: data or pseudoData.' )
 
 	try:
 		args = parser.parse_args()
@@ -226,7 +233,7 @@ if __name__ == '__main__':
 		args.lumiUnc = True
 		args.jesUnc = True
 		args.jerUnc = True
-		#args.normUnc = True
+		args.normUnc = True
 
 	###### Input parameters
 	masses = {}
@@ -243,7 +250,7 @@ if __name__ == '__main__':
 	masses[ 220 ] = 'massAve_deltaEtaDijet'
 	masses[ 230 ] = 'massAve_deltaEtaDijet'
 	masses[ 240 ] = 'massAve_deltaEtaDijet'
-	jesValue = 0.02
+	jesValue = 0.05
 	jerValue = 0.1
 	lumiUnc = 1.027
 	lumi = 2606
@@ -252,17 +259,18 @@ if __name__ == '__main__':
 
 	for mass in masses:
 		signalSample = 'RPVStopStopToJets_UDD312_M-'+str(mass)
-		if mass < 150: RANGE='low'
+		if mass < 160: RANGE='low'
 		else: RANGE='high'
-		dataFileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_DATA_'+RANGE+'_v03.root'
-		bkgFileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_QCDHTAll_'+RANGE+'_v03.root'
-		signalFileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_v03.root'
-		if args.unc: outputName = signalSample+'_v03'
-		else: outputName = signalSample+'_NOSys_v03'
+		dataFileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_DATA_'+RANGE+'_v04.root'
+		bkgFileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_QCDPtAll_'+RANGE+'_v04.root'
+		signalFileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-'+str(mass)+'_'+RANGE+'_v04.root'
+		if args.unc: outputName = signalSample+'_v04'
+		else: outputName = signalSample+'_NOSys_v04'
+		if args.signalInjec: outputName = outputName.replace( signalSample, signalSample+'_signalInjectionTest' )
 
 		print '#'*50 
 		print ' |----> Creating datacard and workspace for RPV St', str(mass)
 		print '#'*50 
-		p = Process( target=shapeCards, args=( args.process, args.isData, TFile(dataFileHistos), TFile(bkgFileHistos), TFile(signalFileHistos), signalSample, masses[ mass ], mass, minMass, maxMass, jesValue, jerValue, lumiUnc, outputName ) )
+		p = Process( target=shapeCards, args=( args.process, args.isData, TFile(dataFileHistos), TFile(bkgFileHistos), TFile(signalFileHistos), signalSample, masses[ mass ], mass, minMass, maxMass, args.reBin, jesValue, jerValue, lumiUnc, outputName ) )
 		p.start()
 		p.join()
