@@ -48,8 +48,8 @@ dictXS = {
 		'ZZTo4Q' : 6.842,
 		'WZ' : 22.82,
 		#### RPV
-		'RPVStopStopToJets_UDD312_M-80' : 2768.51,
-		'RPVStopStopToJets_UDD312_M-90' : 1979.36,
+		'RPVStopStopToJets_UDD312_M-80' : 3746.,
+		'RPVStopStopToJets_UDD312_M-90' : 2369.,
 		'RPVStopStopToJets_UDD312_M-100' : 1521.11,
 		'RPVStopStopToJets_UDD312_M-110' : 1013.76,
 		'RPVStopStopToJets_UDD312_M-120' : 689.799,
@@ -87,8 +87,8 @@ dictXS = {
 		'RPVStopStopToJets_UDD312_M-1400' : 0.000461944,
 		'RPVStopStopToJets_UDD312_M-1500' : 0.000256248,
 
-		'RPVStopStopToJets_UDD323_M-80' : 2768.51,
-		'RPVStopStopToJets_UDD323_M-90' : 1979.36,
+		'RPVStopStopToJets_UDD323_M-80' : 3746.,
+		'RPVStopStopToJets_UDD323_M-90' : 2369.,
 		'RPVStopStopToJets_UDD323_M-100' : 1521.11,
 		'RPVStopStopToJets_UDD323_M-110' : 1013.76,
 		'RPVStopStopToJets_UDD323_M-120' : 689.799,

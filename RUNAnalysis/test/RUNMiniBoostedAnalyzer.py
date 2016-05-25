@@ -135,6 +135,7 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 					)
 			allHistos[ tmpName ].Sumw2()
 
+		if 'RPV' in sam: massBins = 50
 		tmpNameSam = listCuts[-2][0]+'Vs'+listCuts[-1][0]+'_'+sam
 		allHistos[ "massAve_"+tmpNameSam+'_ABCDProj' ] = TH1F( "massAve_"+tmpNameSam+'_ABCDProj', "massAve_"+tmpNameSam+'_ABCDProj', massBins, massXmin, massXmax )
 		allHistos[ "massAve_"+tmpNameSam+'_ABCDProj' ].Sumw2()

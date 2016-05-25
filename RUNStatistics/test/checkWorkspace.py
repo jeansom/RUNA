@@ -12,7 +12,7 @@ gROOT.SetBatch()
 
 def main():
 
-     inputFileWorkspace = TFile("Rootfiles/workspace_RPVStopStopToJets_UDD312_M-110_NOSys_v2.root") 
+     inputFileWorkspace = TFile("Rootfiles/workspace_RPVStopStopToJets_UDD312_M-220_v04.root") 
 
      workspace = inputFileWorkspace.Get("myWS")
      workspace.Print()
@@ -40,8 +40,8 @@ def main():
      #data_TH1_fineBinning.Draw()    
      #signal_TH1_fineBinning.Rebin(10)
      signal_TH1_fineBinning.Draw()    
-     signalUp_TH1_fineBinning.Draw("sames")    
-     signalDown_TH1_fineBinning.Draw("sames")    
+     #signalUp_TH1_fineBinning.Draw("sames")    
+     #signalDown_TH1_fineBinning.Draw("sames")    
      c1.SaveAs("test.png")
 
 if __name__ == '__main__':

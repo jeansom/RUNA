@@ -43,8 +43,10 @@ def calcROCs( BkgSamples, SigSamples, treename, varList, mass, window, cutsList 
 	allHistos = {}
 	for var in varList: 
 		allHistos[ var[0]+"_Sig" ] = TH1F( var[0]+"_Sig", var[0]+"_Sig", var[1], var[2], var[3] )
+		allHistos[ var[0]+"_Sig" ].Sumw2()
 		for bkgSample in BkgSamples: 
 			allHistos[ var[0]+'_'+bkgSample ] = TH1F( var[0]+"_"+bkgSample, var[0]+"_"+bkgSample, var[1], var[2], var[3] )
+			allHistos[ var[0]+'_'+bkgSample ].Sumw2()
 			allHistos[ var[0]+"_"+bkgSample+"_BkgROC"] = TH1F( var[0]+"_"+bkgSample+"_BkgROC", var[0]+"_"+bkgSample+"_BkgROC; "+var[0], var[1], var[2], var[3] )
 			allHistos[ var[0]+"_"+bkgSample+"_SigROC"] = TH1F( var[0]+"_"+bkgSample+"_SigROC", var[0]+"_"+bkgSample+"_SigROC; "+var[0], var[1], var[2], var[3] )
 

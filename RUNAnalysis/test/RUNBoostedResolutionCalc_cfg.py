@@ -113,7 +113,7 @@ else:
 
 
 process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedResolutionCalc',
-		triggerPass 		= cms.vstring( [ 'HLT_AK8PFHT650_TrimR0p1PT0p03Mass50', 'HLT_PFHT800'] ),
+		#triggerPass 		= cms.vstring( [ 'HLT_AK8PFHT650_TrimR0p1PT0p03Mass50', 'HLT_PFHT800'] ),
 		bjSample		= cms.bool( bjsample ),
 		dataPUFile		= cms.string( options.namePUFile  ),
 		jecVersion		= cms.string( options.jecVersion ),
