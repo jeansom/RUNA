@@ -55,7 +55,7 @@ if( isMiniAOD == 0 ):
     process.bTaggingEffAnalyzerAK8PF = cms.EDAnalyzer('BTaggingEffAnalyzer',
         vertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
         JetsTag            = cms.InputTag('slimmedJets'),
-        rho                = cms.InputTag("fixedRhoFastjetCentralNeutral"),
+        rho                = cms.InputTag("fixedGridRhoFastjetCentralNeutral"),
         JetPtTag           = cms.InputTag(''),
         JetEtaTag          = cms.InputTag(''),
         JetPhiTag          = cms.InputTag(''),

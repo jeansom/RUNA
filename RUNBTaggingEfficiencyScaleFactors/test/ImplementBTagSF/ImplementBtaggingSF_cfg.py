@@ -49,7 +49,7 @@ if isMiniAOD == 0:
 				      jetMass = cms.InputTag(""),
 				      jetArea = cms.InputTag(""),
 				      npv = cms.InputTag(""),
-				      rho = cms.InputTag("fixedRhoFastjetCentralNeutral"),
+				      rho = cms.InputTag("fixedGridRhoFastjetCentralNeutral"),
 				      isMiniAOD =  cms.int32(isMiniAOD)
 				      )
 	
