@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 '''
-File: MyAnalyzer.py --mass 50 (optional) --debug -- final --jetAlgo AK5
 Author: Alejandro Gomez Espinosa
 Email: gomez@physics.rutgers.edu
 Description: My Analyzer 
@@ -27,7 +26,7 @@ gROOT.SetBatch()
 ######################################
 def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 
-	outputFileName = 'Rootfiles/RUNMiniBoostedAnalysis_'+grooming+'_'+signalName+UNC+'_'+RANGE+'_'+args.version+'.root' 
+	outputFileName = 'Rootfiles/RUNMiniBoostedAnalysis_'+grooming+'_'+signalName+UNC+'_'+RANGE+'_'+args.version+'tmp.root' 
 	outputFile = TFile( outputFileName, 'RECREATE' )
 
 	###################################### output Tree
@@ -46,6 +45,7 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 
 	for sam in dictSamples:
 		allHistos[ "cutFlow_"+sam ] = TH1F( "cutflow_"+sam, "cutflow_"+sam, len(listCuts), 0., len(listCuts) )
+		allHistos[ "cutFlow_Scaled_"+sam ] = TH1F( "cutflow_scaled_"+sam, "cutflow_scaled_"+sam, len(listCuts), 0., len(listCuts) )
 		allHistos[ "HT_"+sam ] = TH1F( "HT_"+sam, "HT_"+sam, 5000, 0., 5000 )
 		allHistos[ "HT_"+sam ].Sumw2()
 		allHistos[ "MET_"+sam ] = TH1F( "MET_"+sam, "MET_"+sam, 500, 0., 500 )
@@ -135,12 +135,16 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 					)
 			allHistos[ tmpName ].Sumw2()
 
-		if 'RPV' in sam: massBins = 50
 		tmpNameSam = listCuts[-2][0]+'Vs'+listCuts[-1][0]+'_'+sam
-		allHistos[ "massAve_"+tmpNameSam+'_ABCDProj' ] = TH1F( "massAve_"+tmpNameSam+'_ABCDProj', "massAve_"+tmpNameSam+'_ABCDProj', massBins, massXmin, massXmax )
+		#if 'RPV' in sam: massBins = 50
+		allHistos[ "massAve_"+tmpNameSam+'_ABCDProj' ] = TH1F( "massAve_"+tmpNameSam+'_ABCDProj', "massAve_"+tmpNameSam+'_ABCDProj', len(boostedMassAveBins)-1, boostedMassAveBins)
+		allHistos[ "massAve_"+tmpNameSam+'_BC' ] = TH1F( "massAve_"+tmpNameSam+'_BC', "massAve_"+tmpNameSam+'_BC',  len(boostedMassAveBins)-1, boostedMassAveBins )
+		#else:
+		#allHistos[ "massAve_"+tmpNameSam+'_ABCDProj' ] = TH1F( "massAve_"+tmpNameSam+'_ABCDProj', "massAve_"+tmpNameSam+'_ABCDProj', massBins, massXmin, massXmax )
+		#allHistos[ "massAve_"+tmpNameSam+'_BC' ] = TH1F( "massAve_"+tmpNameSam+'_BC', "massAve_"+tmpNameSam+'_BC', massBins, massXmin, massXmax )
 		allHistos[ "massAve_"+tmpNameSam+'_ABCDProj' ].Sumw2()
-		allHistos[ "massAve_"+tmpNameSam+'_BC' ] = TH1F( "massAve_"+tmpNameSam+'_BC', "massAve_"+tmpNameSam+'_BC', massBins, massXmin, massXmax )
 		allHistos[ "massAve_"+tmpNameSam+'_BC' ].Sumw2()
+
 		allHistos[ tmpNameSam+'_Bkg' ] = TH2F( tmpNameSam+'_Bkg', tmpNameSam+'_Bkg', 
 				(50 if 'deltaEta' in listCuts[-2][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[-2][0] else 1. ),
 				(50 if 'deltaEta' in listCuts[-1][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[-1][0] else 1. ) 
@@ -148,7 +152,8 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 		allHistos[ tmpNameSam+'_Bkg' ].Sumw2()
 
 		for k in [ 'A', 'B', 'C', 'D' ]:
-			allHistos[ "massAve_"+tmpNameSam+'_'+k ] = TH1F( "massAve_"+tmpNameSam+'_'+k, "massAve_"+tmpNameSam+'_'+k, massBins, massXmin, massXmax )
+			allHistos[ "massAve_"+tmpNameSam+'_'+k ] = TH1F( "massAve_"+tmpNameSam+'_'+k, "massAve_"+tmpNameSam+'_'+k,  len(boostedMassAveBins)-1, boostedMassAveBins )
+			#allHistos[ "massAve_"+tmpNameSam+'_'+k ] = TH1F( "massAve_"+tmpNameSam+'_'+k, "massAve_"+tmpNameSam+'_'+k, massBins, massXmin, massXmax )
 			allHistos[ "massAve_"+tmpNameSam+'_'+k ].Sumw2()
 			allHistos[ tmpNameSam+'_'+k ] = TH2F( tmpNameSam+'_'+k, tmpNameSam+'_'+k, 
 					(50 if 'deltaEta' in listCuts[-2][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[-2][0] else 1. ),
@@ -167,9 +172,14 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 		print '------> Number of events: '+str(numEntries)
 		d = 0
 		cutFlowList = OrderedDict()
+		cutFlowScaledList = OrderedDict()
 		cutFlowList[ 'Process' ] = 0
 		cutFlowList[ 'Preselection' ] = 0
-		for k in listCuts: cutFlowList[ k[0] ] = 0
+		cutFlowScaledList[ 'Process' ] = 0
+		cutFlowScaledList[ 'Preselection' ] = 0
+		for k in listCuts: 
+			cutFlowList[ k[0] ] = 0
+			cutFlowScaledList[ k[0] ] = 0
 
 		for i in xrange(numEntries):
 			events.GetEntry(i)
@@ -200,10 +210,11 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 			#print 'Entry ', Run, ':', Lumi, ':', NumEvent
 
 			if 'DATA' in sample: scale = 1
-			#elif 'RPV' in sample: scale = 2606 * puWeight * SF
-			else: scale = 2606 * puWeight * lumiWeight
+			else: scale = 2666 * puWeight * lumiWeight
 			#else: scale = puWeight 
-			cutFlowList[ 'Process' ] += scale
+			#scale =1
+			cutFlowList[ 'Process' ] += 1
+			cutFlowScaledList[ 'Process' ] += scale
 
 			########## DDT
 			jet1RhoDDT = TMath.Log( jet1Mass*jet1Mass/jet1Pt )
@@ -218,7 +229,8 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 			
 			#if HTCut and dijetCut and jetPtCut:
 			if HTCut and dijetCut :
-				cutFlowList[ 'Preselection' ] += scale
+				cutFlowList[ 'Preselection' ] += 1
+				cutFlowScaledList[ 'Preselection' ] += scale
 				sigCutsList = []
 				allHistos[ "HT_"+sam ].Fill( HT, scale )
 				allHistos[ "MET_"+sam ].Fill( MET, scale )
@@ -262,11 +274,11 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 						allHistos[ 'deltaEtaDijet_'+var[0]+'_'+sample ].Fill( events.deltaEtaDijet, scale )
 						allHistos[ "HT_"+var[0]+"_"+sam ].Fill( HT, scale )
 						allHistos[ "MET_"+var[0]+"_"+sam ].Fill( MET, scale )
-						allHistos[ "massAve_"+var[0]+"_"+sam ].Fill( massAve, scale )
 						allHistos[ "numJets_"+var[0]+"_"+sam ].Fill( numJets, scale )
 						allHistos[ "jet1Pt_"+var[0]+"_"+sam ].Fill( jet1Pt, scale )
 						allHistos[ "jet2Pt_"+var[0]+"_"+sam ].Fill( jet2Pt, scale )
-						cutFlowList[ var[0] ] += scale
+						cutFlowList[ var[0] ] += 1
+						cutFlowScaledList[ var[0] ] += scale
 				#### n-1 plots
 				if ( 'low' in args.RANGE ):
 					if ( getattr( events, listCuts[0][0] ) < listCuts[0][1] ) and (  getattr( events, listCuts[1][0] ) < listCuts[1][1] ) and ( getattr( events, listCuts[2][0] ) < listCuts[2][1] ) and ( getattr( events, listCuts[3][0] ) < listCuts[3][1] ) and ( getattr( events, listCuts[4][0] ) < listCuts[4][1] ): allHistos[ 'deltaEtaDijet_n-1_'+sample ].Fill( events.deltaEtaDijet, scale )
@@ -301,6 +313,8 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 		for q in cutFlowList: 
 			allHistos[ 'cutFlow_'+sample ].SetBinContent( dummy, cutFlowList[q] )
 			allHistos[ 'cutFlow_'+sample ].GetXaxis().SetBinLabel( dummy, q )
+			allHistos[ 'cutFlow_Scaled_'+sample ].SetBinContent( dummy, cutFlowScaledList[q] )
+			allHistos[ 'cutFlow_Scaled_'+sample ].GetXaxis().SetBinLabel( dummy, q )
 			dummy+=1
 
 	for sample in dictSamples:

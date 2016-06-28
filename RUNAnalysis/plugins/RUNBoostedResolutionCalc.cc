@@ -462,9 +462,9 @@ void RUNBoostedResolutionCalc::analyze(const Event& iEvent, const EventSetup& iS
 	iEvent.getByToken(genPartMom1ID_, genPartMom1ID);
 
 	vector<TLorentzVector> boostedStops;
+	vector<TLorentzVector> dauStop1, dauStop2;
 	if ( !isData ) {
 
-		vector<TLorentzVector> dauStop1, dauStop2;
 		TLorentzVector tmpStopDau;
 		for (size_t p = 0; p < genPartID->size(); p++) {
 			if ( ( (*genPartMom0ID)[p] == 1000002 ) && ( (*genPartStatus)[p] == 23 )  ) { 
@@ -478,7 +478,7 @@ void RUNBoostedResolutionCalc::analyze(const Event& iEvent, const EventSetup& iS
 				//LogWarning("test") << p << " " <<  (*genPartID)[p] << " " << (*genPartMom0ID)[p] << " " << (*genPartStatus)[p] ;
 			}
 		}
-		if ( dauStop1.size() > 1 ){
+		/*if ( dauStop1.size() > 1 ){
 			double deltaRStop1 = dauStop1[0].DeltaR( dauStop1[1] );
 			if ( deltaRStop1 < 0.7 ) boostedStops.push_back( ( dauStop1[0] + dauStop1[1] ) ); 
 			//LogWarning( "test" ) << deltaRStop1 << " " << ( dauStop1[0] + dauStop1[1] ).M();
@@ -486,7 +486,7 @@ void RUNBoostedResolutionCalc::analyze(const Event& iEvent, const EventSetup& iS
 		if ( dauStop2.size() > 1 ){
 			double deltaRStop2 = dauStop2[0].DeltaR( dauStop2[1] );
 			if ( deltaRStop2 < 0.7 ) boostedStops.push_back( ( dauStop2[0] + dauStop2[1] ) ); 
-		}
+		}*/
 
 		// all this section is based on https://github.com/jkarancs/B2GTTrees/blob/master/plugins/B2GEdmExtraVarProducer.cc#L215-L281
 		/////////// GEN weight
@@ -503,7 +503,8 @@ void RUNBoostedResolutionCalc::analyze(const Event& iEvent, const EventSetup& iS
 		////////////////////////////////////////////////////
 	}
 
-	if ( boostedStops.size() == 2 ) { 
+	//if ( boostedStops.size() == 2 ) { 
+	if ( ( dauStop1.size() == 2 ) && ( dauStop2.size() == 2 ) ) { 
 	       //LogWarning("test") << boostedStops.size();
 
 		////////// Check trigger fired
@@ -570,11 +571,33 @@ void RUNBoostedResolutionCalc::analyze(const Event& iEvent, const EventSetup& iS
 
 		//if ( ORTriggers ) {
 		if ( JETS.size() > 1 ) {
-			
-			double deltaRJet1 = boostedStops[0].DeltaR( JETS[0].p4 );
-			double deltaRJet2 = boostedStops[1].DeltaR( JETS[1].p4 );
+			bool matched = false;
+			double tmpDeltaRJet0Dau00 = JETS[0].p4.DeltaR( dauStop1[0] );
+			double tmpDeltaRJet0Dau01 = JETS[0].p4.DeltaR( dauStop1[1] );
+			if ( ( tmpDeltaRJet0Dau00 < 0.7 ) && ( tmpDeltaRJet0Dau01 < 0.7 ) ) {
+				double tmpDeltaRJet1Dau10 = JETS[1].p4.DeltaR( dauStop2[0] );
+				double tmpDeltaRJet1Dau11 = JETS[1].p4.DeltaR( dauStop2[1] );
+				if ( ( tmpDeltaRJet1Dau10 < 0.7 ) && ( tmpDeltaRJet1Dau11 < 0.7 ) ) {
+					matched = true;
+				}
+			}
+			double tmpDeltaRJet1Dau00 = JETS[1].p4.DeltaR( dauStop1[0] );
+			double tmpDeltaRJet1Dau01 = JETS[1].p4.DeltaR( dauStop1[1] );
+			if ( ( tmpDeltaRJet1Dau00 < 0.7 ) && ( tmpDeltaRJet1Dau01 < 0.7 ) ) {
+				double tmpDeltaRJet0Dau10 = JETS[0].p4.DeltaR( dauStop2[0] );
+				double tmpDeltaRJet0Dau11 = JETS[0].p4.DeltaR( dauStop2[1] );
+				if ( ( tmpDeltaRJet0Dau10 < 0.7 ) && ( tmpDeltaRJet0Dau11 < 0.7 ) ) {
+					matched = true;
+				}
+			}
 
-			if ( ( deltaRJet1 < 0.7 ) && ( deltaRJet2 < 0.7 ) ) {
+
+
+			//double deltaRJet1 = boostedStops[0].DeltaR( JETS[0].p4 );
+			//double deltaRJet2 = boostedStops[1].DeltaR( JETS[1].p4 );
+
+			//if ( ( deltaRJet1 < 0.7 ) && ( deltaRJet2 < 0.7 ) ) {
+			if ( matched ) {
 
 				// Mass average and asymmetry
 				massAve = massAverage( JETS[0].mass, JETS[1].mass );
@@ -608,6 +631,12 @@ void RUNBoostedResolutionCalc::analyze(const Event& iEvent, const EventSetup& iS
 
 				if ( cutHT ) {
 					histos1D_[ "massAve_cutHT" ]->Fill( massAve, totalWeight );
+					histos1D_[ "prunedMassAsym_cutHT" ]->Fill( massAsym, totalWeight );
+					histos1D_[ "jet1Tau21_cutHT" ]->Fill( jet1Tau21, totalWeight );
+					histos1D_[ "jet2Tau21_cutHT" ]->Fill( jet2Tau21, totalWeight );
+					histos1D_[ "jet1Tau31_cutHT" ]->Fill( jet1Tau31, totalWeight );
+					histos1D_[ "jet2Tau31_cutHT" ]->Fill( jet2Tau31, totalWeight );
+					histos1D_[ "deltaEtaDijet_cutHT" ]->Fill( deltaEtaDijet, totalWeight );
 					if ( ( jet1Tau21 < cutTau21 ) && ( jet2Tau21 < cutTau21  ) ) {
 						histos1D_[ "massAve_cutTau21" ]->Fill( massAve, totalWeight );
 						if ( ( jet1Tau31 < cutTau31 ) && ( jet2Tau31 < cutTau31  ) ) {
@@ -616,6 +645,12 @@ void RUNBoostedResolutionCalc::analyze(const Event& iEvent, const EventSetup& iS
 								histos1D_[ "massAve_cutMassAsym" ]->Fill( massAve, totalWeight );
 								if ( deltaEtaDijet < cutDeltaEtaDijet ) {
 									histos1D_[ "massAve_cutDeltaEtaDijet" ]->Fill( massAve, totalWeight );
+									histos1D_[ "prunedMassAsym_cutDeltaEtaDijet" ]->Fill( massAsym, totalWeight );
+									histos1D_[ "jet1Tau21_cutDeltaEtaDijet" ]->Fill( jet1Tau21, totalWeight );
+									histos1D_[ "jet2Tau21_cutDeltaEtaDijet" ]->Fill( jet2Tau21, totalWeight );
+									histos1D_[ "jet1Tau31_cutDeltaEtaDijet" ]->Fill( jet1Tau31, totalWeight );
+									histos1D_[ "jet2Tau31_cutDeltaEtaDijet" ]->Fill( jet2Tau31, totalWeight );
+									histos1D_[ "deltaEtaDijet_cutDeltaEtaDijet" ]->Fill( deltaEtaDijet, totalWeight );
 								}
 							}
 						}
@@ -636,6 +671,25 @@ void RUNBoostedResolutionCalc::beginJob() {
 	histos1D_[ "massAve_cutHT" ] = fs_->make< TH1D >( "massAve_cutHT", "massAve_cutHT", 600, 0., 600. );
 	histos1D_[ "massAve_cutHT" ]->Sumw2();
 
+	histos1D_[ "prunedMassAsym_cutHT" ] = fs_->make< TH1D >( "prunedMassAsym_cutHT", "prunedMassAsym_cutHT", 20, 0., 1. );
+	histos1D_[ "prunedMassAsym_cutHT" ]->Sumw2();
+
+	histos1D_[ "jet1Tau21_cutHT" ] = fs_->make< TH1D >( "jet1Tau21_cutHT", "jet1Tau21_cutHT", 20, 0., 1. );
+	histos1D_[ "jet1Tau21_cutHT" ]->Sumw2();
+
+	histos1D_[ "jet2Tau21_cutHT" ] = fs_->make< TH1D >( "jet2Tau21_cutHT", "jet2Tau21_cutHT", 20, 0., 1. );
+	histos1D_[ "jet2Tau21_cutHT" ]->Sumw2();
+
+	histos1D_[ "jet1Tau31_cutHT" ] = fs_->make< TH1D >( "jet1Tau31_cutHT", "jet1Tau31_cutHT", 20, 0., 1. );
+	histos1D_[ "jet1Tau31_cutHT" ]->Sumw2();
+
+	histos1D_[ "jet2Tau31_cutHT" ] = fs_->make< TH1D >( "jet2Tau31_cutHT", "jet2Tau31_cutHT", 20, 0., 1. );
+	histos1D_[ "jet2Tau31_cutHT" ]->Sumw2();
+
+	histos1D_[ "deltaEtaDijet_cutHT" ] = fs_->make< TH1D >( "deltaEtaDijet_cutHT", "deltaEtaDijet_cutHT", 100, 0., 5. );
+	histos1D_[ "deltaEtaDijet_cutHT" ]->Sumw2();
+
+
 	histos1D_[ "massAve_cutTau21" ] = fs_->make< TH1D >( "massAve_cutTau21", "massAve_cutTau21", 600, 0., 600. );
 	histos1D_[ "massAve_cutTau21" ]->Sumw2();
 
@@ -647,6 +701,24 @@ void RUNBoostedResolutionCalc::beginJob() {
 
 	histos1D_[ "massAve_cutDeltaEtaDijet" ] = fs_->make< TH1D >( "massAve_cutDeltaEtaDijet", "massAve_cutDeltaEtaDijet", 600, 0., 600. );
 	histos1D_[ "massAve_cutDeltaEtaDijet" ]->Sumw2();
+
+	histos1D_[ "prunedMassAsym_cutDeltaEtaDijet" ] = fs_->make< TH1D >( "prunedMassAsym_cutDeltaEtaDijet", "prunedMassAsym_cutDeltaEtaDijet", 20, 0., 1. );
+	histos1D_[ "prunedMassAsym_cutDeltaEtaDijet" ]->Sumw2();
+
+	histos1D_[ "jet1Tau21_cutDeltaEtaDijet" ] = fs_->make< TH1D >( "jet1Tau21_cutDeltaEtaDijet", "jet1Tau21_cutDeltaEtaDijet", 20, 0., 1. );
+	histos1D_[ "jet1Tau21_cutDeltaEtaDijet" ]->Sumw2();
+
+	histos1D_[ "jet2Tau21_cutDeltaEtaDijet" ] = fs_->make< TH1D >( "jet2Tau21_cutDeltaEtaDijet", "jet2Tau21_cutDeltaEtaDijet", 20, 0., 1. );
+	histos1D_[ "jet2Tau21_cutDeltaEtaDijet" ]->Sumw2();
+
+	histos1D_[ "jet1Tau31_cutDeltaEtaDijet" ] = fs_->make< TH1D >( "jet1Tau31_cutDeltaEtaDijet", "jet1Tau31_cutDeltaEtaDijet", 20, 0., 1. );
+	histos1D_[ "jet1Tau31_cutDeltaEtaDijet" ]->Sumw2();
+
+	histos1D_[ "jet2Tau31_cutDeltaEtaDijet" ] = fs_->make< TH1D >( "jet2Tau31_cutDeltaEtaDijet", "jet2Tau31_cutDeltaEtaDijet", 20, 0., 1. );
+	histos1D_[ "jet2Tau31_cutDeltaEtaDijet" ]->Sumw2();
+
+	histos1D_[ "deltaEtaDijet_cutDeltaEtaDijet" ] = fs_->make< TH1D >( "deltaEtaDijet_cutDeltaEtaDijet", "deltaEtaDijet_cutDeltaEtaDijet", 100, 0., 5. );
+	histos1D_[ "deltaEtaDijet_cutDeltaEtaDijet" ]->Sumw2();
 
 }
 

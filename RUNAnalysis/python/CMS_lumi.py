@@ -16,7 +16,7 @@ lumiTextSize     = 0.6
 lumiTextOffset   = 0.2
 
 cmsTextSize      = 0.70
-cmsTextOffset    = 0.1
+cmsTextOffset    = 0.0
 
 relPosX    = 0.12
 relPosY    = 0.035
@@ -45,7 +45,7 @@ def CMS_lumi(pad,  iPeriod,  iPosX ):
 
     H = pad.GetWh()
     W = pad.GetWw()
-    l = pad.GetLeftMargin()
+    l = pad.GetLeftMargin()+cmsTextOffset
     t = pad.GetTopMargin()
     r = pad.GetRightMargin()
     b = pad.GetBottomMargin()

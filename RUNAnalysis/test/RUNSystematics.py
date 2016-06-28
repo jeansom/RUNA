@@ -43,62 +43,110 @@ line.SetLineColor(kRed)
 jetMassHTlabY = 0.20
 jetMassHTlabX = 0.85
 
-boostedMassAveBins = array( 'd', [0, 4, 8, 12, 16, 20, 24, 29, 33, 38, 43, 48, 53, 58, 64, 69, 75, 81, 87, 94, 100, 107, 114, 122, 129, 137, 145, 154, 162, 171, 181, 190, 200, 211, 221, 233, 244, 256, 269, 282, 295, 310, 324, 340, 356, 372, 390, 408, 427, 447, 468, 489, 512, 536, 561, 587, 615 ] )
-boostedMassAveBinSize = array( 'd', [ 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 17, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 28, 29, 31, 32] )
+boostedMassAveBins = array( 'd', [ 0, 3, 6, 9, 12, 16, 19, 23, 26, 30, 34, 39, 43, 47, 52, 57, 62, 67, 72, 78, 83, 89, 95, 102, 108, 115, 122, 129, 137, 144, 153, 161, 170, 179, 188, 197, 207, 218, 228, 240, 251, 263, 275, 288, 301, 315, 329, 344, 359, 375, 391, 408, 425, 443, 462, 482, 502 ] )
+boostedMassAveBinSize = array( 'd', [ 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 19, 19, 20, 21] )
 
 def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, log):
 	"""docstring for plot"""
 
-	if 'low' in args.RANGE : massList = [ 90, 100, 110, 120, 130, 140, 150 ]
-	else: massList = [ 170, 180, 190, 210, 220, 230, 240 ] 
+	if 'low' in args.RANGE : 
+		massList = [ 80, 90, 100, 110, 120, 130, 140, 150 ]
+		massWindow = 30 
+	else: 
+		massList = [ 170, 180, 190, 210, 220, 230, 240 ] 
+		massWindow = 30 
+
 	nomArray = []
+	nomArrayErr = []
 	upArray = []
+	upArrayErr = []
 	downArray = []
+	downArrayErr = []
 	upOverNomArray = []
 	downOverNomArray = []
 
 	for xmass in massList:
 
+		gStyle.SetOptFit(1)
 		NominalFile = TFile.Open( inFileSample.replace( '100', str(xmass) ) )
 		UpFile = TFile.Open( inFileSample.replace( '100', str(xmass)+args.unc+'Up'  ) )
 		DownFile = TFile.Open( inFileSample.replace( '100', str(xmass)+args.unc+'Down'  ) )
 
-		outputFileName = name+'_'+args.decay+'RPVSt'+str(xmass)+'_'+args.unc+args.version+'.'+args.ext 
+		outputFileName = name+'_'+args.decay+'RPVSt'+str(xmass)+'_'+args.unc+args.boosted+'_'+args.version+'.'+args.ext 
 		print 'Processing.......', outputFileName
 
 		histos = {}
-		histos[ 'Nominal' ] = NominalFile.Get( name+'_RPVStopStopToJets_'+args.decay+'_M-'+str(xmass) )
 		histos[ 'Up' ] = UpFile.Get( name+'_RPVStopStopToJets_'+args.decay+'_M-'+str(xmass) )
 		histos[ 'Down' ] = DownFile.Get( name+'_RPVStopStopToJets_'+args.decay+'_M-'+str(xmass) )
+		histos[ 'Nominal' ] = NominalFile.Get( name+'_RPVStopStopToJets_'+args.decay+'_M-'+str(xmass) )
 
-		if rebinX > 1: 
-			for k in histos: histos[ k ].Rebin( rebinX )
+		scale = 1 / (scaleFactor( 'RPVStopStopToJets_UDD312_M-'+str(xmass) )*args.lumi )
+		for k in histos: 
+			histos[ k ].Scale( scale )
+			histos[ k ] = histos[ k ].Rebin( rebinX )
 
-		gausNom = TF1("gaus", "gaus", int(xmass)-30, int(xmass)+30)
+		#histos[ 'Up' ] = histos[ 'Up' ].Rebin( len( boostedMassAveBins )-1, histos[ 'Up' ].GetName(), boostedMassAveBins )
+		#histos[ 'Down' ] = histos[ 'Down' ].Rebin( len( boostedMassAveBins )-1, histos[ 'Down' ].GetName(), boostedMassAveBins )
+		#histos[ 'Nominal' ] = histos[ 'Nominal' ].Rebin( len( boostedMassAveBins )-1, histos[ 'Nominal' ].GetName(), boostedMassAveBins )
+
+		#if rebinX > 1: 
+		#for k in histos: histos[ k ] = histos[ k ].Rebin( len( boostedMassAveBins )-1, histos[ k ].GetName(), boostedMassAveBins )
+
+		'''
+		####### Fits for Nominal/Up/Down
+		gausNom = TF1("gausNom", "gaus", 0, 400 )
 		gausNom.SetParameter(1, xmass)
-		histos[ 'Nominal' ].Fit(gausNom, 'MEIRLLF' )
-		gausUp = TF1("gaus", "gaus", int(xmass)-30, int(xmass)+30)
+		for i in range(0,5): histos[ 'Nominal' ].Fit(gausNom, 'MIR', '', int(xmass)-massWindow, int(xmass)+massWindow )
+		gausNomIntegralError = gausNom.IntegralError(0, 400)
+		gausUp = TF1("gausUp", "gaus", 0, 400 )
 		gausUp.SetParameter(1, xmass)
-		histos[ 'Up' ].Fit(gausUp, 'MEIRLLF')
-		gausDown = TF1("gaus", "gaus", int(xmass)-30, int(xmass)+30)
+		for i in range(0,5): histos[ 'Up' ].Fit(gausUp, 'MIR', '', int(xmass)-massWindow, int(xmass)+massWindow )
+		gausUpIntegralError = gausUp.IntegralError(0, 400)
+		gausDown = TF1("gausDown", "gaus", 0, 400 )
 		gausDown.SetParameter(1, xmass)
-		histos[ 'Down' ].Fit(gausDown, 'MEIRLLF')
-
-		totalNumber = search( dictEvents, 'RPVStopStopToJets_UDD312_M-'+str(xmass) )[0]
-		nomArray.append( gausNom.Integral( int(xmass)-30, int(xmass)+30 ) / totalNumber )
-		upArray.append( gausUp.Integral( int(xmass)-30, int(xmass)+30 ) / totalNumber )
-		downArray.append( gausDown.Integral( int(xmass)-30, int(xmass)+30 ) / totalNumber )
-		upOverNomArray.append( ( gausUp.Integral( int(xmass)-30, int(xmass)+30 ) - gausNom.Integral( int(xmass)-30, int(xmass)+30 ) ) / gausNom.Integral( int(xmass)-30, int(xmass)+30 ) )
-		downOverNomArray.append( ( gausDown.Integral( int(xmass)-30, int(xmass)+30 ) - gausNom.Integral( int(xmass)-30, int(xmass)+30 ) ) / gausNom.Integral( int(xmass)-30, int(xmass)+30 ) )
+		for i in range(0,5): histos[ 'Down' ].Fit(gausDown, 'MIR', '', int(xmass)-massWindow, int(xmass)+massWindow )
+		gausDownIntegralError = gausDown.IntegralError(0, 400)
+		'''
 
 		binWidth = histos['Nominal'].GetBinWidth(1)
+		#totalNumber = scaleFactor( 'RPVStopStopToJets_UDD312_M-'+str(xmass) ) * args.lumi
+		totalNumber = search( dictEvents, 'RPVStopStopToJets_UDD312_M-'+str(xmass) )[0]
+		errTotalNumber = TMath.Sqrt( totalNumber )
+		'''
+		nomArray.append( gausNom.Integral( 0, 400 ) / binWidth / totalNumber )
+		nomArrayErr.append( gausNomIntegralError / binWidth  / totalNumber )
+		upArray.append( gausUp.Integral( 0, 400 ) / binWidth / totalNumber )
+		upArrayErr.append( gausUpIntegralError / binWidth / totalNumber )
+		downArray.append( gausDown.Integral( 0, 400 ) / binWidth / totalNumber )
+		downArrayErr.append( gausDownIntegralError / binWidth / totalNumber )
+		upOverNomArray.append( ( gausUp.Integral( 0, 400 ) - gausNom.Integral( 0, 400 ) ) / gausNom.Integral( 0, 400 ) )
+		downOverNomArray.append( ( gausDown.Integral( 0, 400 ) - gausNom.Integral( 0, 400 ) ) / gausNom.Integral( 0, 400 ) )
+		'''
+		errorIntNom = Double(0)
+		intNom = histos['Nominal'].IntegralAndError( 0, 40, errorIntNom )
+		nomArray.append( intNom / totalNumber )
+		nomArrayErr.append( intNom * TMath.Sqrt( TMath.Power( errorIntNom/intNom, 2 ) + TMath.Power( errTotalNumber/totalNumber, 2 ) ) )
 
-		legend=TLegend(0.60,0.75,0.90,0.90)
+		errorIntUp = Double(0)
+		intUp = histos['Up'].IntegralAndError( 0, 40, errorIntUp )
+		upArray.append( intUp / totalNumber )
+		upArrayErr.append( intUp * TMath.Sqrt( TMath.Power( errorIntUp/intUp, 2 ) + TMath.Power( errTotalNumber/totalNumber, 2 ) ) )
+
+		errorIntDown = Double(0)
+		intDown = histos['Down'].IntegralAndError( 0, 40, errorIntDown )
+		downArray.append( intDown / totalNumber )
+		downArrayErr.append( intDown * TMath.Sqrt( TMath.Power( errorIntDown/intDown, 2 ) + TMath.Power( errTotalNumber/totalNumber, 2 ) ) )
+
+		upOverNomArray.append( ( intUp - intNom ) / intNom )
+		downOverNomArray.append( ( intDown - intNom ) / intNom )
+
+
+		legend=TLegend(0.70,0.75,0.90,0.90)
 		legend.SetFillStyle(0)
 		legend.SetTextSize(0.03)
-		legend.AddEntry( histos[ 'Nominal' ], 'Nominal', 'l' )
-		legend.AddEntry( histos[ 'Up' ], args.unc+'Up', 'l' )
-		legend.AddEntry( histos[ 'Down' ], args.unc+'Down', 'l' )
+		legend.AddEntry( histos[ 'Nominal' ], 'Nominal', 'lp' )
+		legend.AddEntry( histos[ 'Up' ], args.unc+' Up', 'lp' )
+		legend.AddEntry( histos[ 'Down' ], args.unc+' Down', 'lp' )
 
 		histos[ 'Nominal' ].SetLineWidth(2)
 		histos[ 'Up' ].SetLineWidth(2)
@@ -109,32 +157,55 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 		histos[ 'Nominal' ].SetMaximum( 1.2* max( histos[ 'Nominal' ].GetMaximum(), histos[ 'Up' ].GetMaximum(), histos[ 'Down' ].GetMaximum() ) ) 
 		if xmax: histos[ 'Nominal' ].GetXaxis().SetRangeUser( xmin, xmax )
 
-		can = TCanvas('c1', 'c1',  10, 10, 750, 500 )
-		if log: can.SetLogy()
+		can1 = TCanvas('c'+str(xmass), 'c'+str(xmass),  10, 10, 750, 500 )
+		if log: can1.SetLogy()
 		#histos['Sample1'].SetMinimum(10)
 		histos['Nominal'].GetXaxis().SetRangeUser( xmass-70, xmass+70   )
-		histos['Nominal'].Draw('histe') 
-		histos['Up'].Draw('histe same')
-		histos['Down'].Draw('histe same')
-		gausNom.SetLineColor(kBlack)
-		gausNom.Draw('same')
-		gausUp.SetLineColor(kBlue)
-		gausUp.Draw('same')
-		gausDown.SetLineColor(kRed)
-		gausDown.Draw('same')
+		histos['Nominal'].Draw('histes') 
+		histos['Up'].Draw('histe sames')
+		histos['Down'].Draw('histe sames')
 		histos['Nominal'].GetYaxis().SetTitleOffset(0.9)
 		histos['Nominal'].GetYaxis().SetTitle( 'Events / '+str(binWidth) )
+		'''
+		gausNom.SetLineColor(kBlack)
+		gausNom.Draw('sames')
+		gausUp.SetLineColor(kBlue)
+		gausUp.Draw('sames')
+		gausDown.SetLineColor(kRed)
+		gausDown.Draw('sames')
+
+		can1.Update()
+		st1 = histos['Nominal'].GetListOfFunctions().FindObject("stats")
+		st1.SetX1NDC(.12);
+		st1.SetX2NDC(.32);
+		st1.SetY1NDC(.76);
+		st1.SetY2NDC(.91);
+		#st1.SetTextColor(4);
+		st2 = histos['Up'].GetListOfFunctions().FindObject("stats")
+		st2.SetX1NDC(.12);
+		st2.SetX2NDC(.32);
+		st2.SetY1NDC(.61);
+		st2.SetY2NDC(.76);
+		st2.SetTextColor(kBlue);
+		st3 = histos['Down'].GetListOfFunctions().FindObject("stats")
+		st3.SetX1NDC(.12);
+		st3.SetX2NDC(.32);
+		st3.SetY1NDC(.46);
+		st3.SetY2NDC(.61);
+		st3.SetTextColor(kRed);
+		can1.Modified()
+		'''
 
 		labelAxis( name, histos['Nominal'], Groom )
 		legend.Draw()
 		CMS_lumi.extraText = "Simulation Preliminary"
 		CMS_lumi.relPosX = 0.12
-		CMS_lumi.CMS_lumi(can, 4, 0)
+		CMS_lumi.CMS_lumi(can1, 4, 0)
 		if not (labX and labY): labels( name, '' )
 		else: labels( name, '', labX, labY )
 
-		can.SaveAs( 'Plots/'+outputFileName )
-		del can
+		can1.SaveAs( 'Plots/'+outputFileName )
+		del can1
 
 	tdrStyle.SetPadRightMargin(0.05)
 	tdrStyle.SetPadLeftMargin(0.15)
@@ -151,25 +222,32 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 	legend.SetFillStyle(0)
 	legend.SetTextSize(0.03)
 
+	zeroList = [0]*len(nomArray)
+	#nomGraph = TGraphErrors( len( massList ), array( 'd', massList), array( 'd', nomArray), array('d', zeroList ), array( 'd', nomArrayErr) )
 	nomGraph = TGraph( len( massList ), array( 'd', massList), array( 'd', nomArray) )		
+	nomGraph.SetMarkerStyle( 21 )
 	nomGraph.SetLineColor( kBlack )
 	nomGraph.SetLineWidth( 2 )
 	multiGraph.Add( nomGraph )
 	legend.AddEntry( nomGraph, 'Nominal', 'l' )
 
+	#upGraph = TGraphErrors( len( massList ), array( 'd', massList), array( 'd', upArray), array('d', zeroList ), array( 'd', upArrayErr) )
 	upGraph = TGraph( len( massList ), array( 'd', massList), array( 'd', upArray) )		
+	upGraph.SetMarkerStyle( 22 )
 	upGraph.SetLineColor( kBlue )
 	upGraph.SetLineWidth( 2 )
 	multiGraph.Add( upGraph )
 	legend.AddEntry( upGraph, args.unc+'Up', 'l' )
 
+	#downGraph = TGraphErrors( len( massList ), array( 'd', massList), array( 'd', downArray), array('d', zeroList ), array( 'd', downArrayErr) )
 	downGraph = TGraph( len( massList ), array( 'd', massList), array( 'd', downArray) )		
+	downGraph.SetMarkerStyle( 23 )
 	downGraph.SetLineColor( kRed )
 	downGraph.SetLineWidth( 2 )
 	multiGraph.Add( downGraph )
 	legend.AddEntry( downGraph, args.unc+'Down', 'l' )
 
-	multiGraph.Draw("ALP")
+	multiGraph.Draw("AP")
 	multiGraph.GetXaxis().SetTitle('Average pruned mass [GeV]')
 	multiGraph.GetYaxis().SetTitle('Acceptance')
 	multiGraph.GetYaxis().SetTitleOffset(0.95)
@@ -180,6 +258,7 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 	pad2.SetBottomMargin(0.3)
 	multiGraphRatio = TMultiGraph()
 
+	for m in range(len(massList)): 	print massList[m], round(upOverNomArray[m],3), round(downOverNomArray[m],3)
 	upOverNomGraph = TGraph( len( massList ), array( 'd', massList), array( 'd', upOverNomArray) )		
 	upOverNomGraph.SetMarkerStyle( 20 )
 	upOverNomGraph.SetMarkerColor( kBlue )
@@ -201,7 +280,7 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 	multiGraphRatio.GetYaxis().SetTitleSize(0.12)
 	multiGraphRatio.GetYaxis().SetTitleOffset(0.45)
 	multiGraphRatio.GetYaxis().CenterTitle()
-	can.SaveAs('Plots/'+name+'_'+args.decay+'RPVSt_'+args.RANGE+'_'+args.unc+args.version+'.'+args.ext)
+	can.SaveAs('Plots/'+name+'_'+args.decay+'RPVSt_'+args.RANGE+'_'+args.unc+args.boosted+'_'+args.version+'.'+args.ext)
 	del can
 	
 
@@ -210,11 +289,11 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-p', '--proc', action='store', default='1D', dest='process', help='Process to draw, example: 1D, 2D, MC.' )
 	parser.add_argument('-d', '--decay', action='store', default='UDD312', dest='decay', help='Decay, example: UDD312, UDD323.' )
-	parser.add_argument('-v', '--version', action='store', default='Boosted', dest='version', help='Boosted or Resolved version, example: Boosted' )
+	parser.add_argument('-b', '--boosted', action='store', default='Boosted', dest='boosted', help='Boosted or Resolved boosted, example: Boosted' )
+	parser.add_argument('-v', '--version', action='store', default='v05', dest='version', help='Version of files: v05.' )
 	parser.add_argument('-g', '--grom', action='store', default='pruned', dest='grooming', help='Grooming Algorithm, example: Pruned, Filtered.' )
-	parser.add_argument('-C', '--cut', action='store', default='_cutMassAsym', dest='cut', help='cut, example: cutDEta' )
-	parser.add_argument('-s', '--single', action='store', default='all', dest='single', help='single histogram, example: massAve_cutDijet.' )
-	parser.add_argument('-l', '--lumi', action='store', type=float, dest='lumi', default=2.6, help='Luminosity, example: 1.' )
+	parser.add_argument('-C', '--cut', action='store', default='_deltaEtaDijet', dest='cut', help='cut, example: cutDEta' )
+	parser.add_argument('-l', '--lumi', action='store', type=float, dest='lumi', default=2606, help='Luminosity, example: 1.' )
 	parser.add_argument('-r', '--range', action='store', default='low', dest='RANGE', help='Trigger used, example PFHT800.' )
 	parser.add_argument('-e', '--extension', action='store', default='png', dest='ext', help='Extension of plots.' )
 	parser.add_argument('-u', '--unc', action='store', default='JES', dest='unc',  help='Type of uncertainty' )
@@ -224,30 +303,12 @@ if __name__ == '__main__':
 		parser.print_help()
 		sys.exit(0)
 
-	CMS_lumi.lumi_13TeV = str(args.lumi)+" fb^{-1}"
+	CMS_lumi.lumi_13TeV = ''#str( round( ( args.lumi / 1000 ), 2 ) )+" fb^{-1}"
 	
-	plotList = [ 
-		[ 'massAve', 0, 400, 2, 0.85, 0.45, False],
-		#[ 'jet1Pt', 400, 1500, 2, 0.85, 0.45, False],
-		#[ 'jet2Pt', 400, 1500, 2, 0.85, 0.45, False],
-		#[ 'HT', 700, 2000, 5, 0.85, 0.45, False],
-
-		]
-
-	if 'all' in args.single: Plots = plotList 
-	else: Plots = [ y for y in plotList if ( y[2] in args.single ) ]
-
-	if 'Resolved' in args.version: args.grooming =  '' 
+	if 'Resolved' in args.boosted: args.grooming =  '' 
 	if 'all' in args.grooming: Groommers = [ '', 'Trimmed', 'Pruned', 'Filtered', "SoftDrop" ]
 	else: Groommers = [ args.grooming ]
 
-	if 'all' in args.cut: 
-		if 'Boosted' in args.version: listCuts = [ '_jet1Tau21', '_jet2Tau21', '_prunedMassAsym', '_deltaEtaDijet', '_jet1Tau31', '_jet2Tau31' ]
-		else: listCuts = [ '_cutMassRes', '_cutDelta', '_cutEtaBand', '_cutDeltaR', '_cutCosTheta', '_cutDEta', '_cutMassPairing' ]
-	else: listCuts = [ args.cut ]
 
-
-	for i in Plots:
-		for optGroom in Groommers:
-			for cut in listCuts: plotSystematics( 'Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-100_'+args.RANGE+'_v05.root', optGroom, i[0]+args.cut, i[1], i[2], i[3], i[4], i[5], i[6] )
+	for optGroom in Groommers: plotSystematics( 'Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-100_'+args.RANGE+'_'+args.version+'.root', optGroom, 'massAve'+args.cut, 0, 400, 10, 0.85, 0.45, False )
 			

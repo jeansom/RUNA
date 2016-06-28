@@ -46,8 +46,9 @@ jetMassHTlabX = 0.85
 def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, log):
 	"""docstring for plot"""
 
-	massList = [ 90, 100, 110, 120, 130, 140, 150, 170, 180, 190, 210, 220, 230, 240 ] 
-	#massList = [ 90, 100, 110, 120, 130, 140, 150, 190, 220, 240 ] 
+	massList = [ 100, 110, 120, 130, 140, 150, 170, 180, 190, 210, 220, 230, 240 ] 
+	#massList = [ 90, 100, 110, 130, 150, 170, 190 ] 
+	#massList = [ 90, 100, 110, 120, 130, 140, 150 ] 
 	resolArray = []
 	resolErrArray = []
 	tmpArray = []
@@ -66,21 +67,26 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 
 		histos = {}
 		histos[ 'massAve' ] = massAveFile.Get( 'BoostedAnalysisPlots/'+name )
+		scale = scaleFactor( 'RPVStopStopToJets_UDD312_M-'+str(xmass) ) 
+		histos[ 'massAve' ].Scale( 1/scale )
 
-		if rebinX > 1: 
-			for k in histos: histos[ k ].Rebin( rebinX )
+		#if rebinX > 1:  histos[ 'massAve' ].Rebin( rebinX )
+		histos[ 'massAve' ].Rebin( 5 )
 
-		gausNom = TF1("gaus", "gaus", 50, 300)
+		massWindow = 20
+		gausNom = TF1("gaus", "gaus", 0, 300)
+		#gausNom.SetParameter(0, histos['massAve'].GetMaximum() )
 		gausNom.SetParameter(1, xmass)
-		#histos[ 'massAve' ].Fit(gausNom, 'MEIRLLF' )
-		for i in range(0,3): histos[ 'massAve' ].Fit(gausNom, 'MIR', '', int(xmass)-20, int(xmass)+20 )
+		#gausNom.SetParameter(1, 10 )
+		for i in range(0,3): histos[ 'massAve' ].Fit(gausNom, 'MIR', '', int(xmass)-massWindow, int(xmass)+massWindow )
 
 		meanGaus = gausNom.GetParameter( 1 )
 		resol = gausNom.GetParameter( 2 ) 
 		resolError = gausNom.GetParError( 2 ) 
-		#resol = 2.355 * gausNom.GetParameter( 2 )
-		#resol = gausNom.GetParameter( 2 ) / meanGaus 
-		#resolError = resol * TMath.Sqrt( TMath.Power( (gausNom.GetParError(1)/ meanGaus) , 2) + TMath.Power( (gausNom.GetParError(2)/ gausNom.GetParameter(2)) , 2) )
+		#resol = 2.355 * gausNom.GetParameter( 2 ) / meanGaus 
+		#resolError = 2.355 * gausNom.GetParError( 2 ) 
+		#resol = gausNom.GetParameter( 2 )# / meanGaus 
+		resolError = resol * TMath.Sqrt( TMath.Power( (gausNom.GetParError(1)/ meanGaus) , 2) + TMath.Power( (gausNom.GetParError(2)/ gausNom.GetParameter(2)) , 2) )
 		resolArray.append( resol )
 		resolErrArray.append( resolError )
 		tmpArray.append( 0 )
@@ -91,19 +97,18 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 		#histos[ 'massAve' ].SetMaximum( 1.2* max( histos[ 'massAve' ].GetMaximum(), histos[ 'Up' ].GetMaximum(), histos[ 'Down' ].GetMaximum() ) ) 
 		if xmax: histos[ 'massAve' ].GetXaxis().SetRangeUser( xmin, xmax )
 
-		can = TCanvas('c1', 'c1',  10, 10, 750, 500 )
+		can = TCanvas('c'+str(xmass), 'c'+str(xmass),  10, 10, 750, 500 )
 		if log: can.SetLogy()
 		#histos['Sample1'].SetMinimum(10)
 		histos['massAve'].GetXaxis().SetRangeUser( xmass-70, xmass+70   )
-		histos['massAve'].Draw('histe') 
+		histos['massAve'].Draw('histes') 
 		gausNom.SetLineColor(kRed)
 		gausNom.SetLineWidth(2)
-		gausNom.Draw('same')
+		gausNom.Draw('sames')
 		histos['massAve'].GetYaxis().SetTitleOffset(0.9)
 		histos['massAve'].GetYaxis().SetTitle( 'Events / '+str(binWidth) )
 
 		labelAxis( name, histos['massAve'], Groom )
-		CMS_lumi.extraText = "Simulation Preliminary"
 		CMS_lumi.relPosX = 0.12
 		CMS_lumi.CMS_lumi(can, 4, 0)
 		#if not (labX and labY): labels( name, '' )
@@ -114,7 +119,7 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 
 	tdrStyle.SetPadRightMargin(0.05)
 	tdrStyle.SetPadLeftMargin(0.15)
-	can = TCanvas('c1', 'c1',  10, 10, 750, 500 )
+	can1 = TCanvas('c2', 'c2', 10, 10, 750, 500 )
 	#PT = TText(0.1, 0.1, sample )
 
 	resolGraph = TGraphErrors( len( massList ), array( 'd', massList), array( 'd', resolArray), array( 'd', tmpArray), array( 'd', resolErrArray ) )
@@ -125,14 +130,14 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 	for i in range(0,3): resolGraph.Fit("pol1")
 
 	resolGraph.GetXaxis().SetTitle('Average pruned mass [GeV]')
-	resolGraph.GetYaxis().SetTitle('#sigma_{mass}/mass')
+	resolGraph.GetYaxis().SetTitle('#sigma_{mass}')
 	resolGraph.GetYaxis().SetTitleOffset(0.95)
 	resolGraph.SetMarkerStyle(20)
 	resolGraph.Draw('AP')
 	exp.Draw("same")
 	#legend.Draw()
-	can.SaveAs('Plots/ResolutionCalculation_'+args.decay+'RPVStop.'+args.extension)
-	del can
+	can1.SaveAs('Plots/ResolutionCalculation_'+args.decay+'RPVStop.'+args.extension)
+	del can1
 	
 
 
@@ -149,7 +154,7 @@ if __name__ == '__main__':
 	parser.add_argument('-s', '--single', action='store', default='all', help='single histogram, example: massAve_cutDijet.' )
 	parser.add_argument('-q', '--QCD', action='store', default='Pt', help='Type of QCD binning, example: HT.' )
 	parser.add_argument('-c', '--campaign', action='store', default='RunIISpring15MiniAODv2-74X', help='Campaign, example: PHYS14.' )
-	parser.add_argument('-l', '--lumi', action='store', type=float, default=149.9, help='Luminosity, example: 1.' )
+	parser.add_argument('-l', '--lumi', action='store', type=float, default=2606, help='Luminosity, example: 1.' )
 	parser.add_argument('-r', '--range', action='store', default='low', dest='RANGE', help='Trigger used, example PFHT800.' )
 	parser.add_argument('-e', '--extension', action='store', default='png', help='Extension of plots.' )
 	parser.add_argument('-u', '--unc', action='store', default='JES', dest='unc',  help='Type of uncertainty' )
@@ -161,8 +166,7 @@ if __name__ == '__main__':
 		sys.exit(0)
 
 	
-	lumi = 2606.
-	CMS_lumi.lumi_13TeV = "2.60 fb^{-1}"
+	CMS_lumi.lumi_13TeV = '' #str( round((args.lumi/1000.),2) )+" fb^{-1}"
+	CMS_lumi.extraText = "Simulation Preliminary"
 	
-	plotSystematics( 'Rootfiles/RUNResolutionCalc_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)+'_RunIIFall15MiniAODv2_v76x_v2p0.root', 'pruned', 'massAve_cutHT', '', '', 10, '', '', False )
-			
+	plotSystematics( 'Rootfiles/RUNResolutionCalc_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)+'_RunIIFall15MiniAODv2_v76x_v2p1.root', 'pruned', 'massAve_cutDeltaEtaDijet', '', '', 1, '', '', False )

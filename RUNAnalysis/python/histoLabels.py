@@ -79,7 +79,7 @@ def labels( name, camp, X=0.92, Y=0.50, align='right', listSel=[] ):
 
 def labelAxis(name, histo, Grom ):
 
-	if 'massAve' in name: 
+	if ('massAve' in name) or ('MassAve' in name): 
 		if 'trimmed' in Grom: histo.GetXaxis().SetTitle( 'Average Trimmed Mass [GeV]' )
 		elif 'pruned' in Grom: histo.GetXaxis().SetTitle( 'Average Pruned Mass [GeV]' )
 		elif 'softDrop' in Grom: histo.GetXaxis().SetTitle( 'Average Soft Drop Mass [GeV]' )
@@ -134,7 +134,7 @@ def labelAxis(name, histo, Grom ):
 	elif 'jet4Pt' in name: histo.GetXaxis().SetTitle( '4th Leading Jet p_{T} [GeV]' )
 	elif 'jet2Mass' in name: histo.GetXaxis().SetTitle( '2nd Leading Jet Mass [GeV]' )
 	elif 'jet2Eta' in name: histo.GetXaxis().SetTitle( '2nd Leading Jet #eta' )
-	elif 'jetNum' in name: histo.GetXaxis().SetTitle( 'Number of Jets' )
+	elif ('jetNum' in name) or ('numJets' in name): histo.GetXaxis().SetTitle( 'Number of Jets' )
 	elif 'deltaEta' in name: histo.GetXaxis().SetTitle( '#Delta #eta (j^{1}, j^{2})' )
 	elif 'deltaR' in name: histo.GetXaxis().SetTitle( '#Delta R dijet' )
 	elif 'NPV' in name: histo.GetXaxis().SetTitle( 'Number of Primary Vertex' )

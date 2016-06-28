@@ -9,14 +9,14 @@ import glob
 
 config = config()
 
-version = '_v05'
+version = '_v01p1'
 
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
 
 config.JobType.pluginName = 'Analysis'
-config.JobType.psetName = 'RUNFullAnalysis_cfg.py'
-#config.JobType.psetName = 'RUNBoostedResolutionCalc_cfg.py'
+#config.JobType.psetName = 'RUNFullAnalysis_cfg.py'
+config.JobType.psetName = 'RUNBoostedResolutionCalc_cfg.py'
 config.JobType.allowUndistributedCMSSW = True
 
 config.Data.inputDataset = ''
@@ -45,7 +45,7 @@ if __name__ == '__main__':
 			#'/JetHT/jkarancs-B2GAnaFW_76X_V1p1_Run2015D-16Dec2015-v1-69b00753dd36562e8813bc06510c861e/USER',
 #			'/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/jkarancs-B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1-bf3ef703e3bdb5dcc5320cf3ff6ce74d/USER',
 #			'/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/jkarancs-B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1-bf3ef703e3bdb5dcc5320cf3ff6ce74d/USER',
-			'/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/jkarancs-B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1-bf3ef703e3bdb5dcc5320cf3ff6ce74d/USER',
+#			'/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/jkarancs-B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1-bf3ef703e3bdb5dcc5320cf3ff6ce74d/USER',
 #			'/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/jkarancs-B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1-bf3ef703e3bdb5dcc5320cf3ff6ce74d/USER',
 #			'/QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/jkarancs-B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1-bf3ef703e3bdb5dcc5320cf3ff6ce74d/USER',
 			
@@ -70,8 +70,9 @@ if __name__ == '__main__':
 
 
 #			######## Centrally produced
+#			'/RPVStopStopToJets_UDD312_M-80_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p1p2-6ff2d2372798a32b31bae3809d51b58e/USER',
 #			'/RPVStopStopToJets_UDD312_M-90_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/RPVStopStopToJets_UDD312_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
+			'/RPVStopStopToJets_UDD312_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
 #			'/RPVStopStopToJets_UDD312_M-110_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
 #			'/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
 #			'/RPVStopStopToJets_UDD312_M-130_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
@@ -144,8 +145,8 @@ if __name__ == '__main__':
 		elif 'RPV' in dataset: 
 			config.Data.splitting = 'LumiBased'
 			config.Data.unitsPerJob = 3
-			procName = dataset.split('/')[1].split('_TuneCUETP8M1')[0]+dataset.split('/')[2].replace( dataset.split('/')[2].split('-')[0] , '').split('-')[1]+'_'+dataset.split('/')[2].replace(dataset.split('/')[2].split('-')[0], '').split('-')[2]+version
-			#procName = dataset.split('/')[1].split('_TuneCUETP8M1')[0]+'ResolCalc'
+			#procName = dataset.split('/')[1].split('_TuneCUETP8M1')[0]+dataset.split('/')[2].replace( dataset.split('/')[2].split('-')[0] , '').split('-')[1]+'_'+dataset.split('/')[2].replace(dataset.split('/')[2].split('-')[0], '').split('-')[2]+version
+			procName = dataset.split('/')[1].split('_TuneCUETP8M1')[0]+'ResolCalc'+version
 			config.JobType.pyCfgParams = [ 'PROC='+procName, 'local=0', 'systematics=1', 'jecVersion=Fall15_25nsV2', 'namePUFile=PileupData2015D_JSON_latest.root' ]
 		else: 
 			config.Data.splitting = 'LumiBased'
