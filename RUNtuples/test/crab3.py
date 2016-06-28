@@ -7,7 +7,7 @@ from CRABClient.UserUtilities import config
 from httplib import HTTPException
 config = config()
 
-name = 'RunIIFall15MiniAODv2-PU25nsData2015v1_76X_'
+name = 'RunIIFall15MiniAODv1-PU25nsData2015v1_76X_'
 version = 'b2ganafw763_v01'
 
 config.General.requestName = ''
@@ -16,7 +16,7 @@ config.General.workArea = 'crab_projects'
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'RUNtuples_cfg.py'
 config.JobType.pyCfgParams = [ 'DataProcessing=MC25ns_MiniAOD_76X', 'useNoHFMET=0' ]
-config.JobType.inputFiles = [ 'Summer15_25nsV7_MC.db' ]
+config.JobType.inputFiles = [ 'Fall15_25nsV1_MC.db' ]
 config.JobType.allowUndistributedCMSSW = True
 
 config.Data.inputDataset = ''

@@ -129,4 +129,4 @@ for path in process.paths:
 	getattr(process,path)._seq = process.ProductionFilterSequence * getattr(process,path)._seq 
 
 
-
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
