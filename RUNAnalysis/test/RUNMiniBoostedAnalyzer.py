@@ -27,7 +27,7 @@ boostedMassAveBins = array( 'd', [ 0, 3, 6, 9, 12, 16, 19, 23, 26, 30, 34, 39, 4
 ######################################
 def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 
-	outputFileName = 'Rootfiles/RUNMiniBoostedAnalysis_'+grooming+'_'+signalName+UNC+'_'+RANGE+'_'+args.version+'p2.root' 
+	outputFileName = 'Rootfiles/RUNMiniBoostedAnalysis_'+grooming+'_'+signalName+UNC+'_'+RANGE+'_'+args.version+'p3.root' 
 	outputFile = TFile( outputFileName, 'RECREATE' )
 
 	###################################### output Tree
@@ -47,6 +47,7 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 	for sam in dictSamples:
 		allHistos[ "cutFlow_"+sam ] = TH1F( "cutflow_"+sam, "cutflow_"+sam, len(listCuts), 0., len(listCuts) )
 		allHistos[ "cutFlow_Scaled_"+sam ] = TH1F( "cutflow_scaled_"+sam, "cutflow_scaled_"+sam, len(listCuts), 0., len(listCuts) )
+		allHistos[ "cutFlow_Scaled_Weights_"+sam ] = TH1F( "cutflow_scaled_weights_"+sam, "cutflow_scaled_weights_"+sam, len(listCuts), 0., len(listCuts) )
 		allHistos[ "HT_"+sam ] = TH1F( "HT_"+sam, "HT_"+sam, 5000, 0., 5000 )
 		allHistos[ "HT_"+sam ].Sumw2()
 		allHistos[ "MET_"+sam ] = TH1F( "MET_"+sam, "MET_"+sam, 500, 0., 500 )
@@ -176,13 +177,17 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 		d = 0
 		cutFlowList = OrderedDict()
 		cutFlowScaledList = OrderedDict()
+		cutFlowScaledListWeights = OrderedDict()
 		cutFlowList[ 'Process' ] = 0
 		cutFlowList[ 'Preselection' ] = 0
 		cutFlowScaledList[ 'Process' ] = 0
 		cutFlowScaledList[ 'Preselection' ] = 0
+		cutFlowScaledListWeights[ 'Process' ] = 0
+		cutFlowScaledListWeights[ 'Preselection' ] = 0
 		for k in listCuts: 
 			cutFlowList[ k[0] ] = 0
 			cutFlowScaledList[ k[0] ] = 0
+			cutFlowScaledListWeights[ k[0] ] = 0
 
 		for i in xrange(numEntries):
 			events.GetEntry(i)
@@ -219,6 +224,7 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 			#scale =1
 			cutFlowList[ 'Process' ] += 1
 			cutFlowScaledList[ 'Process' ] += scale
+			cutFlowScaledList[ 'Process' ] += (puWeight*puWeight)
 
 			########## DDT
 			jet1RhoDDT = TMath.Log( jet1Mass*jet1Mass/jet1Pt )
@@ -229,12 +235,14 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 			#### Pre-selection
 			HTCut = ( HT > 900 )
 			dijetCut =  ( numJets > 1 )
-			jetPtCut =  ( jet1Pt > 500 ) and ( jet2Pt > 450 )
+			#jetPtCut =  ( jet1Pt > 500 ) and ( jet2Pt > 450 )
+			jetPtCut =  ( jet1Pt > 150 ) and ( jet2Pt > 150 )
 			
-			#if HTCut and dijetCut and jetPtCut:
-			if HTCut and dijetCut :
+			if HTCut and dijetCut and jetPtCut:
+			#if HTCut and dijetCut :
 				cutFlowList[ 'Preselection' ] += 1
 				cutFlowScaledList[ 'Preselection' ] += scale
+				cutFlowScaledList[ 'Preselection' ] += (puWeight*puWeight)
 				sigCutsList = []
 				allHistos[ "HT_"+sam ].Fill( HT, scale )
 				allHistos[ "MET_"+sam ].Fill( MET, scale )
@@ -283,6 +291,7 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 						allHistos[ "jet2Pt_"+var[0]+"_"+sam ].Fill( jet2Pt, scale )
 						cutFlowList[ var[0] ] += 1
 						cutFlowScaledList[ var[0] ] += scale
+						cutFlowScaledList[ var[0] ] += (puWeight*puWeight)
 				#### n-1 plots
 				'''
 				if ( 'low' in args.RANGE ):
@@ -319,8 +328,10 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 		for q in cutFlowList: 
 			allHistos[ 'cutFlow_'+sample ].SetBinContent( dummy, cutFlowList[q] )
 			allHistos[ 'cutFlow_'+sample ].GetXaxis().SetBinLabel( dummy, q )
-			allHistos[ 'cutFlow_Scaled_'+sample ].SetBinContent( dummy, cutFlowList[q] )
+			allHistos[ 'cutFlow_Scaled_'+sample ].SetBinContent( dummy, cutFlowScaledList[q] )
 			allHistos[ 'cutFlow_Scaled_'+sample ].GetXaxis().SetBinLabel( dummy, q )
+			allHistos[ 'cutFlow_Scaled_Weights_'+sample ].SetBinContent( dummy, cutFlowScaledListWeights[q] )
+			allHistos[ 'cutFlow_Scaled_Weights_'+sample ].GetXaxis().SetBinLabel( dummy, q )
 			dummy+=1
 
 	for sample in dictSamples:
@@ -417,7 +428,8 @@ if __name__ == '__main__':
 	allSamples[ 'WZ' ] = folder+'/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v2p0_'+args.version+'.root'
 
 	cutList = ( 'Dibosons' if 'Dibosons' in mass else 'RPVStopStopToJets_'+args.decay+'_M-'+mass )
-	try: cuts = selection[ cutList ]
+	#try: cuts = selection[ cutList ]
+	try: cuts = [ [ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] ]
 	except KeyError: 
 		print 'Mass', mass, 'not in list.'
 		sys.exit(0)
