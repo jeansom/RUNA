@@ -392,6 +392,8 @@ def plotCutFlow( signalFiles, bkgFiles, Groom, name, xmax, log, Norm=False ):
 	print 'Processing.......', outputFileName
 
 	histos = {}
+	histosErr = {}
+
 	if len(signalFiles) > 0:
 		for samples in signalFiles:
 			histos[ samples ] = signalFiles[ samples ][0].Get(name+'_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass))
@@ -646,7 +648,7 @@ def plotSignalShape( miniRunaFile, nameInRoot, rebinX, log ):
 	outputFileName = 'signalShape_'+nameInRoot+'_'+args.grooming+'_'+args.decay+'RPVSt_'+args.RANGE+'_AnalysisPlots'+args.version+'.'+args.ext 
 	print 'Processing.......', outputFileName
 
-	legend=TLegend(0.60,(0.5 if 'Tau21' in nameInRoot else 0.67),0.90,0.87)
+	legend=TLegend(0.60,(0.5 if 'Tau21' in nameInRoot else 0.60),0.90,0.87)
 	legend.SetFillStyle(0)
 	legend.SetTextSize(0.03)
 	histos = {}
@@ -654,7 +656,7 @@ def plotSignalShape( miniRunaFile, nameInRoot, rebinX, log ):
 	dummy=1
 	
 #	if 'Tau21' in nameInRoot: 
-	massList = [80, 100, 120, 140, 150, 170, 190, 210, 230, 300, 350 ]
+	massList = [80, 100, 120, 140, 150, 170, 190, 210, 230, 300 ]
 	outputFileName = outputFileName.replace( '_low', '' )
 #	else:
 #		if 'low' in args.RANGE: massList = [ 80, 100, 120, 140 ] 
@@ -686,7 +688,7 @@ def plotSignalShape( miniRunaFile, nameInRoot, rebinX, log ):
 
 	histos[ massList[0] ].GetYaxis().SetTitle( 'Events / '+str(binWidth) )
 	histos[ massList[0] ].GetYaxis().SetTitleOffset( 0.8 )
-	#histos[ massList[0] ].GetXaxis().SetRangeUser( (50 if 'low' in args.RANGE else 100 ) , ( 250 if 'low' in args.RANGE else 400 ) )
+	histos[ massList[0] ].GetXaxis().SetRangeUser( 50, 350 ) #(50 if 'low' in args.RANGE else 100 ) , ( 250 if 'low' in args.RANGE else 400 ) )
 
 	#histos[ massList[0] ].SetMinimum( (0.1 if 'high' in args.RANGE else 0.00001 ) )
 	histos[ massList[0] ].SetMaximum( 1.2*max(maxList) )
@@ -1406,8 +1408,8 @@ if __name__ == '__main__':
 	if 'Scf' in args.process:
 		plotSignalCutFlow('Rootfiles/RUNAnalysis_RPVStopStopToJets_UDD312_M-100_RunIIFall15MiniAODv2_v76x_v2p0_'+args.version+'.root', 'Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_UDD312_M-100_'+args.RANGE+'_'+args.version+'.root', (10 if 'high' in args.RANGE else 12), True, True )
 	if 'signal' in args.process:
-		#plotSignalShape('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_UDD312_M-100_'+args.RANGE+'_'+args.version+'.root', 'massAve'+args.cut, 5, False)
-		plotSignalShape('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_UDD312_M-100_'+args.RANGE+'_'+args.version+'.root', 'jet2Tau21'+args.cut, 1, False)
+		plotSignalShape('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_UDD312_M-100_'+args.RANGE+'_'+args.version+'.root', 'massAve'+args.cut, 5, False)
+		#plotSignalShape('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_UDD312_M-100_'+args.RANGE+'_'+args.version+'.root', 'jet2Tau21'+args.cut, 1, False)
 	if 'acc' in args.process:
 		plotSignalAcceptance('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_UDD312_M-100_'+args.RANGE+'_'+args.version+'.root', 'massAve'+args.cut, False)
 	if 'tmp' in args.process:

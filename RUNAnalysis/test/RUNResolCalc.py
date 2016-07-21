@@ -43,10 +43,10 @@ jetMassHTlabY = 0.20
 jetMassHTlabX = 0.85
 
 
-def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, log):
+def plotResolutionCalculator( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, log):
 	"""docstring for plot"""
 
-	massList = [ 100, 110, 120, 130, 140, 150, 170, 180, 190, 210, 220, 230, 240 ] 
+	massList = [ 80, 90, 100, 110, 120, 130, 140, 150, 170, 180, 190, 210, 220, 230, 240, 300 ] #, 350 ] 
 	#massList = [ 90, 100, 110, 130, 150, 170, 190 ] 
 	#massList = [ 90, 100, 110, 120, 130, 140, 150 ] 
 	resolArray = []
@@ -74,7 +74,7 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 		histos[ 'massAve' ].Rebin( 5 )
 
 		massWindow = 20
-		gausNom = TF1("gaus", "gaus", 0, 300)
+		gausNom = TF1("gaus", "gaus", 0, 500)
 		#gausNom.SetParameter(0, histos['massAve'].GetMaximum() )
 		gausNom.SetParameter(1, xmass)
 		#gausNom.SetParameter(1, 10 )
@@ -122,6 +122,7 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 	can1 = TCanvas('c2', 'c2', 10, 10, 750, 500 )
 	#PT = TText(0.1, 0.1, sample )
 
+	print resolArray
 	resolGraph = TGraphErrors( len( massList ), array( 'd', massList), array( 'd', resolArray), array( 'd', tmpArray), array( 'd', resolErrArray ) )
 	#resolGraph = TGraph( len( massList ), array( 'd', massList), array( 'd', resolArray) )
 	resolGraph.SetLineColor( kBlack )
@@ -169,4 +170,4 @@ if __name__ == '__main__':
 	CMS_lumi.lumi_13TeV = '' #str( round((args.lumi/1000.),2) )+" fb^{-1}"
 	CMS_lumi.extraText = "Simulation Preliminary"
 	
-	plotSystematics( 'Rootfiles/RUNResolutionCalc_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)+'_RunIIFall15MiniAODv2_v76x_v2p1.root', 'pruned', 'massAve_cutDeltaEtaDijet', '', '', 1, '', '', False )
+	plotResolutionCalculator( 'Rootfiles/RUNResolutionCalc_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)+'_RunIIFall15MiniAODv2_v76x_v2p1.root', 'pruned', 'massAve_cutHT', '', '', 1, '', '', False )

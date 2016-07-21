@@ -43,10 +43,8 @@ def calcROCs( BkgSamples, SigSamples, treename, varList, mass, window, cutsList 
 	allHistos = {}
 	for var in varList: 
 		allHistos[ var[0]+"_Sig" ] = TH1F( var[0]+"_Sig", var[0]+"_Sig", var[1], var[2], var[3] )
-		allHistos[ var[0]+"_Sig" ].Sumw2()
 		for bkgSample in BkgSamples: 
 			allHistos[ var[0]+'_'+bkgSample ] = TH1F( var[0]+"_"+bkgSample, var[0]+"_"+bkgSample, var[1], var[2], var[3] )
-			allHistos[ var[0]+'_'+bkgSample ].Sumw2()
 			allHistos[ var[0]+"_"+bkgSample+"_BkgROC"] = TH1F( var[0]+"_"+bkgSample+"_BkgROC", var[0]+"_"+bkgSample+"_BkgROC; "+var[0], var[1], var[2], var[3] )
 			allHistos[ var[0]+"_"+bkgSample+"_SigROC"] = TH1F( var[0]+"_"+bkgSample+"_SigROC", var[0]+"_"+bkgSample+"_SigROC; "+var[0], var[1], var[2], var[3] )
 
@@ -200,10 +198,11 @@ def makeROCs( textFile, variables, bkgSamples, perVariable, cutsList, printValue
 				dictVariablesNum = { rocs: dictNumEvents[ rocs ] for rocs in dictNumEvents if var[0] in rocs }
 
 				totalBkg = np.zeros( len( dictVariablesNum[ var[0]+'_QCD'+qcd+'All_ROC' ][1] ) )
-				totalSig = dictVariablesNum[ var[0]+'_QCD'+qcd+'All_ROC' ][1]
-				for bkg in dictVariablesNum: totalBkg += dictVariablesNum[ bkg ][0]
-				#sigOverBkg = np.divide( totalSig, totalBkg )
-				sigOverSqrtSigBkg = np.divide( totalSig, np.sqrt( totalSig+totalBkg ) )
+				totalSig = dictVariablesNum[ var[0]+'_QCD'+qcd+'All_ROC' ][1]*2666
+				for bkg in dictVariablesNum: totalBkg += dictVariablesNum[ bkg ][0]*2666
+				#sigOverSqrtSigBkg = np.divide( totalSig, np.sqrt( totalSig+totalBkg ) )
+				#sigOverSqrtSigBkg = np.divide( totalSig, np.sqrt(totalBkg) ) 
+				sigOverSqrtSigBkg = np.sqrt( 2*( (totalSig+totalBkg)*np.log( 1 + np.divide( totalSig, totalBkg ) ) - totalSig ) )
 				SOB = TGraph( len(totalSig), ( (dictVariablesNum[ var[0]+'_QCD'+qcd+'All_ROC' ][2])/5. if 'deltaEta' in var[0] else (dictVariablesNum[ var[0]+'_QCD'+qcd+'All_ROC' ][2]) ), sigOverSqrtSigBkg ) # sigOverBkg )
 				dictNumVar[ var[0] ] = SOB 
 
@@ -240,7 +239,9 @@ def plotROC( name, sample, dictROC, numCuts, varOrbkg, SOB ):
 	PT.Draw()
 	if SOB:
 		multiGraph.GetXaxis().SetTitle( 'A.U.' )
-		multiGraph.GetYaxis().SetTitle('S/#sqrt{S+B}')
+		#multiGraph.GetYaxis().SetTitle('S/#sqrt{S+B}')
+		#multiGraph.GetYaxis().SetTitle('S/#sqrt{B}')
+		multiGraph.GetYaxis().SetTitle('#sqrt{2*((s+b)#ln(s/b)-s)}}')
 	else:
 		multiGraph.GetXaxis().SetRangeUser(-0.05,1.05)
 		multiGraph.GetYaxis().SetRangeUser(-0.05,1.05)
@@ -495,20 +496,20 @@ if __name__ == '__main__':
 	effS = args.effS
 	qcd = args.QCD
 
-	if args.batchSys: folder = '/cms/gomez/archiveEOS/Archive/763patch2/v4/'
+	if args.batchSys: folder = '/cms/gomez/archiveEOS/Archive/763patch2/v5/'
 	else: folder = 'Rootfiles/'
 
 	bkgSamples = OrderedDict()
-	bkgSamples[ 'QCD'+qcd+'All' ] = [ folder+'/RUNAnalysis_QCD'+qcd+'All_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kBlue-4 ]
-	bkgSamples[ 'TTJets' ] = [ folder+'/RUNAnalysis_TTJets_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kGreen ]
-	bkgSamples[ 'WJetsToQQ' ] = [ folder+'/RUNAnalysis_WJetsToQQ_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kMagenta ]
-	bkgSamples[ 'ZJetsToQQ' ] = [ folder+'/RUNAnalysis_ZJetsToQQ_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kOrange ]
-	bkgSamples[ 'WWTo4Q' ] = [ folder+'/RUNAnalysis_WWTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kMagenta+2 ]
-	bkgSamples[ 'ZZTo4Q' ] = [ folder+'/RUNAnalysis_ZZTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kOrange+2 ]
-	bkgSamples[ 'WZ' ] = [ folder+'/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v2p0_v04.root', kCyan ]
+	bkgSamples[ 'QCD'+qcd+'All' ] = [ folder+'/RUNAnalysis_QCD'+qcd+'All_RunIIFall15MiniAODv2_v76x_v2p0_v05.root', kBlue-4 ]
+	bkgSamples[ 'TTJets' ] = [ folder+'/RUNAnalysis_TTJets_RunIIFall15MiniAODv2_v76x_v2p0_v05.root', kGreen ]
+	bkgSamples[ 'WJetsToQQ' ] = [ folder+'/RUNAnalysis_WJetsToQQ_RunIIFall15MiniAODv2_v76x_v2p0_v05.root', kMagenta ]
+	bkgSamples[ 'ZJetsToQQ' ] = [ folder+'/RUNAnalysis_ZJetsToQQ_RunIIFall15MiniAODv2_v76x_v2p0_v05.root', kOrange ]
+	bkgSamples[ 'WWTo4Q' ] = [ folder+'/RUNAnalysis_WWTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_v05.root', kMagenta+2 ]
+	bkgSamples[ 'ZZTo4Q' ] = [ folder+'/RUNAnalysis_ZZTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_v05.root', kOrange+2 ]
+	bkgSamples[ 'WZ' ] = [ folder+'/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v2p0_v05.root', kCyan ]
 
 	sigSamples = {}
-	sigSamples[ 'RPVSt'+str(mass) ] = folder+'/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v2p0_v04.root'
+	sigSamples[ 'RPVSt'+str(mass) ] = folder+'/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v2p0_v05.root'
 	#sigSamples[ 'WWTo4Q' ] = folder+'/RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 	#sigSamples[ 'ZZTo4Q' ] = folder+'/RUNAnalysis_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 	#sigSamples[ 'WZ' ] = folder+'/RUNAnalysis_WZ_TuneCUETP8M1_13TeV-pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
@@ -546,13 +547,13 @@ if __name__ == '__main__':
 		[ 'Boosted', "prunedMassAsym", 20, 0., 1., True, 0.1, 0.2, 1 ],
 		[ 'Boosted', "jet1CosThetaStar", 20, 0., 1, True, 0., 0.8, 2 ],
 		[ 'Boosted', "jet2CosThetaStar", 20, 0., 1, True, 0., 0.8, 3 ],
-		[ 'Boosted', "jet1Tau21", 20, 0., 1., True, 0., 0.8 , 4 ],
-		[ 'Boosted', "jet2Tau21", 20, 0., 1., True, 0., 0.80, 5 ],
-		[ 'Boosted', "jet1Tau31", 20, 0., 1., True, 0., 0.7, 6 ],
-		[ 'Boosted', "jet2Tau31", 20, 0., 1., True, 0., 0.7, 7 ],
+		[ 'Boosted', "jet1Tau21", 20, 0., 1., True, 0.5, 0. , 4 ],
+		[ 'Boosted', "jet2Tau21", 20, 0., 1., True, 0.5, 0., 5 ],
+		[ 'Boosted', "jet1Tau31", 20, 0., 1., True, 0., 0., 6 ],
+		[ 'Boosted', "jet2Tau31", 20, 0., 1., True, 0., 0., 7 ],
 		[ 'Boosted', "jet1Tau32", 20, 0., 1., True, 0., 0 , 8 ],
 		[ 'Boosted', "jet2Tau32", 20, 0., 1., True, 0., 0 , 9 ],
-		[ 'Boosted', "deltaEtaDijet", 50, 0., 5., True, 0., 0.6, 11 ],
+		[ 'Boosted', "deltaEtaDijet", 50, 0., 5., True, 1.5, 0.6, 11 ],
 		[ 'Boosted', "jet1SubjetPtRatio", 20, 0., 1., True, 0., 0 , 12 ],
 		[ 'Boosted', "jet2SubjetPtRatio", 20, 0., 1., True, 0., 0 , 13 ],
 	]

@@ -103,8 +103,7 @@ else:
 			'/store/user/algomez/RPVStopStopToJets_UDD312_M-150_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0/160331_081614/0000/B2GEDMNtuple_1.root',
 			#'/store/user/algomez/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v1p0/160310_090317/0000/B2GEDMNtuple_1.root',
 			#'/store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_100723/0000/B2GEDMNtuple_1.root',
-			#'/store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/JetHT/B2GAnaFW_76X_V1p1_Run2015D-16Dec2015-v1/160401_164408/0000/B2GEDMNtuple_1.root',
-			#'/store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/JetHT/B2GAnaFW_76X_V1p1_Run2015D-16Dec2015-v1/160401_164408/0000/B2GEDMNtuple_10.root',
+
 	    )
 	)
 
@@ -138,8 +137,6 @@ process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 )
 process.ResolvedAnalysisPlotsJESUp = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JESUp' ) )
 process.ResolvedAnalysisPlotsJESDown = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JESDown' ) )
-process.ResolvedAnalysisPlotsPUUp = process.ResolvedAnalysisPlots.clone( dataPUFile = 'PileupData2015D_JSON_16Dec2015ReReco_SilverV2_72450_76X.root' )
-process.ResolvedAnalysisPlotsPUDown = process.ResolvedAnalysisPlots.clone( dataPUFile = 'PileupData2015D_JSON_16Dec2015ReReco_SilverV2_65550_76X.root' )
 
 
 process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
@@ -153,8 +150,6 @@ process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 
 process.BoostedAnalysisPlotsJESUp = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JESUp' ) )
 process.BoostedAnalysisPlotsJESDown = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JESDown' ) )
-process.BoostedAnalysisPlotsPUUp = process.BoostedAnalysisPlots.clone( dataPUFile = 'PileupData2015D_JSON_16Dec2015ReReco_SilverV2_72450_76X.root' )
-process.BoostedAnalysisPlotsPUDown = process.BoostedAnalysisPlots.clone( dataPUFile = 'PileupData2015D_JSON_16Dec2015ReReco_SilverV2_65550_76X.root' )
 
 process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone( 
 		PUMethod		= cms.string('Puppi'),
@@ -205,8 +200,6 @@ process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone(
 
 process.BoostedAnalysisPlotsPuppiJESUp = process.BoostedAnalysisPlotsPuppi.clone( systematics = cms.string( 'JESUp' ) )
 process.BoostedAnalysisPlotsPuppiJESDown = process.BoostedAnalysisPlotsPuppi.clone( systematics = cms.string( 'JESDown' ) )
-process.BoostedAnalysisPlotsPuppiPUUp = process.BoostedAnalysisPlotsPuppi.clone( dataPUFile = 'PileupData2015D_JSON_16Dec2015ReReco_SilverV2_72450_76X.root' )
-process.BoostedAnalysisPlotsPuppiPUDown = process.BoostedAnalysisPlotsPuppi.clone( dataPUFile = 'PileupData2015D_JSON_16Dec2015ReReco_SilverV2_65550_76X.root' )
 
 
 
@@ -217,8 +210,6 @@ if 'Resolved' in options.version:
 	if options.systematics:
 		process.p += process.ResolvedAnalysisPlotsJESUp
 		process.p += process.ResolvedAnalysisPlotsJESDown
-		process.p += process.ResolvedAnalysisPlotsPUUp
-		process.p += process.ResolvedAnalysisPlotsPUDown
 elif 'Boosted' in options.version:
 	outputNAME = 'BoostedAnalysis_'
 	process.p += process.BoostedAnalysisPlots
@@ -226,8 +217,6 @@ elif 'Boosted' in options.version:
 	if options.systematics:
 		process.p += process.BoostedAnalysisPlotsJESUp
 		process.p += process.BoostedAnalysisPlotsJESDown
-		process.p += process.BoostedAnalysisPlotsPUUp
-		process.p += process.BoostedAnalysisPlotsPUDown
 		#process.p += process.BoostedAnalysisPlotsPuppiJESUp
 		#process.p += process.BoostedAnalysisPlotsPuppiJESDown
 else: 
@@ -240,10 +229,6 @@ else:
 		process.p += process.BoostedAnalysisPlotsJESDown
 		process.p += process.ResolvedAnalysisPlotsJESUp
 		process.p += process.ResolvedAnalysisPlotsJESDown
-		process.p += process.BoostedAnalysisPlotsPUUp
-		process.p += process.BoostedAnalysisPlotsPUDown
-		process.p += process.ResolvedAnalysisPlotsPUUp
-		process.p += process.ResolvedAnalysisPlotsPUDown
 
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUN'+outputNAME+NAME+'.root' ) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

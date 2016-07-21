@@ -53,7 +53,7 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 		massList = [ 80, 90, 100, 110, 120, 130, 140, 150 ]
 		massWindow = 30 
 	else: 
-		massList = [ 170, 180, 190, 210, 220, 230, 240 ] 
+		massList = [ 170, 180, 190, 210, 220, 230, 240, 300, 350 ] 
 		massWindow = 30 
 
 	nomArray = []

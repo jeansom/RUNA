@@ -273,9 +273,11 @@ def plot2DTriggerEfficiency( inFileSample, sample, triggerDenom, triggerPass, na
 	Efficiency.Reset()
 	Efficiency.Divide( Passing, Denom, 1, 1, 'B' )
 
-	#for i in range( Efficiency.GetNbinsX() ):
-	#	for j in range( Efficiency.GetNbinsY() ):
-	#		if Efficiency.GetYaxis().GetBinLowEdge(j) == 950: print round( Efficiency.GetBinContent( i, j ),2), '\pm', round( Efficiency.GetBinError( i , j), 4 )
+	for i in range( Efficiency.GetNbinsX() ):
+		for j in range( Efficiency.GetNbinsY() ):
+			if Efficiency.GetXaxis().GetBinLowEdge(i) == 400: print '400: ', round( Efficiency.GetBinContent( i, j ),2), '\pm', round( Efficiency.GetBinError( i , j), 4 )
+			if Efficiency.GetXaxis().GetBinLowEdge(i) == 500: print '500: ', round( Efficiency.GetBinContent( i, j ),2), '\pm', round( Efficiency.GetBinError( i , j), 4 )
+			if Efficiency.GetXaxis().GetBinLowEdge(i) == 550: print '550: ', round( Efficiency.GetBinContent( i, j ),2), '\pm', round( Efficiency.GetBinError( i , j), 4 )
 	
 	can = TCanvas('c1', 'c1',  10, 10, 1000, 750 )
 	gStyle.SetPaintTextFormat("4.2f")
@@ -354,10 +356,10 @@ if __name__ == '__main__':
 		[ '1D', 'prunedMassAve', 0, massMaxX, 2, triggerlabX, triggerlabY, True],
 #		[ '1D', 'trimmedMass', massMinX, massMaxX, 2, triggerlabX, triggerlabY, True],
 #		#[ '1D', 'ak4HT', HTMinX, HTMaxX, 5, triggerlabX, triggerlabY, True],
-#		[ '1D', 'jet1Pt', ptMinX, ptMaxX, 2, triggerlabX, triggerlabY, True],
+		[ '1D', 'jet1Pt', ptMinX, ptMaxX, 2, triggerlabX, triggerlabY, True],
 #		[ '1D', 'jet2Pt', ptMinX, ptMaxX, 2, triggerlabX, triggerlabY, True],
 		[ '1D', 'jet1PrunedMass', 0, massMaxX, 1, triggerlabX, triggerlabY, True],
-#		[ '1D', 'jet1SoftDropMass', 0, massMaxX, 1, triggerlabX, triggerlabY, True],
+		[ '1D', 'jet1SoftDropMass', 0, massMaxX, 1, triggerlabX, triggerlabY, True],
 		#[ '1D', 'jet3Pt', 0, 200, 1, triggerlabX, triggerlabY, True],
 		#[ '1D', 'jet4Pt', 0, 200, 1, triggerlabX, triggerlabY, True],
 

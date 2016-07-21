@@ -100,7 +100,7 @@ class RUNBoostedAnalysis : public EDAnalyzer {
       ULong64_t event = 0;
       int numJets = 0, numPV = 0;
       unsigned int lumi = 0, run=0;
-      float AK4HT = 0, HT = 0, trimmedMass = -999, puWeight = -999, genWeight = -999, lumiWeight = -999, MET = -999,
+      float AK4HT = 0, HT = 0, trimmedMass = -999, puWeight = -999, genWeight = -999, lumiWeight = -999, pdfWeight = -999, MET = -999,
 	    jet1Pt = -999, jet1Eta = -999, jet1Phi = -999, jet1E = -999, jet1btagCSVv2 = -9999, jet1btagCMVAv2 = -9999, jet1btagDoubleB = -9999,
 	    jet2Pt = -999, jet2Eta = -999, jet2Phi = -999, jet2E = -999, jet2btagCSVv2 = -9999, jet2btagCMVAv2 = -9999, jet2btagDoubleB = -9999,
 	    subjet11Pt = -999, subjet11Eta = -999, subjet11Phi = -999, subjet11E = -999, subjet11btagCSVv2 = -9999, subjet11btagCMVAv2 = -9999, 
@@ -514,7 +514,15 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 		Handle<LHEEventProduct> lheEvtInfo;
 		iEvent.getByToken( extLHEProducer_, lheEvtInfo );
 		// This function will return all the weights from the lheEvtInfo (scaleWeights, pdfWeights, alphaWeights)
-		//getWeights( lheEvtInfo, lhaPdfId, scaleWeights, pdfWeights, alphaWeights );
+		getWeights( lheEvtInfo, lhaPdfId, scaleWeights, pdfWeights, alphaWeights );
+
+		//// Calculating the RMS from the pdfWeights, per event
+		double sum = accumulate(pdfWeights.begin(), pdfWeights.end(), 0.0);
+		double mean = sum / pdfWeights.size();
+		vector<double> diff(pdfWeights.size());
+		transform(pdfWeights.begin(), pdfWeights.end(), diff.begin(), [mean](double x) { return x - mean; });
+		double sq_sum = inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+		pdfWeight = sqrt(sq_sum / pdfWeights.size());
 		////////////////////////////////////////////////////
 	}
 
@@ -635,7 +643,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			histos1D_[ "chargedMultiplicity" ]->Fill( (*chargedMultiplicity)[i] * jec, totalWeight );
 
 			myJet tmpJET;
-			tmpJET.p4 = tmpJet;
+			tmpJET.p4 = corrJet;
 			tmpJET.subjet0 = tmpSubjet0;
 			tmpJET.subjet0BtagCSVv2 = tmpSubjet0BtagCSVv2;
 			tmpJET.subjet0BtagCMVAv2 = tmpSubjet0BtagCMVAv2;
@@ -1024,6 +1032,7 @@ void RUNBoostedAnalysis::beginJob() {
 	RUNAtree->Branch( "numPV", &numPV, "numPV/I" );
 	RUNAtree->Branch( "puWeight", &puWeight, "puWeight/F" );
 	RUNAtree->Branch( "lumiWeight", &lumiWeight, "lumiWeight/F" );
+	RUNAtree->Branch( "pdfWeight", &pdfWeight, "pdfWeight/F" );
 	RUNAtree->Branch( "genWeight", &genWeight, "genWeight/F" );
 	RUNAtree->Branch( "HT", &HT, "HT/F" );
 	RUNAtree->Branch( "MET", &MET, "MET/F" );
@@ -1094,9 +1103,9 @@ void RUNBoostedAnalysis::beginJob() {
 	RUNAtree->Branch( "jet2SubjetPtRatio", &jet2SubjetPtRatio, "jet2SubjetPtRatio/F" );
 	RUNAtree->Branch( "cosPhi13412", &cosPhi13412, "cosPhi13412/F" );
 	RUNAtree->Branch( "cosPhi31234", &cosPhi31234, "cosPhi31234/F" );
-	RUNAtree->Branch( "scaleWeights", &scaleWeights );
-	RUNAtree->Branch( "pdfWeights", &pdfWeights );
-	RUNAtree->Branch( "alphaWeights", &alphaWeights );
+	//RUNAtree->Branch( "scaleWeights", &scaleWeights );
+	//RUNAtree->Branch( "pdfWeights", &pdfWeights );
+	//RUNAtree->Branch( "alphaWeights", &alphaWeights );
 
 
 	histos1D_[ "oldJetPt" ] = fs_->make< TH1D >( "oldJetPt", "oldJetPt", 100, 0., 1000. );

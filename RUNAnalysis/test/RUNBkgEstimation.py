@@ -12,6 +12,7 @@ import time, os, math, sys
 from array import array
 import argparse
 from collections import OrderedDict
+from DrawHistogram import Rebin2D
 try:
 	from RUNA.RUNAnalysis.histoLabels import labels, labelAxis, finalLabels, setSelection
 	from RUNA.RUNAnalysis.scaleFactors import * #scaleFactor as SF
@@ -39,9 +40,18 @@ yline = array('d', [1, 1])
 line = TGraph(2, xline, yline)
 line.SetLineColor(kRed)
 
+yline11 = array('d', [1.1, 1.1])
+line11 = TGraph(2, xline, yline11)
+line11.SetLineColor(kGreen)
+
+yline09 = array('d', [0.9, 0.9])
+line09 = TGraph(2, xline, yline09)
+line09.SetLineColor(kGreen)
+
 yline0 = array('d', [0,0])
 line0 = TGraph(2, xline, yline0)
 line0.SetLineColor(kRed)
+
 
 def listOfCont( histo ):
  	"""docstring for listOfCont"""
@@ -100,6 +110,21 @@ def makePulls( histo1, histo2 ):
 		pullsOnly.Fill( pull )
 
 	return histoPulls, pullsOnly
+
+def rebin( histo, binning ):
+	"""docstring for rebin"""
+
+	oldhisto = histo.Clone()
+	if 'reso' in str(binning):  
+		boostedMassAveBins = array( 'd', [ 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200, 205, 210, 215, 220, 225, 230, 235, 240, 245, 250, 255, 260, 265, 270, 275, 280, 285, 290, 300, 310, 320, 330, 340, 350, 500, 510 ] )
+		newhisto = oldhisto.Rebin( len( boostedMassAveBins )-1, oldhisto.GetName(), boostedMassAveBins )
+	elif 'ratio' in str(binning): 
+		boostedMassAveBins = array( 'd', [ 0, 25, 50, 75, 100, 150, 200, 250, 300, 350, 400, 450, 500 ] )
+		newhisto = oldhisto.Rebin( len( boostedMassAveBins )-1, oldhisto.GetName(), boostedMassAveBins )
+	else:
+		newhisto = oldhisto.Rebin( binning )
+
+	return newhisto
 	
 
 def ratioPlots( histo1, histo2 ):
@@ -111,7 +136,13 @@ def ratioPlots( histo1, histo2 ):
 	h1errFull.Reset()
 	h1errh2 = histo1.Clone()
 	h1errh2.Reset()
-	for ibin in range( histo1.GetNbinsX()+1 ):
+	ratioList = []
+	binCenterList = []
+	ratioLogNErrXPlusList = []
+	ratioLogNErrXMinusList = []
+
+	for ibin in range( 0, histo1.GetNbinsX() ):
+		binCenterList.append( histo1.GetXaxis().GetBinCenter( ibin ) )
 		x = histo1.GetBinContent( ibin )
 		xErr = histo1.GetBinError( ibin )
 		y = histo2.GetBinContent( ibin )
@@ -120,55 +151,343 @@ def ratioPlots( histo1, histo2 ):
 			ratio = x/y
 			ratioErrX = ratio * TMath.Sqrt( TMath.Power( xErr/x, 2) + TMath.Power( yErr/y, 2)  )
 			ratioErrY = ratio* yErr / y
+			ratioLogNErrXPlus = TMath.Sqrt( TMath.Power( ( (x/(y-yErr)) - ratio ), 2 )  + TMath.Power( ( ((x+xErr)/y) - ratio ) , 2) ) 
+			ratioLogNErrXMinus = TMath.Sqrt( TMath.Power( ( (x/(y+yErr)) - ratio ), 2 )  + TMath.Power( ( ((x-xErr)/y) - ratio ) , 2) ) 
 		except ZeroDivisionError: 
 			ratio = 0
 			ratioErrX = 0
 			ratioErrY = 0
-		print x, xErr, y, yErr, ratio, ratioErrX, ratioErrY
+			ratioLogNErrXPlus = 0
+			ratioLogNErrXMinus = 0
+		#print x, xErr, y, yErr, ratio, ratioErrX, ratioLogNErrX, ratioErrY, ratioLogNErrY
+		#print x, xErr, y, yErr, ratio, ratioLogNErrXPlus, ratioLogNErrXMinus
 		h1errFull.SetBinContent( ibin, ratio )
 		h1errFull.SetBinError( ibin, ratioErrX )
 		h1errh2.SetBinContent( ibin, ratio )
 		h1errh2.SetBinError( ibin, ratioErrY )
+		ratioList.append( ratio )
+		ratioLogNErrXPlusList.append( ratioLogNErrXPlus )
+		ratioLogNErrXMinusList.append( ratioLogNErrXMinus )
 		if ibin < 35 :
 			if (y>0):
 				try: chi2 += ((y-x)*(y-x))/( (yErr*yErr) + (xErr*xErr) )
 				except ZeroDivisionError: chi2 += 0
 				ndf += 1
-	return h1errFull, h1errh2, chi2, ndf-1
+
+	'''
+	histoAsymErrors = histo1.Clone()
+	histoAsymErrors.Reset()
+	histoAsymErrors.Sumw2(False)
+	for ibin in range( histoAsymErrors.GetNbinsX() ):
+		histoAsymErrors.SetBinContent( ibin, ratioList[ibin] )
+	histoAsymErrors.SetBinErrorOption(TH1.kPoisson)
+	'''
+
+	zeroArray = array( 'd', ( [ 0 ] * (len( ratioList )) ) )
+	asymErrors = TGraphAsymmErrors( len(ratioList), array('d', binCenterList), array('d', ratioList), zeroArray, zeroArray, array('d',ratioLogNErrXMinusList), array('d', ratioLogNErrXPlusList) )
+
+	return h1errFull, h1errh2, chi2, ndf-1, asymErrors
+
+def alternativeABCD( nameInRoot, histoB, histoC, histoD, typePlot, plot=True ):
+	"""docstring for alternativeABCD"""
+	
+	histoC = rebin( histoC, 50 ) 
+	histoD = rebin( histoD, 50 ) 
+	histoCD = histoC.Clone()
+	histoCD.Reset()
+	histoCD.Divide( histoC, histoD, 1., 1., '' )
+
+	histoCD.GetYaxis().SetTitle( 'Ratio B/D' )
+	histoCD.GetYaxis().SetTitleOffset(0.75)
+	histoCD.GetXaxis().SetTitle( 'Average pruned mass [GeV]' )
+	histoCD.SetStats( True)
+	fitCD = TF1( 'fitCD', 'pol3', 50, 350 )
+	'''
+	fitLow = TF1( 'fitLow', 'pol2', 25, 100 )
+	fitHigh = TF1( 'fitHigh', 'pol1', 100, 500 )
+	fitCD = TF1( 'fitCD', 'pol2(0)+pol1(3)', 0, 300 )
+	#fitCD = TF1( 'fitCD', '[0]+([1]*x)+([2]*(x-400)*(x-400))+([3]*x*x*x)', 20, 400 )
+	histoCD.Fit( fitLow, 'R' ) 
+	histoCD.Fit( fitHigh, 'R+' ) 
+	fitCD.SetParameter( 0, fitLow.GetParameter( 0 ) )
+	fitCD.SetParameter( 1, fitLow.GetParameter( 1 ) )
+	fitCD.SetParameter( 2, fitLow.GetParameter( 2 ) )
+	fitCD.SetParameter( 3, fitHigh.GetParameter( 0 ) )
+	fitCD.SetParameter( 4, fitHigh.GetParameter( 1 ) )
+	'''
+	for i in range(3):  fitCDResult =  TFitResultPtr(histoCD.Fit( fitCD, 'MIRS' ) )
+	
+	listFitValues = []
+	listFitErrors = []
+	listBinCenter = []
+
+	histoBCD = histoB.Clone()
+	histoBCD.Reset()
+	for ibin in range( 1, histoBCD.GetNbinsX() ):
+		contB = histoB.GetBinContent( ibin )
+		errorB = histoB.GetBinError( ibin )
+		binCenter = histoB.GetBinCenter( ibin )
+		factorCD = fitCD.Eval( binCenter )
+		contBCD = contB * factorCD
+
+		err = array( 'd', [0] )
+		fitCDResult.GetConfidenceIntervals( 1, 1, 1, array('d',[binCenter]), err, 0.683, False ) 
+		#print ibin, contB, errorB, binCenter, factorCD, contBCD, err[0]
+		listFitValues.append( factorCD )
+		listFitErrors.append( err[0] )
+		listBinCenter.append( binCenter )
+
+		try: errBCD = contBCD* TMath.Sqrt( TMath.Power( err[0]/factorCD, 2 ) + TMath.Power( errorB/contB, 2 ) )
+		except ZeroDivisionError: errBCD = 1.8
+		if contBCD == 0 : errBCD = 1.8
+
+		histoBCD.SetBinContent( ibin, contBCD )
+		histoBCD.SetBinError( ibin, errBCD )
+
+	#tmpFile = TFile( 'test.root', 'recreate' )
+	#histoCD.Write()
+	#histoB.Write()
+	#histoC.Write()
+	#histoD.Write()
+	#tmpFile.Close()
+
+	if plot:
+		canCD = TCanvas('canCD', 'canCD',  10, 10, 750, 500 )
+		#if 'simple' in args.binning: tmpcanCD= canCD.DrawFrame(0,0,500,2)
+		#else: tmpcanCD= canCD.DrawFrame(0,0,boostedMassAveBins[-1],2)
+		gStyle.SetOptFit(1)
+		histoCD.Draw("PES")
+		fitCD.SetLineWidth(2)
+		fitCD.SetLineColor(kBlue)
+		fitCD.Draw("same")
+		#fitLow.Draw("same")
+		#fitHigh.Draw("same")
+
+		fitCDUp = TGraph( len(listFitValues), array( 'd', listBinCenter ), np.add( listFitValues, listFitErrors ) ) 
+		fitCDUp.SetLineColor(kRed)
+		fitCDUp.Draw('same pc')
+		fitCDDown = TGraph( len(listFitValues), array( 'd', listBinCenter ), np.subtract( listFitValues, listFitErrors ) ) 
+		fitCDDown.Draw('same pc')
+		fitCDDown.SetLineColor(kRed)
+		canCD.Update()
+		canCD.Modified()
+		outputFileNameCD = nameInRoot+'_'+typePlot+'_CD_'+args.grooming+'_'+args.RANGE+'_QCD'+args.qcd+'_bkgShapeEstimationBoostedPlots'+args.version+'.'+args.extension
+		canCD.SaveAs('Plots/'+outputFileNameCD)
+
+	return histoBCD
+
+def alternativeABCDCombined( nameInRoot, binning, hDataB, hDataC, hDataD, hBkgB, hBkgC, hBkgD, typePlot, plot=True, rootFile=False ):
+	"""docstring for alternativeABCDcombined"""
+	
+	hDataC = rebin( hDataC, binning ) 
+	hDataD = rebin( hDataD, binning ) 
+	hDataCD = hDataC.Clone()
+	hDataCD.Reset()
+	hDataCD.Divide( hDataC, hDataD, 1., 1., '' )
+
+	hBkgC = rebin( hBkgC, binning ) 
+	hBkgD = rebin( hBkgD, binning ) 
+	hBkgCD = hBkgC.Clone()
+	hBkgCD.Reset()
+	hBkgCD.Divide( hBkgC, hBkgD, 1., 1., '' )
+
+	fitFunction = 'pol3'
+	fitMin = 50
+	fitMax = 350
+
+	hBkgCD.GetYaxis().SetTitle( 'Ratio B/D' )
+	hBkgCD.GetYaxis().SetTitleOffset(0.75)
+	hBkgCD.GetXaxis().SetTitle( 'Average pruned mass [GeV]' )
+	hBkgCD.SetStats( True)
+	fitBkgCD = TF1( 'fitBkgCD', fitFunction, fitMin, fitMax )
+	for i in range(3):  fitBkgCDResult =  TFitResultPtr(hBkgCD.Fit( fitBkgCD, 'MIRS' ) )
+
+	hDataCD.GetYaxis().SetTitle( 'Ratio B/D' )
+	hDataCD.GetYaxis().SetTitleOffset(0.75)
+	hDataCD.GetXaxis().SetTitle( 'Average pruned mass [GeV]' )
+	hDataCD.SetStats( True)
+	fitCD = TF1( 'fitCD', fitFunction, fitMin, fitMax )
+	for p in range(fitBkgCD.GetNpar() ): fitCD.SetParameter( p, fitBkgCD.GetParameter( p ) )
+	fitCDResult =  TFitResultPtr(hDataCD.Fit( fitCD, 'MIRS' ) )
+	
+	listFitValues = []
+	listFitErrors = []
+	listBinCenter = []
+	hDataBCD = hDataB.Clone()
+	hDataBCD.Reset()
+	hDataRatioCD = hDataB.Clone()
+	hDataRatioCD.Reset()
+	hBkgBCD = hBkgB.Clone()
+	hBkgBCD.Reset()
+	for ibin in range( 1, hDataBCD.GetNbinsX() ):
+		contB = hDataB.GetBinContent( ibin )
+		errorB = hDataB.GetBinError( ibin )
+		binCenter = hDataB.GetBinCenter( ibin )
+		factorCD = fitCD.Eval( binCenter )
+		contBCD = contB * factorCD
+
+		### error in fit
+		err = array( 'd', [0] )
+		fitCDResult.GetConfidenceIntervals( 1, 1, 1, array('d',[binCenter]), err, 0.683, False ) 
+		#print ibin, contB, errorB, binCenter, factorCD, contBCD, err[0]
+		listFitValues.append( factorCD )
+		listFitErrors.append( err[0] )
+		listBinCenter.append( binCenter )
+
+		try: errBCD = contBCD* TMath.Sqrt( TMath.Power( err[0]/factorCD, 2 ) + TMath.Power( errorB/contB, 2 ) )
+		except ZeroDivisionError: errBCD = 1.8
+		if contBCD == 0 : errBCD = 1.8
+
+		hDataBCD.SetBinContent( ibin, contBCD )
+		hDataBCD.SetBinError( ibin, errBCD )
+		hDataRatioCD.SetBinContent( ibin, factorCD )
+		hDataRatioCD.SetBinError( ibin, err[0] )
+
+		## same for bkg
+		contBkgB = hBkgB.GetBinContent( ibin )
+		errorBkgB = hBkgB.GetBinError( ibin )
+		contBkgBCD = contBkgB * factorCD
+		try: errBkgBCD = contBkgBCD* TMath.Sqrt( TMath.Power( err[0]/factorCD, 2 ) + TMath.Power( errorBkgB/contBkgB, 2 ) )
+		except ZeroDivisionError: errBkgBCD = 1.8
+		if contBkgBCD == 0 : errBkgBCD = 1.8
+		hBkgBCD.SetBinContent( ibin, contBkgBCD )
+		hBkgBCD.SetBinError( ibin, errBkgBCD )
+	
+	fitCDUp = TGraph( len(listFitValues), array( 'd', listBinCenter ), np.add( listFitValues, listFitErrors ) ) 
+	fitCDDown = TGraph( len(listFitValues), array( 'd', listBinCenter ), np.subtract( listFitValues, listFitErrors ) ) 
+
+	if rootFile:
+		tmpFile = TFile('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_DATA_ABCDBkg_'+args.RANGE+'_'+args.version+'.root', 'recreate' )
+		hDataBCD.SetName( 'massAve_prunedMassAsymVsdeltaEtaDijet_DATA_ABCDProj' )
+		hDataBCD.Write()
+		hDataRatioCD.SetName( 'massAve_prunedMassAsymVsdeltaEtaDijet_DATA_RatioBD' )
+		hDataRatioCD.Write()
+		hDataB.Write()
+		tmpFile.Close()
+
+	if plot:
+		canCD = TCanvas('canCD', 'canCD',  10, 10, 750, 500 )
+		#if 'simple' in args.binning: tmpcanCD= canCD.DrawFrame(0,0,500,2)
+		#else: tmpcanCD= canCD.DrawFrame(0,0,boostedMassAveBins[-1],2)
+		gStyle.SetOptFit(1)
+		hBkgCD.SetLineColor(kBlue)
+		hBkgCD.Draw()
+		hDataCD.SetMarkerStyle(8)
+		hDataCD.Draw("sames")
+		fitBkgCD.SetLineWidth(1)
+		fitBkgCD.SetLineColor(kBlue-2)
+		fitBkgCD.Draw("same")
+
+		fitCD.SetLineWidth(2)
+		fitCD.SetLineColor(kRed)
+		fitCD.Draw("same")
+		fitCDUp.SetLineColor(kRed)
+		fitCDUp.Draw('same pc')
+		fitCDDown.Draw('same pc')
+		fitCDDown.SetLineColor(kRed)
+		CMS_lumi.extraText = "Preliminary"
+		CMS_lumi.relPosX = 0.13
+		CMS_lumi.CMS_lumi(canCD, 4, 0)
+
+		legend=TLegend(0.65,0.15,0.90,0.35)
+		legend.SetFillStyle(0)
+		legend.SetTextSize(0.03)
+		legend.AddEntry( hDataCD, 'Data', 'pl' )
+		legend.AddEntry( hBkgCD, 'All MC Bkgs', 'pl' )
+		legend.AddEntry( fitCD, 'Fit to data', 'l' )
+		legend.AddEntry( fitCDUp, 'Fit unc. to data', 'l' )
+		legend.AddEntry( fitBkgCD, 'Fit to MC', 'l' )
+		legend.Draw("same")
+
+		canCD.Update()
+		st2 = hBkgCD.GetListOfFunctions().FindObject("stats")
+		st2.SetX1NDC(.15)
+		st2.SetX2NDC(.35)
+		st2.SetY1NDC(.76)
+		st2.SetY2NDC(.91)
+		st2.SetTextColor(kBlue)
+		st1 = hDataCD.GetListOfFunctions().FindObject("stats")
+		st1.SetX1NDC(.35)
+		st1.SetX2NDC(.55)
+		st1.SetY1NDC(.76)
+		st1.SetY2NDC(.91)
+		st1.SetTextColor(kRed)
+		canCD.Modified()
+		outputFileNameCD = nameInRoot+'_'+typePlot+'_CD_'+args.grooming+'_'+args.RANGE+'_QCD'+args.qcd+'_bkgShapeEstimationBoostedPlots'+args.version+'.'+args.extension
+		canCD.SaveAs('Plots/'+outputFileNameCD)
+
+	return hDataBCD, hBkgBCD
 
 
 def plotBkgEstimation( dataFile, bkgFiles, signalFiles, Groom, nameInRoot, xmin, xmax, rebinX, labX, labY, log, Norm=False ):
 	"""docstring for plotBkgEstimation"""
 
 	SRHistos = {}
+	BCDHistos = {}
+	tmpBCDHistos = {}
 	CRHistos = {}
 	for bkgSamples in bkgFiles:
 		SRHistos[ bkgSamples ] = bkgFiles[ bkgSamples ][0].Get( nameInRoot+'_'+bkgSamples+'_A' )
+		BCDHistos[ bkgSamples+'_B' ] = bkgFiles[ bkgSamples ][0].Get( nameInRoot+'_'+bkgSamples+'_B' )
+		tmpBCDHistos[ bkgSamples+'_B' ] = BCDHistos[ bkgSamples+'_B' ].Clone()
+		BCDHistos[ bkgSamples+'_C' ] = bkgFiles[ bkgSamples ][0].Get( nameInRoot+'_'+bkgSamples+'_C' )
+		tmpBCDHistos[ bkgSamples+'_C' ] = BCDHistos[ bkgSamples+'_C' ].Clone()
+		BCDHistos[ bkgSamples+'_D' ] = bkgFiles[ bkgSamples ][0].Get( nameInRoot+'_'+bkgSamples+'_D' )
+		tmpBCDHistos[ bkgSamples+'_D' ] = BCDHistos[ bkgSamples+'_D' ].Clone()
 		CRHistos[ bkgSamples ] = bkgFiles[ bkgSamples ][0].Get( nameInRoot+'_'+bkgSamples+'_ABCDProj' )
-		if rebinX > 1: 
-			SRHistos[ bkgSamples ].Rebin( rebinX )
-			CRHistos[ bkgSamples ].Rebin( rebinX )
-		#SRHistos[ bkgSamples ] = SRHistos[ bkgSamples ].Rebin( len( boostedMassAveBins )-1, SRHistos[ bkgSamples ].GetName(), boostedMassAveBinSize )
-		#CRHistos[ bkgSamples ] = CRHistos[ bkgSamples ].Rebin( len( boostedMassAveBins )-1, CRHistos[ bkgSamples ].GetName(), boostedMassAveBinSize )
+		if 'simple' in args.binning:
+			if rebinX > 1: 
+				SRHistos[ bkgSamples ] = rebin( SRHistos[ bkgSamples ], rebinX )
+				BCDHistos[ bkgSamples+'_B' ] = rebin( BCDHistos[ bkgSamples+'_B' ], rebinX )
+				BCDHistos[ bkgSamples+'_C' ] = rebin( BCDHistos[ bkgSamples+'_C' ], rebinX )
+				BCDHistos[ bkgSamples+'_D' ] = rebin( BCDHistos[ bkgSamples+'_D' ], rebinX )
+				CRHistos[ bkgSamples ] = rebin( CRHistos[ bkgSamples ], rebinX )
+		else:
+			SRHistos[ bkgSamples ] = rebin( SRHistos[ bkgSamples ], args.binning ) 
+			BCDHistos[ bkgSamples+'_B' ] = rebin( BCDHistos[ bkgSamples+'_B' ], args.binning )
+			BCDHistos[ bkgSamples+'_C' ] = rebin( BCDHistos[ bkgSamples+'_C' ], args.binning )
+			BCDHistos[ bkgSamples+'_D' ] = rebin( BCDHistos[ bkgSamples+'_D' ], args.binning )
+			CRHistos[ bkgSamples ] = rebin( CRHistos[ bkgSamples ], args.binning )
 		if bkgFiles[ bkgSamples ][1] != 1: 
 			scale = bkgFiles[ bkgSamples ][1] 
 			SRHistos[ bkgSamples ].Scale( scale ) 
 			CRHistos[ bkgSamples ].Scale( scale )
+			BCDHistos[ bkgSamples+'_B' ].Scale( scale )
+			BCDHistos[ bkgSamples+'_C' ].Scale( scale )
+			BCDHistos[ bkgSamples+'_D' ].Scale( scale )
+			tmpBCDHistos[ bkgSamples+'_B' ].Scale( scale )
+			tmpBCDHistos[ bkgSamples+'_C' ].Scale( scale )
+			tmpBCDHistos[ bkgSamples+'_D' ].Scale( scale )
 
 	
-	hDataCR =  dataFile.Get( nameInRoot+'_DATA_ABCDProj' )
-	hDataCR.Rebin( rebinX )
-	#hDataCR.Scale( 7.65453e-01 )
-	#hDataCR = hDataCR.Rebin( len( boostedMassAveBins )-1, hDataCR.GetName(), boostedMassAveBinSize )
+	hData =  dataFile.Get( nameInRoot+'_DATA_A' )
+	hData = rebin( hData, ( rebinX if 'simple' in args.binning else args.binning ) )
+	htmpDataCR =  dataFile.Get( nameInRoot+'_DATA_ABCDProj' )
+	htmpDataCR = rebin( htmpDataCR, ( rebinX if 'simple' in args.binning else args.binning ) )
+	hDataCR = htmpDataCR.Clone()
+	hDataCR.Reset()
+	for ibin in range( htmpDataCR.GetNbinsX() ):
+		binCont = htmpDataCR.GetBinContent( ibin )
+		binErr = htmpDataCR.GetBinError( ibin )
+		if binCont == 0:
+			hDataCR.SetBinContent( ibin, 0 )
+			hDataCR.SetBinError( ibin, 1.8 )
+		else:
+			hDataCR.SetBinContent( ibin, binCont )
+			hDataCR.SetBinError( ibin, binErr )
+	hDataB =  dataFile.Get( nameInRoot+'_DATA_B' )
+	htmpDataB = hDataB.Clone()
+	hDataB = rebin( hDataB, ( rebinX if 'simple' in args.binning else args.binning ) )
+	hDataC =  dataFile.Get( nameInRoot+'_DATA_C' )
+	htmpDataC = hDataC.Clone()
+	hDataC = rebin( hDataC, ( rebinX if 'simple' in args.binning else args.binning ) )
+	hDataD =  dataFile.Get( nameInRoot+'_DATA_D' )
+	htmpDataD = hDataD.Clone()
+	hDataD = rebin( hDataD, ( rebinX if 'simple' in args.binning else args.binning ) )
 	
 	for signalSamples in signalFiles:
 		hSignalSR = signalFiles[ signalSamples ][0].Get( nameInRoot+'_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)+'_A' )
 		hSignalCR = signalFiles[ signalSamples ][0].Get( nameInRoot+'_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)+'_ABCDProj' )
-		#if rebinX > 1: 
-		#	hSignalSR.Rebin( rebinX )
-		#	hSignalCR.Rebin( rebinX )
-		#hSignalCR = hSignalCR.Rebin( len( boostedMassAveBins )-1, hSignalCR.GetName(), boostedMassAveBinSize )
-		#hSignalSR = hSignalSR.Rebin( len( boostedMassAveBins )-1, hSignalSR.GetName(), boostedMassAveBinSize )
 		if signalFiles[ signalSamples ][1] != 1: 
 			scale = signalFiles[ signalSamples ][1] 
 			hSignalSR.Scale( scale ) 
@@ -181,21 +500,75 @@ def plotBkgEstimation( dataFile, bkgFiles, signalFiles, Groom, nameInRoot, xmin,
 	for samples in SRHistos:
 		hSR.Add( SRHistos[ samples ].Clone() )
 		hCR.Add( CRHistos[ samples ].Clone() )
-	#print hDataCR.FindFirstBinAbove( 1, 1 ), hDataCR.GetBinContent( 0 )
+	hBkgB = hDataB.Clone()	
+	hBkgB.Reset()
+	hBkgC = hDataB.Clone()	
+	hBkgC.Reset()
+	hBkgD = hDataB.Clone()	
+	hBkgD.Reset()
+	htmpBkgB = htmpDataB.Clone()	
+	htmpBkgB.Reset()
+	htmpBkgC = htmpDataB.Clone()	
+	htmpBkgC.Reset()
+	htmpBkgD = htmpDataB.Clone()	
+	htmpBkgD.Reset()
+	for isamples in BCDHistos:
+		if '_B' in isamples: 
+			hBkgB.Add( BCDHistos[ isamples ].Clone() )
+			htmpBkgB.Add( tmpBCDHistos[ isamples ].Clone() )
+		elif '_C' in isamples: 
+			hBkgC.Add( BCDHistos[ isamples ].Clone() )
+			htmpBkgC.Add( tmpBCDHistos[ isamples ].Clone() )
+		elif '_D' in isamples: 
+			hBkgD.Add( BCDHistos[ isamples ].Clone() )
+			htmpBkgD.Add( tmpBCDHistos[ isamples ].Clone() )
+
+	if 'simple' in args.binning: binWidth = round(hSR.GetBinWidth(1))
+	else: binWidth = '#sigma_{mass}' 
+
+	#hRatiohSRhCRerrhCR, hRatiohSRhCRerrFull, hSRchi2, hSRndf, hRatiohSRhCRAsymErr = ratioPlots( hSR, hCR ) 
+	#makePlots( nameInRoot, hSR, 'All MC Bkgs SR', hCR, 'All MC Bkgs ABCD Pred', binWidth, xmin, xmax, hRatiohSRhCRAsymErr, "MC (SR/Bkg Pred)", '', 'Bkg')
+	#makePlots( nameInRoot, hSR, 'All MC Bkgs SR', hCR, 'All MC Bkgs ABCD Pred', binWidth, xmin, xmax, hRatiohSRhCRAsymErr, "MC (SR/Bkg Pred)", '', 'Bkg_Log', True, True)
+	#hRatiohCRhSRerrhSR, hRatiohCRhSRerrFull, hCRchi2, hCRndf, hRatiohCRhSRAsymErr = ratioPlots( hCR, hSR ) 
+	#makePlots( nameInRoot, hSR, 'All MC Bkgs SR', hCR, 'All MC Bkgs ABCD Pred', binWidth, xmin, xmax, hRatiohCRhSRerrFull, "MC (Bkg Pred/SR)", hRatiohCRhSRerrhSR, 'Bkg_Diff')
+
+	#hRatiohSRhDataCRerrFull, hRatiohSRhDataCRerrhData, hDataCRchi2, hDataCRndf, hRatiohSRhDataCRAsymErr = ratioPlots( hSR, hDataCR ) 
+	#makePlots( nameInRoot, hSR, 'All MC Bkgs SR', hDataCR, 'DATA ABCD Pred', binWidth, xmin, xmax, hRatiohSRhDataCRAsymErr, "MC SR/ABCD Pred", '', 'DATA_Bkg')
+	#hRatiohDataCRhSRerrhSR, hRatiohDataCRhSRerrFull, hDataCRchi2, hDataCRndf, hRatiohDataCRhSRAsymErr = ratioPlots( hDataCR, hSR ) 
+	#makePlots( nameInRoot, hSR, 'All MC Bkgs SR', hDataCR, 'DATA ABCD Pred', binWidth, xmin, xmax, hRatiohDataCRhSRerrFull, "ABCD Pred/MC SR)", hRatiohDataCRhSRerrhSR, 'DATA_Bkg_Diff')
+
+	#hRatiohBkgBhDataBerrDataB, hRatiohBkgBhDataBerrFull, hBkgBchi2, hBkgBndf, hRatiohBkgBAsymErr = ratioPlots( hDataB, hBkgB ) 
+	#makePlots( nameInRoot, hBkgB, 'All MC Bkgs Region B', hDataB, 'DATA Region B', binWidth, xmin, xmax, hRatiohBkgBAsymErr, "DATA/MC", '', 'B', True)
+	#hRatiohBkgChDataCerrDataB, hRatiohBkgChDataCerrFull, hBkgCchi2, hBkgCndf, hRatiohBkgCAsymErr = ratioPlots( hDataC, hBkgC ) 
+	#makePlots( nameInRoot, hBkgC, 'All MC Bkgs Region C', hDataC, 'DATA Region C', binWidth, xmin, xmax, hRatiohBkgCAsymErr, "DATA/MC", '', 'C', True)
+	#hRatiohBkgDhDataDerrDataB, hRatiohBkgDhDataDerrFull, hBkgDchi2, hBkgDndf, hRatiohBkgDAsymErr = ratioPlots( hDataD, hBkgD ) 
+	#makePlots( nameInRoot, hBkgD, 'All MC Bkgs Region D', hDataD, 'DATA Region D', binWidth, xmin, xmax, hRatiohBkgDAsymErr, "DATA/MC", '', 'D', True)
+
+	#hRatiohDataerrDataB, hRatiohBDataerrFull, hDatachi2, hDatandf, hRatiohDataAsymErr = ratioPlots( hData, hDataCR ) 
+	#makePlots( nameInRoot, hData, 'DATA', hDataCR, 'DATA ABCD Pred.', binWidth, xmin, xmax, hRatiohDataAsymErr, "DATA/ABCD Pred", '', '')
+	#makePlots( nameInRoot, hData, 'DATA', hDataCR, 'DATA ABCD Pred.', binWidth, xmin, xmax, hRatiohDataAsymErr, "DATA/ABCD Pred", '', 'Log', True)
+	#hRatiohDataerrDataB, hRatiohBDataerrFull, hDatachi2, hDatandf, hRatiohDatahCRAsymErr = ratioPlots( hData, hCR ) 
+	#makePlots( nameInRoot, hData, 'DATA', hCR, 'MC ABCD Pred.', binWidth, xmin, xmax, hRatiohDatahCRAsymErr, "DATA/MC ABCD Pred", '', 'DATAvsBkg', True)
+
+	#althDataCR = alternativeABCD( nameInRoot, hDataC, htmpDataB, htmpDataD, 'DATA' )
+	#althDataCR = alternativeABCD( nameInRoot, hDataC, hDataB, hDataD, 'DATA' )
+	althDataCR, althBkgCR = alternativeABCDCombined( nameInRoot, 25, hDataC, htmpDataB, htmpDataD, hBkgC, htmpBkgB, htmpBkgD, 'combined', rootFile=True )
+	althRatiohDataerrDataB, althRatiohBDataerrFull, althDatachi2, althDatandf, althRatiohDataAsymErr = ratioPlots( hData, althDataCR ) 
+	makePlots( nameInRoot, hData, 'DATA', althDataCR, 'DATA ABCD Pred.', binWidth, xmin, xmax, althRatiohDataAsymErr, "DATA/ABCD Pred", '', 'Log_altBCD', True)
+	hRatiohSRhDataCRerrhCR, hRatiohSRhCRerrFull, hSRchi2, hSRndf, hRatiohSRhDataCRAsymErr = ratioPlots( hSR, althDataCR ) 
+	makePlots( nameInRoot, hSR, 'All MC Bkgs SR', althDataCR, 'DATA ABCD Pred', binWidth, xmin, xmax, hRatiohSRhDataCRAsymErr, "(MC SR)/(DATA Pred)", '', 'BkgSR_DATAAltBCD_Log', True)
+
+	althRatiohBkgerrBkgB, althRatiohBBkgerrFull, althBkgchi2, althBkgndf, althRatiohDatahBkgAsymErr = ratioPlots( althDataCR, althBkgCR ) 
+	makePlots( nameInRoot, althBkgCR, 'Hybrid MC ABCD Pred.', althDataCR, 'DATA ABCD Pred', binWidth, xmin, xmax, althRatiohDatahBkgAsymErr, "ABCD Pred (DATA/MC)", '', 'DATA_Bkg_Log_altBCD', True)
+
+	althRatiohBkgerrBkgB, althRatiohBBkgerrFull, althBkgchi2, althBkgndf, althRatiohBkgAsymErr = ratioPlots( hSR, althBkgCR ) 
+	makePlots( nameInRoot, hSR, 'MC SR', althBkgCR, 'Hybrid MC ABCD Pred.', binWidth, xmin, xmax, althRatiohBkgAsymErr, "MC SR/ABCD Pred", '', 'HybridBkg_Log_altBCD', True)
+	althBkgCR = alternativeABCD( nameInRoot, hBkgC, htmpBkgB, htmpBkgD, 'Bkg' )
+	althRatiohBkgerrBkgB, althRatiohBBkgerrFull, althBkgchi2, althBkgndf, althRatiohBkgAsymErr = ratioPlots( hSR, althBkgCR ) 
+	makePlots( nameInRoot, hSR, 'MC SR', althBkgCR, 'MC ABCD Pred.', binWidth, xmin, xmax, althRatiohBkgAsymErr, "MC SR/ABCD Pred", '', 'Bkg_Log_altBCD', True)
+	sys.exit(0)
 
 
-	firstBinData = 40 #hDataCR.GetXaxis().GetLowEdge( hDataCR.FindFirstBinAbove( 0, 1 ) )  #40
-	#locFirstBin = boostedMassAveBins.index( firstBinData )
-	lastBinData = 300 #hDataCR.GetXaxis().GetLowEdge( hDataCR.FindLastBinAbove( 0, 1 ) )   #300
-	tmpSR = hSR.Clone()
-	tmpSR.GetXaxis().SetRangeUser( firstBinData, lastBinData )
-	tmpCR = hCR.Clone()
-	tmpCR.GetXaxis().SetRangeUser( firstBinData, lastBinData )
-	res = array( 'd', ( [ 0 ] * tmpSR.GetNbinsX() ) )
-	chi2NdfMC =  round( tmpSR.Chi2Test(tmpCR, 'WWCHI2/NDFP', res), 2 )
-	chi2MC =  round( tmpSR.Chi2Test(tmpCR, 'WWCHI2'), 2 )
-
-	
 	#linearCR = TF1("linearCR", "pol0", 0, 500 ) 
 	#linearCR = TF1("linearCR", "pol0", firstBinData, lastBinData ) 
 	#hRatiohSRhDataCRerrhData.Fit(linearCR, 'MIR' )
@@ -225,342 +598,13 @@ def plotBkgEstimation( dataFile, bkgFiles, signalFiles, Groom, nameInRoot, xmin,
 	tmphDataCRPlusSignal = hDataCR.Clone()
 	tmphDataCRPlusSignal.Reset()
 	tmphDataCRPlusSignal.Divide( hDataCR, hDataPlusSignal, 1., 1., '' )
-
-	binWidth = hSR.GetBinWidth(1) # '#sigma_{mass}'
-
-	##### Bkg CR vs Bkg SR
-	legend=TLegend(0.55,0.75,0.90,0.87)
-	legend.SetFillStyle(0)
-	legend.SetTextSize(0.04)
-	#legend.AddEntry( hSR, 'MC '+bkgLabel+' SR' , 'l' )
-	#legend.AddEntry( hCR, 'MC '+bkgLabel+' ABCD Pred', 'pl' )
-	legend.AddEntry( hSR, 'All MC Bkgs SR' , 'l' )
-	legend.AddEntry( hCR, 'All MC Bkgs ABCD Pred', 'pl' )
-
-	hSR.SetLineColor(kRed-4)
-	hSR.SetLineWidth(2)
-	hSR.GetYaxis().SetTitle('Events / '+str(binWidth))
-	hSR.GetXaxis().SetRangeUser( xmin, xmax )
-	hSR.SetMaximum( 1.2* max( hSR.GetMaximum(), hCR.GetMaximum() ) )
-	hCR.SetLineColor(kBlue-4)
-	hCR.SetLineWidth(2)
-	hCR.SetLineStyle(2)
-	hDataCR.SetMarkerStyle(8)
-
-	tdrStyle.SetPadRightMargin(0.05)
-	tdrStyle.SetPadLeftMargin(0.15)
-	can = TCanvas('c1', 'c1',  10, 10, 750, 750 )
-	pad1 = TPad("pad1", "Fit",0,0.207,1.00,1.00,-1)
-	pad2 = TPad("pad2", "Pull",0,0.00,1.00,0.30,-1);
-	pad1.Draw()
-	pad2.Draw()
-
-	pad1.cd()
-	pad1.SetGrid()
-	#if log: pad1.SetLogy() 	
-	hSR.Draw("histe")
-	#hSRUncBand = addSysBand( hSR, 1.10, kRed )
-	#legend.AddEntry( hSRUncBand, 'Syst. unc.', 'f' )
-	#hSRUncBand.Draw("same E2")
-	hCR.Draw('histe same')
-	#hCRUncBand = addSysBand( hCR, 1.10, kBlue )
-	#hCRUncBand.Draw("same E2")
-
-	hRatiohSRhCRerrhCR, hRatiohSRhCRerrFull, hSRchi2, hSRndf = ratioPlots( hSR, hCR ) 
-
-	#textkolTestMC = TLatex( 200, 550, 'Kolmogorov Test = '+ str( round( tmpSR.KolmogorovTest(tmpCR), 2 ) ) )
-	#textkolTestMC.SetTextFont(42) ### 62 is bold, 42 is normal
-	#textkolTestMC.SetTextSize(0.04)
-	#textkolTestMC.Draw()
-
-	textchi2TestMC = TLatex( 209, (2000 if 'low' in args.RANGE else 300) , '#chi^{2}/ndF Test = '+ str( chi2MC )+'/'+str( round(chi2MC/chi2NdfMC) ) )
-	#textchi2TestMC = TLatex( 209, 2000, '#chi^{2}/ndF Test = '+ str( round(hSRchi2,2) )+'/'+str( hSRndf ) )
-	textchi2TestMC.SetTextFont(42) ### 62 is bold, 42 is normal
-	textchi2TestMC.SetTextSize(0.04)
-	textchi2TestMC.Draw()
-
-	textNumMC = TLatex( 209, (1600 if 'low' in args.RANGE else 200) , '#splitline{events SR/ABCD Pred = }{'+ str( round( hSR.Integral(),2 ) )+'/'+str( round( hCR.Integral(),2 ) )+'}' )
-	textNumMC.SetTextFont(42) ### 62 is bold, 42 is normal
-	textNumMC.SetTextSize(0.04)
-	textNumMC.Draw()
-
-	CMS_lumi.extraText = "Simulation Preliminary"
-	CMS_lumi.relPosX = 0.13
-	CMS_lumi.CMS_lumi(pad1, 4, 0)
-	legend.Draw()
-	#if not (labX and labY): labels( name, '', '' )
-	#labels( name1, '', '' ) #, labX, labY )
-
-	pad2.cd()
-	pad2.SetGrid()
-	pad2.SetTopMargin(0)
-	pad2.SetBottomMargin(0.3)
-	
-	#hRatiohSRhCRerrFull = hSR.Clone()
-	#hRatiohSRhCRerrFull.Reset()
-	#hRatiohSRhCRerrFull.Divide( hSR, hCR, 1., 1., '' )
 	'''
-	for ibin in range( hSR.GetNbinsX()+1 ):
-		x = hSR.GetBinContent( ibin )
-		xErr = hSR.GetBinError( ibin )
-		y = hCR.GetBinContent( ibin )
-		yErr = hCR.GetBinError( ibin )
-		try: 
-			ratio = x/y
-			ratioErr = ratio * TMath.Sqrt( TMath.Power( xErr/x , 2) +  TMath.Power( yErr/y , 2) ) 
-		except ZeroDivisionError: 
-			ratio = 0
-			ratioErr = 0
-		hRatiohSRhCRerrFull.SetBinContent( ibin, ratio )
-		hRatiohSRhCRerrFull.SetBinError( ibin, ratioErr )
-	'''
-
 	#for i in range( 0, len(res)) : 
 	#	print locFirstBin+i+1, res[i], 
 	#	hRatiohSRhCRerrFull.SetBinContent( locFirstBin+i+1, res[i] )
 	#hRatiohSRhCRerrFull, hRatiohSRhCRerrFullPulls = makePulls( hCR, hSR )
 	#hRatiohSRhCRerrFullCR, hRatiohSRhCRerrFullCRPulls = makePulls( hSR, hCR )
 	'''
-	#linearSR = TF1("SR", "pol0", 0, 500 ) 
-	#linearSR = TF1("SR", "pol0", firstBinData, lastBinData ) 
-	#hRatiohSRhCRerrFull.Fit(linearSR, 'MIR' )
-	#fSR = hRatiohSRhCRerrFull.GetFunction("SR") 
-	'''
-	
-	labelAxis( nameInRoot, hRatiohSRhCRerrFull, Groom )
-	hRatiohSRhCRerrFull.GetXaxis().SetRangeUser( xmin, xmax )
-	hRatiohSRhCRerrFull.SetMarkerStyle(8)
-	hRatiohSRhCRerrFull.SetLineColor(kBlack)
-	hRatiohSRhCRerrFull.GetXaxis().SetTitleOffset(1.1)
-	hRatiohSRhCRerrFull.GetXaxis().SetLabelSize(0.12)
-	hRatiohSRhCRerrFull.GetXaxis().SetTitleSize(0.12)
-	hRatiohSRhCRerrFull.GetYaxis().SetTitle("MC (SR/Bkg Pred)")
-	hRatiohSRhCRerrFull.GetYaxis().CenterTitle()
-	#hRatiohSRhCRerrFull.GetYaxis().SetTitle("Pull")
-	hRatiohSRhCRerrFull.GetYaxis().SetLabelSize(0.12)
-	hRatiohSRhCRerrFull.GetYaxis().SetTitleSize(0.12)
-	hRatiohSRhCRerrFull.GetYaxis().SetTitleOffset(0.55)
-	hRatiohSRhCRerrFull.SetMaximum( 2. )
-	hRatiohSRhCRerrFull.SetMinimum( 0. )
-	#hRatiohSRhCRerrFull.SetMaximum( 3. )
-	#hRatiohSRhCRerrFull.SetMinimum( -3. )
-	hRatiohSRhCRerrFull.GetYaxis().SetNdivisions(505)
-	hRatiohSRhCRerrFull.Draw('PE')
-	hRatiohSRhCRerrhCR.SetFillStyle(3004)
-	hRatiohSRhCRerrhCR.SetFillColor( kRed )
-	hRatiohSRhCRerrhCR.Draw('same E2')
-#	linearSR.SetLineWidth( 2 )
-#	linearSR.SetLineColor( kGreen )
-#	linearSR.Draw("same")
-#	textChi2SR = TLatex( 10, 1.5, '#splitline{#chi^{2}/NdF = '+ str( round( fSR.GetChisquare(), 2 ) )+'/'+ str( round( fSR.GetNDF(), 2 ) )+'}{p0 = '+ str( round( fSR.GetParameter(0), 2 ) ) +', p1 = '+ str( round( fSR.GetParameter(1), 5 ) ) +'}' )
-#	textChi2SR.SetTextFont(62) ### 62 is bold, 42 is normal
-#	textChi2SR.SetTextSize(0.08)
-#	textChi2SR.Draw()
-#	#hRatiohSRhDataCRerrhData.Draw()
-	line.Draw("same")
-	#line0.Draw("same")
-
-	outputFileName = nameInRoot+'_Bkg_'+Groom+'_'+args.RANGE+'_QCD'+args.qcd+'_bkgShapeEstimation'+args.boosted+'Plots'+args.version+'.'+args.extension
-	print 'Processing.......', outputFileName
-	can.SaveAs( 'Plots/'+ outputFileName )
-	del can
-
-	'''
-	can = TCanvas('c1', 'c1',  10, 10, 750, 500 )
-	gStyle.SetOptStat(1)
-	pullGaus = TF1( 'pullGaus', 'gaus', -3, 3 )
-	hRatiohSRhCRerrFullPulls.Fit( 'pullGaus', 'MIR' )
-	hRatiohSRhCRerrFullPulls.GetXaxis().SetTitle('Pulls')
-	hRatiohSRhCRerrFullPulls.GetYaxis().SetTitle('Bins')
-	hRatiohSRhCRerrFullPulls.Draw('PE')
-	#can.Update()
-	#gStyle.SetStatY(0.91)
-	#gStyle.SetStatX(0.95)
-	#gStyle.SetStatW(0.15)
-	#gStyle.SetStatH(0.30) 
-	#print hRatiohSRhCRerrFullPulls.GetListOfFunctions().FindObject("stats")
-#	st1.SetX1NDC(.12);
-#	st1.SetX2NDC(.32);
-#	st1.SetY1NDC(.76);
-#	st1.SetY2NDC(.91);
-#	#st1.SetTextColor(4);
-	can.Modified()
-	outputFileNamePulls= nameInRoot+'_Pulls_Bkg_'+Groom+'_'+args.RANGE+'_QCD'+args.qcd+'_bkgShapeEstimation'+args.boosted+'Plots'+args.version+'.'+args.extension
-	can.SaveAs('Plots/'+outputFileNamePulls)
-	'''
-
-	##### DATA CR vs Bkg SR
-	legend2=TLegend(0.55,0.75,0.90,0.87)
-	legend2.SetFillStyle(0)
-	legend2.SetTextSize(0.04)
-	#legend2.AddEntry( hSR, 'MC '+bkgLabel+' SR' , 'l' )
-	legend2.AddEntry( hSR, 'All MC Bkgs SR' , 'l' )
-	legend2.AddEntry( hDataCR, 'DATA ABCD Pred', 'pl' )
-	can = TCanvas('c1', 'c1',  10, 10, 750, 750 )
-	pad1 = TPad("pad1", "Fit",0,0.207,1.00,1.00,-1)
-	pad2 = TPad("pad2", "Pull",0,0.00,1.00,0.30,-1);
-	pad1.Draw()
-	pad2.Draw()
-
-	pad1.cd()
-	pad1.SetGrid()
-	#if log: pad1.SetLogy() 	
-	hSR.Draw("histe")
-	#legend2.AddEntry( hSRUncBand, 'Syst. unc.', 'f' )
-	#hSRUncBand.Draw("same E2")
-	hDataCR.Draw('PE same')
-	#hDataCRUncBand = addSysBand( hDataCR, 1.10, kBlack )
-	#hDataCRUncBand.Draw("same E2")
-
-	#hRatiohSRhDataCRerrhData.Divide( hSR, hDataCR, 1., 1., '' )
-	hRatiohSRhDataCRerrFull, hRatiohSRhDataCRerrhData, hDataCRchi2, hDataCRndf = ratioPlots( hSR, hDataCR ) 
-
-	tmpDataCR = hDataCR.Clone()
-	tmpDataCR.GetXaxis().SetRangeUser( firstBinData, lastBinData )
-	#textkolTestDataMC = TLatex( 200, 550, 'Kolmogorov Test = '+ str( round( tmpSR.KolmogorovTest(tmpDataCR ), 2 ) ) )
-	#textkolTestDataMC.SetTextFont(42) ### 62 is bold, 42 is normal
-	#textkolTestDataMC.SetTextSize(0.04)
-	#textkolTestDataMC.Draw()
-
-	chi2NdfDataMC =  round( tmpDataCR.Chi2Test(tmpSR, 'WWCHI2/NDFP'), 2 )
-	chi2DataMC =  round( tmpDataCR.Chi2Test(tmpSR, 'WWCHI2'), 2 )
-	textchi2TestDataMC = TLatex( 209,  (2000 if 'low' in args.RANGE else 300), '#chi^{2}/ndF Test = '+ str( chi2DataMC )+'/'+str( round(chi2DataMC/chi2NdfDataMC) ) )
-	#textchi2TestDataMC = TLatex( 209, 2000, '#chi^{2}/ndF Test = '+ str( round(hDataCRchi2,2) )+'/'+str( hDataCRndf ) )
-	textchi2TestDataMC.SetTextFont(42) ### 62 is bold, 42 is normal
-	textchi2TestDataMC.SetTextSize(0.04)
-	textchi2TestDataMC.Draw()
-
-	textNumDataMC = TLatex( 209,  (1600 if 'low' in args.RANGE else 200), '#splitline{events SR/ABCD Pred = }{'+ str( round( hSR.Integral(),2 ) )+'/'+str( round( hDataCR.Integral(),2 ) )+'}' )
-	textNumDataMC.SetTextFont(42) ### 62 is bold, 42 is normal
-	textNumDataMC.SetTextSize(0.04)
-	textNumDataMC.Draw()
-
-	CMS_lumi.extraText = "Preliminary"
-	CMS_lumi.relPosX = 0.13
-	CMS_lumi.CMS_lumi(pad1, 4, 0)
-	legend2.Draw()
-	#if not (labX and labY): labels( name, '', '' )
-	#labels( name1, '', '' ) #, labX, labY )
-
-	pad2.cd()
-	pad2.SetGrid()
-	pad2.SetTopMargin(0)
-	pad2.SetBottomMargin(0.3)
-	
-	#hRatiohSRhDataCRerrhData, hRatiohSRhDataCRerrhDataPulls = makePulls( hSR, hDataCR )
-	#tmphDataCRSR, tmphDataCRSRPulls = makePulls( hDataCR, hSR )
-
-	labelAxis( nameInRoot, hRatiohSRhDataCRerrhData, Groom )
-	hRatiohSRhDataCRerrhData.SetMarkerStyle(8)
-	hRatiohSRhDataCRerrhData.GetXaxis().SetRangeUser( xmin, xmax )
-	hRatiohSRhDataCRerrhData.SetMarkerStyle(8)
-	hRatiohSRhDataCRerrhData.GetXaxis().SetTitleOffset(1.1)
-	hRatiohSRhDataCRerrhData.GetXaxis().SetLabelSize(0.12)
-	hRatiohSRhDataCRerrhData.GetXaxis().SetTitleSize(0.12)
-	hRatiohSRhDataCRerrhData.GetYaxis().SetTitle("MC SR/ABCD Pred")
-	#hRatiohSRhDataCRerrhData.GetYaxis().SetTitle("Pull")
-	hRatiohSRhDataCRerrhData.GetYaxis().SetLabelSize(0.12)
-	hRatiohSRhDataCRerrhData.GetYaxis().SetTitleSize(0.12)
-	hRatiohSRhDataCRerrhData.GetYaxis().SetTitleOffset(0.55)
-	hRatiohSRhDataCRerrhData.SetMaximum( 2. )
-	hRatiohSRhDataCRerrhData.SetMinimum( 0. )
-	#hRatiohSRhDataCRerrhData.SetMaximum( 3. )
-	#hRatiohSRhDataCRerrhData.SetMinimum( -3. )
-	hRatiohSRhDataCRerrhData.GetYaxis().SetNdivisions(505)
-	#hRatiohSRhDataCRerrhData.SetFillStyle(3004)
-	#hRatiohSRhDataCRerrhData.SetFillColor( kRed )
-	hRatiohSRhDataCRerrhData.Draw('PE')
-	hRatiohSRhDataCRerrFull.SetFillStyle(3004)
-	hRatiohSRhDataCRerrFull.SetFillColor( kBlue )
-	hRatiohSRhDataCRerrFull.Draw('same E2')
-	'''
-	#tmphDataCRSR.SetFillStyle(3004)
-	#tmphDataCRSR.SetFillColor( kBlack )
-	#tmphDataCRSR.Draw('same E2')
-	linearCR.SetLineWidth( 2 )
-	linearCR.SetLineColor( kGreen )
-	linearCR.Draw("same")
-	textChi2CR = TLatex( 10, 1.5, '#splitline{#chi^{2}/NdF = '+ str( round( fCR.GetChisquare(), 2 ) )+'/'+ str( round( fCR.GetNDF(), 2 ) )+'}{p0 = '+ str( round( fCR.GetParameter(0), 2 ) ) +', p1 = '+ str( round( fCR.GetParameter(1), 5 ) )+'}' )
-	textChi2CR.SetTextFont(62) ### 62 is bold, 42 is normal
-	textChi2CR.SetTextSize(0.08)
-	textChi2CR.Draw()
-	'''
-	line.Draw("same")
-
-	outputFileName = nameInRoot+'_DATA_Bkg_'+Groom+'_'+args.RANGE+'_QCD'+args.qcd+'_bkgShapeEstimation'+args.boosted+'Plots'+args.version+'.'+args.extension
-	print 'Processing.......', outputFileName
-	can.SaveAs( 'Plots/'+ outputFileName )
-	del can
-	sys.exit(0)
-	#### signal plus bkg in CR
-	legend3=TLegend(0.55,0.75,0.90,0.87)
-	legend3.SetFillStyle(0)
-	legend3.SetTextSize(0.03)
-	legend3.AddEntry( hSignalCR, 'All MC Bkgs + RPV #tilde{t} '+str(args.mass)+' GeV - ABCD Pred' , 'l' )
-	legend3.AddEntry( hCR, 'All MC Bkgs - ABCD Pred', 'pl' )
-
-	hSignalCR.SetLineColor(kRed-4)
-	hSignalCR.SetLineWidth(2)
-	hSignalCR.GetYaxis().SetTitle('Events / '+str(binWidth))
-	hSignalCR.GetXaxis().SetRangeUser( xmin, xmax )
-	hSignalCR.SetMaximum( 1.2* max( hSignalCR.GetMaximum(), hCR.GetMaximum() ) )
-	#hSignalCR.SetLineColor(kBlue-4)
-	#hSignalCR.SetLineWidth(2)
-	#hSignalCR.SetLineStyle(2)
-
-	tdrStyle.SetPadRightMargin(0.05)
-	tdrStyle.SetPadLeftMargin(0.15)
-	can = TCanvas('c1', 'c1',  10, 10, 750, 750 )
-	pad1 = TPad("pad1", "Fit",0,0.207,1.00,1.00,-1)
-	pad2 = TPad("pad2", "Pull",0,0.00,1.00,0.30,-1);
-	pad1.Draw()
-	pad2.Draw()
-
-	pad1.cd()
-	pad1.SetGrid()
-	#if log: pad1.SetLogy() 	
-	hSignalCR.Draw("histe")
-	hCR.Draw('histe same')
-
-	CMS_lumi.extraText = "Simulation Preliminary"
-	CMS_lumi.relPosX = 0.13
-	CMS_lumi.CMS_lumi(pad1, 4, 0)
-	legend3.Draw()
-	#if not (labX and labY): labels( name, '', '' )
-	#labels( name1, '', '' ) #, labX, labY )
-
-	pad2.cd()
-	pad2.SetGrid()
-	pad2.SetTopMargin(0)
-	pad2.SetBottomMargin(0.3)
-	
-	labelAxis( nameInRoot, hRatiohSRhCRerrFull, Groom )
-	tmphSignalCR.GetXaxis().SetRangeUser( xmin, xmax )
-	tmphSignalCR.SetMarkerStyle(8)
-	tmphSignalCR.GetXaxis().SetTitleOffset(1.1)
-	tmphSignalCR.GetXaxis().SetLabelSize(0.12)
-	tmphSignalCR.GetXaxis().SetTitleSize(0.12)
-	tmphSignalCR.GetYaxis().SetTitle("SR/CR")
-	tmphSignalCR.GetYaxis().SetLabelSize(0.12)
-	tmphSignalCR.GetYaxis().SetTitleSize(0.12)
-	tmphSignalCR.GetYaxis().SetTitleOffset(0.55)
-	tmphSignalCR.SetMaximum( 2. )
-	tmphSignalCR.SetMinimum( 0. )
-	tmphSignalCR.GetYaxis().SetNdivisions(505)
-	tmphSignalCR.Draw()
-#	linearSignalCR.SetLineWidth( 2 )
-#	linearSignalCR.SetLineColor( kGreen )
-#	linearSignalCR.Draw("same")
-#	textChi2SignalCR = TLatex( 250, 1.5, '#chi^{2}/NdF = '+ str( round(linearSignalCRChi2, 2) ) +'/'+ str( round(linearSignalCRNDF, 2)  ) )
-#	textChi2SignalCR.SetTextFont(62) ### 62 is bold, 42 is normal
-#	textChi2SignalCR.SetTextSize(0.08)
-#	textChi2SignalCR.Draw()
-	line.Draw("same")
-
-	outputFileName = nameInRoot+'_BkgPlusRPVSt'+str(args.mass)+'_'+Groom+'_'+args.RANGE+'_QCD'+args.qcd+'_bkgShapeEstimation'+args.boosted+'Plots'+args.version+'.'+args.extension
-	print 'Processing.......', outputFileName
-	can.SaveAs( 'Plots/'+ outputFileName )
-	del can
 
 	#### Data minus signal
 	legend4=TLegend(0.55,0.75,0.90,0.87)
@@ -618,7 +662,7 @@ def plotBkgEstimation( dataFile, bkgFiles, signalFiles, Groom, nameInRoot, xmin,
 	tmphDataCR.Draw()
 	line.Draw("same")
 
-	outputFileName = nameInRoot+'_DATAMinusRPVSt'+str(args.mass)+'_'+Groom+'_'+args.RANGE+'_QCD'+args.qcd+'_bkgShapeEstimation'+args.boosted+'Plots'+args.version+'.'+args.extension
+	outputFileName = nameInRoot+'_DATAMinusRPVSt'+str(args.mass)+'_'+Groom+'_'+args.RANGE+'_QCD'+args.qcd+'_bkgShapeEstimationBoostedPlots'+args.version+'.'+args.extension
 	print 'Processing.......', outputFileName
 	can.SaveAs( 'Plots/'+ outputFileName )
 	del can
@@ -650,6 +694,7 @@ def plotBkgEstimation( dataFile, bkgFiles, signalFiles, Groom, nameInRoot, xmin,
 	stackHisto.Draw('hist')
 	hDataCR.Draw("EP same")
 	#hCR.Draw('histe same')
+	canRatio.Modified()
 
 	stackHisto.GetYaxis().SetTitle('Events / '+str(binWidth))
 	stackHisto.GetXaxis().SetRangeUser( xmin, xmax )
@@ -683,11 +728,296 @@ def plotBkgEstimation( dataFile, bkgFiles, signalFiles, Groom, nameInRoot, xmin,
 	tmphDataCRPlusSignal.Draw()
 	line.Draw("same")
 
-	outputFileName = nameInRoot+'_DATAStackRPVSt'+str(args.mass)+'_'+Groom+'_'+args.RANGE+'_QCD'+args.qcd+'_bkgShapeEstimation'+args.boosted+'Plots'+args.version+'.'+args.extension
+	outputFileName = nameInRoot+'_DATAStackRPVSt'+str(args.mass)+'_'+Groom+'_'+args.RANGE+'_QCD'+args.qcd+'_bkgShapeEstimationBoostedPlots'+args.version+'.'+args.extension
 	print 'Processing.......', outputFileName
 	can.SaveAs( 'Plots/'+ outputFileName )
 	del can
 
+def makePlots( nameInRoot, tmphisto1, labelh1, tmphisto2, labelh2, binWidth, xmin, xmax, ratio, labelRatio, ratio2, typePlot, log=False, reScale=False):
+	"""docstring for makePlots"""
+
+	histo1 = tmphisto1.Clone()
+	histo2 = tmphisto2.Clone()
+	legend=TLegend(0.55,0.75,0.90,0.87)
+	legend.SetFillStyle(0)
+	legend.SetTextSize(0.04)
+	if 'DATA' in labelh1: legend.AddEntry( histo1, labelh1, 'ep' )
+	else: legend.AddEntry( histo1, labelh1, 'l' )
+	legend.AddEntry( histo2, labelh2, 'pl' )
+
+	histo1.GetYaxis().SetTitle('Events / '+(str(int(binWidth)) if 'simple' in args.binning else binWidth )+' GeV')
+	histo1.GetXaxis().SetRangeUser( 50, 350 )
+	histo2.GetXaxis().SetRangeUser( 50, 350 )
+	histo1.SetMaximum( 1.1* max( histo1.GetMaximum(), histo2.GetMaximum() ) )
+	if 'MC' in labelh1: 
+		histo1.SetLineColor(kRed-4)
+		histo1.SetLineWidth(2)
+	histo2.SetLineColor(kBlue-4)
+	histo2.SetLineWidth(2)
+	if 'MC' in labelh2: histo2.SetLineStyle(2)
+	else: histo2.SetLineStyle(1)
+
+	tdrStyle.SetPadRightMargin(0.05)
+	tdrStyle.SetPadLeftMargin(0.15)
+	can = TCanvas('c1', 'c1',  10, 10, 750, 750 )
+	pad1 = TPad("pad1", "Fit",0,0.207,1.00,1.00,-1)
+	pad2 = TPad("pad2", "Pull",0,0.00,1.00,0.30,-1);
+	pad1.Draw()
+	pad2.Draw()
+
+	pad1.cd()
+	if log: 
+		pad1.SetLogy() 	
+		if not 'Region' in labelh1: histo1.SetMaximum( (5000 if 'low' in args.RANGE else 500) )
+		histo1.SetMinimum( 0.5 )
+	else: 
+		pad1.SetGrid()
+		if not 'Region' in labelh1: histo1.SetMaximum( (3000 if 'low' in args.RANGE else 400) )
+	if 'DATA' in labelh1: 
+		histo1.SetMarkerStyle(8)
+		histo1.Draw("PE")
+	else: histo1.Draw("histe")
+	#histo1UncBand = addSysBand( histo1, 1.10, kRed )
+	#legend.AddEntry( histo1UncBand, 'Syst. unc.', 'f' )
+	#histo1UncBand.Draw("same E2")
+	histo2.Draw('hist E0 same')
+	#histo2UncBand = addSysBand( histo2, 1.10, kBlue )
+	#histo2UncBand.Draw("same E2")
+
+	#locFirstBin = boostedMassAveBins.index( firstBinData )
+	tmpHisto1 = histo1.Clone()
+	tmpHisto2 = histo2.Clone()
+	'''
+	if 'DATA' in labelh2: 
+		if 'simple' in args.binning: 
+			firstBinData = histo2.FindFirstBinAbove( 0, 1 )*binWidth  #histo2.GetXaxis().GetLowEdge(  )  #40
+			lastBinData = histo2.FindLastBinAbove( 10, 1 )*binWidth  #hDataCR.GetXaxis().GetLowEdge(  )   #300
+		else: 
+			firstBinData = boostedMassAveBins[ histo2.FindFirstBinAbove( 0, 1 ) ]
+			lastBinData = boostedMassAveBins[ histo2.FindLastBinAbove( 10, 1 ) ]
+		#tmpHisto1.GetXaxis().SetRangeUser( firstBinData, lastBinData )
+		#tmpHisto2.GetXaxis().SetRangeUser( firstBinData, lastBinData )
+	'''
+	res = array( 'd', ( [ 0 ] * tmpHisto1.GetNbinsX() ) )
+	chi2Ndf =  round( tmpHisto1.Chi2Test(tmpHisto2, 'WWCHI2/NDFP', res), 2 )
+	chi2 =  round( tmpHisto1.Chi2Test(tmpHisto2, 'WWCHI2'), 2 )
+	chi2Test = TLatex( 0.6, 0.7, '#chi^{2}/ndF Test = '+ str( chi2 )+'/'+str( round(chi2/chi2Ndf) ) )
+	chi2Test.SetNDC()
+#	#chi2Test = TLatex( 209, 2000, '#chi^{2}/ndF Test = '+ str( round(hSRchi2,2) )+'/'+str( hSRndf ) )
+	chi2Test.SetTextFont(42) ### 62 is bold, 42 is normal
+	chi2Test.SetTextSize(0.04)
+	chi2Test.Draw()
+
+	if 'DATA' in labelh1: tmpLabel = 'DATA'
+	else: tmpLabel = 'SR'
+	numEvents = TLatex( 0.6, 0.62, '#splitline{events '+tmpLabel+'/ABCD Pred = }{'+ str( round( histo1.Integral(),2 ) )+'/'+str( round( histo2.Integral(),2 ) )+'}' )
+	numEvents.SetNDC()
+	numEvents.SetTextFont(42) ### 62 is bold, 42 is normal
+	numEvents.SetTextSize(0.04)
+	numEvents.Draw()
+
+	CMS_lumi.extraText = ("Preliminary" if 'DATA' in labelh2 else "Simulation Preliminary")
+	CMS_lumi.relPosX = 0.13
+	CMS_lumi.CMS_lumi(pad1, 4, 0)
+	legend.Draw()
+
+	pad2.cd()
+	pad2.SetGrid()
+	pad2.SetTopMargin(0)
+	pad2.SetBottomMargin(0.3)
+	tmpPad2= pad2.DrawFrame(50,0,350,2)
+	#if 'simple' in args.binning: tmpPad2= pad2.DrawFrame(50,0,350,2)
+	#else: tmpPad2= pad2.DrawFrame(0,0,boostedMassAveBins[-1],2)
+	tmpPad2.SetXTitle( 'Average pruned mass [GeV]' )
+	tmpPad2.SetYTitle( labelRatio )
+	tmpPad2.SetTitleSize(0.12, "x")
+	tmpPad2.SetTitleSize(0.12, 'y')
+	tmpPad2.SetLabelSize(0.12, 'x')
+	tmpPad2.SetLabelSize(0.12, 'y')
+	tmpPad2.SetTitleOffset(0.5, 'y')
+	#tmpPad2.CenterXTitle()
+	#tmpPad2.SetTitleOffset(0.55)
+	tmpPad2.SetNdivisions(505, 'x' )
+	tmpPad2.SetNdivisions(505, 'y' )
+	pad2.Modified()
+	
+	#labelAxis( nameInRoot, ratio, args.grooming )
+	#ratio.GetXaxis().SetRangeUser( xmin, xmax )
+	ratio.SetMarkerStyle(8)
+	ratio.SetLineColor(kBlack)
+	#ratio.SetMaximum( 2. )
+	#ratio.SetMinimum( 0. )
+	#if isinstance( ratio, TGraphAsymmErrors ): ratio.Draw('p')
+	ratio.Draw('P')
+	if isinstance( ratio2, TH1 ):
+		ratio2.SetFillStyle(3004)
+		ratio2.SetFillColor( kRed )
+		ratio2.Draw('same E2')
+	line.Draw("same")
+	line11.Draw("same")
+	line09.Draw("same")
+
+	outputFileName = nameInRoot+'_'+typePlot+'_'+args.grooming+'_'+args.RANGE+'_QCD'+args.qcd+'_bkgShapeEstimationBoostedPlots'+args.version+'.'+args.extension
+	if not 'simple' in args.binning: outputFileName = outputFileName.replace( typePlot, typePlot+'_ResoBasedBin' )
+	print 'Processing.......', outputFileName
+	can.SaveAs( 'Plots/'+ outputFileName )
+	del can
+
+	if reScale:
+		canRatio = TCanvas('canRatio', 'canRatio',  10, 10, 750, 500 )
+		if 'simple' in args.binning: tmpCanRatio = canRatio.DrawFrame(0,0,500,3)
+		else: tmpCanRatio = canRatio.DrawFrame(0,0, boostedMassAveBins[-1] ,3)
+		gStyle.SetOptFit(1)
+		tmpCanRatio.SetXTitle( 'Average pruned mass [GeV]' )
+		tmpCanRatio.SetYTitle( labelRatio )
+		canRatio.Modified()
+		ratio.Draw('ps')
+		line.Draw("same")
+		ratioP0 = TF1( 'ratioP0', 'pol0', 0, 500 )
+		for i in range(2): ratio.Fit( ratioP0, 'MIR' )
+		ratioP0.SetLineWidth(2)
+		ratioP0.SetLineColor(kBlue)
+		ratioP0.Draw("same")
+		ratioP1 = TF1( 'ratioP1', 'pol1', 0, 500 )
+		ratio1 = ratio.Clone()
+		for i in range(2): ratio1.Fit( ratioP1, 'MIR' )
+		ratio1.Draw("ps")
+		ratioP1.SetLineWidth(2)
+		ratioP1.SetLineColor(kViolet)
+		ratioP1.Draw("same")
+		canRatio.Update()
+		st1 = ratio.GetListOfFunctions().FindObject("stats")
+		st1.SetX1NDC(.15)
+		st1.SetX2NDC(.35)
+		st1.SetY1NDC(.76)
+		st1.SetY2NDC(.91)
+		st1.SetTextColor(kBlue)
+		st2 = ratio1.GetListOfFunctions().FindObject("stats")
+		st2.SetX1NDC(.35)
+		st2.SetX2NDC(.55)
+		st2.SetY1NDC(.76)
+		st2.SetY2NDC(.91)
+		st2.SetTextColor(kViolet)
+		canRatio.Modified()
+		outputFileNameRatio = nameInRoot+'_'+typePlot+'_Ratio_'+args.grooming+'_'+args.RANGE+'_QCD'+args.qcd+'_bkgShapeEstimationBoostedPlots'+args.version+'.'+args.extension
+		if not 'simple' in args.binning: outputFileNameRatio = outputFileNameRatio.replace( typePlot, typePlot+'_ResoBasedBin' )
+		canRatio.SaveAs('Plots/'+outputFileNameRatio)
+		del canRatio
+
+
+		tdrStyle.SetPadRightMargin(0.05)
+		tdrStyle.SetPadLeftMargin(0.15)
+		canReScale = TCanvas('canReScale', 'canReScale',  10, 10, 750, 750 )
+		pad1 = TPad("pad1", "Fit",0,0.207,1.00,1.00,-1)
+		pad2 = TPad("pad2", "Pull",0,0.00,1.00,0.30,-1);
+		pad1.Draw()
+		pad2.Draw()
+
+		pad1.cd()
+		if log: 
+			pad1.SetLogy() 	
+			histo1.SetMaximum( (5000 if 'low' in args.RANGE else 500) )
+		else: 
+			pad1.SetGrid()
+			histo1.SetMaximum( (3000 if 'low' in args.RANGE else 400) )
+		if 'DATA' in labelh1: 
+			histo1.SetMarkerStyle(8)
+			histo1.Draw("PE")
+		else: histo1.Draw("histe")
+		#histo1UncBand = addSysBand( histo1, 1.10, kRed )
+		#legend.AddEntry( histo1UncBand, 'Syst. unc.', 'f' )
+		#histo1UncBand.Draw("same E2")
+		reScaleFactor = ratioP0.GetParameter( 0 ) 
+		histo2.Scale( reScaleFactor )
+		histo2.Draw('hist E0 same')
+		#histo2UncBand = addSysBand( histo2, 1.10, kBlue )
+		#histo2UncBand.Draw("same E2")
+
+		#locFirstBin = boostedMassAveBins.index( firstBinData )
+		tmpHisto1 = histo1.Clone()
+		tmpHisto2 = histo2.Clone()
+		res = array( 'd', ( [ 0 ] * tmpHisto1.GetNbinsX() ) )
+		chi2Ndf =  round( tmpHisto1.Chi2Test(tmpHisto2, 'WWCHI2/NDFP', res), 2 )
+		chi2 =  round( tmpHisto1.Chi2Test(tmpHisto2, 'WWCHI2'), 2 )
+		chi2Test = TLatex( 0.6, 0.7, '#chi^{2}/ndF Test = '+ str( chi2 )+'/'+str( round(chi2/chi2Ndf) ) )
+		chi2Test.SetNDC()
+	#	#chi2Test = TLatex( 209, 2000, '#chi^{2}/ndF Test = '+ str( round(hSRchi2,2) )+'/'+str( hSRndf ) )
+		chi2Test.SetTextFont(42) ### 62 is bold, 42 is normal
+		chi2Test.SetTextSize(0.04)
+		chi2Test.Draw()
+
+		if 'DATA' in labelh1: tmpLabel = 'DATA'
+		else: tmpLabel = 'SR'
+		numEvents = TLatex( 0.6, 0.62, '#splitline{events '+tmpLabel+'/ABCD Pred = }{'+ str( round( histo1.Integral(),2 ) )+'/'+str( round( histo2.Integral(),2 ) )+'}' )
+		numEvents.SetNDC()
+		numEvents.SetTextFont(42) ### 62 is bold, 42 is normal
+		numEvents.SetTextSize(0.04)
+		numEvents.Draw()
+
+		CMS_lumi.extraText = ("Preliminary" if 'DATA' in labelh2 else "Simulation Preliminary")
+		CMS_lumi.relPosX = 0.13
+		CMS_lumi.CMS_lumi(pad1, 4, 0)
+		legend.Draw()
+
+		pad2.cd()
+		pad2.SetGrid()
+		pad2.SetTopMargin(0)
+		pad2.SetBottomMargin(0.3)
+		if 'simple' in args.binning: TMPPad2= pad2.DrawFrame(0,0,500,2)
+		else: TMPPad2= pad2.DrawFrame(0,0,boostedMassAveBins[-1],2)
+		TMPPad2.SetXTitle( 'Average pruned mass [GeV]' )
+		TMPPad2.SetYTitle( labelRatio )
+		TMPPad2.SetTitleSize(0.12, "x")
+		TMPPad2.SetTitleSize(0.12, 'y')
+		TMPPad2.SetLabelSize(0.12, 'x')
+		TMPPad2.SetLabelSize(0.12, 'y')
+		TMPPad2.SetTitleOffset(0.5, 'y')
+		#TMPPad2.CenterXTitle()
+		#TMPPad2.SetTitleOffset(0.55)
+		TMPPad2.SetNdivisions(505, 'x' )
+		TMPPad2.SetNdivisions(505, 'y' )
+		pad2.Modified()
+		
+		none1, none2, none3, none3, newRatio = ratioPlots( histo1, histo2 ) 
+		#labelAxis( nameInRoot, newRatio, args.grooming )
+		#newRatio.GetXaxis().SetRangeUser( xmin, xmax )
+		newRatio.SetMarkerStyle(8)
+		newRatio.SetLineColor(kBlack)
+		newRatio.GetYaxis().SetNdivisions(505)
+		#if isinstance( newRatio, TGraphAsymmErrors ): newRatio.Draw('ap')
+		newRatio.Draw('P')
+		line.Draw("same")
+		line11.Draw("same")
+		line09.Draw("same")
+
+		outputFileName = outputFileName.replace( typePlot, typePlot+'_reScale_' )
+		if not 'simple' in args.binning: outputFileName = outputFileName.replace( typePlot, typePlot+'_ResoBasedBin' )
+		print 'Processing.......', outputFileName
+		canReScale.SaveAs( 'Plots/'+ outputFileName )
+		del canReScale
+	'''
+	can = TCanvas('c1', 'c1',  10, 10, 750, 500 )
+	gStyle.SetOptStat(1)
+	pullGaus = TF1( 'pullGaus', 'gaus', -3, 3 )
+	hRatiohSRhCRerrFullPulls.Fit( 'pullGaus', 'MIR' )
+	hRatiohSRhCRerrFullPulls.GetXaxis().SetTitle('Pulls')
+	hRatiohSRhCRerrFullPulls.GetYaxis().SetTitle('Bins')
+	hRatiohSRhCRerrFullPulls.Draw('PE')
+	#can.Update()
+	#gStyle.SetStatY(0.91)
+	#gStyle.SetStatX(0.95)
+	#gStyle.SetStatW(0.15)
+	#gStyle.SetStatH(0.30) 
+	#print hRatiohSRhCRerrFullPulls.GetListOfFunctions().FindObject("stats")
+#	st1.SetX1NDC(.12);
+#	st1.SetX2NDC(.32);
+#	st1.SetY1NDC(.76);
+#	st1.SetY2NDC(.91);
+#	#st1.SetTextColor(4);
+	can.Modified()
+	outputFileNamePulls= nameInRoot+'_Pulls_Bkg_'+Groom+'_'+args.RANGE+'_QCD'+args.qcd+'_bkgShapeEstimationBoostedPlots'+args.version+'.'+args.extension
+	can.SaveAs('Plots/'+outputFileNamePulls)
+	'''
 def tmpPlotBkgEstimation( dataFile, Groom, nameInRoot, xmin, xmax, rebinX, labX, labY, log, Norm=False ):
 	"""docstring for tmpPlotBkgEstimation"""
 
@@ -770,7 +1100,7 @@ def tmpPlotBkgEstimation( dataFile, Groom, nameInRoot, xmin, xmax, rebinX, labX,
 	tmphSignalCR.Draw()
 	line.Draw("same")
 
-	outputFileName = nameInRoot+'_BkgPlusRPVSt'+str(args.mass)+'_'+Groom+'_'+args.RANGE+'_QCD'+args.qcd+'_bkgShapeEstimation'+args.boosted+'Plots'+args.version+'.'+args.extension
+	outputFileName = nameInRoot+'_BkgPlusRPVSt'+str(args.mass)+'_'+Groom+'_'+args.RANGE+'_QCD'+args.qcd+'_bkgShapeEstimationBoostedPlots'+args.version+'.'+args.extension
 	print 'Processing.......', outputFileName
 	can.SaveAs( 'Plots/'+ outputFileName )
 	del can
@@ -778,13 +1108,13 @@ def tmpPlotBkgEstimation( dataFile, Groom, nameInRoot, xmin, xmax, rebinX, labX,
 def plot2DBkgEstimation( rootFile, sample, Groom, nameInRoot, titleXAxis, titleXAxis2, Xmin, Xmax, rebinx, Ymin, Ymax, rebiny, legX, legY ):
 	"""docstring for plot"""
 
-	outputFileName = nameInRoot+'_'+sample+'_'+Groom+'_'+args.RANGE+'_bkgShapeEstimation'+args.boosted+'Plots'+args.version+'.'+args.extension
+	outputFileName = nameInRoot+'_'+sample+'_'+Groom+'_'+args.RANGE+'_bkgShapeEstimationBoostedPlots'+args.version+'.'+args.extension
 	print 'Processing.......', outputFileName
 
 	bkgHistos = OrderedDict()
 	if isinstance(rootFile, dict):
 		for bkg in rootFile:
-			if not 'DATA' in bkg: bkgHistos[ bkg+'_A' ] = Rebin2D( rootFile[ bkg ][0].Get( nameInRoot+'_'+bkg+'_A' ), rebinx, rebiny )
+			bkgHistos[ bkg+'_A' ] = Rebin2D( rootFile[ bkg ][0].Get( nameInRoot+'_'+bkg+'_A' ), rebinx, rebiny )
 			bkgHistos[ bkg+'_B' ] = Rebin2D( rootFile[ bkg ][0].Get( nameInRoot+'_'+bkg+'_B' ), rebinx, rebiny )
 			bkgHistos[ bkg+'_C' ] = Rebin2D( rootFile[ bkg ][0].Get( nameInRoot+'_'+bkg+'_C' ), rebinx, rebiny )
 			bkgHistos[ bkg+'_D' ] = Rebin2D( rootFile[ bkg ][0].Get( nameInRoot+'_'+bkg+'_D' ), rebinx, rebiny )
@@ -795,7 +1125,7 @@ def plot2DBkgEstimation( rootFile, sample, Groom, nameInRoot, titleXAxis, titleX
 			print samples
 			hBkg.Add( bkgHistos[ samples ].Clone() )
 	else: 
-		if not 'DATA' in sample: bkgHistos[ sample+'_A' ] = Rebin2D( rootFile.Get( nameInRoot+'_'+sample+'_A' ), rebinx, rebiny )
+		bkgHistos[ sample+'_A' ] = Rebin2D( rootFile.Get( nameInRoot+'_'+sample+'_A' ), rebinx, rebiny )
 		bkgHistos[ sample+'_B' ] = Rebin2D( rootFile.Get( nameInRoot+'_'+sample+'_B' ), rebinx, rebiny )
 		bkgHistos[ sample+'_C' ] = Rebin2D( rootFile.Get( nameInRoot+'_'+sample+'_C' ), rebinx, rebiny )
 		bkgHistos[ sample+'_D' ] = Rebin2D( rootFile.Get( nameInRoot+'_'+sample+'_D' ), rebinx, rebiny )
@@ -843,8 +1173,8 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-p', '--proc', action='store', default='1D', help='Process to draw, example: 1D, 2D, MC.' )
 	parser.add_argument('-d', '--decay', action='store', default='UDD312', dest='decay', help='Decay, example: UDD312, UDD323.' )
-	parser.add_argument('-b', '--boosted', action='store', default='Boosted', help='Boosted or non boosted, example: Boosted' )
-	parser.add_argument('-v', '--version', action='store', default='v04', help='Version: v01, v02.' )
+	parser.add_argument('-b', '--binning', action='store', default='simple', help='Binning: resoBased or simple' )
+	parser.add_argument('-v', '--version', action='store', default='v05', help='Version: v01, v02.' )
 	parser.add_argument('-g', '--grom', action='store', default='pruned', dest='grooming', help='Grooming Algorithm, example: Pruned, Filtered.' )
 	parser.add_argument('-m', '--mass', action='store', default='100', help='Mass of Stop, example: 100' )
 	parser.add_argument('-q', '--qcd', action='store', default='Pt', dest='qcd', help='Type of QCD binning, example: HT.' )
@@ -872,8 +1202,8 @@ if __name__ == '__main__':
 	dataFile = TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_DATA_'+args.RANGE+'_'+args.version+'.root')
 	signalFiles[ 'Signal' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)+'_'+args.RANGE+'_'+args.version+'.root'), 1, args.decay+' RPV #tilde{t} '+str(args.mass)+' GeV', kRed-4]
 	bkgFiles[ 'TTJets' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_TTJets_'+args.RANGE+'_'+args.version+'.root'),	1, 't #bar{t} + Jets', kGreen ]
-    	#bkgFiles[ 'ZJetsToQQ' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_ZJetsToQQ_'+args.RANGE+'_'+args.version+'.root'), 1., 'Z + Jets', kOrange]
-    	#bkgFiles[ 'WJetsToQQ' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_WJetsToQQ_'+args.RANGE+'_'+args.version+'.root'), 1., 'W + Jets', kMagenta ]
+    	bkgFiles[ 'ZJetsToQQ' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_ZJetsToQQ_'+args.RANGE+'_'+args.version+'.root'), 1., 'Z + Jets', kOrange]
+    	bkgFiles[ 'WJetsToQQ' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_WJetsToQQ_'+args.RANGE+'_'+args.version+'.root'), 1., 'W + Jets', kMagenta ]
 	bkgFiles[ 'WWTo4Q' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_WWTo4Q_'+args.RANGE+'_'+args.version+'.root'), 1 , 'WW (had)', kMagenta+2 ]
 	bkgFiles[ 'ZZTo4Q' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_ZZTo4Q_'+args.RANGE+'_'+args.version+'.root'), 1, 'ZZ (had)', kOrange+2 ]
 	bkgFiles[ 'WZ' ] = [ TFile.Open('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_WZ_'+args.RANGE+'_'+args.version+'.root'), 1, 'WZ', kCyan ]
@@ -882,19 +1212,20 @@ if __name__ == '__main__':
 
 
 	massMinX = 0
-	massMaxX = 350
+	massMaxX = 510
 	jetMassHTlabY = 0.20
 	jetMassHTlabX = 0.85
 
-	if 'Resolved' in args.boosted: args.grooming =  '' 
 	if 'all' in args.grooming: Groommers = [ '', 'Trimmed', 'Pruned', 'Filtered', "SoftDrop" ]
 	else: Groommers = [ args.grooming ]
 
 	for optGroom in Groommers:
 		if '2D' in args.proc: 
-			for bkg in bkgFiles: plot2DBkgEstimation( bkgFiles[ bkg ][0], bkg, optGroom, 'prunedMassAsymVsdeltaEtaDijet', 'Mass Asymmetry', '| #eta_{j1} - #eta_{j2} |', 0, 1, 1, 0, 5, 1, jetMassHTlabX, jetMassHTlabY)
-			for bkg in signalFiles: plot2DBkgEstimation( signalFiles[ bkg ][0], 'RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass), optGroom, 'prunedMassAsymVsdeltaEtaDijet', 'Mass Asymmetry', '| #eta_{j1} - #eta_{j2} |', 0, 1, 1, 0, 5, 1, jetMassHTlabX, jetMassHTlabY)
+			#for bkg in bkgFiles: plot2DBkgEstimation( bkgFiles[ bkg ][0], bkg, optGroom, 'prunedMassAsymVsdeltaEtaDijet', 'Mass Asymmetry', '| #eta_{j1} - #eta_{j2} |', 0, 1, 1, 0, 5, 1, jetMassHTlabX, jetMassHTlabY)
+			plot2DBkgEstimation( dataFile, 'DATA', optGroom, 'prunedMassAsymVsdeltaEtaDijet', 'Mass Asymmetry', '| #eta_{j1} - #eta_{j2} |', 0, 1, 1, 0, 5, 1, jetMassHTlabX, jetMassHTlabY)
+			#for bkg in bkgFiles: plot2DBkgEstimation( bkgFiles, bkg, optGroom, 'prunedMassAsymVsdeltaEtaDijet', 'Mass Asymmetry', '| #eta_{j1} - #eta_{j2} |', 0, 1, 1, 0, 5, 1, jetMassHTlabX, jetMassHTlabY)
+			#for bkg in signalFiles: plot2DBkgEstimation( signalFiles[ bkg ][0], 'RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass), optGroom, 'prunedMassAsymVsdeltaEtaDijet', 'Mass Asymmetry', '| #eta_{j1} - #eta_{j2} |', 0, 1, 1, 0, 5, 1, jetMassHTlabX, jetMassHTlabY)
 		else: 
 			tmpListCuts = selection[ 'RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass) ][-2:]
 			nameVarABCD = 'massAve_'+tmpListCuts[0][0]+'Vs'+tmpListCuts[1][0]
-			plotBkgEstimation( dataFile, bkgFiles, signalFiles, optGroom, nameVarABCD, 0, massMaxX, 10, '', '', False )
+			plotBkgEstimation( dataFile, bkgFiles, signalFiles, optGroom, nameVarABCD, 0, massMaxX, 5, '', '', False )

@@ -12,13 +12,15 @@ gROOT.SetBatch()
 
 def main():
 
-     inputFileWorkspace = TFile("Rootfiles/workspace_RPVStopStopToJets_UDD312_M-100_v05.root") 
+     inputFileWorkspace = TFile("Rootfiles/workspace_RPVStopStopToJets_UDD312_M-90_altBkg_Bin5_v05p3.root") 
+     #inputFileWorkspace = TFile("test.root") 
 
      workspace = inputFileWorkspace.Get("myWS")
+     #workspace = inputFileWorkspace.Get("w")
      workspace.Print()
 
      mjj = workspace.var("massAve")
-     mjj.Print()
+     #mjj.Print()
      '''
      mjj1 = workspace.var("massAveBkg")
      mjj1.Print()
@@ -33,8 +35,8 @@ def main():
      backgroundStatDown = workspace.data("background__BkgStatUncDown")
      data = workspace.data("data_obs")
      signal = workspace.data("signal")
-     signalUp = workspace.data("signal__JERUp")
-     signalDown = workspace.data("signal__JERDown")
+     signalUp = workspace.data("signal__JESUp")
+     signalDown = workspace.data("signal__JESDown")
      data.Print()
      #signal.Print()
 
@@ -53,20 +55,26 @@ def main():
      #print "signal_TH1_fineBinning integral = ", signal_TH1_fineBinning.Integral()
 
      canvas = TCanvas()
+     #canvas.SetLogy()
+     #xframe = workspace.var("massAve").frame()
+     #workspace.pdf("signal").plotOn(xframe)
+     #xframe.Draw()
+
      #data_TH1_fineBinning.Rebin(10)    
+     #data_TH1_fineBinning.Draw()    
      #signal_TH1_fineBinning.Rebin(10)
-     #signal_TH1_fineBinning.Draw('hist')    
-     #signalUp_TH1_fineBinning.Draw("hist same")    
-     #signalDown_TH1_fineBinning.Draw("hist same")    
-     #backgroundUp_TH1_fineBinning.Draw("hist")    
-     background_TH1_fineBinning.Rebin(10)
-     background_TH1_fineBinning.Draw("hist")    
+     signal_TH1_fineBinning.Draw('')    
+     signalUp_TH1_fineBinning.Draw("hist same")    
+     signalDown_TH1_fineBinning.Draw("hist same")    
+     #backgroundUp_TH1_fineBinning.Draw("")    
+     #background_TH1_fineBinning.Rebin(10)
+     #background_TH1_fineBinning.Draw("")    
      #data_TH1_fineBinning.Draw("same")    
-     #backgroundDown_TH1_fineBinning.Draw("hist same")    
-     backgroundStatUp_TH1_fineBinning.Rebin(10)
-     backgroundStatUp_TH1_fineBinning.Draw("same")    
-     backgroundStatDown_TH1_fineBinning.Rebin(10)
-     backgroundStatDown_TH1_fineBinning.Draw("same")    
+     #backgroundDown_TH1_fineBinning.Draw("")    
+     #backgroundStatUp_TH1_fineBinning.Rebin(10)
+     #backgroundStatUp_TH1_fineBinning.Draw("")    
+     #backgroundStatDown_TH1_fineBinning.Rebin(10)
+     #backgroundStatDown_TH1_fineBinning.Draw("same")    
      canvas.SaveAs("test.png")
 
 if __name__ == '__main__':
