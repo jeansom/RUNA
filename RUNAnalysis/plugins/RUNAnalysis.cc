@@ -115,7 +115,7 @@ class RUNAnalysis : public EDAnalyzer {
       float HT = 0, mass1 = -999, mass2 = -999, avgMass = -999, MET = -999,
 	    delta1 = -999, delta2 = -999, massAsym = -999, eta1 = -999, eta2 = -999, deltaEta = -999, 
 	    deltaR = -999, cosThetaStar1 = -999, cosThetaStar2 = -999,
-	    puWeight = -999, genWeight = -999, lumiWeight = -999 ;
+	    puWeight = -999, genWeight = -999, lumiWeight = -999, pdfWeight = -999 ;
       vector<float> scaleWeights, pdfWeights, alphaWeights;
 
       EDGetTokenT<vector<float>> jetPt_;
@@ -363,7 +363,15 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 		Handle<LHEEventProduct> lheEvtInfo;
 		iEvent.getByToken( extLHEProducer_, lheEvtInfo );
 		// This function will return all the weights from the lheEvtInfo (scaleWeights, pdfWeights, alphaWeights)
-		//getWeights( lheEvtInfo, lhaPdfId, scaleWeights, pdfWeights, alphaWeights );
+		getWeights( lheEvtInfo, lhaPdfId, scaleWeights, pdfWeights, alphaWeights );
+
+		//// Calculating the RMS from the pdfWeights, per event
+		double sum = accumulate(pdfWeights.begin(), pdfWeights.end(), 0.0);
+		double mean = sum / pdfWeights.size();
+		vector<double> diff(pdfWeights.size());
+		transform(pdfWeights.begin(), pdfWeights.end(), diff.begin(), [mean](double x) { return x - mean; });
+		double sq_sum = inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+		pdfWeight = sqrt(sq_sum / pdfWeights.size());
 		////////////////////////////////////////////////////
 	}
 
@@ -720,6 +728,7 @@ void RUNAnalysis::beginJob() {
 	RUNAtree->Branch( "numPV", &numPV, "numPV/I" );
 	RUNAtree->Branch( "puWeight", &puWeight, "puWeight/F" );
 	RUNAtree->Branch( "lumiWeight", &lumiWeight, "lumiWeight/F" );
+	RUNAtree->Branch( "pdfWeight", &pdfWeight, "pdfWeight/F" );
 	RUNAtree->Branch( "genWeight", &genWeight, "genWeight/F" );
 	RUNAtree->Branch( "HT", &HT, "HT/F" );
 	RUNAtree->Branch( "mass1", &mass1, "mass1/F" );
@@ -739,9 +748,9 @@ void RUNAnalysis::beginJob() {
 	RUNAtree->Branch( "jetsPhi", "vector<float>", &jetsPhi);
 	RUNAtree->Branch( "jetsE", "vector<float>", &jetsE);
 	RUNAtree->Branch( "jetsQGL", "vector<float>", &jetsQGL);
-	RUNAtree->Branch( "scaleWeights", &scaleWeights );
-	RUNAtree->Branch( "pdfWeights", &pdfWeights );
-	RUNAtree->Branch( "alphaWeights", &alphaWeights );
+	//RUNAtree->Branch( "scaleWeights", &scaleWeights );
+	//RUNAtree->Branch( "pdfWeights", &pdfWeights );
+	//RUNAtree->Branch( "alphaWeights", &alphaWeights );
 
 	histos1D_[ "rawJetPt" ] = fs_->make< TH1D >( "rawJetPt", "rawJetPt", 100, 0., 1000. );
 	histos1D_[ "rawJetPt" ]->Sumw2();
