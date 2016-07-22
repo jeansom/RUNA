@@ -446,7 +446,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 				double deltaPtUp = ( corrJetPt - (*jetGenPt)[i] ) * (JERUp-1.0);
 				sysJER = max( 0.0, ( corrJetPt + deltaPtUp ) / corrJetPt );
 			} else if  ( systematics.Contains("JERDown") ){
-				double JERDown = getJER( (*jetEta)[i], 1 );
+				double JERDown = getJER( (*jetEta)[i], -1 );
 				double corrJetPt = (*jetPt)[i] * JEC;
 				double deltaPtDown = ( corrJetPt - (*jetGenPt)[i] ) * (JERDown-1.0);
 				sysJER = max( 0.0, ( corrJetPt + deltaPtDown ) / corrJetPt );
