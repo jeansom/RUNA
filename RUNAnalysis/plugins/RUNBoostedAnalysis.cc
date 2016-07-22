@@ -572,6 +572,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 
 		double JEC = corrections( rawJet, (*jetArea)[i], (*rho)[i] ,*NPV, jetJECAK8); 
 		double sysJEC = 0;
+		double sysJER = 1;
 		if ( !isData ) {
 			if ( systematics.Contains("JESUp") ){
 				double JESUp = uncertainty( rawJet, jetCorrUnc, true );
@@ -580,8 +581,21 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 				double JESDown = uncertainty( rawJet, jetCorrUnc, false );
 				sysJEC = ( - JESDown );
 			}
+
+			// Based on this: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideCMSDataAnalysisSchool2015KoreaJetExercise#Resolution
+			if ( systematics.Contains("JERUp") ){
+				double JERUp = getJER( (*jetEta)[i], 1 );
+				double corrJetPt = (*jetPt)[i] * JEC;
+				double deltaPtUp = ( corrJetPt - (*jetGenPt)[i] ) * (JERUp-1.0);
+				sysJER = max( 0.0, ( corrJetPt + deltaPtUp ) / corrJetPt );
+			} else if  ( systematics.Contains("JERDown") ){
+				double JERDown = getJER( (*jetEta)[i], 1 );
+				double corrJetPt = (*jetPt)[i] * JEC;
+				double deltaPtDown = ( corrJetPt - (*jetGenPt)[i] ) * (JERDown-1.0);
+				sysJER = max( 0.0, ( corrJetPt + deltaPtDown ) / corrJetPt );
+			}
 		} 
-		corrJet = rawJet* ( JEC + sysJEC  );
+		corrJet = rawJet* ( ( JEC * sysJER ) + sysJEC  );
 
 		if( corrJet.Pt() > 150 && idL ) { 
 
@@ -590,11 +604,11 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			++numberJets;
 
 			double massJEC = corrections( rawJet, (*jetArea)[i], (*rho)[i] ,*NPV, massJECAK8); 
-			double corrMass = (*jetMass)[i] * ( massJEC + sysJEC  );
-			double corrTrimmedMass = (*jetTrimmedMass)[i] * ( massJEC + sysJEC  );
-			double corrPrunedMass = (*jetPrunedMass)[i] * ( massJEC + sysJEC  );
-			double corrSoftDropMass = (*jetSoftDropMass)[i] * ( massJEC + sysJEC  );
-			double corrFilteredMass = (*jetFilteredMass)[i] * ( massJEC + sysJEC  );
+			double corrMass = (*jetMass)[i] * ( ( massJEC * sysJER ) + sysJEC  );
+			double corrTrimmedMass = (*jetTrimmedMass)[i] * ( ( massJEC * sysJER ) + sysJEC  );
+			double corrPrunedMass = (*jetPrunedMass)[i] * ( ( massJEC * sysJER ) + sysJEC  );
+			double corrSoftDropMass = (*jetSoftDropMass)[i] * ( ( massJEC * sysJER ) + sysJEC  );
+			double corrFilteredMass = (*jetFilteredMass)[i] * ( ( massJEC * sysJER ) + sysJEC  );
 
 			/// Vector of zeros
 			TLorentzVector tmpSubjet0, tmpSubjet1, tmpZeros;

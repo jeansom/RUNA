@@ -18,6 +18,7 @@ try:
 	from RUNA.RUNAnalysis.cuts import selection 
 	import RUNA.RUNAnalysis.CMS_lumi as CMS_lumi 
 	import RUNA.RUNAnalysis.tdrstyle as tdrstyle
+	from RUNA.RUNAnalysis.commonFunctions import *
 except ImportError:
 	sys.path.append('../python')
 	from histoLabels import labels, labelAxis, finalLabels
@@ -25,6 +26,7 @@ except ImportError:
 	from cuts import selection 
 	import CMS_lumi as CMS_lumi 
 	import tdrstyle as tdrstyle
+	from commonFunctions import *
 
 
 
@@ -43,18 +45,20 @@ line.SetLineColor(kRed)
 jetMassHTlabY = 0.20
 jetMassHTlabX = 0.85
 
-boostedMassAveBins = array( 'd', [ 0, 3, 6, 9, 12, 16, 19, 23, 26, 30, 34, 39, 43, 47, 52, 57, 62, 67, 72, 78, 83, 89, 95, 102, 108, 115, 122, 129, 137, 144, 153, 161, 170, 179, 188, 197, 207, 218, 228, 240, 251, 263, 275, 288, 301, 315, 329, 344, 359, 375, 391, 408, 425, 443, 462, 482, 502 ] )
-boostedMassAveBinSize = array( 'd', [ 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 19, 19, 20, 21] )
 
 def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, log):
 	"""docstring for plot"""
 
-	if 'low' in args.RANGE : 
-		massList = [ 80, 90, 100, 110, 120, 130, 140, 150 ]
-		massWindow = 30 
-	else: 
-		massList = [ 170, 180, 190, 210, 220, 230, 240, 300, 350 ] 
-		massWindow = 30 
+	if args.version in [ 'v05' ]:
+		if 'low' in args.RANGE : 
+			massList = [ 80, 90, 100, 110, 120, 130, 140, 150 ]
+			massWindow = 30 
+		else: 
+			massList = [ 170, 180, 190, 210, 220, 230, 240, 300, 350 ] 
+			massWindow = 30 
+	else:
+			massList = [ 80, 90, 100, 110, 120, 130, 140, 150, 170, 180, 190, 210, 220, 230, 240, 300 ] 
+			massWindow = 30 
 
 	nomArray = []
 	nomArrayErr = []
@@ -65,6 +69,7 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 	upOverNomArray = []
 	downOverNomArray = []
 
+	dummy = 0
 	for xmass in massList:
 
 		gStyle.SetOptFit(1)
@@ -92,6 +97,10 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 		#if rebinX > 1: 
 		#for k in histos: histos[ k ] = histos[ k ].Rebin( len( boostedMassAveBins )-1, histos[ k ].GetName(), boostedMassAveBins )
 
+		##### window for acceptance
+		lowEdgeWindow = int(xmass/args.reBin -  2*( int( massWidthList[ dummy ] )/args.reBin ))
+		highEdgeWindow = int(xmass/args.reBin + 2*( int( massWidthList[ dummy ] )/args.reBin ))
+		dummy += 1
 		'''
 		####### Fits for Nominal/Up/Down
 		gausNom = TF1("gausNom", "gaus", 0, 400 )
@@ -158,7 +167,7 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 		if xmax: histos[ 'Nominal' ].GetXaxis().SetRangeUser( xmin, xmax )
 
 		can1 = TCanvas('c'+str(xmass), 'c'+str(xmass),  10, 10, 750, 500 )
-		if log: can1.SetLogy()
+		#if log: can1.SetLogy()
 		#histos['Sample1'].SetMinimum(10)
 		histos['Nominal'].GetXaxis().SetRangeUser( xmass-70, xmass+70   )
 		histos['Nominal'].Draw('histes') 
@@ -216,6 +225,7 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 	pad2.Draw()
 
 	pad1.cd()
+	if pad1: can1.SetLogy()
 	#PT = TText(0.1, 0.1, sample )
 	multiGraph = TMultiGraph()
 	legend=TLegend(0.70,0.70,0.90,0.90)
@@ -297,6 +307,7 @@ if __name__ == '__main__':
 	parser.add_argument('-r', '--range', action='store', default='low', dest='RANGE', help='Trigger used, example PFHT800.' )
 	parser.add_argument('-e', '--extension', action='store', default='png', dest='ext', help='Extension of plots.' )
 	parser.add_argument('-u', '--unc', action='store', default='JES', dest='unc',  help='Type of uncertainty' )
+	parser.add_argument('-R', '--reBin', action='store', default=5, type=float, dest='reBin', help='Rebin number.' )
 
 	try: args = parser.parse_args()
 	except:
@@ -310,5 +321,5 @@ if __name__ == '__main__':
 	else: Groommers = [ args.grooming ]
 
 
-	for optGroom in Groommers: plotSystematics( 'Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-100_'+args.RANGE+'_'+args.version+'.root', optGroom, 'massAve'+args.cut, 0, 400, 10, 0.85, 0.45, False )
+	for optGroom in Groommers: plotSystematics( 'Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-100_'+args.RANGE+'_'+args.version+'.root', optGroom, 'massAve'+args.cut, 0, 400, 10, 0.85, 0.45, True )
 			

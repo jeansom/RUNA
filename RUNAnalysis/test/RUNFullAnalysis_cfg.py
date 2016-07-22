@@ -137,6 +137,8 @@ process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
 )
 process.ResolvedAnalysisPlotsJESUp = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JESUp' ) )
 process.ResolvedAnalysisPlotsJESDown = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JESDown' ) )
+process.ResolvedAnalysisPlotsJERUp = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JERUp' ) )
+process.ResolvedAnalysisPlotsJERDown = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JERDown' ) )
 
 
 process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
@@ -150,6 +152,8 @@ process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 
 process.BoostedAnalysisPlotsJESUp = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JESUp' ) )
 process.BoostedAnalysisPlotsJESDown = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JESDown' ) )
+process.BoostedAnalysisPlotsJERUp = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JERUp' ) )
+process.BoostedAnalysisPlotsJERDown = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JERDown' ) )
 
 process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone( 
 		PUMethod		= cms.string('Puppi'),
@@ -200,6 +204,8 @@ process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone(
 
 process.BoostedAnalysisPlotsPuppiJESUp = process.BoostedAnalysisPlotsPuppi.clone( systematics = cms.string( 'JESUp' ) )
 process.BoostedAnalysisPlotsPuppiJESDown = process.BoostedAnalysisPlotsPuppi.clone( systematics = cms.string( 'JESDown' ) )
+process.BoostedAnalysisPlotsPuppiJERUp = process.BoostedAnalysisPlotsPuppi.clone( systematics = cms.string( 'JERUp' ) )
+process.BoostedAnalysisPlotsPuppiJERDown = process.BoostedAnalysisPlotsPuppi.clone( systematics = cms.string( 'JERDown' ) )
 
 
 
@@ -210,6 +216,8 @@ if 'Resolved' in options.version:
 	if options.systematics:
 		process.p += process.ResolvedAnalysisPlotsJESUp
 		process.p += process.ResolvedAnalysisPlotsJESDown
+		process.p += process.ResolvedAnalysisPlotsJERUp
+		process.p += process.ResolvedAnalysisPlotsJERDown
 elif 'Boosted' in options.version:
 	outputNAME = 'BoostedAnalysis_'
 	process.p += process.BoostedAnalysisPlots
@@ -217,6 +225,8 @@ elif 'Boosted' in options.version:
 	if options.systematics:
 		process.p += process.BoostedAnalysisPlotsJESUp
 		process.p += process.BoostedAnalysisPlotsJESDown
+		process.p += process.BoostedAnalysisPlotsJERUp
+		process.p += process.BoostedAnalysisPlotsJERDown
 		#process.p += process.BoostedAnalysisPlotsPuppiJESUp
 		#process.p += process.BoostedAnalysisPlotsPuppiJESDown
 else: 
@@ -227,8 +237,12 @@ else:
 	if options.systematics:
 		process.p += process.BoostedAnalysisPlotsJESUp
 		process.p += process.BoostedAnalysisPlotsJESDown
+		process.p += process.BoostedAnalysisPlotsJERUp
+		process.p += process.BoostedAnalysisPlotsJERDown
 		process.p += process.ResolvedAnalysisPlotsJESUp
 		process.p += process.ResolvedAnalysisPlotsJESDown
+		process.p += process.ResolvedAnalysisPlotsJERUp
+		process.p += process.ResolvedAnalysisPlotsJERDown
 
 process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUN'+outputNAME+NAME+'.root' ) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

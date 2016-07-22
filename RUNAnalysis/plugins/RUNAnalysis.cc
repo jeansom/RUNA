@@ -127,6 +127,10 @@ class RUNAnalysis : public EDAnalyzer {
       EDGetTokenT<vector<float>> jetCSVv2_;
       EDGetTokenT<vector<float>> jetCMVAv2_;
       EDGetTokenT<vector<float>> jetArea_;
+      EDGetTokenT<vector<float>> jetGenPt_;
+      EDGetTokenT<vector<float>> jetGenEta_;
+      EDGetTokenT<vector<float>> jetGenPhi_;
+      EDGetTokenT<vector<float>> jetGenE_;
       EDGetTokenT<int> NPV_;
       EDGetTokenT<vector<float>> metPt_;
       EDGetTokenT<int> trueNInt_;
@@ -176,6 +180,10 @@ RUNAnalysis::RUNAnalysis(const ParameterSet& iConfig):
 	jetCSVv2_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetCSVv2"))),
 	jetCMVAv2_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetCMVAv2"))),
 	jetArea_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetArea"))),
+	jetGenPt_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetGenPt"))),
+	jetGenEta_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetGenEta"))),
+	jetGenPhi_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetGenPhi"))),
+	jetGenE_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetGenE"))),
 	NPV_(consumes<int>(iConfig.getParameter<InputTag>("NPV"))),
 	metPt_(consumes<vector<float>>(iConfig.getParameter<InputTag>("metPt"))),
 	trueNInt_(consumes<int>(iConfig.getParameter<InputTag>("trueNInt"))),
@@ -287,6 +295,18 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 	Handle<vector<float> > jetArea;
 	iEvent.getByToken(jetArea_, jetArea);
+
+	Handle<vector<float> > jetGenPt;
+	iEvent.getByToken(jetGenPt_, jetGenPt);
+
+	Handle<vector<float> > jetGenEta;
+	iEvent.getByToken(jetGenEta_, jetGenEta);
+
+	Handle<vector<float> > jetGenPhi;
+	iEvent.getByToken(jetGenPhi_, jetGenPhi);
+
+	Handle<vector<float> > jetGenE;
+	iEvent.getByToken(jetGenE_, jetGenE);
 
 	Handle<int> NPV;
 	iEvent.getByToken(NPV_, NPV);
@@ -409,6 +429,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 		double JEC = corrections( rawJet, (*jetArea)[i], (*rho)[i] ,*NPV, jetJEC); 
 		double sysJEC = 0;
+		double sysJER = 1;
 		if ( !isData ) {
 			if ( systematics.Contains("JESUp") ){
 				double JESUp = uncertainty( rawJet, jetCorrUnc, true );
@@ -417,8 +438,21 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 				double JESDown = uncertainty( rawJet, jetCorrUnc, false );
 				sysJEC = ( - JESDown );
 			}
+
+			// Based on this: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideCMSDataAnalysisSchool2015KoreaJetExercise#Resolution
+			if ( systematics.Contains("JERUp") ){
+				double JERUp = getJER( (*jetEta)[i], 1 );
+				double corrJetPt = (*jetPt)[i] * JEC;
+				double deltaPtUp = ( corrJetPt - (*jetGenPt)[i] ) * (JERUp-1.0);
+				sysJER = max( 0.0, ( corrJetPt + deltaPtUp ) / corrJetPt );
+			} else if  ( systematics.Contains("JERDown") ){
+				double JERDown = getJER( (*jetEta)[i], 1 );
+				double corrJetPt = (*jetPt)[i] * JEC;
+				double deltaPtDown = ( corrJetPt - (*jetGenPt)[i] ) * (JERDown-1.0);
+				sysJER = max( 0.0, ( corrJetPt + deltaPtDown ) / corrJetPt );
+			}
 		} 
-		corrJet = rawJet* ( JEC + sysJEC  );
+		corrJet = rawJet* ( ( JEC * sysJER ) + sysJEC  );
 
 		if( corrJet.Pt() > 80 && idL ) { 
 
@@ -1020,6 +1054,10 @@ void RUNAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descriptions
 	desc.add<InputTag>("jetCSVv2", 	InputTag("jetsAK4CHS:jetAK4CHSCSVv2"));
 	desc.add<InputTag>("jetCMVAv2", 	InputTag("jetsAK4CHS:jetAK4CHSCMVAv2"));
 	desc.add<InputTag>("jetArea", 	InputTag("jetsAK4CHS:jetAK4CHSjetArea"));
+	desc.add<InputTag>("jetGenPt", 	InputTag("jetsAK4CHS:jetAK4CHSGenJetPt"));
+	desc.add<InputTag>("jetGenEta", 	InputTag("jetsAK4CHS:jetAK4CHSGenJetEta"));
+	desc.add<InputTag>("jetGenPhi", 	InputTag("jetsAK4CHS:jetAK4CHSGenJetPhi"));
+	desc.add<InputTag>("jetGenE", 	InputTag("jetsAK8CHS:jetAK8CHSGenJetE"));
 	desc.add<InputTag>("NPV", 	InputTag("eventUserData:npv"));
 	desc.add<InputTag>("metPt", 	InputTag("metFull:metFullPt"));
 	// JetID
