@@ -397,9 +397,9 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 
 	bool ORTriggers = checkORListOfTriggerBits( triggerName, triggerBit, triggerPass );
 	// PU Reweight
-	//if ( isData ) puWeight = 1;
-	//else puWeight = PUWeight_.getPUWeight( *trueNInt, *bunchCross );
-	puWeight = 1;
+	if ( isData ) puWeight = 1;
+	else puWeight = PUWeight_.getPUWeight( *trueNInt, *bunchCross );
+	//puWeight = 1;
 	histos1D_[ "PUWeight" ]->Fill( puWeight );
 	lumiWeight = scale;
 	double totalWeight = puWeight * lumiWeight;
