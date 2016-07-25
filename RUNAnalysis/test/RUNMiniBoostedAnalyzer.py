@@ -27,7 +27,7 @@ boostedMassAveBins = array( 'd', [ 0, 3, 6, 9, 12, 16, 19, 23, 26, 30, 34, 39, 4
 ######################################
 def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 
-	outputFileName = 'Rootfiles/RUNMiniBoostedAnalysis_'+grooming+'_'+signalName+UNC+'_'+RANGE+'_'+args.version+'p3.root' 
+	outputFileName = 'Rootfiles/RUNMiniBoostedAnalysis_'+grooming+'_'+signalName+UNC+'_'+RANGE+'_'+args.version+'p4.root' 
 	outputFile = TFile( outputFileName, 'RECREATE' )
 
 	###################################### output Tree
@@ -170,6 +170,7 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 	for sample in dictSamples:
 
 		####### Get GenTree 
+		if 'PDF' in UNC: UNC = ''
 		inputFile, events, numEntries = getTree( dictSamples[ sample ], ('BoostedAnalysisPlotsPuppi'+UNC+'/RUNATree' if 'Puppi' in args.grooming else 'BoostedAnalysisPlots'+UNC+'/RUNATree' ) )
 		print '-'*40
 		print '------> ', sample
@@ -202,6 +203,7 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 			Lumi     = events.lumi
 			NumEvent = events.event
 			puWeight	= events.puWeight
+			pdfWeight	= events.pdfWeight
 			lumiWeight	= events.lumiWeight
 			HT		= events.HT
 			MET		= events.MET
@@ -220,8 +222,11 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 			if 'DATA' in sample: scale = 1
 			#elif 'RPV' in sample: scale = 2606 * puWeight * SF
 			else: scale = 2666 * puWeight * lumiWeight
-			#else: scale = puWeight 
-			#scale =1
+
+			if 'PDF' in UNC:
+				if 'Up' in UNC: scale = scale*(1+pdfWeight)
+				else: scale = scale(1-pdfWeight)
+
 			cutFlowList[ 'Process' ] += 1
 			cutFlowScaledList[ 'Process' ] += scale
 			cutFlowScaledList[ 'Process' ] += (puWeight*puWeight)
@@ -238,8 +243,8 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 			#jetPtCut =  ( jet1Pt > 500 ) and ( jet2Pt > 450 )
 			jetPtCut =  ( jet1Pt > 150 ) and ( jet2Pt > 150 )
 			
-			if HTCut and dijetCut and jetPtCut:
-			#if HTCut and dijetCut :
+			#if HTCut and dijetCut and jetPtCut:
+			if HTCut and dijetCut :
 				cutFlowList[ 'Preselection' ] += 1
 				cutFlowScaledList[ 'Preselection' ] += scale
 				cutFlowScaledList[ 'Preselection' ] += (puWeight*puWeight)
@@ -276,8 +281,9 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 					if ( getattr( events, var[0] ) < var[1] ): nextCut = True 
 					else: nextCut = False
 					sigCutsList.append( nextCut )
+
 					if all(sigCutsList): 
-						allHistos[ 'massAve_'+var[0]+'_'+sample ].Fill( massAve, scale )
+						allHistos[ 'massAve_'+var[0]+'_'+sample ].Fill( massAve, scale )  ### adding two prong scale factor
 						allHistos[ 'jet1Tau21_'+var[0]+'_'+sample ].Fill( events.jet1Tau21, scale )
 						allHistos[ 'jet2Tau21_'+var[0]+'_'+sample ].Fill( events.jet2Tau21, scale )
 						#if 'low' in args.RANGE: allHistos[ 'jet1Tau31_'+var[0]+'_'+sample ].Fill( events.jet1Tau31, scale )
@@ -443,6 +449,7 @@ if __name__ == '__main__':
 	else: 
 		dictSamples = allSamples
 		signalSample = 'RPVStopStopToJets_'+args.decay+'_M-'+mass+'_All'
+
 	allHistos = {}
 
 	if ('RPV' in samples) and args.unc:
