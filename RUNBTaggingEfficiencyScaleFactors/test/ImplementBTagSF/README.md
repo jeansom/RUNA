@@ -6,7 +6,7 @@ The code assumes CSVv2M, but this can be changed.
 The code implements JECs for ONLY MiniAODs. You need to change lines 131-133 of ImplementBtaggingSF.cc in the plugins directory to use the JECs you want.
 
 The .csv files containing the scale factors can be found at: 
-https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation76X#Boosted_event_topologies or in the 8TeV_SF or 13TeV_SF directory. 
+https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation80X or in the 13TeV_SF directory. 
 Currently, the most up-to-date file is CSVv2.csv.
 
 ## 1) Instructions for producing scale factor corrected plots

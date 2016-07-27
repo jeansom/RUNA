@@ -13,21 +13,15 @@ This package contains scripts:
 
 ## Instructions
 ```
-cmsrel CMSSW_7_6_3_patch2
-cd CMSSW_7_6_3_patch2/src/
-cmsenv 
-git cms-init
-```
-Temporary fix (only for 763 releases):
-```
-git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
-git fetch --tags btv-cmssw
-git cms-merge-topic cms-btv-pog:fixTMVAEvaluatorMemoryProblem-from-CMSSW_7_6_3 
+setenv SCRAM_ARCH slc6_amd64_gcc530 (or in bash: export SCRAM_ARCH=slc6_amd64_gcc530)
+cmsrel CMSSW_8_0_8_patch2
+cd CMSSW_8_0_8_patch2/src
+cmsenv
 ```
 ```
-git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b v7.6.x_v1.2
+git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_8_0_X_V2
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_763
-git clone git@github.com:alefisico/RUNA.git -b v763
+git clone git@github.com:jeasom/RUNA.git -b v808
 scram b -j 18
 cmsenv
 ```

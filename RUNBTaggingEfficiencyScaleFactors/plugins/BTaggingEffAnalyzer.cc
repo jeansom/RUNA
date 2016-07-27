@@ -154,9 +154,9 @@ BTaggingEffAnalyzer::BTaggingEffAnalyzer(const ParameterSet& iConfig) :
 
    //Jet Correction Files
    vector<string> jecPayloadNames_;
-   jecPayloadNames_.push_back("JECs/Summer15_25nsV6_MC_L1FastJet_AK4PFchs.txt");
-   jecPayloadNames_.push_back("JECs/Summer15_25nsV6_MC_L2Relative_AK4PFchs.txt");
-   jecPayloadNames_.push_back("JECs/Summer15_25nsV6_MC_L3Absolute_AK4PFchs.txt");
+   jecPayloadNames_.push_back("JECs/Spring16_25nsV6_MC_L1FastJet_AK4PFchs.txt");
+   jecPayloadNames_.push_back("JECs/Spring16_25nsV6_MC_L2Relative_AK4PFchs.txt");
+   jecPayloadNames_.push_back("JECs/Spring16_25nsV6_MC_L3Absolute_AK4PFchs.txt");
    
    for ( vector<string>::const_iterator payloadBegin = jecPayloadNames_.begin(), payloadEnd = jecPayloadNames_.end(), ipayload = payloadBegin; ipayload != payloadEnd; ++ipayload ) {
      JetCorrectorParameters pars(*ipayload);

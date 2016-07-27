@@ -208,9 +208,9 @@ ConvertBtaggingSF::ConvertBtaggingSF(const ParameterSet& iConfig):
 
   //Jet Correction Files
   vector<string> jecAK8PayloadNames_;
-  jecAK8PayloadNames_.push_back("JECs/Summer15_25nsV6_MC_L1FastJet_AK8PFchs.txt");
-  jecAK8PayloadNames_.push_back("JECs/Summer15_25nsV6_MC_L2Relative_AK8PFchs.txt");
-  jecAK8PayloadNames_.push_back("JECs/Summer15_25nsV6_MC_L3Absolute_AK8PFchs.txt");
+  jecAK8PayloadNames_.push_back("JECs/Spring16_25nsV6_MC_L1FastJet_AK8PFchs.txt");
+  jecAK8PayloadNames_.push_back("JECs/Spring16_25nsV6_MC_L2Relative_AK8PFchs.txt");
+  jecAK8PayloadNames_.push_back("JECs/Spring16_25nsV6_MC_L3Absolute_AK8PFchs.txt");
 
   for ( vector<string>::const_iterator payloadBegin = jecAK8PayloadNames_.begin(), payloadEnd = jecAK8PayloadNames_.end(), ipayload = payloadBegin; ipayload != payloadEnd; ++ipayload ) {
     JetCorrectorParameters pars(*ipayload);
