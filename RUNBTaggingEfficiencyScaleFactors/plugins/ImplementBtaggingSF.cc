@@ -20,16 +20,14 @@
 
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
-#include "DataFormats/PatCandidates/interface/Muon.h"
-#include "DataFormats/PatCandidates/interface/Electron.h"
-#include "DataFormats/PatCandidates/interface/Tau.h"
-#include "DataFormats/PatCandidates/interface/Photon.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 
 #include "CondFormats/BTauObjects/interface/BTagCalibration.h"
-#include "CondFormats/BTauObjects/interface/BTagCalibrationReader.h"
+#include "CondTools/BTau/interface/BTagCalibrationReader.h"
+#include "CondFormats/BTauObjects/src/BTagCalibration.cc"
+#include "CondTools/BTau/src/BTagCalibrationReader.cc"
 
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
@@ -63,14 +61,8 @@ class ImplementBtaggingSF : public EDAnalyzer {
       TH1D * h_bjet_pt_wt_plus_err = fs_->make<TH1D>("h_bjet_pt_wt_plus_err","",50,0.,1000.);
       TH1D * h_bjet_pt_wt_minus_err = fs_->make<TH1D>("h_bjet_pt_wt_minus_err","",50,0.,1000.);
 
-      EDGetTokenT<reco::VertexCollection> vtxToken_;
-      EDGetTokenT<pat::MuonCollection> muonToken_;
-      EDGetTokenT<pat::ElectronCollection> electronToken_;
-      EDGetTokenT<pat::TauCollection> tauToken_;
-      EDGetTokenT<pat::PhotonCollection> photonToken_;
-      EDGetTokenT<pat::JetCollection> jetToken_;
-      EDGetTokenT<pat::JetCollection> puppijetToken_;
-      EDGetTokenT<pat::METCollection> metToken_;
+  EDGetTokenT<reco::VertexCollection> vtxToken_;
+  EDGetTokenT<pat::JetCollection> jetToken_;
   
   vector<float> *jetsPt = new std::vector<float>();
   vector<float> *jetsEta = new std::vector<float>();
@@ -94,7 +86,6 @@ class ImplementBtaggingSF : public EDAnalyzer {
   vector<JetCorrectorParameters> jetPar;
   FactorizedJetCorrector * JetCorrector;
 
-
   int isMiniAOD;
 
       TH2D * h2_EffMapB = (TH2D*)f_EffMap->Get("efficiency_b"); //Name of the b efficiency map
@@ -104,13 +95,7 @@ class ImplementBtaggingSF : public EDAnalyzer {
 
 ImplementBtaggingSF::ImplementBtaggingSF(const ParameterSet& iConfig):
   vtxToken_(consumes<reco::VertexCollection>(iConfig.getParameter<InputTag>("vertices"))),
-  muonToken_(consumes<pat::MuonCollection>(iConfig.getParameter<InputTag>("muons"))),
-  electronToken_(consumes<pat::ElectronCollection>(iConfig.getParameter<InputTag>("electrons"))),
-  tauToken_(consumes<pat::TauCollection>(iConfig.getParameter<InputTag>("taus"))),
-  photonToken_(consumes<pat::PhotonCollection>(iConfig.getParameter<InputTag>("photons"))),
   jetToken_(consumes<pat::JetCollection>(iConfig.getParameter<InputTag>("jets"))),
-  puppijetToken_(consumes<pat::JetCollection>(iConfig.getParameter<InputTag>("puppijets"))),
-  metToken_(consumes<pat::METCollection>(iConfig.getParameter<InputTag>("mets"))),
 
   npv_(consumes<int>(iConfig.getParameter<InputTag>("npv"))),
   jetPt_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetPt"))),
@@ -137,6 +122,7 @@ ImplementBtaggingSF::ImplementBtaggingSF(const ParameterSet& iConfig):
     jetPar.push_back(pars);
   }
   JetCorrector = new FactorizedJetCorrector(jetPar);
+
 }
 
 ImplementBtaggingSF::~ImplementBtaggingSF()
@@ -149,14 +135,8 @@ ImplementBtaggingSF::analyze(const Event& iEvent, const EventSetup& iSetup)
 
 
     //miniaod
-    Handle<reco::VertexCollection> vertices;    
-    Handle<pat::MuonCollection> muons;
-    Handle<pat::ElectronCollection> electrons;
-    Handle<pat::PhotonCollection> photons;
-    Handle<pat::TauCollection> taus;
+    Handle<reco::VertexCollection> vertices;
     Handle<pat::JetCollection> jets;
-    Handle<pat::JetCollection> puppijets;
-    Handle<pat::METCollection> mets;
     Handle<double> rho;
     //ntuple
     Handle<vector<float> > jetPt;
@@ -170,20 +150,29 @@ ImplementBtaggingSF::analyze(const Event& iEvent, const EventSetup& iSetup)
     Handle<vector<float> > jetArea;
     Handle<int> npv;
 
-
     size_t sizeJets = 0;
+
+    BTagCalibration calib("csv","CSVv2.csv");
+
+    BTagCalibrationReader reader(BTagEntry::OP_MEDIUM,    // operating point
+				 "central",
+				 { "up", "down" });         //sys types
+    
+    reader.load(calib,                   // calibration instance
+		BTagEntry::FLAV_B,       // btag flavour
+		"comb");                  // measurement type
+    reader.load(calib,
+		BTagEntry::FLAV_C,
+		"incl");
+    reader.load(calib,
+		BTagEntry::FLAV_UDSG,
+		"incl");
 
     if( isMiniAOD == 0){
       
       iEvent.getByToken(vtxToken_, vertices);
       if (vertices->empty()) return; // skip the event if no PV found
-      iEvent.getByToken(muonToken_, muons);
-      iEvent.getByToken(electronToken_, electrons);
-      iEvent.getByToken(photonToken_, photons);
-      iEvent.getByToken(tauToken_, taus);
       iEvent.getByToken(jetToken_, jets);
-      iEvent.getByToken(puppijetToken_, puppijets);
-      iEvent.getByToken(metToken_, mets);
 
       iEvent.getByToken( rhoToken_, rho );
 
@@ -223,31 +212,6 @@ ImplementBtaggingSF::analyze(const Event& iEvent, const EventSetup& iSetup)
     float err3 = 0; 
     float err4 = 0; 
 
-    BTagCalibration calib_csv("csv","CSVv2.csv");
-    BTagCalibrationReader reader(&calib_csv,           // calibration instance
-				 BTagEntry::OP_MEDIUM,    //operating point
-				 "mujets",                 //measurement type
-				 "central");             //systematics type
-    BTagCalibrationReader readerUp(&calib_csv,           // calibration instance
-				 BTagEntry::OP_MEDIUM,    //operating point
-				 "mujets",                 //measurement type
-				 "up");             //systematics type
-    BTagCalibrationReader readerDown(&calib_csv,           // calibration instance
-				 BTagEntry::OP_MEDIUM,    //operating point
-				 "mujets",                 //measurement type
-				 "down");             //systematics type
-    BTagCalibrationReader readerLight(&calib_csv,           // calibration instance
-				 BTagEntry::OP_MEDIUM,    //operating point
-				 "incl",                 //measurement type
-				 "central");             //systematics type
-    BTagCalibrationReader readerLightUp(&calib_csv,           // calibration instance
-				 BTagEntry::OP_MEDIUM,    //operating point
-				 "incl",                 //measurement type
-				 "up");             //systematics type
-    BTagCalibrationReader readerLightDown(&calib_csv,           // calibration instance
-				 BTagEntry::OP_MEDIUM,    //operating point
-				 "incl",                 //measurement type
-				 "down");             //systematics type    
 
     for ( size_t i = 0; i < sizeJets; i++ ) {
 
@@ -306,52 +270,35 @@ ImplementBtaggingSF::analyze(const Event& iEvent, const EventSetup& iSetup)
 	    float SFup = 0;
 	    float SFdown = 0;
 	    float SFerr = 0;
-	    double ptmax = 670.;
-	    double ptmin = 20.;
-	    float ptTemp = pt;
-	    if( pt > ptmax ) ptTemp = ptmax;
-	    if( pt < ptmin ) ptTemp = ptmin;
 
 	    if ( partonFlavor == 5 ) {
 
-	      SF = reader.eval(BTagEntry::FLAV_B, 
-			       eta,
-			       ptTemp);
-	      SFup = readerUp.eval(BTagEntry::FLAV_B,
-				   eta,
-				   ptTemp);
-	      SFdown = readerDown.eval(BTagEntry::FLAV_B,
-				       eta,
-				       ptTemp);
-	      SFerr = fabs( SFup-SF )>fabs( SFdown-SF)? fabs( SFup-SF):fabs( SFdown-SF);
+	      SF = reader.eval_auto_bounds( "central", BTagEntry::FLAV_B, eta, pt );
+	      SFup = reader.eval_auto_bounds( "up", BTagEntry::FLAV_B, eta, pt );
+	      SFdown = reader.eval_auto_bounds( "down", BTagEntry::FLAV_B, eta, pt );
+
 	    }
 	    else if ( partonFlavor == 4 ) {
 
-	      SF = reader.eval(BTagEntry::FLAV_C,
-			       eta,
-			       ptTemp);
-	      SFup = readerUp.eval(BTagEntry::FLAV_C,
-				   eta,
-				   ptTemp);
-	      SFdown = readerDown.eval(BTagEntry::FLAV_C,
-				       eta,
-				       ptTemp);
-	      SFerr = fabs( SFup-SF )>fabs( SFdown-SF)? fabs( SFup-SF):fabs( SFdown-SF);
+	      SF = reader.eval_auto_bounds( "central", BTagEntry::FLAV_C, eta, pt);
+	      SFup = reader.eval_auto_bounds( "up", BTagEntry::FLAV_C, eta, pt);
+	      SFdown = reader.eval_auto_bounds( "down", BTagEntry::FLAV_C, eta, pt);
+
 	    }
 	    else {
+
 	      cout << "Light Flavor jet!" << endl;
-	      SF = readerLight.eval(BTagEntry::FLAV_UDSG,
-				    eta,
-				    ptTemp);
-	      SFup = readerLightUp.eval(BTagEntry::FLAV_UDSG,
-					eta,
-					ptTemp);
-	      SFdown = readerLightDown.eval(BTagEntry::FLAV_UDSG,
-					    eta,
-					    ptTemp);
-	      SFerr = fabs( SFup-SF )>fabs( SFdown-SF)? fabs( SFup-SF):fabs( SFdown-SF);	    
+
+	      SF = reader.eval_auto_bounds( "central", BTagEntry::FLAV_UDSG, eta, pt );
+	      SFup = reader.eval_auto_bounds( "up", BTagEntry::FLAV_UDSG, eta, pt);
+	      SFdown = reader.eval_auto_bounds( "down", BTagEntry::FLAV_UDSG, eta, pt );
+
 	    }
+
+	    SFerr = fabs( SFup-SF )>fabs( SFdown-SF)? fabs( SFup-SF):fabs( SFdown-SF);
+
 	    if( SF == 0 || SFerr == 0 ) continue;
+
 	    if(istag){
 	      mcTag *= eff;
 	      dataTag *= eff*SF;
@@ -376,12 +323,14 @@ ImplementBtaggingSF::analyze(const Event& iEvent, const EventSetup& iSetup)
     
     for( size_t i = 0; i < sizeJets; i++ ) {
       if( isMiniAOD == 0 ) {
-	if( (*jets)[i].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > .8 && !(fabs((*jets)[i].eta()) > 2.4) && (*jets)[i].bDiscriminator("pfCombinedIncludsiveSecondaryVertexV2BJetTags") <= 1 ) {
+	float csv = (*jets)[i].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+	if( csv > .8 && !(fabs((*jets)[i].eta()) > 2.4) && csv <= 1 ) {
 	  h_bjet_wt_errorsquared->Fill((*jets)[i].pt(),errsquared);
 	}
       }
       if( isMiniAOD == 1 ) {
-	if( (*jetCSV)[i] > .8 && !(fabs((*jetEta)[i]) > 2.4 ) && (*jetCSV)[i] <= 1 ) {
+	float csv = (*jetCSV)[i];
+	if( csv > .8 && !(fabs((*jetEta)[i]) > 2.4 ) && csv <= 1 ) {
 	  h_bjet_wt_errorsquared->Fill((*jetPt)[i], errsquared);
 	}
       }
@@ -389,7 +338,8 @@ ImplementBtaggingSF::analyze(const Event& iEvent, const EventSetup& iSetup)
 
     for ( size_t i = 0; i < sizeJets; i++ ) {
       if( isMiniAOD == 0 ) {
-	if(  (*jets)[i].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") > .8 && !(fabs((*jets)[i].eta()) > 2.4) && (*jets)[i].bDiscriminator("pfCombinedIncludsiveSecondaryVertexV2BJetTags") <= 1 ) {
+	float csv = (*jets)[i].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+	if(  csv > .8 && !(fabs((*jets)[i].eta()) > 2.4) && csv <= 1 ) {
 
 	  TLorentzVector RawJet;
 	  if(isMiniAOD == 0) RawJet.SetPtEtaPhiM((*jets)[i].pt(), (*jets)[i].eta(), (*jets)[i].phi(), (*jets)[i].mass());
@@ -419,7 +369,8 @@ ImplementBtaggingSF::analyze(const Event& iEvent, const EventSetup& iSetup)
 	}
       }
       if( isMiniAOD == 1 ) {
-	if( (*jetCSV)[i] > .8 && !(fabs((*jetEta)[i]) > 2.4 ) && (*jetCSV)[i] <= 1 ) {
+	float csv = (*jetCSV)[i];
+	if( csv > .8 && !(fabs((*jetEta)[i]) > 2.4 ) && csv <= 1 ) {
 	  h_bjet_pt->Fill((*jetPt)[i]);
 	  h_bjet_pt_wt->Fill((*jetPt)[i],wtbtag);
 	  h_bjet_pt_wt_plus_err->Fill((*jetPt)[i],wtbtag+wtbtagError);
