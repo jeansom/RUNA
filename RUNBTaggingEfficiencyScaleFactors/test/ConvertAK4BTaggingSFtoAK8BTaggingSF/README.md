@@ -9,7 +9,7 @@ The code implements JECs for ONLY AK8 Jets in MiniAODs.
 The .csv files containing the scale factors can be found at: 
 https://twiki.cern.ch/twiki/bin/view/CMS/BTagCalibration or in the 8TeV_SF or 13TeV_SF directory. 
 Currently, the most up-to-date file is CSVv2.csv. The scale factor cuts for this file can be found at:
-https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation74X50ns
+https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation80X
 
 ## Instructions for converting the scale factors
 

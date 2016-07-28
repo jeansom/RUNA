@@ -21,7 +21,7 @@ cmsenv
 ```
 git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_8_0_X_V2
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_763
-git clone git@github.com:jeasom/RUNA.git -b v808
+git clone git@github.com:jeansom/RUNA.git -b v808
 scram b -j 18
 cmsenv
 ```
