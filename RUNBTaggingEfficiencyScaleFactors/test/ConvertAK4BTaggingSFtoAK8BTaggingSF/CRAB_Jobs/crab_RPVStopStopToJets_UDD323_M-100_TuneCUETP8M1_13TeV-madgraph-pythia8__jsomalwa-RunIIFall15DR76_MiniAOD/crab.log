@@ -1,0 +1,449 @@
+2
+DEBUG 2016-08-01 12:21:35,647: 	 Executing command: 'submit'
+DEBUG 2016-08-01 12:21:35,648: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2016-08-01 12:21:35,656: 	 Checking credentials
+DEBUG 2016-08-01 12:21:35,656: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2016-08-01 12:21:35,656: 	 Getting proxy life time left
+DEBUG 2016-08-01 12:21:35,759: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 28734
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:21:35,862: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 28734
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:21:35,863: 	 Proxy valid for 07:58:54 hours
+INFO 2016-08-01 12:21:35,863: 	 Will use CRAB configuration file CRAB_Jobs/cfg_files/RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD_Asympt25ns-928d46295c808b28c2560dd199b08897__USER_crab.py
+DEBUG 2016-08-01 12:21:35,863: 	 Loading CRAB configuration file.
+DEBUG 2016-08-01 12:21:35,867: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2016-08-01 12:21:35,981: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:21:35,981: 	 Checking credentials
+DEBUG 2016-08-01 12:21:35,981: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2016-08-01 12:21:35,981: 	 Getting proxy life time left
+DEBUG 2016-08-01 12:21:36,085: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 28733
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:21:36,188: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 28733
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:21:36,188: 	 Proxy valid for 07:58:53 hours
+DEBUG 2016-08-01 12:21:36,292: 	 Executing : 
+ command : env X509_USER_PROXY=/tmp/x509up_u50722 voms-proxy-info -fqan
+ output : /cms/Role=NULL/Capability=NULL
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:21:37,435: 	 Registering user credentials for server /DC=ch/DC=cern/OU=computers/CN=vocms(045|052|021|031|0118|0118a|0119|0108).cern.ch
+DEBUG 2016-08-01 12:21:37,543: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:21:37,543: 	 Getting myproxy life time left for myproxy.cern.ch
+DEBUG 2016-08-01 12:21:37,543: 	 Calculating hash of /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar_cmsweb.cern.ch for credential name
+DEBUG 2016-08-01 12:21:39,350: 	 Executing : 
+ command : myproxy-info -l ac9247d9f49cd12a2d903ee3ca75f0aee57d3b74 -s myproxy.cern.ch
+ output : username: ac9247d9f49cd12a2d903ee3ca75f0aee57d3b74
+owner: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+  renewal policy: /DC=ch/DC=cern/OU=computers/CN=vocms(045|052|021|031|0118|0118a|0119|0108).cern.ch
+  trusted retrieval policy: /DC=ch/DC=cern/OU=computers/CN=vocms(045|052|021|031|0118|0118a|0119|0108).cern.ch
+  timeleft: 477:15:50  (19.9 days)
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:21:39,351: 	 Myproxy is valid: 1718150
+DEBUG 2016-08-01 12:21:39,351: 	 Command use: submit
+DEBUG 2016-08-01 12:21:39,351: 	 Options use: ['-c', 'CRAB_Jobs/cfg_files/RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD_Asympt25ns-928d46295c808b28c2560dd199b08897__USER_crab.py']
+DEBUG 2016-08-01 12:21:40,480: 	 CRABClient version: 3.3.1607.patch2
+DEBUG 2016-08-01 12:21:40,480: 	 Instance is prod
+DEBUG 2016-08-01 12:21:40,481: 	 Server base url is cmsweb.cern.ch
+DEBUG 2016-08-01 12:21:40,481: 	 Command url /crabserver/prod/workflow
+DEBUG 2016-08-01 12:21:40,481: 	 Started submission
+DEBUG 2016-08-01 12:21:40,481: 	 Working on /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD
+DEBUG 2016-08-01 12:21:41,742: 	 Loading required information from the environment
+DEBUG 2016-08-01 12:21:41,742: 	 Found CMSSW_8_0_12 for slc6_amd64_gcc530 with base /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12
+DEBUG 2016-08-01 12:21:41,775: 	 UNIQUE NAME: tarUUID 7cb363bf-d624-4bfa-9267-8243fde73ed8 
+DEBUG 2016-08-01 12:21:41,776: 	 self.config: from WMCore.Configuration import Configuration
+config = Configuration()
+config.section_('General')
+config.General.transferOutputs = True
+config.General.requestName = 'RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD'
+config.section_('JobType')
+config.JobType.psetName = '/uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/CRAB_Jobs/cfg_files/CMSSW_cfg.py'
+config.JobType.pluginName = 'Analysis'
+config.JobType.inputFiles = ['JECs']
+config.JobType.pyCfgParams = ['wantSummary=True']
+config.section_('Data')
+config.Data.inputDataset = '/RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIIFall15DR76_MiniAOD_Asympt25ns-928d46295c808b28c2560dd199b08897/USER'
+config.Data.outputDatasetTag = 'PUBLICATION_NAME'
+config.Data.publishDBS = 'https://cmsweb.cern.ch/dbs/prod/phys03/DBSWriter/'
+config.Data.publication = False
+config.Data.unitsPerJob = 50
+config.Data.splitting = 'FileBased'
+config.Data.inputDBS = 'https://cmsweb.cern.ch/dbs/prod/phys03/DBSReader/'
+config.section_('User')
+config.section_('Site')
+config.Site.storageSite = 'T3_US_FNALLPC'
+
+DEBUG 2016-08-01 12:21:41,776: 	 self.config.JobType.psetName: /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/CRAB_Jobs/cfg_files/CMSSW_cfg.py
+INFO 2016-08-01 12:21:41,776: 	 Importing CMSSW configuration /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/CRAB_Jobs/cfg_files/CMSSW_cfg.py
+DEBUG 2016-08-01 12:21:41,776: 	 Additional parameters for the CMSSW configuration are: ['wantSummary=True']
+INFO 2016-08-01 12:21:41,881: 	 Finished importing CMSSW configuration /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/CRAB_Jobs/cfg_files/CMSSW_cfg.py
+DEBUG 2016-08-01 12:21:41,881: 	 Writing CMSSW configuration to /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD/inputs/PSet.py
+DEBUG 2016-08-01 12:21:41,901: 	 The following EDM output files will be collected: []
+DEBUG 2016-08-01 12:21:41,901: 	 The following TFile output files will be collected: ['output_someEvents.root']
+DEBUG 2016-08-01 12:21:41,901: 	 The following user output files will be collected: []
+DEBUG 2016-08-01 12:21:41,902: 	 Loading required information from the environment
+DEBUG 2016-08-01 12:21:41,902: 	 Found CMSSW_8_0_12 for slc6_amd64_gcc530 with base /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12
+DEBUG 2016-08-01 12:21:41,902: 	 Making tarball in /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD/inputs/7cb363bf-d624-4bfa-9267-8243fde73ed8default.tgz
+DEBUG 2016-08-01 12:21:41,902: 	 Checking directory /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/lib
+DEBUG 2016-08-01 12:21:41,903: 	 Adding directory /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/lib to tarball
+DEBUG 2016-08-01 12:21:42,658: 	 Checking directory /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/biglib
+DEBUG 2016-08-01 12:21:42,658: 	 Adding directory /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/biglib to tarball
+DEBUG 2016-08-01 12:21:42,659: 	 Checking directory /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/module
+DEBUG 2016-08-01 12:21:42,702: 	 Adding data directory /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNAnalysis/interface to tarball
+DEBUG 2016-08-01 12:21:42,808: 	 Adding file JECs to tarball
+DEBUG 2016-08-01 12:21:44,680: 	 Uploading archive /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD/inputs/7cb363bf-d624-4bfa-9267-8243fde73ed8default.tgz to the CRAB cache. Using URI https://cmsweb.cern.ch/crabcache
+DEBUG 2016-08-01 12:21:49,569: 	 Loading required information from the environment
+DEBUG 2016-08-01 12:21:49,569: 	 Found CMSSW_8_0_12 for slc6_amd64_gcc530 with base /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12
+DEBUG 2016-08-01 12:21:49,569: 	 Making tarball in /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD/inputs/debugFiles.tgz
+DEBUG 2016-08-01 12:21:49,573: 	 Uploading archive /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD/inputs/debugFiles.tgz to the CRAB cache. Using URI https://cmsweb.cern.ch/crabcache
+DEBUG 2016-08-01 12:21:50,958: 	 Result uploading input files: fa2180bb70294a76e1b28b38dad9f3f91c6db822aa70db01fed0b55b9a46bac1.tar.gz 
+INFO 2016-08-01 12:21:50,959: 	 Sending the request to the server
+DEBUG 2016-08-01 12:21:50,959: 	 Submitting {'maxjobruntime': 1250, 'ignorelocality': 0, 'savelogsflag': 0, 'useparent': 0, 'asyncdest': 'T3_US_FNALLPC', 'algoargs': 50, 'cachefilename': 'fa2180bb70294a76e1b28b38dad9f3f91c6db822aa70db01fed0b55b9a46bac1.tar.gz', 'numcores': 1, 'addoutputfiles': [], 'generator': 'pythia', 'maxmemory': 2000, 'publishdbsurl': 'https://cmsweb.cern.ch/dbs/prod/phys03/DBSWriter', 'priority': 10, 'jobsw': 'CMSSW_8_0_12', 'edmoutfiles': [], 'userfiles': [], 'primarydataset': '', 'inputdata': '/RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIIFall15DR76_MiniAOD_Asympt25ns-928d46295c808b28c2560dd199b08897/USER', 'dryrun': 0, 'workflow': 'crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD', 'adduserfiles': ['JECs'], 'nonprodsw': 0, 'tfileoutfiles': ['output_someEvents.root'], 'oneEventMode': 0, 'debugfilename': 'da024a78298ba9e400f53d7191422a95ead9665455b130b2ebf1311d4b576772.tar.gz', 'cacheurl': 'https://cmsweb.cern.ch/crabcache', 'saveoutput': 1, 'publication': 0, 'jobarch': 'slc6_amd64_gcc530', 'totalunits': 0, 'splitalgo': 'FileBased', 'nonvaliddata': 0, 'dbsurl': 'https://cmsweb.cern.ch/dbs/prod/phys03/DBSReader', 'publishgroupname': 0, 'jobtype': 'Analysis', 'publishname2': 'PUBLICATION_NAME'} 
+DEBUG 2016-08-01 12:21:50,959: 	 Encoded submit request: maxjobruntime=1250&ignorelocality=0&savelogsflag=0&useparent=0&asyncdest=T3_US_FNALLPC&algoargs=50&cachefilename=fa2180bb70294a76e1b28b38dad9f3f91c6db822aa70db01fed0b55b9a46bac1.tar.gz&numcores=1&generator=pythia&maxmemory=2000&publishdbsurl=https%3A%2F%2Fcmsweb.cern.ch%2Fdbs%2Fprod%2Fphys03%2FDBSWriter&priority=10&jobsw=CMSSW_8_0_12&primarydataset=&inputdata=%2FRPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8%2Fjsomalwa-RunIIFall15DR76_MiniAOD_Asympt25ns-928d46295c808b28c2560dd199b08897%2FUSER&dryrun=0&workflow=crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD&nonprodsw=0&oneEventMode=0&debugfilename=da024a78298ba9e400f53d7191422a95ead9665455b130b2ebf1311d4b576772.tar.gz&cacheurl=https%3A%2F%2Fcmsweb.cern.ch%2Fcrabcache&saveoutput=1&publication=0&jobarch=slc6_amd64_gcc530&totalunits=0&splitalgo=FileBased&nonvaliddata=0&dbsurl=https%3A%2F%2Fcmsweb.cern.ch%2Fdbs%2Fprod%2Fphys03%2FDBSReader&publishgroupname=0&jobtype=Analysis&publishname2=PUBLICATION_NAME&adduserfiles=JECs&tfileoutfiles=output_someEvents.root
+DEBUG 2016-08-01 12:21:52,526: 	 Result: {'result': [{'RequestName': '160801_172152:jsomalwa_crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD'}]}
+INFO 2016-08-01 12:21:52,528: 	 Success: Your task has been delivered to the CRAB3 server.
+INFO 2016-08-01 12:21:52,528: 	 Task name: 160801_172152:jsomalwa_crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD
+INFO 2016-08-01 12:21:52,528: 	 Please use 'crab status' to check how the submission process proceeds.
+DEBUG 2016-08-01 12:21:52,528: 	 About to return
+INFO 2016-08-01 12:21:52,533: 	 Log file is /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD/crab.log
+DEBUG 2016-08-01 12:27:19,216: 	 Executing command: 'status'
+DEBUG 2016-08-01 12:27:19,217: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2016-08-01 12:27:19,234: 	 Checking credentials
+DEBUG 2016-08-01 12:27:19,234: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2016-08-01 12:27:19,235: 	 Getting proxy life time left
+DEBUG 2016-08-01 12:27:19,338: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 28390
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:27:19,441: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 28390
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:27:19,441: 	 Proxy valid for 07:53:10 hours
+DEBUG 2016-08-01 12:27:19,556: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:27:19,556: 	 Checking credentials
+DEBUG 2016-08-01 12:27:19,556: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2016-08-01 12:27:19,556: 	 Getting proxy life time left
+DEBUG 2016-08-01 12:27:19,659: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 28390
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:27:19,763: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 28390
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:27:19,763: 	 Proxy valid for 07:53:10 hours
+DEBUG 2016-08-01 12:27:20,950: 	 Registering user credentials for server /DC=ch/DC=cern/OU=computers/CN=vocms(045|052|021|031|0118|0118a|0119|0108).cern.ch
+DEBUG 2016-08-01 12:27:21,059: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:27:21,060: 	 Getting myproxy life time left for myproxy.cern.ch
+DEBUG 2016-08-01 12:27:21,060: 	 Calculating hash of /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar_cmsweb.cern.ch for credential name
+DEBUG 2016-08-01 12:27:22,165: 	 Executing : 
+ command : myproxy-info -l ac9247d9f49cd12a2d903ee3ca75f0aee57d3b74 -s myproxy.cern.ch
+ output : username: ac9247d9f49cd12a2d903ee3ca75f0aee57d3b74
+owner: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+  renewal policy: /DC=ch/DC=cern/OU=computers/CN=vocms(045|052|021|031|0118|0118a|0119|0108).cern.ch
+  trusted retrieval policy: /DC=ch/DC=cern/OU=computers/CN=vocms(045|052|021|031|0118|0118a|0119|0108).cern.ch
+  timeleft: 477:10:07  (19.9 days)
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:27:22,169: 	 Myproxy is valid: 1717807
+DEBUG 2016-08-01 12:27:22,169: 	 Command use: status
+DEBUG 2016-08-01 12:27:22,169: 	 Options use: ['crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD/']
+DEBUG 2016-08-01 12:27:23,299: 	 CRABClient version: 3.3.1607.patch2
+DEBUG 2016-08-01 12:27:23,299: 	 Instance is prod
+DEBUG 2016-08-01 12:27:23,299: 	 Server base url is cmsweb.cern.ch
+DEBUG 2016-08-01 12:27:23,299: 	 Command url /crabserver/prod/workflow
+DEBUG 2016-08-01 12:27:23,299: 	 Looking up detailed status of task 160801_172152:jsomalwa_crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD
+DEBUG 2016-08-01 12:27:30,991: 	 {'status': 'SUBMITTED', 'username': 'jsomalwa', 'jobsPerStatus': {'idle': 20}, 'jobs': {'11': {'State': 'idle'}, '10': {'State': 'idle'}, '13': {'State': 'idle'}, '12': {'State': 'idle'}, '15': {'State': 'idle'}, '14': {'State': 'idle'}, '17': {'State': 'idle'}, '16': {'State': 'idle'}, '19': {'State': 'idle'}, '18': {'State': 'idle'}, '20': {'State': 'idle'}, '1': {'State': 'idle'}, '3': {'State': 'idle'}, '2': {'State': 'idle'}, '5': {'State': 'idle'}, '4': {'State': 'idle'}, '7': {'State': 'idle'}, '6': {'State': 'idle'}, '9': {'State': 'idle'}, '8': {'State': 'idle'}}, 'publication': {'disabled': []}, 'taskWarningMsg': [], 'schedd': 'crab3-1@submit-5.t2.ucsd.edu', 'publicationFailures': {}, 'outdatasets': None, 'statusFailureMsg': '', 'taskFailureMsg': '', 'failedJobdefs': 0, 'ASOURL': 'https://cmsweb.cern.ch/couchdb2', 'command': 'SUBMIT', 'totalJobdefs': 0, 'submissionTime': 1470072112, 'jobdefErrors': [], 'collector': 'cmsgwms-collector-global.cern.ch,cmssrv221.fnal.gov', 'jobList': [['idle', 11], ['idle', 10], ['idle', 13], ['idle', 12], ['idle', 15], ['idle', 14], ['idle', 17], ['idle', 16], ['idle', 19], ['idle', 18], ['idle', 1], ['idle', 3], ['idle', 2], ['idle', 5], ['idle', 4], ['idle', 7], ['idle', 6], ['idle', 9], ['idle', 8], ['idle', 20]]}
+INFO 2016-08-01 12:27:30,991: 	 CRAB project directory:		/uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/CRAB_Jobs/crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD
+INFO 2016-08-01 12:27:30,991: 	 Task name:			160801_172152:jsomalwa_crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD
+INFO 2016-08-01 12:27:30,991: 	 Grid scheduler:			crab3-1@submit-5.t2.ucsd.edu
+INFO 2016-08-01 12:27:30,991: 	 Task status:			SUBMITTED
+INFO 2016-08-01 12:27:30,991: 	 Dashboard monitoring URL:	http://dashb-cms-job.cern.ch/dashboard/templates/task-analysis/#user=jsomalwa&table=Mains&pattern=160801_172152%3Ajsomalwa_crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD
+INFO 2016-08-01 12:27:30,991: 	 
+Jobs status:			idle          100.0% (20/20)
+INFO 2016-08-01 12:27:30,992: 	 
+No publication information (publication has been disabled in the CRAB configuration file)
+INFO 2016-08-01 12:27:30,995: 	 Log file is /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/CRAB_Jobs/crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD/crab.log
+DEBUG 2016-08-01 12:44:41,467: 	 Executing command: 'status'
+DEBUG 2016-08-01 12:44:41,467: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2016-08-01 12:44:41,479: 	 Checking credentials
+DEBUG 2016-08-01 12:44:41,479: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2016-08-01 12:44:41,479: 	 Getting proxy life time left
+DEBUG 2016-08-01 12:44:41,583: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 27348
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:44:41,686: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 27348
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:44:41,686: 	 Proxy valid for 07:35:48 hours
+DEBUG 2016-08-01 12:44:41,803: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:44:41,803: 	 Checking credentials
+DEBUG 2016-08-01 12:44:41,804: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2016-08-01 12:44:41,804: 	 Getting proxy life time left
+DEBUG 2016-08-01 12:44:41,906: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 27348
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:44:42,010: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 27348
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:44:42,010: 	 Proxy valid for 07:35:48 hours
+DEBUG 2016-08-01 12:44:43,774: 	 Registering user credentials for server /DC=ch/DC=cern/OU=computers/CN=vocms(045|052|021|031|0118|0118a|0119|0108).cern.ch
+DEBUG 2016-08-01 12:44:43,883: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:44:43,883: 	 Getting myproxy life time left for myproxy.cern.ch
+DEBUG 2016-08-01 12:44:43,884: 	 Calculating hash of /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar_cmsweb.cern.ch for credential name
+DEBUG 2016-08-01 12:44:44,888: 	 Executing : 
+ command : myproxy-info -l ac9247d9f49cd12a2d903ee3ca75f0aee57d3b74 -s myproxy.cern.ch
+ output : username: ac9247d9f49cd12a2d903ee3ca75f0aee57d3b74
+owner: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+  renewal policy: /DC=ch/DC=cern/OU=computers/CN=vocms(045|052|021|031|0118|0118a|0119|0108).cern.ch
+  trusted retrieval policy: /DC=ch/DC=cern/OU=computers/CN=vocms(045|052|021|031|0118|0118a|0119|0108).cern.ch
+  timeleft: 476:52:45  (19.9 days)
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:44:44,892: 	 Myproxy is valid: 1716765
+DEBUG 2016-08-01 12:44:44,892: 	 Command use: status
+DEBUG 2016-08-01 12:44:44,892: 	 Options use: ['crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD/']
+DEBUG 2016-08-01 12:44:46,047: 	 CRABClient version: 3.3.1607.patch2
+DEBUG 2016-08-01 12:44:46,047: 	 Instance is prod
+DEBUG 2016-08-01 12:44:46,047: 	 Server base url is cmsweb.cern.ch
+DEBUG 2016-08-01 12:44:46,047: 	 Command url /crabserver/prod/workflow
+DEBUG 2016-08-01 12:44:46,047: 	 Looking up detailed status of task 160801_172152:jsomalwa_crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD
+DEBUG 2016-08-01 12:44:57,491: 	 {'status': 'SUBMITTED', 'username': 'jsomalwa', 'jobsPerStatus': {'running': 20}, 'jobs': {'11': {'State': 'running'}, '10': {'State': 'running'}, '13': {'State': 'running'}, '12': {'State': 'running'}, '15': {'State': 'running'}, '14': {'State': 'running'}, '17': {'State': 'running'}, '16': {'State': 'running'}, '19': {'State': 'running'}, '18': {'State': 'running'}, '20': {'State': 'running'}, '1': {'State': 'running'}, '3': {'State': 'running'}, '2': {'State': 'running'}, '5': {'State': 'running'}, '4': {'State': 'running'}, '7': {'State': 'running'}, '6': {'State': 'running'}, '9': {'State': 'running'}, '8': {'State': 'running'}}, 'publication': {'disabled': []}, 'taskWarningMsg': [], 'schedd': 'crab3-1@submit-5.t2.ucsd.edu', 'publicationFailures': {}, 'outdatasets': None, 'statusFailureMsg': '', 'taskFailureMsg': '', 'failedJobdefs': 0, 'ASOURL': 'https://cmsweb.cern.ch/couchdb2', 'command': 'SUBMIT', 'totalJobdefs': 0, 'submissionTime': 1470072112, 'jobdefErrors': [], 'collector': 'cmsgwms-collector-global.cern.ch,cmssrv221.fnal.gov', 'jobList': [['running', 11], ['running', 10], ['running', 13], ['running', 12], ['running', 15], ['running', 14], ['running', 17], ['running', 16], ['running', 19], ['running', 18], ['running', 1], ['running', 3], ['running', 2], ['running', 5], ['running', 4], ['running', 7], ['running', 6], ['running', 9], ['running', 8], ['running', 20]]}
+INFO 2016-08-01 12:44:57,491: 	 CRAB project directory:		/uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/CRAB_Jobs/crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD
+INFO 2016-08-01 12:44:57,491: 	 Task name:			160801_172152:jsomalwa_crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD
+INFO 2016-08-01 12:44:57,491: 	 Grid scheduler:			crab3-1@submit-5.t2.ucsd.edu
+INFO 2016-08-01 12:44:57,491: 	 Task status:			SUBMITTED
+INFO 2016-08-01 12:44:57,492: 	 Dashboard monitoring URL:	http://dashb-cms-job.cern.ch/dashboard/templates/task-analysis/#user=jsomalwa&table=Mains&pattern=160801_172152%3Ajsomalwa_crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD
+INFO 2016-08-01 12:44:57,492: 	 
+Jobs status:			running       100.0% (20/20)
+INFO 2016-08-01 12:44:57,492: 	 
+No publication information (publication has been disabled in the CRAB configuration file)
+INFO 2016-08-01 12:44:57,495: 	 Log file is /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/CRAB_Jobs/crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD/crab.log
+DEBUG 2016-08-01 12:45:14,947: 	 Executing command: 'status'
+DEBUG 2016-08-01 12:45:14,947: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2016-08-01 12:45:14,956: 	 Checking credentials
+DEBUG 2016-08-01 12:45:14,956: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2016-08-01 12:45:14,956: 	 Getting proxy life time left
+DEBUG 2016-08-01 12:45:15,059: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 27314
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:45:15,162: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 27314
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:45:15,162: 	 Proxy valid for 07:35:14 hours
+DEBUG 2016-08-01 12:45:15,276: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:45:15,276: 	 Checking credentials
+DEBUG 2016-08-01 12:45:15,276: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2016-08-01 12:45:15,276: 	 Getting proxy life time left
+DEBUG 2016-08-01 12:45:15,379: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 27314
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:45:15,483: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 27314
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:45:15,483: 	 Proxy valid for 07:35:14 hours
+DEBUG 2016-08-01 12:45:16,689: 	 Registering user credentials for server /DC=ch/DC=cern/OU=computers/CN=vocms(045|052|021|031|0118|0118a|0119|0108).cern.ch
+DEBUG 2016-08-01 12:45:16,797: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:45:16,798: 	 Getting myproxy life time left for myproxy.cern.ch
+DEBUG 2016-08-01 12:45:16,798: 	 Calculating hash of /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar_cmsweb.cern.ch for credential name
+DEBUG 2016-08-01 12:45:17,802: 	 Executing : 
+ command : myproxy-info -l ac9247d9f49cd12a2d903ee3ca75f0aee57d3b74 -s myproxy.cern.ch
+ output : username: ac9247d9f49cd12a2d903ee3ca75f0aee57d3b74
+owner: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+  renewal policy: /DC=ch/DC=cern/OU=computers/CN=vocms(045|052|021|031|0118|0118a|0119|0108).cern.ch
+  trusted retrieval policy: /DC=ch/DC=cern/OU=computers/CN=vocms(045|052|021|031|0118|0118a|0119|0108).cern.ch
+  timeleft: 476:52:12  (19.9 days)
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 12:45:17,806: 	 Myproxy is valid: 1716732
+DEBUG 2016-08-01 12:45:17,806: 	 Command use: status
+DEBUG 2016-08-01 12:45:17,806: 	 Options use: ['crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD/']
+DEBUG 2016-08-01 12:45:18,918: 	 CRABClient version: 3.3.1607.patch2
+DEBUG 2016-08-01 12:45:18,918: 	 Instance is prod
+DEBUG 2016-08-01 12:45:18,918: 	 Server base url is cmsweb.cern.ch
+DEBUG 2016-08-01 12:45:18,918: 	 Command url /crabserver/prod/workflow
+DEBUG 2016-08-01 12:45:18,918: 	 Looking up detailed status of task 160801_172152:jsomalwa_crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD
+DEBUG 2016-08-01 12:45:24,104: 	 {'status': 'SUBMITTED', 'username': 'jsomalwa', 'jobsPerStatus': {'running': 20}, 'jobs': {'11': {'State': 'running'}, '10': {'State': 'running'}, '13': {'State': 'running'}, '12': {'State': 'running'}, '15': {'State': 'running'}, '14': {'State': 'running'}, '17': {'State': 'running'}, '16': {'State': 'running'}, '19': {'State': 'running'}, '18': {'State': 'running'}, '20': {'State': 'running'}, '1': {'State': 'running'}, '3': {'State': 'running'}, '2': {'State': 'running'}, '5': {'State': 'running'}, '4': {'State': 'running'}, '7': {'State': 'running'}, '6': {'State': 'running'}, '9': {'State': 'running'}, '8': {'State': 'running'}}, 'publication': {'disabled': []}, 'taskWarningMsg': [], 'schedd': 'crab3-1@submit-5.t2.ucsd.edu', 'publicationFailures': {}, 'outdatasets': None, 'statusFailureMsg': '', 'taskFailureMsg': '', 'failedJobdefs': 0, 'ASOURL': 'https://cmsweb.cern.ch/couchdb2', 'command': 'SUBMIT', 'totalJobdefs': 0, 'submissionTime': 1470072112, 'jobdefErrors': [], 'collector': 'cmsgwms-collector-global.cern.ch,cmssrv221.fnal.gov', 'jobList': [['running', 11], ['running', 10], ['running', 13], ['running', 12], ['running', 15], ['running', 14], ['running', 17], ['running', 16], ['running', 19], ['running', 18], ['running', 1], ['running', 3], ['running', 2], ['running', 5], ['running', 4], ['running', 7], ['running', 6], ['running', 9], ['running', 8], ['running', 20]]}
+INFO 2016-08-01 12:45:24,105: 	 CRAB project directory:		/uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/CRAB_Jobs/crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD
+INFO 2016-08-01 12:45:24,105: 	 Task name:			160801_172152:jsomalwa_crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD
+INFO 2016-08-01 12:45:24,105: 	 Grid scheduler:			crab3-1@submit-5.t2.ucsd.edu
+INFO 2016-08-01 12:45:24,105: 	 Task status:			SUBMITTED
+INFO 2016-08-01 12:45:24,105: 	 Dashboard monitoring URL:	http://dashb-cms-job.cern.ch/dashboard/templates/task-analysis/#user=jsomalwa&table=Mains&pattern=160801_172152%3Ajsomalwa_crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD
+INFO 2016-08-01 12:45:24,105: 	 
+Jobs status:			running       100.0% (20/20)
+INFO 2016-08-01 12:45:24,105: 	 
+No publication information (publication has been disabled in the CRAB configuration file)
+INFO 2016-08-01 12:45:24,109: 	 Log file is /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/CRAB_Jobs/crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD/crab.log
+DEBUG 2016-08-01 15:20:25,432: 	 Executing command: 'status'
+DEBUG 2016-08-01 15:20:25,432: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2016-08-01 15:20:25,441: 	 Checking credentials
+DEBUG 2016-08-01 15:20:25,441: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2016-08-01 15:20:25,441: 	 Getting proxy life time left
+DEBUG 2016-08-01 15:20:25,544: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 43175
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 15:20:25,647: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 43175
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 15:20:25,648: 	 Proxy valid for 11:59:35 hours
+DEBUG 2016-08-01 15:20:25,766: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 15:20:25,767: 	 Checking credentials
+DEBUG 2016-08-01 15:20:25,767: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2016-08-01 15:20:25,767: 	 Getting proxy life time left
+DEBUG 2016-08-01 15:20:25,870: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 43175
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 15:20:25,973: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 43175
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 15:20:25,973: 	 Proxy valid for 11:59:35 hours
+DEBUG 2016-08-01 15:20:26,956: 	 Registering user credentials for server /DC=ch/DC=cern/OU=computers/CN=vocms(045|052|021|031|0118|0118a|0119|0108).cern.ch
+DEBUG 2016-08-01 15:20:27,066: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 15:20:27,066: 	 Getting myproxy life time left for myproxy.cern.ch
+DEBUG 2016-08-01 15:20:27,066: 	 Calculating hash of /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar_cmsweb.cern.ch for credential name
+DEBUG 2016-08-01 15:20:28,172: 	 Executing : 
+ command : myproxy-info -l ac9247d9f49cd12a2d903ee3ca75f0aee57d3b74 -s myproxy.cern.ch
+ output : username: ac9247d9f49cd12a2d903ee3ca75f0aee57d3b74
+owner: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+  renewal policy: /DC=ch/DC=cern/OU=computers/CN=vocms(045|052|021|031|0118|0118a|0119|0108).cern.ch
+  trusted retrieval policy: /DC=ch/DC=cern/OU=computers/CN=vocms(045|052|021|031|0118|0118a|0119|0108).cern.ch
+  timeleft: 474:17:01  (19.8 days)
+
+ error: 
+ retcode : 0
+DEBUG 2016-08-01 15:20:28,175: 	 Myproxy is valid: 1707421
+DEBUG 2016-08-01 15:20:28,176: 	 Command use: status
+DEBUG 2016-08-01 15:20:28,176: 	 Options use: ['crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD/']
+DEBUG 2016-08-01 15:20:29,407: 	 CRABClient version: 3.3.1607.patch2
+DEBUG 2016-08-01 15:20:29,408: 	 Instance is prod
+DEBUG 2016-08-01 15:20:29,408: 	 Server base url is cmsweb.cern.ch
+DEBUG 2016-08-01 15:20:29,408: 	 Command url /crabserver/prod/workflow
+DEBUG 2016-08-01 15:20:29,408: 	 Looking up detailed status of task 160801_172152:jsomalwa_crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD
+DEBUG 2016-08-01 15:20:35,065: 	 {'status': 'SUBMITTED', 'username': 'jsomalwa', 'jobsPerStatus': {'finished': 2, 'transferring': 18}, 'jobs': {'11': {'State': 'transferring'}, '10': {'State': 'finished'}, '13': {'State': 'transferring'}, '12': {'State': 'transferring'}, '15': {'State': 'transferring'}, '14': {'State': 'transferring'}, '17': {'State': 'transferring'}, '16': {'State': 'transferring'}, '19': {'State': 'transferring'}, '18': {'State': 'transferring'}, '20': {'State': 'transferring'}, '1': {'State': 'transferring'}, '3': {'State': 'transferring'}, '2': {'State': 'transferring'}, '5': {'State': 'transferring'}, '4': {'State': 'transferring'}, '7': {'State': 'finished'}, '6': {'State': 'transferring'}, '9': {'State': 'transferring'}, '8': {'State': 'transferring'}}, 'publication': {'disabled': []}, 'taskWarningMsg': [], 'schedd': 'crab3-1@submit-5.t2.ucsd.edu', 'publicationFailures': {}, 'outdatasets': None, 'statusFailureMsg': '', 'taskFailureMsg': '', 'failedJobdefs': 0, 'ASOURL': 'https://cmsweb.cern.ch/couchdb2', 'command': 'SUBMIT', 'totalJobdefs': 0, 'submissionTime': 1470072112, 'jobdefErrors': [], 'collector': 'cmsgwms-collector-global.cern.ch,cmssrv221.fnal.gov', 'jobList': [['transferring', 11], ['finished', 10], ['transferring', 13], ['transferring', 12], ['transferring', 15], ['transferring', 14], ['transferring', 17], ['transferring', 16], ['transferring', 19], ['transferring', 18], ['transferring', 1], ['transferring', 3], ['transferring', 2], ['transferring', 5], ['transferring', 4], ['finished', 7], ['transferring', 6], ['transferring', 9], ['transferring', 8], ['transferring', 20]]}
+INFO 2016-08-01 15:20:35,066: 	 CRAB project directory:		/uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/CRAB_Jobs/crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD
+INFO 2016-08-01 15:20:35,066: 	 Task name:			160801_172152:jsomalwa_crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD
+INFO 2016-08-01 15:20:35,066: 	 Grid scheduler:			crab3-1@submit-5.t2.ucsd.edu
+INFO 2016-08-01 15:20:35,066: 	 Task status:			SUBMITTED
+INFO 2016-08-01 15:20:35,066: 	 Dashboard monitoring URL:	http://dashb-cms-job.cern.ch/dashboard/templates/task-analysis/#user=jsomalwa&table=Mains&pattern=160801_172152%3Ajsomalwa_crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD
+INFO 2016-08-01 15:20:35,066: 	 
+Jobs status:			finished       10.0% ( 2/20)
+INFO 2016-08-01 15:20:35,067: 	 				transferring   90.0% (18/20)
+INFO 2016-08-01 15:20:35,067: 	 
+No publication information (publication has been disabled in the CRAB configuration file)
+INFO 2016-08-01 15:20:35,072: 	 Log file is /uscms_data/d3/jsomalwa/SFb80X/test8116/CMSSW_8_0_12/src/RUNA/RUNBTaggingEfficiencyScaleFactors/test/ConvertAK4BTaggingSFtoAK8BTaggingSF/CRAB_Jobs/crab_RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8__jsomalwa-RunIIFall15DR76_MiniAOD/crab.log
