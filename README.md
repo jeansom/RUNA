@@ -14,14 +14,14 @@ This package contains scripts:
 ## Instructions
 ```
 setenv SCRAM_ARCH slc6_amd64_gcc530 (or in bash: export SCRAM_ARCH=slc6_amd64_gcc530)
-cmsrel CMSSW_8_0_8_patch2
-cd CMSSW_8_0_8_patch2/src
+cmsrel CMSSW_8_0_12
+cd CMSSW_8_0_12/src
 cmsenv
 ```
 ```
 git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_8_0_X_V2
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_763
-git clone git@github.com:jeansom/RUNA.git -b v808
+git clone git@github.com:jeansom/RUNA.git -b v8012
 scram b -j 18
 cmsenv
 ```
