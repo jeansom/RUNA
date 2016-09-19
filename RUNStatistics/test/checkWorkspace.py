@@ -12,7 +12,7 @@ gROOT.SetBatch()
 
 def main():
 
-     inputFileWorkspace = TFile("Rootfiles/workspace_RPVStopStopToJets_UDD312_M-90_altBkg_Bin5_v05p3.root") 
+     inputFileWorkspace = TFile("Rootfiles/workspace_RPVStopStopToJets_UDD312_M-100_altBkg_Bin5_v05p3.root") 
      #inputFileWorkspace = TFile("test.root") 
 
      workspace = inputFileWorkspace.Get("myWS")
@@ -44,7 +44,9 @@ def main():
      data_TH1_fineBinning.SetLineColor(1)
      signal_TH1_fineBinning = signal.createHistogram("signal_TH1_fineBinning",mjj)    
      signalUp_TH1_fineBinning = signalUp.createHistogram("signalUp_TH1_fineBinning",mjj)    
+     signalUp_TH1_fineBinning.SetLineColor(kRed)
      signalDown_TH1_fineBinning = signalDown.createHistogram("signalDown_TH1_fineBinning",mjj)    
+     signalDown_TH1_fineBinning.SetLineColor(kGreen)
      backgroundUp_TH1_fineBinning = backgroundUp.createHistogram("backgroundUp_TH1_fineBinning",mjj)    
      background_TH1_fineBinning = background.createHistogram("background_TH1_fineBinning",mjj)    
      backgroundUp_TH1_fineBinning.SetLineColor(2)

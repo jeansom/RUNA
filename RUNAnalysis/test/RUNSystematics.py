@@ -46,7 +46,7 @@ jetMassHTlabY = 0.20
 jetMassHTlabX = 0.85
 
 
-def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, log):
+def plotSystematics( inFileSample, Groom, name, xmin, xmax, labX, labY, log):
 	"""docstring for plot"""
 
 	if args.version in [ 'v05' ]:
@@ -67,7 +67,9 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 	downArray = []
 	downArrayErr = []
 	upOverNomArray = []
+	errUpOverNomArray = []
 	downOverNomArray = []
+	errDownOverNomArray = []
 
 	dummy = 0
 	for xmass in massList:
@@ -88,13 +90,13 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 		scale = 1 / (scaleFactor( 'RPVStopStopToJets_UDD312_M-'+str(xmass) )*args.lumi )
 		for k in histos: 
 			histos[ k ].Scale( scale )
-			histos[ k ] = histos[ k ].Rebin( rebinX )
+			histos[ k ] = histos[ k ].Rebin( args.reBin )
 
 		#histos[ 'Up' ] = histos[ 'Up' ].Rebin( len( boostedMassAveBins )-1, histos[ 'Up' ].GetName(), boostedMassAveBins )
 		#histos[ 'Down' ] = histos[ 'Down' ].Rebin( len( boostedMassAveBins )-1, histos[ 'Down' ].GetName(), boostedMassAveBins )
 		#histos[ 'Nominal' ] = histos[ 'Nominal' ].Rebin( len( boostedMassAveBins )-1, histos[ 'Nominal' ].GetName(), boostedMassAveBins )
 
-		#if rebinX > 1: 
+		#if args.reBin > 1: 
 		#for k in histos: histos[ k ] = histos[ k ].Rebin( len( boostedMassAveBins )-1, histos[ k ].GetName(), boostedMassAveBins )
 
 		##### window for acceptance
@@ -132,22 +134,39 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 		downOverNomArray.append( ( gausDown.Integral( 0, 400 ) - gausNom.Integral( 0, 400 ) ) / gausNom.Integral( 0, 400 ) )
 		'''
 		errorIntNom = Double(0)
-		intNom = histos['Nominal'].IntegralAndError( 0, 40, errorIntNom )
-		nomArray.append( intNom / totalNumber )
-		nomArrayErr.append( intNom * TMath.Sqrt( TMath.Power( errorIntNom/intNom, 2 ) + TMath.Power( errTotalNumber/totalNumber, 2 ) ) )
+		eventsInWindow = histos['Nominal'].IntegralAndError( lowEdgeWindow, highEdgeWindow, errorIntNom )
+		failedEvents = totalNumber - eventsInWindow
+		accXeffErr = sqrt( (1/failedEvents) + (1/eventsInWindow) ) * failedEvents * eventsInWindow / pow( ( totalNumber ), 2 )
+		nomArray.append( eventsInWindow / totalNumber ) 
+		nomArrayErr.append( accXeffErr )
 
 		errorIntUp = Double(0)
-		intUp = histos['Up'].IntegralAndError( 0, 40, errorIntUp )
-		upArray.append( intUp / totalNumber )
-		upArrayErr.append( intUp * TMath.Sqrt( TMath.Power( errorIntUp/intUp, 2 ) + TMath.Power( errTotalNumber/totalNumber, 2 ) ) )
+		eventsUpInWindow = histos['Up'].IntegralAndError( lowEdgeWindow, highEdgeWindow, errorIntUp )
+		failedEvents = totalNumber - eventsUpInWindow
+		accXeffErr = sqrt( (1/failedEvents) + (1/eventsUpInWindow) ) * failedEvents * eventsUpInWindow / pow( ( totalNumber ), 2 )
+		upArray.append( eventsUpInWindow / totalNumber ) 
+		upArrayErr.append( accXeffErr )
 
 		errorIntDown = Double(0)
-		intDown = histos['Down'].IntegralAndError( 0, 40, errorIntDown )
-		downArray.append( intDown / totalNumber )
-		downArrayErr.append( intDown * TMath.Sqrt( TMath.Power( errorIntDown/intDown, 2 ) + TMath.Power( errTotalNumber/totalNumber, 2 ) ) )
+		eventsDownInWindow = histos['Down'].IntegralAndError( lowEdgeWindow, highEdgeWindow, errorIntDown )
+		failedEvents = totalNumber - eventsDownInWindow
+		accXeffErr = sqrt( (1/failedEvents) + (1/eventsDownInWindow) ) * failedEvents * eventsDownInWindow / pow( ( totalNumber ), 2 )
+		downArray.append( eventsDownInWindow / totalNumber ) 
+		downArrayErr.append( accXeffErr )
 
-		upOverNomArray.append( ( intUp - intNom ) / intNom )
-		downOverNomArray.append( ( intDown - intNom ) / intNom )
+		upOverNom = ( eventsUpInWindow - eventsInWindow ) / eventsInWindow
+		upOverNomArray.append( upOverNom )
+		### errors
+		errorSubs = TMath.Sqrt( TMath.Power(errorIntUp,2) + TMath.Power( TMath.Sqrt( eventsInWindow ), 2 ) )
+		errorUpOverNom = TMath.Abs( upOverNom ) * TMath.Sqrt( TMath.Power( errorIntUp / eventsUpInWindow, 2 ) + TMath.Power( TMath.Sqrt( eventsInWindow )/ eventsInWindow , 2 ) )
+		errUpOverNomArray.append( errorUpOverNom )
+
+		downOverNom = ( eventsDownInWindow - eventsInWindow ) / eventsInWindow
+		downOverNomArray.append( downOverNom )
+		### errors
+		errorSubs = TMath.Sqrt( TMath.Power(errorIntDown,2) + TMath.Power( TMath.Sqrt( eventsInWindow ), 2 ) )
+		errorDownOverNom = TMath.Abs( downOverNom ) * TMath.Sqrt( TMath.Power( errorIntDown / eventsDownInWindow, 2 ) + TMath.Power( TMath.Sqrt( eventsInWindow )/ eventsInWindow , 2 ) )
+		errDownOverNomArray.append( errorDownOverNom )
 
 
 		legend=TLegend(0.70,0.75,0.90,0.90)
@@ -166,8 +185,18 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 		histos[ 'Nominal' ].SetMaximum( 1.2* max( histos[ 'Nominal' ].GetMaximum(), histos[ 'Up' ].GetMaximum(), histos[ 'Down' ].GetMaximum() ) ) 
 		if xmax: histos[ 'Nominal' ].GetXaxis().SetRangeUser( xmin, xmax )
 
-		can1 = TCanvas('c'+str(xmass), 'c'+str(xmass),  10, 10, 750, 500 )
-		#if log: can1.SetLogy()
+		if 'PDF' in args.unc:
+			tdrStyle.SetPadRightMargin(0.05)
+			tdrStyle.SetPadLeftMargin(0.15)
+			can = TCanvas('c1', 'c1',  10, 10, 750, 750 )
+			pad1 = TPad("pad1", "Fit",0,0.207,1.00,1.00,-1)
+			pad2 = TPad("pad2", "Pull",0,0.00,1.00,0.30,-1);
+			pad1.Draw()
+			pad2.Draw()
+			pad1.cd()
+		else:
+			can = TCanvas('c'+str(xmass), 'c'+str(xmass),  10, 10, 750, 500 )
+			if log: can.SetLogy()
 		#histos['Sample1'].SetMinimum(10)
 		histos['Nominal'].GetXaxis().SetRangeUser( xmass-70, xmass+70   )
 		histos['Nominal'].Draw('histes') 
@@ -209,12 +238,38 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 		legend.Draw()
 		CMS_lumi.extraText = "Simulation Preliminary"
 		CMS_lumi.relPosX = 0.12
-		CMS_lumi.CMS_lumi(can1, 4, 0)
+		CMS_lumi.CMS_lumi( (pad1 if 'PDF' in args.unc else 'can' ), 4, 0)
 		if not (labX and labY): labels( name, '' )
 		else: labels( name, '', labX, labY )
 
-		can1.SaveAs( 'Plots/'+outputFileName )
-		del can1
+		if 'PDF' in args.unc:
+			pad2.cd()
+			pad2.SetGrid()
+			pad2.SetTopMargin(0)
+			pad2.SetBottomMargin(0.3)
+
+			hRatioUp = histos['Nominal'].Clone()
+			hRatioUp.Divide( histos['Up'].Clone() )
+			hRatioUp.SetMaximum( 1.3 )
+			hRatioUp.SetMinimum( 0.7 )
+			hRatioUp.SetLineColor(kRed)
+			hRatioUp.GetYaxis().SetNdivisions(505)
+			hRatioUp.GetXaxis().SetLabelSize(0.12)
+			hRatioUp.GetXaxis().SetTitleSize(0.12)
+			hRatioUp.GetYaxis().SetTitle( 'Up(Down)/Nominal' )
+			hRatioUp.GetYaxis().SetTitleOffset(1.5)
+			hRatioUp.GetYaxis().SetLabelSize(0.12)
+			hRatioUp.GetYaxis().SetTitleSize(0.12)
+			hRatioUp.GetYaxis().SetTitleOffset(0.45)
+			hRatioUp.GetYaxis().CenterTitle()
+			hRatioUp.Draw()
+			hRatioDown = histos['Nominal'].Clone()
+			hRatioDown.Divide( histos['Down'].Clone() )
+			hRatioDown.SetLineColor(kBlue)
+			hRatioDown.Draw("same")
+
+		can.SaveAs( 'Plots/'+outputFileName )
+		del can
 
 	tdrStyle.SetPadRightMargin(0.05)
 	tdrStyle.SetPadLeftMargin(0.15)
@@ -225,7 +280,7 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 	pad2.Draw()
 
 	pad1.cd()
-	if pad1: can1.SetLogy()
+	if log: pad1.SetLogy()
 	#PT = TText(0.1, 0.1, sample )
 	multiGraph = TMultiGraph()
 	legend=TLegend(0.70,0.70,0.90,0.90)
@@ -262,30 +317,41 @@ def plotSystematics( inFileSample, Groom, name, xmin, xmax, rebinX, labX, labY, 
 	multiGraph.GetYaxis().SetTitle('Acceptance')
 	multiGraph.GetYaxis().SetTitleOffset(0.95)
 	legend.Draw()
+	CMS_lumi.extraText = "Simulation Preliminary"
+	#CMS_lumi.lumi_13TeV = ''
+	CMS_lumi.relPosX = 0.14
+	CMS_lumi.CMS_lumi(pad1, 4, 0)
+
 	pad2.cd()
 	pad2.SetGrid()
 	pad2.SetTopMargin(0)
 	pad2.SetBottomMargin(0.3)
 	multiGraphRatio = TMultiGraph()
 
-	for m in range(len(massList)): 	print massList[m], round(upOverNomArray[m],3), round(downOverNomArray[m],3)
-	upOverNomGraph = TGraph( len( massList ), array( 'd', massList), array( 'd', upOverNomArray) )		
+	uncAcceptanceError = []
+	for m in range(len(massList)): 	
+		print massList[m], round(upOverNomArray[m],3), round(downOverNomArray[m],3), round( max( abs( upOverNomArray[m] ), abs( downOverNomArray[m] ) ), 3 )
+		uncAcceptanceError.append( round( max( abs( upOverNomArray[m] ), abs( downOverNomArray[m] ) ), 3 ) )
+	print '-'*10, args.unc+' list:', uncAcceptanceError
+	upOverNomGraph = TGraphErrors( len( massList ), array( 'd', massList), array( 'd', upOverNomArray), array( 'd', [0]*len(massList) ), array( 'd', errUpOverNomArray) )		
 	upOverNomGraph.SetMarkerStyle( 20 )
 	upOverNomGraph.SetMarkerColor( kBlue )
 	multiGraphRatio.Add( upOverNomGraph )
-	downOverNomGraph = TGraph( len( massList ), array( 'd', massList), array( 'd', downOverNomArray) )		
+	downOverNomGraph = TGraphErrors( len( massList ), array( 'd', massList), array( 'd', downOverNomArray), array( 'd', [0]*len(massList) ), array( 'd', errDownOverNomArray) )		
 	downOverNomGraph.SetMarkerStyle( 24 )
 	downOverNomGraph.SetMarkerColor( kRed)
 	multiGraphRatio.Add( downOverNomGraph )
 
 	multiGraphRatio.Draw("AP")
-	multiGraphRatio.GetYaxis().SetRangeUser(-0.1,0.1)
+	if 'PDF' in args.unc: multiGraphRatio.GetYaxis().SetRangeUser(-0.2, .2)
+	else: multiGraphRatio.GetYaxis().SetRangeUser(-0.1,0.1)
 	multiGraphRatio.GetYaxis().SetNdivisions(505)
 	multiGraphRatio.GetXaxis().SetTitle('Average pruned mass [GeV]')
 	multiGraphRatio.GetXaxis().SetLabelSize(0.12)
 	multiGraphRatio.GetXaxis().SetTitleSize(0.12)
-	multiGraphRatio.GetYaxis().SetTitle('(Up(Down)-Nom)/Nom')
-	#multiGraphRatio.GetYaxis().SetTitleOffset(0.95)
+	multiGraphRatio.GetYaxis().SetTitle('Rel. Error')
+	#multiGraphRatio.GetYaxis().SetTitle('(Up(Down)-Nom)/Nom')
+	multiGraphRatio.GetYaxis().SetTitleOffset(1.5)
 	multiGraphRatio.GetYaxis().SetLabelSize(0.12)
 	multiGraphRatio.GetYaxis().SetTitleSize(0.12)
 	multiGraphRatio.GetYaxis().SetTitleOffset(0.45)
@@ -321,5 +387,5 @@ if __name__ == '__main__':
 	else: Groommers = [ args.grooming ]
 
 
-	for optGroom in Groommers: plotSystematics( 'Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-100_'+args.RANGE+'_'+args.version+'.root', optGroom, 'massAve'+args.cut, 0, 400, 10, 0.85, 0.45, True )
+	for optGroom in Groommers: plotSystematics( 'Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-100_'+args.RANGE+'_'+args.version+'.root', optGroom, 'massAve'+args.cut, 0, 400, 0.85, 0.45, True )
 			
