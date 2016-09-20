@@ -575,6 +575,13 @@ def binByBinCards( datahistosFile, bkghistosFile, signalFile, signalSample, hist
 		hDataD.Rebin ( args.reBin )
 
 	if args.addingMCbkg:
+		newBkgHistoFile = datahistosFile.replace( 'DATA', 'DATA_ABCDBkg' )
+		newBkgFile = TFile( newBkgHistoFile )
+		hDataRatioBD = newBkgFile.Get('massAve_prunedMassAsymVsdeltaEtaDijet_DATAMinusTTbar_RatioBD' )
+		if (hDataRatioBD.GetBinWidth( 1 ) != args.reBin ): 
+			print '|----- Bin size in DATA_C histogram is different than rest.'
+			sys.exit(0)
+
 		TTJetsFile = TFile( bkghistosFile[ 'TTJets' ] )
 		hTTJetsA = TTJetsFile.Get( 'massAve_deltaEtaDijet_TTJets' )
 		hTTJetsA.Rebin ( args.reBin )
@@ -588,7 +595,7 @@ def binByBinCards( datahistosFile, bkghistosFile, signalFile, signalSample, hist
 	#args.reBin = 5
 	lowEdgeWindow = int(signalMass/args.reBin - 2*( int( signalMassWidth )/args.reBin ))
 	highEdgeWindow = int(signalMass/args.reBin + 2*( int( signalMassWidth )/args.reBin ))
-	#print lowEdgeWindow*args.reBin, highEdgeWindow*args.reBin
+	#print '%'*30, signalMassWidth, lowEdgeWindow*args.reBin, highEdgeWindow*args.reBin
 
 	combineCards = 'combineCards.py '
 	for ibin in range( lowEdgeWindow, highEdgeWindow+1):
@@ -674,8 +681,8 @@ def binByBinCards( datahistosFile, bkghistosFile, signalFile, signalSample, hist
 		datacard.write('SigStatUnc'+str(ibin)+'\tlnN\t'+str(sigStatUnc)+'\t-'+
 				(('\t-')*2 if args.addingMCbkg else '')+'\n')
 		if args.addingMCbkg:
-			datacard.write('ttbarStatUnc'+str(ibin)+'\tlnN\t-\t-\t'+str(ttbarStatUnc)+'\t-\n')
-			datacard.write('wjetsStatUnc'+str(ibin)+'\tlnN\t-\t-\t-\t'+str(wjetsStatUnc)+'\n')
+			datacard.write('ttbarUnc\tlnN\t-\t-\t'+str(ttbarStatUnc)+'\t-\n')
+			datacard.write('wjetsUnc\tlnN\t-\t-\t-\t'+str(wjetsStatUnc)+'\n')
 		datacard.write('QCDBkgUnc'+str(ibin)+'\tgmN\t'+str(int(contDataC))+'\t-\t'+str(tf)+
 				(('\t-')*2 if args.addingMCbkg else '')+'\n')
 		if args.bkgUnc: 
@@ -756,17 +763,51 @@ if __name__ == '__main__':
 		jesUncAcc = [1]*len(massList)
 		#massList = [ 90 ]
 		#massWidthList = [ 8.445039648677378 ]
-		if args.jesUnc: jesUncAcc = [0.042, 0.056, 0.041, 0.033, 0.014, 0.022, 0.031, 0.003, 0.008, 0.014, 0.003, 0.02, 0.039, 0.013, 0.012, 0.019]
-		if args.jerUnc: jerUncAcc = [0.008, 0.023, 0.023, 0.006, 0.015, 0.007, 0.019, 0.05, 0.019, 0.029, 0.032, 0.025, 0.027, 0.029, 0.016, 0.042]
+		if args.jesUnc: 
+			jesUncAcc = {}
+			jesUncAcc[ 80 ] = 0.042
+			jesUncAcc[ 90 ] =  0.056
+			jesUncAcc[ 100 ] =  0.041
+			jesUncAcc[ 110 ] =  0.033
+			jesUncAcc[ 120 ] =  0.014
+			jesUncAcc[ 130 ] =  0.022
+			jesUncAcc[ 140 ] =  0.031
+			jesUncAcc[ 150 ] =  0.003
+			jesUncAcc[ 170 ] =  0.008
+			jesUncAcc[ 180 ] =  0.014
+			jesUncAcc[ 190 ] =  0.003
+			jesUncAcc[ 210 ] =  0.02
+			jesUncAcc[ 220 ] =  0.039
+			jesUncAcc[ 230 ] =  0.013
+			jesUncAcc[ 240 ] =  0.012
+			jesUncAcc[ 300 ] =  0.019
+		if args.jerUnc: 
+			jerUncAcc = {}
+			jerUncAcc[ 80 ] = 0.008
+			jerUncAcc[ 90 ] =  0.023
+			jerUncAcc[ 100 ] =  0.023
+			jerUncAcc[ 110 ] =  0.006
+			jerUncAcc[ 120 ] =  0.015
+			jerUncAcc[ 130 ] =  0.007
+			jerUncAcc[ 140 ] =  0.019
+			jerUncAcc[ 150 ] =  0.05
+			jerUncAcc[ 170 ] =  0.019
+			jerUncAcc[ 180 ] =  0.029
+			jerUncAcc[ 190 ] =  0.032
+			jerUncAcc[ 210 ] =  0.025
+			jerUncAcc[ 220 ] =  0.027
+			jerUncAcc[ 230 ] =  0.029
+			jerUncAcc[ 240 ] =  0.016
+			jerUncAcc[ 300 ] =  0.042
 
 	if args.massValue > 0: massList = [ args.massValue ]
-	if args.signalInjec: massList = massList * 10 
+	if args.signalInjec: massList = massList * 100
 
-
-	for mass in range( len(massList) ):
-		signalSample = 'RPVStopStopToJets_UDD312_M-'+str(massList[mass])
+	dummy0 = 0
+	for mass in massList: #range( len(massList) ):
+		signalSample = 'RPVStopStopToJets_UDD312_M-'+str(mass)
 		if args.version in [ 'v05' ]:
-			if massList[ mass ] < 155: RANGE='low'
+			if mass < 155: RANGE='low'
 			else: RANGE='high'
 		else:
 			RANGE = 'low'
@@ -777,18 +818,22 @@ if __name__ == '__main__':
 		bkgFileHistos[ 'WJetsToQQ' ] =  currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_WJetsToQQ_'+RANGE+'_'+( 'v05' if 'v05p2' in args.version else args.version)+'.root'
 		if args.unc: outputName = signalSample+'_Bin'+str(args.reBin)+'_'+args.version
 		else: outputName = signalSample+'_NOSys_'+args.version
-		if args.signalInjec: outputName = outputName.replace( signalSample, signalSample+'_signalInjectionTest'+str(mass) )
+		if args.signalInjec: 
+			outputName = outputName.replace( signalSample, signalSample+'_signalInjectionTest'+str(dummy0) )
+			dummy0 += 1
 		if args.altBkg: outputName = outputName.replace( signalSample, signalSample+'_altBkg' )
+		if args.addingMCbkg: outputName = outputName.replace( signalSample, signalSample+'_withMC' )
 		if 'gaus' in args.technique: 
 			outputName = outputName+'_GaussShape'
-			signalFileHistos = gausFunctList[ massList[ mass ] ] 
+			signalFileHistos = gausFunctList[ mass ] 
 		else: 
-			signalFileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-'+str( massList[mass] )+'_'+RANGE+'_'+args.version+'.root'
+			signalFileHistos = currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_RPVStopStopToJets_'+args.decay+'_M-'+str( mass )+'_'+RANGE+'_'+args.version+'.root'
 
 		print '#'*50 
-		print ' |----> Creating datacard and workspace for RPV St', str( massList[ mass ] )
-		print '#'*50 
-		if 'bin' in args.technique: p = Process( target=binByBinCards, args=( dataFileHistos, bkgFileHistos, signalFileHistos, signalSample, 'massAve_deltaEtaDijet', massList[ mass ], massWidthList[ mass ], jesUncAcc[ mass ], jerUncAcc[ mass ], minMass, maxMass, outputName ) )
-		else: p = Process( target=shapeCards, args=( dataFileHistos, TFile(bkgFileHistos), signalFileHistos, signalSample, 'massAve_deltaEtaDijet', massList[ mass ], minMass, maxMass, outputName, outputFileTheta ) )
+		print ' |----> Creating datacard and workspace for RPV St', str( mass )
+		print '#'*50  
+
+		if 'bin' in args.technique: p = Process( target=binByBinCards, args=( dataFileHistos, bkgFileHistos, signalFileHistos, signalSample, 'massAve_deltaEtaDijet', mass, massWidthList[ mass ], jesUncAcc[ mass ], jerUncAcc[ mass ], minMass, maxMass, outputName ) )
+		else: p = Process( target=shapeCards, args=( dataFileHistos, TFile(bkgFileHistos), signalFileHistos, signalSample, 'massAve_deltaEtaDijet', mass, minMass, maxMass, outputName, outputFileTheta ) )
 		p.start()
 		p.join()
