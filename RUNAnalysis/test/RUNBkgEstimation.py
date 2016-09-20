@@ -252,7 +252,7 @@ def ABCDwithTF( histoB, function, fitResults, hextraHistoB ):
 	return histoBCD, histoRatioCD, histoBCDminusExtra, listFitValues, listFitErrors, listBinCenter 
 
 
-def alternativeABCDCombined( nameInRoot, binning, hDataB, hDataC, hDataD, hBkgB, hBkgC, hBkgD, typePlot, ttbarC, plot=True, rootFile=False, bkgSamples='' ):
+def alternativeABCDCombined( nameInRoot, binning, hDataB, hDataC, hDataD, hBkgB, hBkgC, hBkgD, hDataMinusttbarB, hDataMinusttbarC, hDataMinusttbarD, typePlot, ttbarC, plot=True, rootFile=False, bkgSamples='' ):
 	"""docstring for alternativeABCDcombined"""
 	
 	hunbinnedDataC = rebin( hDataC, 5) 
@@ -499,10 +499,13 @@ def plotBkgEstimation( dataFile, bkgFiles, signalFiles, Groom, nameInRoot, xmin,
 	##### Data minus ttbar
 	hDataMinusttbarB = hunbinnedDataB.Clone()
 	hDataMinusttbarB.Add( unbinnedBCDHistos[ 'TTJets_B' ], -1 )
-	hDataMinusttbarC = hunbinnedDataC.Clone()
-	hDataMinusttbarC.Add( unbinnedBCDHistos[ 'TTJets_C' ], -1 )
+	hDataMinusttbarB.Add( unbinnedBCDHistos[ 'WJetsToQQ_B' ], -1 )
+	hDataMinusttbarC = hDataC.Clone()
+	hDataMinusttbarC.Add( BCDHistos[ 'TTJets_C' ], -1 )
+	hDataMinusttbarC.Add( BCDHistos[ 'WJetsToQQ_C' ], -1 )
 	hDataMinusttbarD = hunbinnedDataD.Clone()
 	hDataMinusttbarD.Add( unbinnedBCDHistos[ 'TTJets_D' ], -1 )
+	hDataMinusttbarD.Add( unbinnedBCDHistos[ 'WJetsToQQ_D' ], -1 )
 	
 	for signalSamples in signalFiles:
 		hSignalSR = signalFiles[ signalSamples ][0].Get( nameInRoot+'_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)+'_A' )
@@ -616,12 +619,10 @@ def plotBkgEstimation( dataFile, bkgFiles, signalFiles, Groom, nameInRoot, xmin,
 #	makePlots( nameInRoot, hData, 'DATA', althDataMinusqcdCR, 'DATA ABCD Pred. - qcd', binWidth, xmin, xmax, althRatiohDataMinusqcdCRAsymErr, "DATA/ABCD Pred", '', 'Log_altBCDMinusqcd', True)
 
 
-
-
-
-	althDataCR, althBkgCR, althallBkgCR, stackAlthBkgCR = alternativeABCDCombined( nameInRoot, 25, hDataC, hunbinnedDataB, hunbinnedDataD, hBkgC, hunbinnedBkgB, hunbinnedBkgD, 'combined', None, rootFile=True, bkgSamples=[ BCDHistos, SRHistos ] )   #### for prunedMassAsymVsdeltaEtaDijet
 	#althDataCR, althBkgCR, althallBkgCR, stackAlthBkgCR = alternativeABCDCombined( nameInRoot, 25, hDataB, hunbinnedDataC, hunbinnedDataD, hBkgB, hunbinnedBkgC, hunbinnedBkgD, 'combined', None, rootFile=True, bkgSamples=[ BCDHistos, SRHistos ] )   
 	#althDataCR, althBkgCR, althallBkgCR, stackAlthBkgCR = alternativeABCDCombined( nameInRoot, 1, hunbinnedDataB, hunbinnedDataC, hunbinnedDataD, hunbinnedBkgB, hunbinnedBkgC, hunbinnedBkgD, 'combined', None, rootFile=True, bkgSamples=[ BCDHistos, SRHistos ] )
+
+	althDataCR, althBkgCR, althallBkgCR, stackAlthBkgCR = alternativeABCDCombined( nameInRoot, 25, hDataC, hunbinnedDataB, hunbinnedDataD, hDataMinusttbarC, hDataMinusttbarB, hDataMinusttbarD, hBkgC, hunbinnedBkgB, hunbinnedBkgD, 'combined', None, rootFile=True, bkgSamples=[ BCDHistos, SRHistos ] )   #### for prunedMassAsymVsdeltaEtaDijet
 	althRatiohDataAsymErr = ratioPlots( hData, althDataCR ) 
 	makePlots( nameInRoot, hData, 'DATA', althDataCR, 'DATA ABCD Pred.', binWidth, xmin, xmax, althRatiohDataAsymErr, "DATA/ABCD Pred", '', 'Log_altBCD', True)
 #	#makePlots( nameInRoot, hData, 'DATA', althDataCR, 'DATA ABCD Pred.', binWidth, xmin, xmax, althRatiohDataAsymErr, "DATA/ABCD Pred", '', 'altBCD', False)
