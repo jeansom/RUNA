@@ -200,7 +200,7 @@ def ratioPlots( histo1, histo2 ):
 	return asymErrors
 
 def ABCDwithTF( histoB, function, fitResults, hextraHistoB ):
-	"""docstring for ABCDwithTF"""
+	"""docstring for ABCDwithTF: creates histogram with ABCD prediction using the transfer function """
 
 	listFitValues = []
 	listFitErrors = []
@@ -252,9 +252,11 @@ def ABCDwithTF( histoB, function, fitResults, hextraHistoB ):
 	return histoBCD, histoRatioCD, histoBCDminusExtra, listFitValues, listFitErrors, listBinCenter 
 
 
-def alternativeABCDCombined( nameInRoot, binning, hDataB, hDataC, hDataD, hBkgB, hBkgC, hBkgD, hDataMinusttbarB, hDataMinusttbarC, hDataMinusttbarD, typePlot, ttbarC, plot=True, rootFile=False, bkgSamples='' ):
-	"""docstring for alternativeABCDcombined"""
+def alternativeABCDCombined( nameInRoot, binning, hDataB, hDataC, hDataD, hBkgB, hBkgC, hBkgD, hDataMinusttbarB, hDataMinusttbarC, hDataMinusttbarD, typePlot, ttbarC, plot=True, rootFile=False, bkgSamples='', makeBkgPlots=False ):
+	"""docstring for alternativeABCDcombined: fits ratio B/D and multiply by C"""
 	
+	############# Data
+	### unbinned for test
 	hunbinnedDataC = rebin( hDataC, 5) 
 	hunbinnedDataD = rebin( hDataD, 5 ) 
 	hunbinnedDataCD = hunbinnedDataC.Clone()
@@ -267,13 +269,24 @@ def alternativeABCDCombined( nameInRoot, binning, hDataB, hDataC, hDataD, hBkgB,
 	hDataCD.Reset()
 	hDataCD.Divide( hDataC, hDataD, 1., 1., '' )
 
+	#### data minus ttbar and wjets
+	hDataMinusTTbarC = rebin( hDataMinusttbarC, binning ) 
+	hDataMinusTTbarD = rebin( hDataMinusttbarD, binning ) 
+	hDataMinusTTbarCD = hDataMinusTTbarC.Clone()
+	hDataMinusTTbarCD.Reset()
+	hDataMinusTTbarCD.Divide( hDataMinusTTbarC, hDataMinusTTbarD, 1., 1., '' )
+	######################################################
+
+	############## all bkgs
 	hBkgC = rebin( hBkgC, binning ) 
 	hBkgD = rebin( hBkgD, binning ) 
 	hBkgCD = hBkgC.Clone()
 	hBkgCD.Reset()
 	hBkgCD.Divide( hBkgC, hBkgD, 1., 1., '' )
 	if isinstance( ttbarC, TH1F ): httbarC = rebin( ttbarC, binning ) 
+	######################################################
 
+	################ Fit 
 	#### for prunedMassAsymVsdeltaEtaDijet
 	#fitFunction = '1/([0]+TMath::Exp([1]+([2]*x*x)))'  ## v1
 	fitFunction = '1/([0]+TMath::Exp([1]+([2]*x*x*x)))'   ## v2
@@ -282,53 +295,79 @@ def alternativeABCDCombined( nameInRoot, binning, hDataB, hDataC, hDataD, hBkgB,
 	fitMin = 50    #### 50 
 	fitMax = 350   #### 350
 
-	hBkgCD.GetYaxis().SetTitle( 'Ratio B/D' )
-	hBkgCD.GetYaxis().SetTitleOffset(0.75)
-	hBkgCD.GetXaxis().SetTitle( 'Average pruned mass [GeV]' )
-	hBkgCD.SetStats( True)
+	print ' |----> Fit to Bkg'
 	fitBkgCD = TF1( 'fitBkgCD', fitFunction, 0, 500 )
-	#fitBkgCD.SetParameter( 0, 0.35 )
-	fitBkgCD.SetParameter( 1, 1 )  #### 1, 150
+	fitBkgCD.SetParameter( 0, 2 )
+	#fitBkgCD.SetParameter( 1, 1 )  #### 1, 150
 	#fitBkgCD.SetParameter( 2, 0.55 )
 	for i in range(3):  fitBkgCDResult =  TFitResultPtr(hBkgCD.Fit( fitBkgCD, 'MIRS', '', fitMin, fitMax ) )
 
-	hDataCD.GetYaxis().SetTitle( 'Ratio B/D' )
-	hDataCD.GetYaxis().SetTitleOffset(0.75)
-	hDataCD.GetXaxis().SetTitle( 'Average pruned mass [GeV]' )
-	hDataCD.SetStats( True)
+	print ' |----> Fit to data'
 	fitCD = TF1( 'fitCD', fitFunction, 0, 500 )
 	for p in range(fitBkgCD.GetNpar() ): fitCD.SetParameter( p, fitBkgCD.GetParameter( p ) )
 	fitCDResult =  TFitResultPtr(hDataCD.Fit( fitCD, 'MIRS', '', fitMin, fitMax ) )
+
+	print ' |----> Fit to data minus ttbar and wjets'
+	fitWOttbarCD = TF1( 'fitWOttbarCD', fitFunction, 0, 500 )
+	for p in range(fitBkgCD.GetNpar() ): fitWOttbarCD.SetParameter( p, fitBkgCD.GetParameter( p ) )
+	fitWOttbarCDResult =  TFitResultPtr(hDataMinusTTbarCD.Fit( fitWOttbarCD, 'MIRS', '', fitMin, fitMax ) )
+	######################################################
 	
+	#### Create histogram with prediction
 	hDataBCD, hDataRatioCD, dummy00, listFitValues, listFitErrors, listBinCenter  = ABCDwithTF( hDataB, fitCD, fitCDResult, False )  
 	hBkgBCD, dummy01, dummy02, dummy03, dummy04, dummy05  = ABCDwithTF( hBkgB, fitCD, fitCDResult, False )  
 	hallBkgBCD, hBkgRatioCD, dummy06, dummy07, dummy08, dummy09 = ABCDwithTF( hBkgB, fitBkgCD, fitBkgCDResult, False )  
+	hDataMinusTTbarBCD, hDataMinusTTbarRatioCD, dummy10, listFitValuesWOttbar, listFitErrorsWOttbar, listBinCenteWOttbarr = ABCDwithTF( hDataMinusttbarB, fitWOttbarCD, fitWOttbarCDResult, False )  
 	
-	fitCDUp = TGraph( len(listFitValues), array( 'd', listBinCenter ), np.add( listFitValues, listFitErrors ) ) 
-	fitCDDown = TGraph( len(listFitValues), array( 'd', listBinCenter ), np.subtract( listFitValues, listFitErrors ) ) 
-
+	#### Create rootfile for limit setting
 	if rootFile:
 		tmpFile = TFile('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_DATA_ABCDBkg_'+args.RANGE+'_'+args.version+'.root', 'recreate' )
 		hDataBCD.SetName( 'massAve_prunedMassAsymVsdeltaEtaDijet_DATA_ABCDProj' )
 		hDataBCD.Write()
 		hDataRatioCD.SetName( 'massAve_prunedMassAsymVsdeltaEtaDijet_DATA_RatioBD' )
 		hDataRatioCD.Write()
+		hDataMinusTTbarBCD.SetName( 'massAve_prunedMassAsymVsdeltaEtaDijet_DATAMinusTTbar_ABCDProj' )
+		hDataMinusTTbarBCD.Write()
+		hDataMinusTTbarRatioCD.SetName( 'massAve_prunedMassAsymVsdeltaEtaDijet_DATAMinusTTbar_RatioBD' )
+		hDataMinusTTbarRatioCD.Write()
 		hDataB.Write()
 		tmpFile.Close()
 
+	##### Plot bkg estimation
 	if plot:
+		fitCDUp = TGraph( len(listFitValues), array( 'd', listBinCenter ), np.add( listFitValues, listFitErrors ) ) 
+		fitCDDown = TGraph( len(listFitValues), array( 'd', listBinCenter ), np.subtract( listFitValues, listFitErrors ) ) 
+
 		canCD = TCanvas('canCD', 'canCD',  10, 10, 750, 500 )
 		#if 'simple' in args.binning: tmpcanCD= canCD.DrawFrame(0,0,500,2)
 		#else: tmpcanCD= canCD.DrawFrame(0,0,boostedMassAveBins[-1],2)
 		gStyle.SetOptFit(1)
+		hBkgCD.GetYaxis().SetTitle( 'Ratio B/D' )
+		hBkgCD.GetYaxis().SetTitleOffset(0.75)
+		hBkgCD.GetXaxis().SetTitle( 'Average pruned mass [GeV]' )
+		hBkgCD.SetStats( True)
 		hBkgCD.SetLineColor(kBlue)
 		hBkgCD.GetXaxis().SetRangeUser( 60, 350 )
 		hBkgCD.Draw()
-		hDataCD.SetMarkerStyle(8)
+		#hDataCD.GetYaxis().SetTitle( 'Ratio B/D' )
+		#hDataCD.GetYaxis().SetTitleOffset(0.75)
+		#hDataCD.GetXaxis().SetTitle( 'Average pruned mass [GeV]' )
+		hDataMinusTTbarCD.SetStats( True)
+		hDataMinusTTbarCD.SetMarkerStyle(23)
+		hDataMinusTTbarCD.SetMarkerColor(kGreen+2)
+		hDataMinusTTbarCD.SetLineColor(kGreen+2)
+		hDataMinusTTbarCD.Draw("sames")
+		hDataCD.SetStats( True)
+		hDataCD.SetMarkerStyle(22)
+		hDataCD.SetMarkerColor(kRed)
 		hDataCD.Draw("sames")
 		fitBkgCD.SetLineWidth(1)
 		fitBkgCD.SetLineColor(kBlue-2)
 		fitBkgCD.Draw("same")
+
+		fitWOttbarCD.SetLineWidth(2)
+		fitWOttbarCD.SetLineColor(kGreen+2)
+		fitWOttbarCD.Draw("same")
 
 		fitCD.SetLineWidth(2)
 		fitCD.SetLineColor(kRed)
@@ -339,6 +378,7 @@ def alternativeABCDCombined( nameInRoot, binning, hDataB, hDataC, hDataD, hBkgB,
 		fitCDDown.SetLineStyle(2)
 		fitCDDown.Draw('same pc')
 		fitCDDown.SetLineColor(kRed)
+
 		CMS_lumi.extraText = "Preliminary"
 		CMS_lumi.relPosX = 0.13
 		CMS_lumi.CMS_lumi(canCD, 4, 0)
@@ -347,6 +387,7 @@ def alternativeABCDCombined( nameInRoot, binning, hDataB, hDataC, hDataD, hBkgB,
 		legend.SetFillStyle(0)
 		legend.SetTextSize(0.03)
 		legend.AddEntry( hDataCD, 'Data', 'pl' )
+		legend.AddEntry( hDataMinusTTbarCD, 'Data minus ttbar and Wjets', 'pl' )
 		legend.AddEntry( hBkgCD, 'All MC Bkgs', 'pl' )
 		legend.AddEntry( fitCD, 'Fit to data', 'l' )
 		legend.AddEntry( fitCDUp, 'Fit unc. to data', 'l' )
@@ -355,29 +396,34 @@ def alternativeABCDCombined( nameInRoot, binning, hDataB, hDataC, hDataD, hBkgB,
 
 		canCD.Update()
 		st2 = hBkgCD.GetListOfFunctions().FindObject("stats")
-		st2.SetX1NDC(.15)
-		st2.SetX2NDC(.35)
+		st2.SetX1NDC(.12)
+		st2.SetX2NDC(.32)
 		st2.SetY1NDC(.76)
 		st2.SetY2NDC(.91)
 		st2.SetTextColor(kBlue)
 		st1 = hDataCD.GetListOfFunctions().FindObject("stats")
-		st1.SetX1NDC(.35)
-		st1.SetX2NDC(.55)
+		st1.SetX1NDC(.32)
+		st1.SetX2NDC(.52)
 		st1.SetY1NDC(.76)
 		st1.SetY2NDC(.91)
 		st1.SetTextColor(kRed)
+		st3 = hDataMinusTTbarCD.GetListOfFunctions().FindObject("stats")
+		st3.SetX1NDC(.52)
+		st3.SetX2NDC(.72)
+		st3.SetY1NDC(.76)
+		st3.SetY2NDC(.91)
+		st3.SetTextColor(kGreen+2)
 		canCD.Modified()
 		outputFileNameCD = nameInRoot+'_'+typePlot+'_CD_'+args.grooming+'_'+args.RANGE+'_QCD'+args.qcd+'_bkgShapeEstimationBoostedPlots'+args.version+'.'+args.extension
 		canCD.SaveAs('Plots/'+outputFileNameCD)
 
+	#################### bkg with TF
 	stackHisto = THStack('stackHisto', 'stack')
-	histoTTjets = hBkgC.Clone()
-	histoWjets = hBkgC.Clone()
 	if isinstance( bkgSamples, list ):
+		histoTTjets = hBkgC.Clone()
+		histoWjets = hBkgC.Clone()
 		for bkgSample in bkgSamples[1]:
-			if 'TTJets' in bkgSample:
-				histoTTjets = bkgSamples[1][ bkgSample ].Clone()
-				print '&'*30, 'yes'
+			if 'TTJets' in bkgSample: histoTTjets = bkgSamples[1][ bkgSample ].Clone()
 			if 'WJets' in bkgSample: histoWjets = bkgSamples[1][ bkgSample ].Clone()
 		for bkgSample in bkgSamples[0]:
 			if '_C' in bkgSample:
@@ -412,18 +458,19 @@ def alternativeABCDCombined( nameInRoot, binning, hDataB, hDataC, hDataD, hBkgB,
 					histoBkgBCD.SetBinContent( ibin, contBCD )
 					histoBkgBCD.SetBinError( ibin, errBCD )
 
-				hRatioAsymErr = ratioPlots( bkgSamples[1][ bkgSample.replace('_C','') ], histoBkgHybridBCD ) 
-				makePlots( nameInRoot, bkgSamples[1][ bkgSample.replace('_C','') ], bkgSample.replace('_C',''), histoBkgHybridBCD, 'Hybrid '+bkgSample.replace('_C','')+' ABCD Pred.', 5, 60, 350, hRatioAsymErr, "MC SR/ABCD Pred", '', bkgSample+'_Log_altBCDHybrid', True)
+				if makeBkgPlots:
+					hRatioAsymErr = ratioPlots( bkgSamples[1][ bkgSample.replace('_C','') ], histoBkgHybridBCD ) 
+					makePlots( nameInRoot, bkgSamples[1][ bkgSample.replace('_C','') ], bkgSample.replace('_C',''), histoBkgHybridBCD, 'Hybrid '+bkgSample.replace('_C','')+' ABCD Pred.', 5, 60, 350, hRatioAsymErr, "MC SR/ABCD Pred", '', bkgSample+'_Log_altBCDHybrid', True, addUncBand=False )
 
-				hRatioAsymErr = ratioPlots( bkgSamples[1][ bkgSample.replace('_C','') ], histoBkgBCD ) 
-				makePlots( nameInRoot, bkgSamples[1][ bkgSample.replace('_C','') ], bkgSample.replace('_C',''), histoBkgBCD, ' '+bkgSample.replace('_C','')+' ABCD Pred.', 5, 60, 350, hRatioAsymErr, "MC SR/ABCD Pred", '', bkgSample+'_Log_altBCD', True)
+					hRatioAsymErr = ratioPlots( bkgSamples[1][ bkgSample.replace('_C','') ], histoBkgBCD ) 
+					makePlots( nameInRoot, bkgSamples[1][ bkgSample.replace('_C','') ], bkgSample.replace('_C',''), histoBkgBCD, ' '+bkgSample.replace('_C','')+' ABCD Pred.', 5, 60, 350, hRatioAsymErr, "MC SR/ABCD Pred", '', bkgSample+'_Log_altBCD', True, addUncBand=False)
 
-				stackHisto.Add( histoBkgHybridBCD )
+					stackHisto.Add( histoBkgHybridBCD )
 	
-	hDataBCD.Add( histoTTjets )
-	hDataBCD.Add( histoWjets )
+		#hDataBCD.Add( histoTTjets )
+		#hDataBCD.Add( histoWjets )
 
-	return hDataBCD, hBkgBCD, hallBkgBCD, stackHisto
+	return hDataBCD, hBkgBCD, hallBkgBCD, hDataMinusTTbarBCD, stackHisto
 
 
 def plotBkgEstimation( dataFile, bkgFiles, signalFiles, Groom, nameInRoot, xmin, xmax, rebinX, labX, labY, log, Norm=False ):
@@ -571,13 +618,13 @@ def plotBkgEstimation( dataFile, bkgFiles, signalFiles, Groom, nameInRoot, xmin,
 	#hDataMinusqcdD = hunbinnedDataD.Clone()
 	#hDataMinusqcdD.Add( hunbinnedBkgMinusqcdD, -1 )
 
-	tmphunbinnedBkgMinusQCDB = substractHistos( hunbinnedBkgB, unbinnedBCDHistos[ 'QCD'+args.qcd+'All_B' ] )
-	tmphunbinnedBkgMinusQCDC = substractHistos( hBkgC, BCDHistos[ 'QCD'+args.qcd+'All_C' ] )
-	tmphunbinnedBkgMinusQCDD = substractHistos( hunbinnedBkgD, unbinnedBCDHistos[ 'QCD'+args.qcd+'All_D' ] )
+	#tmphunbinnedBkgMinusQCDB = substractHistos( hunbinnedBkgB, unbinnedBCDHistos[ 'QCD'+args.qcd+'All_B' ] )
+	#tmphunbinnedBkgMinusQCDC = substractHistos( hBkgC, BCDHistos[ 'QCD'+args.qcd+'All_C' ] )
+	#tmphunbinnedBkgMinusQCDD = substractHistos( hunbinnedBkgD, unbinnedBCDHistos[ 'QCD'+args.qcd+'All_D' ] )
 	
-	hDataMinusqcdB = substractHistos( hunbinnedDataB, hunbinnedBkgMinusqcdB )
-	hDataMinusqcdC = substractHistos( hDataC, hBkgMinusqcdC )
-	hDataMinusqcdD = substractHistos( hunbinnedDataD, hunbinnedBkgMinusqcdD )
+	#hDataMinusqcdB = substractHistos( hunbinnedDataB, hunbinnedBkgMinusqcdB )
+	#hDataMinusqcdC = substractHistos( hDataC, hBkgMinusqcdC )
+	#hDataMinusqcdD = substractHistos( hunbinnedDataD, hunbinnedBkgMinusqcdD )
 	
 
 	
@@ -619,13 +666,20 @@ def plotBkgEstimation( dataFile, bkgFiles, signalFiles, Groom, nameInRoot, xmin,
 #	makePlots( nameInRoot, hData, 'DATA', althDataMinusqcdCR, 'DATA ABCD Pred. - qcd', binWidth, xmin, xmax, althRatiohDataMinusqcdCRAsymErr, "DATA/ABCD Pred", '', 'Log_altBCDMinusqcd', True)
 
 
-	#althDataCR, althBkgCR, althallBkgCR, stackAlthBkgCR = alternativeABCDCombined( nameInRoot, 25, hDataB, hunbinnedDataC, hunbinnedDataD, hBkgB, hunbinnedBkgC, hunbinnedBkgD, 'combined', None, rootFile=True, bkgSamples=[ BCDHistos, SRHistos ] )   
-	#althDataCR, althBkgCR, althallBkgCR, stackAlthBkgCR = alternativeABCDCombined( nameInRoot, 1, hunbinnedDataB, hunbinnedDataC, hunbinnedDataD, hunbinnedBkgB, hunbinnedBkgC, hunbinnedBkgD, 'combined', None, rootFile=True, bkgSamples=[ BCDHistos, SRHistos ] )
 
-	althDataCR, althBkgCR, althallBkgCR, stackAlthBkgCR = alternativeABCDCombined( nameInRoot, 25, hDataC, hunbinnedDataB, hunbinnedDataD, hDataMinusttbarC, hDataMinusttbarB, hDataMinusttbarD, hBkgC, hunbinnedBkgB, hunbinnedBkgD, 'combined', None, rootFile=True, bkgSamples=[ BCDHistos, SRHistos ] )   #### for prunedMassAsymVsdeltaEtaDijet
+	althDataCR, althBkgCR, althallBkgCR, althDataMinusttbarCR, stackAlthBkgCR = alternativeABCDCombined( nameInRoot, 25, hDataC, hunbinnedDataB, hunbinnedDataD, hBkgC, hunbinnedBkgB, hunbinnedBkgD, hDataMinusttbarC, hDataMinusttbarB, hDataMinusttbarD, 'combined', None, rootFile=True, bkgSamples=[ BCDHistos, SRHistos ], makeBkgPlots=args.bkgPlots )   #### for prunedMassAsymVsdeltaEtaDijet
+
 	althRatiohDataAsymErr = ratioPlots( hData, althDataCR ) 
 	makePlots( nameInRoot, hData, 'DATA', althDataCR, 'DATA ABCD Pred.', binWidth, xmin, xmax, althRatiohDataAsymErr, "DATA/ABCD Pred", '', 'Log_altBCD', True)
-#	#makePlots( nameInRoot, hData, 'DATA', althDataCR, 'DATA ABCD Pred.', binWidth, xmin, xmax, althRatiohDataAsymErr, "DATA/ABCD Pred", '', 'altBCD', False)
+	althRatiohDataMinusTTbarAsymErr = ratioPlots(  althDataMinusttbarCR, althDataCR ) 
+	makePlots( nameInRoot, althDataMinusttbarCR, '(DATA - tt & Wjets) ABCD Pred.', althDataCR, 'DATA ABCD Pred.', binWidth, xmin, xmax, althRatiohDataMinusTTbarAsymErr, "(DATA-tt&Wjets)/DATA", '', 'Log_diffAltBCD', True, addUncBand=False)
+
+	althDataPlusMCttbarCR = althDataMinusttbarCR.Clone()
+	althDataPlusMCttbarCR.Add( SRHistos[ 'TTJets' ] ) 
+	althDataPlusMCttbarCR.Add( SRHistos[ 'WJetsToQQ' ] ) 
+	althRatiohDataPlusMCttbarAsymErr = ratioPlots(  hData, althDataPlusMCttbarCR ) 
+	makePlots( nameInRoot, hData, 'DATA', althDataPlusMCttbarCR, 'ABCD Pred. + tt & WJets', binWidth, xmin, xmax, althRatiohDataPlusMCttbarAsymErr, "DATA/Bkg", '', 'Log_altBCDPlusMCbkgs', True)
+
 	#hRatiohSRhDataCRAsymErr = ratioPlots( hSR, althDataCR ) 
 	#makePlots( nameInRoot, hSR, 'All MC Bkgs SR', althDataCR, 'DATA ABCD Pred', binWidth, xmin, xmax, hRatiohSRhDataCRAsymErr, "(MC SR)/(DATA Pred)", '', 'BkgSR_DATAAltBCD_Log', True)
 ##
@@ -641,7 +695,7 @@ def plotBkgEstimation( dataFile, bkgFiles, signalFiles, Groom, nameInRoot, xmin,
 
 
 
-def makePlots( nameInRoot, tmphisto1, labelh1, tmphisto2, labelh2, binWidth, xmin, xmax, ratio, labelRatio, ratio2, typePlot, log=False, reScale=False):
+def makePlots( nameInRoot, tmphisto1, labelh1, tmphisto2, labelh2, binWidth, xmin, xmax, ratio, labelRatio, ratio2, typePlot, log=False, reScale=False, addUncBand=True):
 	"""docstring for makePlots"""
 
 	histo1 = tmphisto1.Clone()
@@ -649,7 +703,8 @@ def makePlots( nameInRoot, tmphisto1, labelh1, tmphisto2, labelh2, binWidth, xmi
 	legend=TLegend(0.55,0.75,0.90,0.87)
 	legend.SetFillStyle(0)
 	legend.SetTextSize(0.04)
-	if 'DATA' in labelh1: legend.AddEntry( histo1, labelh1, 'ep' )
+	if ('Pred' in labelh1) and ('Pred' in labelh2): legend.AddEntry( histo1, labelh1, 'l' )
+	elif 'DATA' in labelh1: legend.AddEntry( histo1, labelh1, 'ep' )
 	else: legend.AddEntry( histo1, labelh1, 'l' )
 	legend.AddEntry( histo2, labelh2, 'pl' )
 
@@ -658,6 +713,9 @@ def makePlots( nameInRoot, tmphisto1, labelh1, tmphisto2, labelh2, binWidth, xmi
 	histo1.SetMaximum( 1.1* max( histo1.GetMaximum(), histo2.GetMaximum() ) )
 	if 'MC' in labelh1: 
 		histo1.SetLineColor(kRed-4)
+		histo1.SetLineWidth(2)
+	elif ('Pred' in labelh1) and ('Pred' in labelh2):
+		histo1.SetLineColor(kGreen-2)
 		histo1.SetLineWidth(2)
 	if not isinstance( histo2, THStack ):
 		histo2.GetXaxis().SetRangeUser( 60, 350 )
@@ -682,7 +740,8 @@ def makePlots( nameInRoot, tmphisto1, labelh1, tmphisto2, labelh2, binWidth, xmi
 	else: 
 		pad1.SetGrid()
 		#if not 'Region' in labelh1: histo1.SetMaximum( (3000 if 'low' in args.RANGE else 400) )
-	if 'DATA' in labelh1: 
+	if ('Pred' in labelh1) and ('Pred' in labelh2): histo1.Draw("histe")
+	elif 'DATA' in labelh1: 
 		histo1.SetMarkerStyle(8)
 		histo1.Draw("PE")
 	else: histo1.Draw("histe")
@@ -708,15 +767,17 @@ def makePlots( nameInRoot, tmphisto1, labelh1, tmphisto2, labelh2, binWidth, xmi
 		#tmpHisto2.GetXaxis().SetRangeUser( firstBinData, lastBinData )
 	'''
 	if not isinstance( histo2, THStack ):
-		res = array( 'd', ( [ 0 ] * tmpHisto1.GetNbinsX() ) )
-		chi2Ndf =  round( tmpHisto1.Chi2Test(tmpHisto2, 'WWCHI2/NDFP', res), 2 )
-		chi2 =  round( tmpHisto1.Chi2Test(tmpHisto2, 'WWCHI2'), 2 )
-		chi2Test = TLatex( 0.6, 0.7, '#chi^{2}/ndF Test = '+ str( chi2 )+'/'+str( round(chi2/chi2Ndf) ) )
-		chi2Test.SetNDC()
-	#	#chi2Test = TLatex( 209, 2000, '#chi^{2}/ndF Test = '+ str( round(hSRchi2,2) )+'/'+str( hSRndf ) )
-		chi2Test.SetTextFont(42) ### 62 is bold, 42 is normal
-		chi2Test.SetTextSize(0.04)
-		chi2Test.Draw()
+		try: 
+			res = array( 'd', ( [ 0 ] * tmpHisto1.GetNbinsX() ) )
+			chi2Ndf =  round( tmpHisto1.Chi2Test(tmpHisto2, 'WWCHI2/NDFP', res), 2 )
+			chi2 =  round( tmpHisto1.Chi2Test(tmpHisto2, 'WWCHI2'), 2 )
+			chi2Test = TLatex( 0.6, 0.7, '#chi^{2}/ndF Test = '+ str( chi2 )+'/'+str( round(chi2/chi2Ndf) ) )
+			chi2Test.SetNDC()
+		#	#chi2Test = TLatex( 209, 2000, '#chi^{2}/ndF Test = '+ str( round(hSRchi2,2) )+'/'+str( hSRndf ) )
+			chi2Test.SetTextFont(42) ### 62 is bold, 42 is normal
+			chi2Test.SetTextSize(0.04)
+			chi2Test.Draw()
+		except ZeroDivisionError: print ' |---> chi2Test failed. ZeroDivisionError'
 
 		if 'DATA' in labelh1: tmpLabel = 'DATA'
 		else: tmpLabel = 'SR'
@@ -764,8 +825,9 @@ def makePlots( nameInRoot, tmphisto1, labelh1, tmphisto2, labelh2, binWidth, xmi
 		ratio2.SetFillColor( kRed )
 		ratio2.Draw('same E2')
 	line.Draw("same")
-	line11.Draw("same")
-	line09.Draw("same")
+	if addUncBand:
+		line11.Draw("same")
+		line09.Draw("same")
 
 	outputFileName = nameInRoot+'_'+typePlot+'_'+args.grooming+'_'+args.RANGE+'_QCD'+args.qcd+'_bkgShapeEstimationBoostedPlots'+args.version+'.'+args.extension
 	if not 'simple' in args.binning: outputFileName = outputFileName.replace( typePlot, typePlot+'_ResoBasedBin' )
@@ -1135,6 +1197,7 @@ if __name__ == '__main__':
 	parser.add_argument('-l', '--lumi', action='store', default=2666, help='Luminosity, example: 1.' )
 	parser.add_argument('-r', '--range', action='store', default='low', dest='RANGE', help='Trigger used, example PFHT800.' )
 	parser.add_argument('-e', '--extension', action='store', default='png', help='Extension of plots.' )
+	parser.add_argument('-B', '--bkgPlots', action='store', type=bool, default=False, help='Binning: resoBased or simple' )
 
 	try:
 		args = parser.parse_args()
