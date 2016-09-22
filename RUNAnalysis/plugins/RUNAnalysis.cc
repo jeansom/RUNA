@@ -75,7 +75,7 @@ class RUNAnalysis : public EDAnalyzer {
       //virtual void endLuminosityBlock(LuminosityBlock const&, EventSetup const&) override;
 
       // ----------member data ---------------------------
-      //PUReweighter PUWeight_;
+      PUReweighter PUWeight_;
       int lhaPdfId;
 
       Service<TFileService> fs_;
@@ -752,7 +752,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 void RUNAnalysis::beginJob() {
 
 	// Calculate PUWeight
-	//if ( !isData ) PUWeight_.generateWeights( dataPUFile );
+	if ( !isData ) PUWeight_.generateWeights( dataPUFile );
 
 	RUNAtree = fs_->make< TTree >("RUNATree", "RUNATree"); 
 	RUNAtree->Branch( "run", &run, "run/I" );
