@@ -574,18 +574,19 @@ def binByBinCards( datahistosFile, bkghistosFile, signalFile, signalSample, hist
 		hDataD = dataFile.Get( 'massAve_prunedMassAsymVsdeltaEtaDijet_DATA_D')
 		hDataD.Rebin ( args.reBin )
 
-	if args.addingMCbkg:
-		newBkgHistoFile = datahistosFile.replace( 'DATA', 'DATA_ABCDBkg' )
-		newBkgFile = TFile( newBkgHistoFile )
-		hDataRatioBD = newBkgFile.Get('massAve_prunedMassAsymVsdeltaEtaDijet_DATAMinusTTbar_RatioBD' )
-		if (hDataRatioBD.GetBinWidth( 1 ) != args.reBin ): 
-			print '|----- Bin size in DATA_C histogram is different than rest.'
-			sys.exit(0)
+	newBkgHistoFile = datahistosFile.replace( 'DATA', 'DATA_ABCDBkg' )
+	newBkgFile = TFile( newBkgHistoFile )
+	hDataRatioBD = newBkgFile.Get('massAve_prunedMassAsymVsdeltaEtaDijet_DATAMinusTTbar_RatioBD' )
+	if (hDataRatioBD.GetBinWidth( 1 ) != args.reBin ): 
+		print '|----- Bin size in DATA_C histogram is different than rest.'
+		sys.exit(0)
 
+	if args.addingMCbkg:
 		TTJetsFile = TFile( bkghistosFile[ 'TTJets' ] )
 		hTTJetsA = TTJetsFile.Get( 'massAve_deltaEtaDijet_TTJets' )
 		hTTJetsA.Rebin ( args.reBin )
 		hTTJetsA.Scale ( twoProngSF )
+		hTTJetsA.Scale ( 1.5 )
 
 		WJetsToQQFile = TFile( bkghistosFile[ 'WJetsToQQ' ] )
 		hWJetsToQQA = WJetsToQQFile.Get( 'massAve_deltaEtaDijet_WJetsToQQ' )
@@ -595,10 +596,10 @@ def binByBinCards( datahistosFile, bkghistosFile, signalFile, signalSample, hist
 	#args.reBin = 5
 	lowEdgeWindow = int(signalMass/args.reBin - 2*( int( signalMassWidth )/args.reBin ))
 	highEdgeWindow = int(signalMass/args.reBin + 2*( int( signalMassWidth )/args.reBin ))
-	#print '%'*30, signalMassWidth, lowEdgeWindow*args.reBin, highEdgeWindow*args.reBin
+	print '%'*30, signalMassWidth, lowEdgeWindow*args.reBin, highEdgeWindow*args.reBin
 
 	combineCards = 'combineCards.py '
-	for ibin in range( lowEdgeWindow, highEdgeWindow+1):
+	for ibin in range( lowEdgeWindow, highEdgeWindow ):
 
 		### Signal
 		sigAcc = hSignal.GetBinContent( ibin )
@@ -801,7 +802,7 @@ if __name__ == '__main__':
 			jerUncAcc[ 300 ] =  0.042
 
 	if args.massValue > 0: massList = [ args.massValue ]
-	if args.signalInjec: massList = massList * 100
+	if args.signalInjec: massList = massList * 1000
 
 	dummy0 = 0
 	for mass in massList: #range( len(massList) ):
