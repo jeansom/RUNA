@@ -27,7 +27,7 @@ git cms-merge-topic cms-btv-pog:fixTMVAEvaluatorMemoryProblem-from-CMSSW_7_6_3
 ```
 git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b v7.6.x_v1.2
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_763
-git clone git@github.com:alefisico/RUNA.git -b v763_V1
+git clone git@github.com:RutgersHEX/RUNA.git -b v763_V1
 scram b -j 18
 cmsenv
 ```
