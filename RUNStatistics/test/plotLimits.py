@@ -138,7 +138,7 @@ def plotLimits( listMasses  ):
 	graph_exp_2sigma.GetXaxis().SetTitle("Resonance mass [GeV]")
 	graph_exp_2sigma.GetYaxis().SetTitle("#sigma #times #it{B} [pb]")
 	graph_exp_2sigma.GetYaxis().SetTitleOffset(1.1)
-	graph_exp_2sigma.GetYaxis().SetRangeUser(5,1e+04)
+	graph_exp_2sigma.GetYaxis().SetRangeUser(1,1e+04)
 	#graph_exp_2sigma.GetXaxis().SetNdivisions(1005)
 
 	graph_exp_2sigma.Draw("AF")
@@ -147,8 +147,7 @@ def plotLimits( listMasses  ):
 	graph_obs.Draw("LP")
         graph_xs_th.Draw("L")
 
-        legend.AddEntry(graph_xs_th,"RPV #lambda_{312} (#tilde{t} #rightarrow qq)","l")
-        #legend.AddEntry(graph_xs_th,"UDD312 RPV Stop #tilde{t}","l")
+        legend.AddEntry(graph_xs_th,"RPV Stop #lambda_{312} (#tilde{t} #rightarrow qq)","l")
 	legend.AddEntry(graph_obs,"Observed","lp")
 	legend.AddEntry(graph_exp,"Expected","lp")
 	legend.AddEntry(graph_exp_1sigma,"#pm 1#sigma","F")
@@ -188,7 +187,7 @@ if __name__ == '__main__':
 	
 	CMS_lumi.extraText = "Preliminary"
 	lumi = 2606
-	CMS_lumi.lumi_13TeV = "2.7 fb^{-1}"
+	CMS_lumi.lumi_13TeV = "2.6 fb^{-1}"
 	if 'gaus' in args.process: massList = range( 80, 360, 10 )
 	else: massList = [ 80, 90, 100, 110, 120, 130, 140, 150, 170, 180, 190, 210, 220, 230, 240, 300]
 	plotLimits( massList  )
