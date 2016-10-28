@@ -16,7 +16,6 @@ This package contains scripts:
 cmsrel CMSSW_7_6_3_patch2
 cd CMSSW_7_6_3_patch2/src/
 cmsenv 
-<<<<<<< HEAD
 git cms-init
 ```
 Temporary fix (only for 763 releases):
