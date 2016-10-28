@@ -80,6 +80,8 @@ class myJet {
 		double cEMf;
 		int numConst;
 		double chm;
+		double subjet0PartonFlavor;
+		double subjet1PartonFlavor;
 };
 
 inline float massAverage( float m1, float m2 ){ return ( (m1 + m2)/2 ); }

@@ -45,6 +45,10 @@
 #include "RUNA/RUNAnalysis/interface/CommonVariablesStructure.h"
 #include "RUNA/RUNAnalysis/interface/PUReweighter.h"
 
+#include "CondFormats/BTauObjects/interface/BTagCalibration.h"
+#include "CondFormats/BTauObjects/interface/BTagCalibrationReader.h"
+
+
 using namespace edm;
 using namespace std;
 
@@ -97,6 +101,16 @@ class RUNBoostedAnalysis : public EDAnalyzer {
       FactorizedJetCorrector * massJECAK8;
       JetCorrectionUncertainty *jetCorrUnc;
 
+  //string EffMapName;
+
+  //   TFile *EffMap;
+ 
+  // TH2D *EffMapB;
+  // TH2D *EffMapC;
+  // TH2D *EffMapUDSG;
+
+
+
       ULong64_t event = 0;
       int numJets = 0, numPV = 0;
       unsigned int lumi = 0, run=0;
@@ -107,6 +121,10 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 	    subjet12Pt = -999, subjet12Eta = -999, subjet12Phi = -999, subjet12E = -999, subjet12btagCSVv2 = -9999, subjet12btagCMVAv2 = -9999, 
 	    subjet21Pt = -999, subjet21Eta = -999, subjet21Phi = -999, subjet21E = -999, subjet21btagCSVv2 = -9999, subjet21btagCMVAv2 = -9999, 
 	    subjet22Pt = -999, subjet22Eta = -999, subjet22Phi = -999, subjet22E = -999, subjet22btagCSVv2 = -9999, subjet22btagCMVAv2 = -9999,
+    	    subjet11SF = 0, subjet12SF = 0, subjet21SF = 0, subjet22SF = 0,
+    	    subjet11SFError = 0, subjet12SFError = 0, subjet21SFError = 0, subjet22SFError = 0,
+      // 	    subjet11btagEff = 0, subjet12btagEff = 0, subjet21btagEff = 0, subjet22btagEff = 0,
+	    subjet11Flavor = 0, subjet12Flavor = 0, subjet21Flavor = 0, subjet22Flavor = 0,
 	    massAve = -9999, massAsym = -9999, 
 	    jet1PrunedMass = -9999, jet2PrunedMass = -9999,
 	    jet1SoftDropMass = -9999, jet2SoftDropMass = -9999,
@@ -122,7 +140,8 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 	    cosPhi13412 = -9999, cosPhi31234 = -9999,
 	    dalitzY1 = -9999, dalitzY2 = -9999, dalitzY3 = -9999, dalitzY4 = -9999, dalitzY5 = -9999, dalitzY6 = -9999, 
 	    dalitzX1 = -9999, dalitzX2 = -9999, dalitzX3 = -9999, dalitzX4 = -9999, dalitzX5 = -9999, dalitzX6 = -9999;
-      vector<float> scaleWeights, pdfWeights, alphaWeights;
+
+  vector<float> scaleWeights, pdfWeights, alphaWeights, genPartonPt, genPartonMass, genPartonID, genPartonDau0ID, genPartonDau1ID;
 
       EDGetTokenT<vector<float>> jetAK4Pt_;
       EDGetTokenT<vector<float>> jetAK4Eta_;
@@ -180,7 +199,7 @@ class RUNBoostedAnalysis : public EDAnalyzer {
       EDGetTokenT<vector<float>> neutralHadronMultiplicity_;
       EDGetTokenT<vector<float>> chargedMultiplicity_;
       EDGetTokenT<vector<float>> muonEnergy_; 
-
+  
       // Subjets
       EDGetTokenT<vector<float>> subjetPt_;
       EDGetTokenT<vector<float>> subjetEta_;
@@ -190,6 +209,15 @@ class RUNBoostedAnalysis : public EDAnalyzer {
       EDGetTokenT<vector<float>> subjetCSVv2_;
       EDGetTokenT<vector<float>> subjetCMVAv2_;
 
+      EDGetTokenT<vector<float>> subjetFlavor_;
+
+      EDGetTokenT<vector<float>> genPartPt_;
+      EDGetTokenT<vector<float>> genPartMass_;
+      EDGetTokenT<vector<float>> genPartID_;
+
+      EDGetTokenT<vector<float>> genPartDau0ID_;
+      EDGetTokenT<vector<float>> genPartDau1ID_;
+     
 };
 
 //
@@ -261,9 +289,28 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 	subjetE_(consumes<vector<float>>(iConfig.getParameter<InputTag>("subjetE"))),
 	subjetMass_(consumes<vector<float>>(iConfig.getParameter<InputTag>("subjetMass"))),
 	subjetCSVv2_(consumes<vector<float>>(iConfig.getParameter<InputTag>("subjetCSVv2"))),
-	subjetCMVAv2_(consumes<vector<float>>(iConfig.getParameter<InputTag>("subjetCMVAv2")))
+	subjetCMVAv2_(consumes<vector<float>>(iConfig.getParameter<InputTag>("subjetCMVAv2"))),
+       subjetFlavor_(consumes<vector<float>>(iConfig.getParameter<InputTag>("subjetFlavor"))),
+       genPartPt_(consumes<vector<float>>(iConfig.getParameter<InputTag>("genPartPt"))),
+       genPartMass_(consumes<vector<float>>(iConfig.getParameter<InputTag>("genPartMass"))),
+       genPartID_(consumes<vector<float>>(iConfig.getParameter<InputTag>("genPartID"))),
+       genPartDau0ID_(consumes<vector<float>>(iConfig.getParameter<InputTag>("genPartDau0ID"))),
+       genPartDau1ID_(consumes<vector<float>>(iConfig.getParameter<InputTag>("genPartDau1ID")))
+
+
+		 
 {
-	consumes<LHERunInfoProduct,edm::InRun> (edm::InputTag("externalLHEProducer"));
+  //        EffMapName      = iConfig.getParameter<string>("EffMapName");
+  //	const char *MapName = EffMapName.c_str();
+
+  //	EffMap = new TFile(MapName);
+  //	EffMapB = (TH2D*)EffMap->Get("efficiency_b");
+  //	EffMapC = (TH2D*)EffMap->Get("efficiency_c");
+  //	EffMapUDSG = (TH2D*)EffMap->Get("efficiency_udsg");
+
+  consumes<LHERunInfoProduct,edm::InRun> (edm::InputTag("externalLHEProducer"));
+	//	consumes<LHERunInfoProduct,edm::InRun> (edm::InputTag("source"));
+	
 	scale 		= iConfig.getParameter<double>("scale");
 	bjSample 	= iConfig.getParameter<bool>("bjSample");
 	isData 		= iConfig.getParameter<bool>("isData");
@@ -501,6 +548,24 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	Handle<vector<float> > subjetCMVAv2;
 	iEvent.getByToken(subjetCMVAv2_, subjetCMVAv2);
 
+	Handle<vector<float> > subjetFlavor;
+	iEvent.getByToken( subjetFlavor_, subjetFlavor );
+
+	Handle<vector<float> > genPartPt;
+	iEvent.getByToken( genPartPt_, genPartPt );
+
+	Handle<vector<float> > genPartMass;
+	iEvent.getByToken( genPartMass_, genPartMass );
+
+	Handle<vector<float> > genPartID;
+	iEvent.getByToken( genPartID_, genPartID );
+
+	Handle<vector<float> > genPartDau0ID;
+	iEvent.getByToken( genPartDau0ID_, genPartDau0ID );
+
+	Handle<vector<float> > genPartDau1ID;
+	iEvent.getByToken( genPartDau1ID_, genPartDau1ID );
+
 	if ( !isData ) {
 
 		// all this section is based on https://github.com/jkarancs/B2GTTrees/blob/master/plugins/B2GEdmExtraVarProducer.cc#L215-L281
@@ -549,6 +614,15 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 		AK4HT += (*jetAK4Pt)[q];
 	}
 	////////////////////////////////////////////////////
+
+	///////// Saving Gen-Level Info
+	for (size_t i = 0; i < genPartPt->size(); i++) genPartonPt.push_back((*genPartPt)[i]);
+	for (size_t i = 0; i < genPartMass->size(); i++) genPartonMass.push_back((*genPartMass)[i]);
+	for (size_t i = 0; i < genPartID->size(); i++) genPartonID.push_back((*genPartID)[i]);
+	for (size_t i = 0; i < genPartDau0ID->size(); i++) genPartonDau0ID.push_back((*genPartDau0ID)[i]);
+	for (size_t i = 0; i < genPartDau1ID->size(); i++) genPartonDau1ID.push_back((*genPartDau1ID)[i]);
+
+
 
 	/// Applying kinematic, trigger and jet ID
 	cutmap["Processed"] += 1;
@@ -612,7 +686,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 
 			/// Vector of zeros
 			TLorentzVector tmpSubjet0, tmpSubjet1, tmpZeros;
-			double tmpSubjet0BtagCSVv2 = -999, tmpSubjet0BtagCMVAv2 = -999, tmpSubjet1BtagCSVv2 = -999, tmpSubjet1BtagCMVAv2 = -999;
+			double tmpSubjet0BtagCSVv2 = -999, tmpSubjet0BtagCMVAv2 = -999, tmpSubjet0PartonFlavor = -999, tmpSubjet1BtagCSVv2 = -999, tmpSubjet1BtagCMVAv2 = -999, tmpSubjet1PartonFlavor = -999;
 			tmpZeros.SetPtEtaPhiE( 0, 0, 0, 0 );
 
 			for (size_t j = 0; j < subjetPt->size(); j++) {
@@ -621,12 +695,14 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 					tmpSubjet0.SetPtEtaPhiE( (*subjetPt)[j], (*subjetEta)[j], (*subjetPhi)[j], (*subjetE)[j] );
 					tmpSubjet0BtagCSVv2 = (*subjetCSVv2)[j];
 					tmpSubjet0BtagCMVAv2 = (*subjetCMVAv2)[j];
+					tmpSubjet0PartonFlavor = (*subjetFlavor)[j];
 				} //else tmpSubjet0 = tmpZeros ; 
 					
 				if( j == (*jetSubjetIndex1)[i] ) {
 					tmpSubjet1.SetPtEtaPhiE( (*subjetPt)[j], (*subjetEta)[j], (*subjetPhi)[j], (*subjetE)[j] );
 					tmpSubjet1BtagCSVv2 = (*subjetCSVv2)[j];
 					tmpSubjet1BtagCMVAv2 = (*subjetCMVAv2)[j];
+					tmpSubjet1PartonFlavor = (*subjetFlavor)[j];
 				} //else tmpSubjet1 = tmpZeros ; 
 			}
 
@@ -661,9 +737,11 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			tmpJET.subjet0 = tmpSubjet0;
 			tmpJET.subjet0BtagCSVv2 = tmpSubjet0BtagCSVv2;
 			tmpJET.subjet0BtagCMVAv2 = tmpSubjet0BtagCMVAv2;
+			tmpJET.subjet0PartonFlavor = tmpSubjet0PartonFlavor;
 			tmpJET.subjet1 = tmpSubjet1;
 			tmpJET.subjet1BtagCSVv2 = tmpSubjet1BtagCSVv2;
 			tmpJET.subjet1BtagCMVAv2 = tmpSubjet1BtagCMVAv2;
+			tmpJET.subjet1PartonFlavor = tmpSubjet1PartonFlavor;
 			tmpJET.mass = corrMass;
 			tmpJET.trimmedMass = corrTrimmedMass;
 			tmpJET.prunedMass = corrPrunedMass;
@@ -686,9 +764,35 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 		}
 	}
 
-	numPV = *NPV;
-	MET = (*metPt)[0];
-	numJets = numberJets;
+        BTagCalibration calib_csv("csv","CSVv2_subjets.csv");
+        BTagCalibrationReader reader(&calib_csv,           // calibration instance
+                                     BTagEntry::OP_MEDIUM,    //operating point
+                                     "lt",                 //measurement type
+                                     "central");             //systematics type
+        BTagCalibrationReader readerUp(&calib_csv,           // calibration instance
+                                       BTagEntry::OP_MEDIUM,    //operating point
+                                       "lt",                 //measurement type
+                                       "up");             //systematics type
+        BTagCalibrationReader readerDown(&calib_csv,           // calibration instance
+                                         BTagEntry::OP_MEDIUM,    //operating point
+                                         "lt",                 //measurement type
+                                         "down");             //systematics type
+        BTagCalibrationReader readerLight(&calib_csv,           // calibration instance
+                                          BTagEntry::OP_MEDIUM,    //operating point
+                                          "incl",                 //measurement type
+                                          "central");             //systematics type
+        BTagCalibrationReader readerLightUp(&calib_csv,           // calibration instance
+                                            BTagEntry::OP_MEDIUM,    //operating point
+                                            "incl",                 //measurement type
+                                            "up");             //systematics type
+        BTagCalibrationReader readerLightDown(&calib_csv,           // calibration instance
+                                              BTagEntry::OP_MEDIUM,    //operating point
+                                              "incl",                 //measurement type
+                                              "down");             //systematics type
+
+
+
+
 	//sort(JETS.begin(), JETS.end(), [](const JETtype &p1, const JETtype &p2) { return p1.mass > p2.mass; }); 
 	//sort(JETS.begin(), JETS.end(), [](const JETtype &p1, const JETtype &p2) { TLorentzVector tmpP1, tmpP2; tmpP1 = p1.p4; tmpP2 = p2.p4;  return tmpP1.M() > tmpP2.M(); }); 
 	histos1D_[ "jetNum" ]->Fill( numJets, totalWeight );
@@ -769,7 +873,162 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			softDropMassAve = massAverage( JETS[0].softDropMass, JETS[1].softDropMass );
 			softDropMassAsym = massAsymmetry( JETS[0].softDropMass, JETS[1].softDropMass );
 			//////////////////////////////////////////////////////////////////////////
+			//B-tag Efficiency Scale Factors			
+
+			double subjet11PtTemp  = JETS[0].subjet0.Pt();
+			subjet11Eta = JETS[0].subjet0.Eta();
+			subjet11Pt  = JETS[0].subjet0.Pt();
+			subjet11Flavor = JETS[0].subjet0PartonFlavor;
+
+			if ( fabs(subjet11Flavor) == 5 || fabs(subjet11Flavor) == 4 ) {
+			  if ( subjet11PtTemp > 420 ) subjet11PtTemp = 420;
+			  if ( subjet11PtTemp < 30 ) subjet11PtTemp = 30;
+			}
+			else if ( fabs(subjet11Flavor) != 0 ) {
+			  if ( subjet11PtTemp > 1000 ) subjet11PtTemp = 1000;
+			  if ( subjet11PtTemp < 20 ) subjet11PtTemp = 20;
+			}
+
+			if ( fabs(subjet11Flavor) == 5 ) {
+			  subjet11SF = reader.eval(BTagEntry::FLAV_B, subjet11Eta, subjet11PtTemp);
+			  double SFUp = readerUp.eval(BTagEntry::FLAV_B, subjet11Eta, subjet11PtTemp);
+			  double SFDown = readerDown.eval(BTagEntry::FLAV_B, subjet11Eta, subjet11PtTemp);
+			  subjet11SFError = fabs( SFUp - subjet11SF ) > fabs( SFDown - subjet11SF ) ? fabs( SFUp - subjet11SF ) : fabs( SFDown - subjet11SF );
+			  if ( subjet11PtTemp != subjet11Pt ) subjet11SFError *= 2;
+			  //			  subjet11btagEff = EffMapB->GetBinContent( EffMapB->GetXaxis()->FindBin(subjet11Pt), EffMapB->GetYaxis()->FindBin(fabs(subjet11Eta)));
+			}
+			else if ( fabs(subjet11Flavor) == 4 ) {
+			  subjet11SF = reader.eval(BTagEntry::FLAV_C, subjet11Eta, subjet11PtTemp);
+			  double SFUp = readerUp.eval(BTagEntry::FLAV_C, subjet11Eta, subjet11PtTemp);
+			  double SFDown = readerDown.eval(BTagEntry::FLAV_C, subjet11Eta, subjet11PtTemp);
+			  subjet11SFError = fabs( SFUp - subjet11SF ) > fabs( SFDown - subjet11SF ) ? fabs( SFUp - subjet11SF ) : fabs( SFDown - subjet11SF );
+			  if ( subjet11PtTemp != subjet11Pt ) subjet11SFError *= 2;
+			  //			  subjet11btagEff = EffMapC->GetBinContent( EffMapB->GetXaxis()->FindBin(subjet11Pt), EffMapC->GetYaxis()->FindBin(fabs(subjet11Eta)));
+			}				
+			else if ( fabs(subjet11Flavor) != 0 ) {
+			  subjet11SF = readerLight.eval(BTagEntry::FLAV_UDSG, subjet11Eta, subjet11PtTemp);
+			  double SFUp = readerLightUp.eval(BTagEntry::FLAV_UDSG, subjet11Eta, subjet11PtTemp);
+			  double SFDown = readerLightDown.eval(BTagEntry::FLAV_UDSG, subjet11Eta, subjet11PtTemp);
+			  subjet11SFError = fabs( SFUp - subjet11SF ) > fabs( SFDown - subjet11SF ) ? fabs( SFUp - subjet11SF ) : fabs( SFDown - subjet11SF );
+			  //			  subjet11btagEff = EffMapUDSG->GetBinContent( EffMapUDSG->GetXaxis()->FindBin(subjet11Pt), EffMapUDSG->GetYaxis()->FindBin(fabs(subjet11Eta)));
+			}
 			
+			double subjet12PtTemp  = JETS[0].subjet1.Pt();
+			subjet12Eta = JETS[0].subjet1.Eta();
+			subjet12Pt  = JETS[0].subjet1.Pt();
+			
+			subjet12Flavor = JETS[0].subjet0PartonFlavor;
+			if ( fabs( subjet12Flavor ) == 5 || fabs( subjet12Flavor ) == 4 ) {
+			  if ( subjet12PtTemp > 420 ) subjet12PtTemp = 420;
+			  if ( subjet12PtTemp < 30 ) subjet12PtTemp = 30;
+			}
+			else if ( fabs( subjet12Flavor ) != 0 ) {
+			  if ( subjet12PtTemp > 1000 ) subjet12PtTemp = 1000;
+			  if ( subjet12PtTemp < 20 ) subjet12PtTemp = 20;
+			}
+			if ( fabs( subjet12Flavor ) == 5 ) {
+			  subjet12SF = reader.eval(BTagEntry::FLAV_B, subjet12Eta, subjet12PtTemp);
+			  double SFUp = readerUp.eval(BTagEntry::FLAV_B, subjet12Eta, subjet12PtTemp);
+			  double SFDown = readerDown.eval(BTagEntry::FLAV_B, subjet12Eta, subjet12PtTemp);
+			  subjet12SFError = fabs( SFUp - subjet12SF ) > fabs( SFDown - subjet12SF ) ? fabs( SFUp - subjet12SF ) : fabs( SFDown - subjet12SF );
+			  if ( subjet12PtTemp != subjet12Pt ) subjet12SFError *= 2;
+			  //			  subjet12btagEff = EffMapB->GetBinContent( EffMapB->GetXaxis()->FindBin(subjet12Pt), EffMapB->GetYaxis()->FindBin(fabs(subjet12Eta)));
+			}
+			else if ( fabs( subjet12Flavor ) == 4 ) {
+			  subjet12SF = reader.eval(BTagEntry::FLAV_C, subjet12Eta, subjet12PtTemp);
+			  double SFUp = readerUp.eval(BTagEntry::FLAV_C, subjet12Eta, subjet12PtTemp);
+			  double SFDown = readerDown.eval(BTagEntry::FLAV_C, subjet12Eta, subjet12PtTemp);
+			  subjet12SFError = fabs( SFUp - subjet12SF ) > fabs( SFDown - subjet12SF ) ? fabs( SFUp - subjet12SF ) : fabs( SFDown - subjet12SF );
+			  if ( subjet12PtTemp != subjet12Pt ) subjet12SFError *= 2;
+			  //			  subjet12btagEff = EffMapC->GetBinContent( EffMapB->GetXaxis()->FindBin(subjet12Pt), EffMapC->GetYaxis()->FindBin(fabs(subjet12Eta)));
+			}	
+			else if ( fabs( subjet12Flavor ) != 0 ) {
+			  subjet12SF = readerLight.eval(BTagEntry::FLAV_UDSG, subjet12Eta, subjet12PtTemp);
+			  double SFUp = readerLightUp.eval(BTagEntry::FLAV_UDSG, subjet12Eta, subjet12PtTemp);
+			  double SFDown = readerLightDown.eval(BTagEntry::FLAV_UDSG, subjet12Eta, subjet12PtTemp);
+			  subjet12SFError = fabs( SFUp - subjet12SF ) > fabs( SFDown - subjet12SF ) ? fabs( SFUp - subjet12SF ) : fabs( SFDown - subjet12SF );
+			  //			  subjet12btagEff = EffMapUDSG->GetBinContent( EffMapUDSG->GetXaxis()->FindBin(subjet12Pt), EffMapUDSG->GetYaxis()->FindBin(fabs(subjet12Eta)));
+			}
+			
+			double subjet21PtTemp  = JETS[1].subjet0.Pt();
+			subjet21Eta = JETS[1].subjet0.Eta();
+			subjet21Pt  = JETS[1].subjet0.Pt();
+			
+			subjet21Flavor = JETS[0].subjet0PartonFlavor;
+			if ( fabs( subjet21Flavor ) == 5 || fabs( subjet21Flavor ) == 4 ) {
+			  if ( subjet21PtTemp > 420 ) subjet21PtTemp = 420;
+			  if ( subjet21PtTemp < 30 ) subjet21PtTemp = 30;
+			}
+			else if ( fabs( subjet21Flavor ) != 0 ) {
+			  if ( subjet21PtTemp > 1000 ) subjet21PtTemp = 1000;
+			  if ( subjet21PtTemp < 20 ) subjet21PtTemp = 20;
+			}
+			if ( fabs( subjet21Flavor ) == 5 ) {
+			  subjet21SF = reader.eval(BTagEntry::FLAV_B, subjet21Eta, subjet21PtTemp);
+			  double SFUp = readerUp.eval(BTagEntry::FLAV_B, subjet21Eta, subjet21PtTemp);
+			  double SFDown = readerDown.eval(BTagEntry::FLAV_B, subjet21Eta, subjet21PtTemp);
+			  subjet21SFError = fabs( SFUp - subjet21SF ) > fabs( SFDown - subjet21SF ) ? fabs( SFUp - subjet21SF ) : fabs( SFDown - subjet21SF );
+			  if ( subjet21PtTemp != subjet21Pt ) subjet21SFError *= 2;
+			  //			  subjet21btagEff = EffMapB->GetBinContent( EffMapB->GetXaxis()->FindBin(subjet21Pt), EffMapB->GetYaxis()->FindBin(fabs(subjet21Eta)));
+			}
+			else if ( fabs( subjet21Flavor ) == 4 ) {
+			  subjet21SF = reader.eval(BTagEntry::FLAV_C, subjet21Eta, subjet21PtTemp);
+			  double SFUp = readerUp.eval(BTagEntry::FLAV_C, subjet21Eta, subjet21PtTemp);
+			  double SFDown = readerDown.eval(BTagEntry::FLAV_C, subjet21Eta, subjet21PtTemp);
+			  subjet21SFError = fabs( SFUp - subjet21SF ) > fabs( SFDown - subjet21SF ) ? fabs( SFUp - subjet21SF ) : fabs( SFDown - subjet21SF );
+			  if ( subjet21PtTemp != subjet21Pt ) subjet21SFError *= 2;
+			  //			  subjet21btagEff = EffMapC->GetBinContent( EffMapB->GetXaxis()->FindBin(subjet21Pt), EffMapC->GetYaxis()->FindBin(fabs(subjet21Eta)));
+			}	
+			else if ( fabs( subjet21Flavor ) != 0 ) {
+			  subjet21SF = readerLight.eval(BTagEntry::FLAV_UDSG, subjet21Eta, subjet21PtTemp);
+			  double SFUp = readerLightUp.eval(BTagEntry::FLAV_UDSG, subjet21Eta, subjet21PtTemp);
+			  double SFDown = readerLightDown.eval(BTagEntry::FLAV_UDSG, subjet21Eta, subjet21PtTemp);
+			  subjet21SFError = fabs( SFUp - subjet21SF ) > fabs( SFDown - subjet21SF ) ? fabs( SFUp - subjet21SF ) : fabs( SFDown - subjet21SF );
+			  //			  subjet21btagEff = EffMapUDSG->GetBinContent( EffMapUDSG->GetXaxis()->FindBin(subjet21Pt), EffMapUDSG->GetYaxis()->FindBin(fabs(subjet21Eta)));
+			}
+
+			
+			double subjet22PtTemp  = JETS[1].subjet1.Pt();
+			subjet22Eta = JETS[1].subjet1.Eta();
+			subjet22Pt  = JETS[1].subjet1.Pt();
+			
+			subjet22Flavor = JETS[0].subjet0PartonFlavor;
+			if ( fabs( subjet22Flavor ) == 5 || fabs( subjet22Flavor ) == 4 ) {
+			  if ( subjet22PtTemp > 420 ) subjet22PtTemp = 420;
+			  if ( subjet22PtTemp < 30 ) subjet22PtTemp = 30;
+			}
+			else if ( fabs( subjet22Flavor ) != 0 ) {
+			  if ( subjet22PtTemp > 1000 ) subjet22PtTemp = 1000;
+			  if ( subjet22PtTemp < 20 ) subjet22PtTemp = 20;
+			}
+			if ( fabs( subjet22Flavor ) == 5 ) {
+			  subjet22SF = reader.eval(BTagEntry::FLAV_B, subjet22Eta, subjet22PtTemp);
+			  double SFUp = readerUp.eval(BTagEntry::FLAV_B, subjet22Eta, subjet22PtTemp);
+			  double SFDown = readerDown.eval(BTagEntry::FLAV_B, subjet22Eta, subjet22PtTemp);
+			  subjet22SFError = fabs( SFUp - subjet22SF ) > fabs( SFDown - subjet22SF ) ? fabs( SFUp - subjet22SF ) : fabs( SFDown - subjet22SF );
+			  if ( subjet22PtTemp != subjet22Pt ) subjet22SFError *= 2;
+			  //			  subjet22btagEff = EffMapB->GetBinContent( EffMapB->GetXaxis()->FindBin(subjet22Pt), EffMapB->GetYaxis()->FindBin(fabs(subjet22Eta)));
+			}
+			else if ( fabs( subjet22Flavor ) == 4 ) {
+			  subjet22SF = reader.eval(BTagEntry::FLAV_C, subjet22Eta, subjet22PtTemp);
+			  double SFUp = readerUp.eval(BTagEntry::FLAV_C, subjet22Eta, subjet22PtTemp);
+			  double SFDown = readerDown.eval(BTagEntry::FLAV_C, subjet22Eta, subjet22PtTemp);
+			  subjet22SFError = fabs( SFUp - subjet22SF ) > fabs( SFDown - subjet22SF ) ? fabs( SFUp - subjet22SF ) : fabs( SFDown - subjet22SF );
+			  if ( subjet22PtTemp != subjet22Pt ) subjet22SFError *= 2;
+			  //			  subjet22btagEff = EffMapC->GetBinContent( EffMapB->GetXaxis()->FindBin(subjet22Pt), EffMapC->GetYaxis()->FindBin(fabs(subjet22Eta)));
+			}	
+			else if ( fabs( subjet22Flavor ) != 0 ) {
+			  subjet22SF = readerLight.eval(BTagEntry::FLAV_UDSG, subjet22Eta, subjet22PtTemp);
+			  double SFUp = readerLightUp.eval(BTagEntry::FLAV_UDSG, subjet22Eta, subjet22PtTemp);
+			  double SFDown = readerLightDown.eval(BTagEntry::FLAV_UDSG, subjet22Eta, subjet22PtTemp);
+			  subjet22SFError = fabs( SFUp - subjet22SF ) > fabs( SFDown - subjet22SF ) ? fabs( SFUp - subjet22SF ) : fabs( SFDown - subjet22SF );
+			  //			  subjet22btagEff = EffMapUDSG->GetBinContent( EffMapUDSG->GetXaxis()->FindBin(subjet22Pt), EffMapUDSG->GetYaxis()->FindBin(fabs(subjet22Eta)));
+			}
+
+
+////////////////////////////////////////////////////////
+
+
 			// Btag
 			jet1btagCSVv2 = JETS[0].btagCSVv2;
 			jet2btagCSVv2 = JETS[1].btagCSVv2;
@@ -1076,24 +1335,40 @@ void RUNBoostedAnalysis::beginJob() {
 	RUNAtree->Branch( "subjet11E", &subjet11E, "subjet11E/F" );
 	RUNAtree->Branch( "subjet11btagCSVv2", &subjet11btagCSVv2, "subjet11btagCSVv2/F" );
 	RUNAtree->Branch( "subjet11btagCMVAv2", &subjet11btagCMVAv2, "subjet11btagCMVAv2/F" );
+	RUNAtree->Branch( "subjet11SF", &subjet11SF, "subjet11SF/F" );
+	RUNAtree->Branch( "subjet11SFError", &subjet11SFError, "subjet11SFError/F" );
+	//	RUNAtree->Branch( "subjet11btagEff", &subjet11btagEff, "subjet11btagEff/F" );
+	RUNAtree->Branch( "subjet11PartonFlavor", &subjet11Flavor, "subjet11PartonFlavor/F" );
 	RUNAtree->Branch( "subjet12Pt", &subjet12Pt, "subjet12Pt/F" );
 	RUNAtree->Branch( "subjet12Eta", &subjet12Eta, "subjet12Eta/F" );
 	RUNAtree->Branch( "subjet12Phi", &subjet12Phi, "subjet12Phi/F" );
 	RUNAtree->Branch( "subjet12E", &subjet12E, "subjet12E/F" );
 	RUNAtree->Branch( "subjet12btagCSVv2", &subjet12btagCSVv2, "subjet12btagCSVv2/F" );
 	RUNAtree->Branch( "subjet12btagCMVAv2", &subjet12btagCMVAv2, "subjet12btagCMVAv2/F" );
+	RUNAtree->Branch( "subjet12SF", &subjet12SF, "subjet12SF/F" );
+	RUNAtree->Branch( "subjet12SFError", &subjet12SFError, "subjet12SFError/F" );
+	//	RUNAtree->Branch( "subjet12btagEff", &subjet12btagEff, "subjet12btagEff/F" );
+	RUNAtree->Branch( "subjet12PartonFlavor", &subjet12Flavor, "subjet12PartonFlavor/F" );
 	RUNAtree->Branch( "subjet21Pt", &subjet21Pt, "subjet21Pt/F" );
 	RUNAtree->Branch( "subjet21Eta", &subjet21Eta, "subjet21Eta/F" );
 	RUNAtree->Branch( "subjet21Phi", &subjet21Phi, "subjet21Phi/F" );
 	RUNAtree->Branch( "subjet21E", &subjet21E, "subjet21E/F" );
 	RUNAtree->Branch( "subjet21btagCSVv2", &subjet21btagCSVv2, "subjet21btagCSVv2/F" );
 	RUNAtree->Branch( "subjet21btagCMVAv2", &subjet21btagCMVAv2, "subjet21btagCMVAv2/F" );
+	RUNAtree->Branch( "subjet21SF", &subjet21SF, "subjet21SF/F" );
+	RUNAtree->Branch( "subjet21SFError", &subjet21SFError, "subjet21SFError/F" );
+	//	RUNAtree->Branch( "subjet21btagEff", &subjet21btagEff, "subjet21btagEff/F" );
+	RUNAtree->Branch( "subjet21PartonFlavor", &subjet21Flavor, "subjet21PartonFlavor/F" );
 	RUNAtree->Branch( "subjet22Pt", &subjet22Pt, "subjet22Pt/F" );
 	RUNAtree->Branch( "subjet22Eta", &subjet22Eta, "subjet22Eta/F" );
 	RUNAtree->Branch( "subjet22Phi", &subjet22Phi, "subjet22Phi/F" );
 	RUNAtree->Branch( "subjet22E", &subjet22E, "subjet22E/F" );
 	RUNAtree->Branch( "subjet22btagCSVv2", &subjet22btagCSVv2, "subjet22btagCSVv2/F" );
 	RUNAtree->Branch( "subjet22btagCMVAv2", &subjet22btagCMVAv2, "subjet22btagCMVAv2/F" );
+	RUNAtree->Branch( "subjet22SF", &subjet22SF, "subjet22SF/F" );
+	RUNAtree->Branch( "subjet22SFError", &subjet22SFError, "subjet22SFError/F" );
+	//	RUNAtree->Branch( "subjet22btagEff", &subjet22btagEff, "subjet22btagEff/F" );
+	RUNAtree->Branch( "subjet22PartonFlavor", &subjet22Flavor, "subjet22PartonFlavor/F" );
 	RUNAtree->Branch( "massAve", &massAve, "massAve/F" );
 	RUNAtree->Branch( "massAsym", &massAsym, "massAsym/F" );
 	RUNAtree->Branch( "trimmedMassAve", &trimmedMassAve, "trimmedMassAve/F" );
@@ -1117,6 +1392,12 @@ void RUNBoostedAnalysis::beginJob() {
 	RUNAtree->Branch( "jet2SubjetPtRatio", &jet2SubjetPtRatio, "jet2SubjetPtRatio/F" );
 	RUNAtree->Branch( "cosPhi13412", &cosPhi13412, "cosPhi13412/F" );
 	RUNAtree->Branch( "cosPhi31234", &cosPhi31234, "cosPhi31234/F" );
+	RUNAtree->Branch( "genPartPt", &genPartonPt );
+	RUNAtree->Branch( "genPartMass", &genPartonMass );
+	RUNAtree->Branch( "genPartID", &genPartonID );
+	RUNAtree->Branch( "genPartDau0ID", &genPartonDau0ID );
+	RUNAtree->Branch( "genPartDau1ID", &genPartonDau1ID );
+
 	//RUNAtree->Branch( "scaleWeights", &scaleWeights );
 	//RUNAtree->Branch( "pdfWeights", &pdfWeights );
 	//RUNAtree->Branch( "alphaWeights", &alphaWeights );
@@ -1361,6 +1642,7 @@ void RUNBoostedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descr
 	desc.add<string>("systematics", "None");
 	desc.add<string>("PUMethod", "chs");
 	desc.add<double>("scale", 1);
+	//        desc.add<string>("EffMapName", "supportFiles/EfficiencyMapsSubjets.root");       
 	vector<string> HLTPass;
 	HLTPass.push_back("HLT_AK8PFHT700_TrimR0p1PT0p03Mass50");
 	desc.add<vector<string>>("triggerPass",	HLTPass);
@@ -1370,6 +1652,7 @@ void RUNBoostedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descr
 	desc.add<InputTag>("Event", 	InputTag("eventInfo:evtInfoEventNumber"));
 	desc.add<InputTag>("generator", 	InputTag("generator"));
 	desc.add<InputTag>("extLHEProducer", 	InputTag("externalLHEProducer"));
+	//	desc.add<InputTag>("extLHEProducer", 	InputTag("source"));
 	desc.add<InputTag>("bunchCross", 	InputTag("eventUserData:puBX"));
 	desc.add<InputTag>("rho", 	InputTag("vertexInfo:rho"));
 	desc.add<InputTag>("puNumInt", 	InputTag("eventUserData:puNInt"));
@@ -1427,6 +1710,12 @@ void RUNBoostedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descr
 	desc.add<InputTag>("subjetMass", 	InputTag("subjetsAK8CHS:subjetAK8CHSMass"));
 	desc.add<InputTag>("subjetCSVv2", 	InputTag("subjetsAK8CHS:subjetAK8CHSCSVv2"));
 	desc.add<InputTag>("subjetCMVAv2", 	InputTag("subjetsAK8CHS:subjetAK8CHSCMVAv2"));
+        desc.add<InputTag>("subjetFlavor",      InputTag("subjetsAK8CHS:subjetAK8CHSPartonFlavour"));	
+	desc.add<InputTag>("genPartPt",         InputTag("genPart:genPartPt"));
+	desc.add<InputTag>("genPartMass",         InputTag("genPart:genPartMass"));
+	desc.add<InputTag>("genPartID",         InputTag("genPart:genPartID"));
+	desc.add<InputTag>("genPartDau0ID",         InputTag("genPart:genPartDau0ID"));
+	desc.add<InputTag>("genPartDau1ID",         InputTag("genPart:genPartDau1ID"));
 	descriptions.addDefault(desc);
 }
       
@@ -1436,9 +1725,10 @@ void RUNBoostedAnalysis::beginRun(const Run& iRun, const EventSetup& iSetup){
 	 * Notice that to be used they need to be renormalized to the central event weight
 	 * at LHE level which may be different from genEvtInfo->weight()
 	 */
-	if (!isData) {
+	if (!isData ) {
 		Handle<LHERunInfoProduct> lheRunInfo;
 		iRun.getByLabel( "externalLHEProducer", lheRunInfo );
+		//iRun.getByLabel( "source", lheRunInfo );
 
 		if (lheRunInfo.isValid()) {
 			// Check which PDF set was used

@@ -1,0 +1,19 @@
+DEBUG 2016-10-15 08:15:08,273: 	 Executing command: 'submit'
+DEBUG 2016-10-15 08:15:08,324: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2016-10-15 08:15:08,373: 	 Checking credentials
+DEBUG 2016-10-15 08:15:08,373: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2016-10-15 08:15:08,373: 	 Getting proxy life time left
+DEBUG 2016-10-15 08:15:08,576: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 38765
+
+ error: 
+ retcode : 0
+DEBUG 2016-10-15 08:15:08,679: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 38765
+
+ error: 
+ retcode : 0
+DEBUG 2016-10-15 08:15:08,679: 	 Proxy valid for 10:46:05 hours
+DEBUG 2016-10-15 08:15:08,680: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).

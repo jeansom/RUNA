@@ -9,19 +9,19 @@ options = VarParsing ('python')
 
 ### General Options
 options.register('PROC', 
-		'RPVStopStopToJets_UDD312_M-120',
+		'RPVStopStopToJets_UDD323_M-100',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
 		"name"
 		)
 options.register('local', 
-		True,
+		False,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.bool,
 		"Run locally or crab"
 		)
 options.register('version', 
-		'Full',
+		'Boosted',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
 		"Version of the analysis to run. (Full, Resolved, Boosted)"
@@ -100,10 +100,16 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 		fileNames = cms.untracked.vstring(
-			'/store/user/algomez/RPVStopStopToJets_UDD312_M-150_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0/160331_081614/0000/B2GEDMNtuple_1.root',
+#			'/store/user/algomez/RPVStopStopToJets_UDD312_M-150_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0/160331_081614/0000/B2GEDMNtuple_1.root',
 			#'/store/user/algomez/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v1p0/160310_090317/0000/B2GEDMNtuple_1.root',
 			#'/store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_100723/0000/B2GEDMNtuple_1.root',
-
+#			'/store/user/jsomalwa/RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0/160726_202900/0000/B2GEDMNtuple_985.root',
+#			'file://B2GEDMNtuple_975.root'
+#			'/store/user/jsomalwa/RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0/160726_202900/0000/B2GEDMNtuple_14.root',
+#			'/store/user/jsomalwa/RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0/160726_202900/0000/B2GEDMNtuple_84.root',
+			'/store/user/algomez/QCD_Pt_1400to1800_TuneCUETP8M1_13TeV_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0/160427_162249/0000/B2GEDMNtuple_9.root',
+			'/store/user/algomez/QCD_Pt_1400to1800_TuneCUETP8M1_13TeV_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0/160427_162249/0000/B2GEDMNtuple_45.root',
+			'/store/user/algomez/QCD_Pt_1400to1800_TuneCUETP8M1_13TeV_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0/160427_162249/0000/B2GEDMNtuple_23.root'
 	    )
 	)
 
@@ -142,6 +148,7 @@ process.ResolvedAnalysisPlotsJERDown = process.ResolvedAnalysisPlots.clone( syst
 
 
 process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
+#		EffMapName              = cms.string( "EfficiencyMapsSubjets"+NAME+".root"),
 		triggerPass 		= cms.vstring( [ 'HLT_AK8PFHT650_TrimR0p1PT0p03Mass50', 'HLT_PFHT800'] ),
 		bjSample		= cms.bool( bjsample ),
 		dataPUFile		= cms.string( options.namePUFile  ),
@@ -200,6 +207,7 @@ process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone(
 		subjetMass 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiMass'),
 		subjetCSVv2 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiCSVv2'),
 		subjetCMVAv2 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiCMVAv2'),
+		subjetFlavor            = cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiPartonFlavour')
 		)
 
 process.BoostedAnalysisPlotsPuppiJESUp = process.BoostedAnalysisPlotsPuppi.clone( systematics = cms.string( 'JESUp' ) )
@@ -221,7 +229,7 @@ if 'Resolved' in options.version:
 elif 'Boosted' in options.version:
 	outputNAME = 'BoostedAnalysis_'
 	process.p += process.BoostedAnalysisPlots
-	process.p += process.BoostedAnalysisPlotsPuppi
+	#process.p += process.BoostedAnalysisPlotsPuppi
 	if options.systematics:
 		process.p += process.BoostedAnalysisPlotsJESUp
 		process.p += process.BoostedAnalysisPlotsJESDown

@@ -75,7 +75,7 @@ class RUNAnalysis : public EDAnalyzer {
       //virtual void endLuminosityBlock(LuminosityBlock const&, EventSetup const&) override;
 
       // ----------member data ---------------------------
-      //PUReweighter PUWeight_;
+      PUReweighter PUWeight_;
       int lhaPdfId;
 
       Service<TFileService> fs_;
@@ -91,6 +91,7 @@ class RUNAnalysis : public EDAnalyzer {
       string jecVersion;
       TString systematics;
       double scale;
+
       double cutMassAsym;
       double cutDelta;
       double cutDEta;
@@ -506,13 +507,6 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 		for (int i = 0; i < numJets; i++) {
 			histos1D_[ "jetPt_cutTrigger" ]->Fill( JETS[i].p4.Pt(), totalWeight );
 			histos1D_[ "jetEta_cutTrigger" ]->Fill( JETS[i].p4.Eta(), totalWeight );
-		}
-		event		= *ievent;
-		run		= *Run;
-		lumi		= *Lumi;
-
-		if( numJets > 3 ) { 
-			
 			cutmap["4Jets"] += totalWeight;
 			histos1D_[ "HT_cut4Jets" ]->Fill( HT, totalWeight );
 			histos1D_[ "jetNum_cut4Jets" ]->Fill( numJets, totalWeight );
@@ -752,7 +746,7 @@ void RUNAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) {
 void RUNAnalysis::beginJob() {
 
 	// Calculate PUWeight
-	//if ( !isData ) PUWeight_.generateWeights( dataPUFile );
+	if ( !isData ) PUWeight_.generateWeights( dataPUFile );
 
 	RUNAtree = fs_->make< TTree >("RUNATree", "RUNATree"); 
 	RUNAtree->Branch( "run", &run, "run/I" );

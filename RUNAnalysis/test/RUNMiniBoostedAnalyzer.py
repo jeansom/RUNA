@@ -27,7 +27,7 @@ boostedMassAveBins = array( 'd', [ 0, 3, 6, 9, 12, 16, 19, 23, 26, 30, 34, 39, 4
 ######################################
 def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 
-	outputFileName = 'Rootfiles/RUNMiniBoostedAnalysis_'+grooming+'_'+signalName+UNC+'_'+RANGE+'_'+args.version+'p6.root' 
+	outputFileName = 'Rootfiles/RUNMiniBoostedAnalysis_'+grooming+'_'+signalName+UNC+'_'+RANGE+'_'+args.version+'p4.root' 
 	outputFile = TFile( outputFileName, 'RECREATE' )
 
 	###################################### output Tree
@@ -39,7 +39,7 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 
 
 	################################################################################################## Histos
-	massBins = 100
+	massBins = 500
 	massXmin = 0.
 	massXmax = 500.
 	listOfOptions = [ [ j,k] for j in range(len(listCuts)-1) for k in range(1, len(listCuts) ) if k > j ]
@@ -93,13 +93,6 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 		allHistos[ "jet1SubjetPtRatio_"+sam ].Sumw2()
 		allHistos[ "jet2SubjetPtRatio_"+sam ] = TH1F( "jet2SubjetPtRatio_"+sam, "jet2SubjetPtRatio_"+sam, 20, 0., 1 )
 		allHistos[ "jet2SubjetPtRatio_"+sam ].Sumw2()
-		allHistos[ "jet1BtagCSV_"+sam ] = TH1F( "jet1BtagCSV_"+sam, "jet1BtagCSV_"+sam, 5, 0., 5 )
-		allHistos[ "jet1BtagCSV_"+sam ].Sumw2()
-		allHistos[ "jet2BtagCSV_"+sam ] = TH1F( "jet2BtagCSV_"+sam, "jet2BtagCSV_"+sam, 5, 0., 5 )
-		allHistos[ "jet2BtagCSV_"+sam ].Sumw2()
-		allHistos[ "jetsBtagCSV_"+sam ] = TH1F( "jetsBtagCSV_"+sam, "jetsBtagCSV_"+sam, 5, 0., 5 )
-		allHistos[ "jetsBtagCSV_"+sam ].Sumw2()
-
 		allHistos[ "deltaEtaDijet_n-1_"+sam ] = TH1F( "deltaEtaDijet_n-1_"+sam, "deltaEtaDijet_n-1_"+sam, 50, 0., 5 )
 		allHistos[ "deltaEtaDijet_n-1_"+sam ].Sumw2()
 		allHistos[ "prunedMassAsym_n-1_"+sam ] = TH1F( "prunedMassAsym_n-1_"+sam, "prunedMassAsym_n-1_"+sam, 20, 0., 1 )
@@ -115,7 +108,7 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 			allHistos[ "jet2Tau31_n-1_"+sam ] = TH1F( "jet2Tau31_n-1_"+sam, "jet2Tau31_n-1_"+sam, 20, 0., 1 )
 			allHistos[ "jet2Tau31_n-1_"+sam ].Sumw2()
 		'''
-		listCuts.append( [ 'btag' ] )
+
 		for var in listCuts:
 			if 'deltaEta' in var[0]: 
 				allHistos[ var[0]+'_'+sam ] = TH1F( var[0]+'_'+sam, var[0]+'_'+sam, 50, 0., 5. )
@@ -137,7 +130,6 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 			allHistos[ "jet1Pt_"+var[0]+"_"+sam ].Sumw2()
 			allHistos[ "jet2Pt_"+var[0]+"_"+sam ] = TH1F( "jet2Pt_"+var[0]+"_"+sam, "jet2Pt_"+var[0]+"_"+sam, 2000, 0., 2000 )
 			allHistos[ "jet2Pt_"+var[0]+"_"+sam ].Sumw2()
-		listCuts.remove( ['btag'] )
 
 		for ind in listOfOptions:
 			tmpName = listCuts[ind[0]][0]+'Vs'+listCuts[ind[1]][0]+'_'+sam
@@ -147,43 +139,39 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 					)
 			allHistos[ tmpName ].Sumw2()
 
-			#tmpNameSam = listCuts[-2][0]+'Vs'+listCuts[-1][0]+'_'+sam
-			tmpNameSam = tmpName #listCuts[-2][0]+'Vs'+listCuts[-1][0]+'_'+sam
-			#if 'RPV' in sam: massBins = 50
-			#allHistos[ "massAve_"+tmpNameSam+'_ABCDProj' ] = TH1F( "massAve_"+tmpNameSam+'_ABCDProj', "massAve_"+tmpNameSam+'_ABCDProj', len(boostedMassAveBins)-1, boostedMassAveBins)
-			#allHistos[ "massAve_"+tmpNameSam+'_BC' ] = TH1F( "massAve_"+tmpNameSam+'_BC', "massAve_"+tmpNameSam+'_BC',  len(boostedMassAveBins)-1, boostedMassAveBins )
-			#else:
-			allHistos[ "massAve_"+tmpNameSam+'_ABCDProj' ] = TH1F( "massAve_"+tmpNameSam+'_ABCDProj', "massAve_"+tmpNameSam+'_ABCDProj', massBins, massXmin, massXmax )
-			allHistos[ "massAve_"+tmpNameSam+'_BC' ] = TH1F( "massAve_"+tmpNameSam+'_BC', "massAve_"+tmpNameSam+'_BC', massBins, massXmin, massXmax )
-			allHistos[ "massAve_"+tmpNameSam+'_ABCDProj' ].Sumw2()
-			allHistos[ "massAve_"+tmpNameSam+'_BC' ].Sumw2()
+		tmpNameSam = listCuts[-2][0]+'Vs'+listCuts[-1][0]+'_'+sam
+		if 'RPV' in sam: massBins = 50
+		#allHistos[ "massAve_"+tmpNameSam+'_ABCDProj' ] = TH1F( "massAve_"+tmpNameSam+'_ABCDProj', "massAve_"+tmpNameSam+'_ABCDProj', len(boostedMassAveBins)-1, boostedMassAveBins)
+		#allHistos[ "massAve_"+tmpNameSam+'_BC' ] = TH1F( "massAve_"+tmpNameSam+'_BC', "massAve_"+tmpNameSam+'_BC',  len(boostedMassAveBins)-1, boostedMassAveBins )
+		#else:
+		allHistos[ "massAve_"+tmpNameSam+'_ABCDProj' ] = TH1F( "massAve_"+tmpNameSam+'_ABCDProj', "massAve_"+tmpNameSam+'_ABCDProj', massBins, massXmin, massXmax )
+		allHistos[ "massAve_"+tmpNameSam+'_BC' ] = TH1F( "massAve_"+tmpNameSam+'_BC', "massAve_"+tmpNameSam+'_BC', massBins, massXmin, massXmax )
+		allHistos[ "massAve_"+tmpNameSam+'_ABCDProj' ].Sumw2()
+		allHistos[ "massAve_"+tmpNameSam+'_BC' ].Sumw2()
 
-			allHistos[ tmpNameSam+'_Bkg' ] = TH2F( tmpNameSam+'_Bkg', tmpNameSam+'_Bkg', 
-					#(50 if 'deltaEta' in listCuts[-2][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[-2][0] else 1. ),
-					#(50 if 'deltaEta' in listCuts[-1][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[-1][0] else 1. ) 
-					(50 if 'deltaEta' in listCuts[ind[0]][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[ind[0]][0] else 1. ),
-					(50 if 'deltaEta' in listCuts[ind[1]][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[ind[1]][0] else 1. ) 
+		allHistos[ tmpNameSam+'_Bkg' ] = TH2F( tmpNameSam+'_Bkg', tmpNameSam+'_Bkg', 
+				(50 if 'deltaEta' in listCuts[-2][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[-2][0] else 1. ),
+				(50 if 'deltaEta' in listCuts[-1][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[-1][0] else 1. ) 
+				)
+		allHistos[ tmpNameSam+'_Bkg' ].Sumw2()
+
+		for k in [ 'A', 'B', 'C', 'D' ]:
+			#allHistos[ "massAve_"+tmpNameSam+'_'+k ] = TH1F( "massAve_"+tmpNameSam+'_'+k, "massAve_"+tmpNameSam+'_'+k,  len(boostedMassAveBins)-1, boostedMassAveBins )
+			allHistos[ "massAve_"+tmpNameSam+'_'+k ] = TH1F( "massAve_"+tmpNameSam+'_'+k, "massAve_"+tmpNameSam+'_'+k, massBins, massXmin, massXmax )
+			allHistos[ "massAve_"+tmpNameSam+'_'+k ].Sumw2()
+			allHistos[ tmpNameSam+'_'+k ] = TH2F( tmpNameSam+'_'+k, tmpNameSam+'_'+k, 
+					(50 if 'deltaEta' in listCuts[-2][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[-2][0] else 1. ),
+					(50 if 'deltaEta' in listCuts[-1][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[-1][0] else 1. ) 
 					)
-			allHistos[ tmpNameSam+'_Bkg' ].Sumw2()
-
-			for k in [ 'A', 'B', 'C', 'D' ]:
-				#allHistos[ "massAve_"+tmpNameSam+'_'+k ] = TH1F( "massAve_"+tmpNameSam+'_'+k, "massAve_"+tmpNameSam+'_'+k,  len(boostedMassAveBins)-1, boostedMassAveBins )
-				allHistos[ "massAve_"+tmpNameSam+'_'+k ] = TH1F( "massAve_"+tmpNameSam+'_'+k, "massAve_"+tmpNameSam+'_'+k, massBins, massXmin, massXmax )
-				allHistos[ "massAve_"+tmpNameSam+'_'+k ].Sumw2()
-				allHistos[ tmpNameSam+'_'+k ] = TH2F( tmpNameSam+'_'+k, tmpNameSam+'_'+k, 
-						#(50 if 'deltaEta' in listCuts[-2][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[-2][0] else 1. ),
-						#(50 if 'deltaEta' in listCuts[-1][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[-1][0] else 1. ) 
-						(50 if 'deltaEta' in listCuts[ind[0]][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[ind[0]][0] else 1. ),
-						(50 if 'deltaEta' in listCuts[ind[1]][0] else 20 ), 0., (5. if 'deltaEta' in listCuts[ind[1]][0] else 1. ) 
-						)
-				allHistos[ tmpNameSam+'_'+k ].Sumw2()
+			allHistos[ tmpNameSam+'_'+k ].Sumw2()
 	#print allHistos
 
 	################################################################################################## Running the Analysis
 	for sample in dictSamples:
 
 		####### Get GenTree 
-		inputFile, events, numEntries = getTree( dictSamples[ sample ], ('BoostedAnalysisPlotsPuppi'+( '' if 'PDF' in UNC else UNC)+'/RUNATree' if 'Puppi' in args.grooming else 'BoostedAnalysisPlots'+( '' if 'PDF' in UNC else UNC)+'/RUNATree' ) )
+		if 'PDF' in UNC: UNC = ''
+		inputFile, events, numEntries = getTree( dictSamples[ sample ], ('BoostedAnalysisPlotsPuppi'+UNC+'/RUNATree' if 'Puppi' in args.grooming else 'BoostedAnalysisPlots'+UNC+'/RUNATree' ) )
 		print '-'*40
 		print '------> ', sample
 		print '------> Number of events: '+str(numEntries)
@@ -201,9 +189,6 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 			cutFlowList[ k[0] ] = 0
 			cutFlowScaledList[ k[0] ] = 0
 			cutFlowScaledListWeights[ k[0] ] = 0
-		cutFlowList[ 'btag' ] = 0
-		cutFlowScaledList[ 'btag' ] = 0
-		cutFlowScaledListWeights[ 'btag' ] = 0
 
 		for i in xrange(numEntries):
 			events.GetEntry(i)
@@ -218,7 +203,7 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 			Lumi     = events.lumi
 			NumEvent = events.event
 			puWeight	= events.puWeight
-			if 'v06' in args.version: pdfWeight	= events.pdfWeight
+			pdfWeight	= events.pdfWeight
 			lumiWeight	= events.lumiWeight
 			HT		= events.HT
 			MET		= events.MET
@@ -232,9 +217,6 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 			jet2Eta          = events.jet2Eta
 			jet1CosThetaStar	= events.jet1CosThetaStar
 			jet2CosThetaStar	= events.jet2CosThetaStar
-			jet1BtagCSV		= ( events.jet1btagCSVv2 > 0.800 )
-			jet2BtagCSV		= ( events.jet2btagCSVv2 > 0.800 )
-			
 			#print 'Entry ', Run, ':', Lumi, ':', NumEvent
 
 			if 'DATA' in sample: scale = 1
@@ -243,7 +225,7 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 
 			if 'PDF' in UNC:
 				if 'Up' in UNC: scale = scale*(1+pdfWeight)
-				else: scale = scale*(1-pdfWeight)
+				else: scale = scale(1-pdfWeight)
 
 			cutFlowList[ 'Process' ] += 1
 			cutFlowScaledList[ 'Process' ] += scale
@@ -293,15 +275,6 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 				allHistos[ "jet2Tau32_"+sam ].Fill( events.jet2Tau32, scale )
 				allHistos[ "jet1SubjetPtRatio_"+sam ].Fill( events.jet1SubjetPtRatio, scale )
 				allHistos[ "jet2SubjetPtRatio_"+sam ].Fill( events.jet2SubjetPtRatio, scale )
-				allHistos[ "jet1BtagCSV_"+sam ].Fill( 1 if jet1BtagCSV else 0 )
-				allHistos[ "jet2BtagCSV_"+sam ].Fill( 1 if jet1BtagCSV else 0 )
-
-				bothBtag = ( jet1BtagCSV and jet2BtagCSV )
-				oneBtag = ( jet1BtagCSV or jet2BtagCSV )
-				if bothBtag: allHistos[ "jetsBtagCSV_"+sam ].Fill( 2 )
-				elif oneBtag: allHistos[ "jetsBtagCSV_"+sam ].Fill( 1 )
-				else: allHistos[ "jetsBtagCSV_"+sam ].Fill( 0 )
-
 				for var in listCuts:
 					#allHistos[ var[0]+'_'+sample ].Fill( getattr( events, var[0] ), scale )
 					nextCut = False
@@ -325,23 +298,6 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 						cutFlowList[ var[0] ] += 1
 						cutFlowScaledList[ var[0] ] += scale
 						cutFlowScaledList[ var[0] ] += (puWeight*puWeight)
-
-				if oneBtag and all(sigCutsList): 
-					allHistos[ 'massAve_btag_'+sample ].Fill( massAve, scale )  ### adding two prong scale factor
-					allHistos[ 'jet1Tau21_btag_'+sample ].Fill( events.jet1Tau21, scale )
-					allHistos[ 'jet2Tau21_btag_'+sample ].Fill( events.jet2Tau21, scale )
-					#if 'low' in args.RANGE: allHistos[ 'jet1Tau31_btag_'+sample ].Fill( events.jet1Tau31, scale )
-					#if 'low' in args.RANGE: allHistos[ 'jet2Tau31_btag_'+sample ].Fill( events.jet2Tau31, scale )
-					allHistos[ 'prunedMassAsym_btag_'+sample ].Fill( events.prunedMassAsym, scale )
-					allHistos[ 'deltaEtaDijet_btag_'+sample ].Fill( events.deltaEtaDijet, scale )
-					allHistos[ "HT_btag_"+sam ].Fill( HT, scale )
-					allHistos[ "MET_btag_"+sam ].Fill( MET, scale )
-					allHistos[ "numJets_btag_"+sam ].Fill( numJets, scale )
-					allHistos[ "jet1Pt_btag_"+sam ].Fill( jet1Pt, scale )
-					allHistos[ "jet2Pt_btag_"+sam ].Fill( jet2Pt, scale )
-					cutFlowList[ 'btag' ] += 1
-					cutFlowScaledList[ 'btag' ] += scale
-					cutFlowScaledList[ 'btag' ] += (puWeight*puWeight)
 				#### n-1 plots
 				'''
 				if ( 'low' in args.RANGE ):
@@ -371,19 +327,6 @@ def myAnalyzer( dictSamples, listCuts, signalName, RANGE, UNC ):
 				if ( all(sigCutsList[:-2]) ): # and ( getattr( events, listCuts[5][0] ) > (listCuts[5][1]*2) )): 
 					allHistos[ listCuts[-2][0]+'Vs'+listCuts[-1][0]+'_'+sample+'_Bkg' ].Fill( getattr( events, listCuts[0][0] ), getattr( events, listCuts[1][0] ), scale )
 					plotABCD( [ ( getattr( events, listCuts[-2][0] ) < listCuts[-2][1] ), ( getattr( events, listCuts[-1][0] ) < listCuts[-1][1] ) ], [ listCuts[-2][0], listCuts[-1][0] ], events, massAve, scale, sample )
-
-				####### bkg estimation alternatives
-				if sigCutsList[2]: 
-					allHistos[ 'jet1Tau21VsdeltaEtaDijet_'+sample+'_Bkg' ].Fill( getattr( events, 'jet1Tau21' ), getattr( events, 'deltaEtaDijet' ), scale )
-					allHistos[ 'jet2Tau21VsdeltaEtaDijet_'+sample+'_Bkg' ].Fill( getattr( events, 'jet2Tau21' ), getattr( events, 'deltaEtaDijet' ), scale )
-					plotABCDv2( [ ( getattr( events, listCuts[0][0] ) < listCuts[0][1] ), ( getattr( events, listCuts[1][0] ) < listCuts[1][1] ), ( getattr( events, listCuts[-1][0] ) < listCuts[-1][1] ) ], [ listCuts[0][0], listCuts[-1][0] ], events, massAve, scale, sample )
-					plotABCDv2( [ ( getattr( events, listCuts[0][0] ) < listCuts[0][1] ), ( getattr( events, listCuts[1][0] ) < listCuts[1][1] ), ( getattr( events, listCuts[-1][0] ) < listCuts[-1][1] ) ], [ listCuts[1][0], listCuts[-1][0] ], events, massAve, scale, sample )
-
-				if sigCutsList[-1]: 
-					allHistos[ 'jet1Tau21VsprunedMassAsym_'+sample+'_Bkg' ].Fill( getattr( events, 'jet1Tau21' ), getattr( events, 'prunedMassAsym' ), scale )
-					allHistos[ 'jet2Tau21VsprunedMassAsym_'+sample+'_Bkg' ].Fill( getattr( events, 'jet2Tau21' ), getattr( events, 'prunedMassAsym' ), scale )
-					plotABCDv2( [ ( getattr( events, listCuts[0][0] ) < listCuts[0][1] ), ( getattr( events, listCuts[1][0] ) < listCuts[1][1] ), ( getattr( events, listCuts[-2][0] ) < listCuts[-2][1] ) ], [ listCuts[0][0], listCuts[-2][0] ], events, massAve, scale, sample )
-					plotABCDv2( [ ( getattr( events, listCuts[0][0] ) < listCuts[0][1] ), ( getattr( events, listCuts[1][0] ) < listCuts[1][1] ), ( getattr( events, listCuts[-2][0] ) < listCuts[-2][1] ) ], [ listCuts[1][0], listCuts[-2][0] ], events, massAve, scale, sample )
 
 						
 
@@ -441,23 +384,6 @@ def plotABCD( listSel, var, fromTree, massAve, scale, sample ):
 		allHistos[ 'massAve_'+nameABCD+'_C' ].Fill( massAve, scale )
 		allHistos[ nameABCD+'_C' ].Fill( getattr( fromTree, var[0] ), getattr( fromTree, var[1] ), scale )
 	else:
-		allHistos[ 'massAve_'+nameABCD+'_D' ].Fill( massAve, scale )
-		allHistos[ nameABCD+'_D' ].Fill( getattr( fromTree, var[0] ), getattr( fromTree, var[1] ), scale )
-
-def plotABCDv2( listSel, var, fromTree, massAve, scale, sample ):
-	"""docstring for plotABCD"""
-
-	nameABCD = var[0]+'Vs'+var[1]+'_'+sample
-	if (listSel[0] and listSel[1]) and listSel[2]: 
-		allHistos[ 'massAve_'+nameABCD+'_A' ].Fill( massAve, scale )
-		allHistos[ nameABCD+'_A' ].Fill( getattr( fromTree, var[0] ), getattr( fromTree, var[1] ), scale )
-	elif (listSel[0] and listSel[1]) and not listSel[2]: 
-		allHistos[ 'massAve_'+nameABCD+'_B' ].Fill( massAve, scale )
-		allHistos[ nameABCD+'_B' ].Fill( getattr( fromTree, var[0] ), getattr( fromTree, var[1] ), scale )
-	elif not listSel[0] and not listSel[1] and listSel[2]: 
-		allHistos[ 'massAve_'+nameABCD+'_C' ].Fill( massAve, scale )
-		allHistos[ nameABCD+'_C' ].Fill( getattr( fromTree, var[0] ), getattr( fromTree, var[1] ), scale )
-	elif not listSel[0] and not listSel[1] and not listSel[2]: 
 		allHistos[ 'massAve_'+nameABCD+'_D' ].Fill( massAve, scale )
 		allHistos[ nameABCD+'_D' ].Fill( getattr( fromTree, var[0] ), getattr( fromTree, var[1] ), scale )
 
