@@ -101,16 +101,6 @@ class RUNBoostedAnalysis : public EDAnalyzer {
       FactorizedJetCorrector * massJECAK8;
       JetCorrectionUncertainty *jetCorrUnc;
 
-  //string EffMapName;
-
-  //   TFile *EffMap;
- 
-  // TH2D *EffMapB;
-  // TH2D *EffMapC;
-  // TH2D *EffMapUDSG;
-
-
-
       ULong64_t event = 0;
       int numJets = 0, numPV = 0;
       unsigned int lumi = 0, run=0;
@@ -123,7 +113,6 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 	    subjet22Pt = -999, subjet22Eta = -999, subjet22Phi = -999, subjet22E = -999, subjet22btagCSVv2 = -9999, subjet22btagCMVAv2 = -9999,
     	    subjet11SF = 0, subjet12SF = 0, subjet21SF = 0, subjet22SF = 0,
     	    subjet11SFError = 0, subjet12SFError = 0, subjet21SFError = 0, subjet22SFError = 0,
-      // 	    subjet11btagEff = 0, subjet12btagEff = 0, subjet21btagEff = 0, subjet22btagEff = 0,
 	    subjet11Flavor = 0, subjet12Flavor = 0, subjet21Flavor = 0, subjet22Flavor = 0,
 	    massAve = -9999, massAsym = -9999, 
 	    jet1PrunedMass = -9999, jet2PrunedMass = -9999,
@@ -300,16 +289,7 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 
 		 
 {
-  //        EffMapName      = iConfig.getParameter<string>("EffMapName");
-  //	const char *MapName = EffMapName.c_str();
-
-  //	EffMap = new TFile(MapName);
-  //	EffMapB = (TH2D*)EffMap->Get("efficiency_b");
-  //	EffMapC = (TH2D*)EffMap->Get("efficiency_c");
-  //	EffMapUDSG = (TH2D*)EffMap->Get("efficiency_udsg");
-
   consumes<LHERunInfoProduct,edm::InRun> (edm::InputTag("externalLHEProducer"));
-	//	consumes<LHERunInfoProduct,edm::InRun> (edm::InputTag("source"));
 	
 	scale 		= iConfig.getParameter<double>("scale");
 	bjSample 	= iConfig.getParameter<bool>("bjSample");
@@ -895,7 +875,6 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			  double SFDown = readerDown.eval(BTagEntry::FLAV_B, subjet11Eta, subjet11PtTemp);
 			  subjet11SFError = fabs( SFUp - subjet11SF ) > fabs( SFDown - subjet11SF ) ? fabs( SFUp - subjet11SF ) : fabs( SFDown - subjet11SF );
 			  if ( subjet11PtTemp != subjet11Pt ) subjet11SFError *= 2;
-			  //			  subjet11btagEff = EffMapB->GetBinContent( EffMapB->GetXaxis()->FindBin(subjet11Pt), EffMapB->GetYaxis()->FindBin(fabs(subjet11Eta)));
 			}
 			else if ( fabs(subjet11Flavor) == 4 ) {
 			  subjet11SF = reader.eval(BTagEntry::FLAV_C, subjet11Eta, subjet11PtTemp);
@@ -903,14 +882,12 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			  double SFDown = readerDown.eval(BTagEntry::FLAV_C, subjet11Eta, subjet11PtTemp);
 			  subjet11SFError = fabs( SFUp - subjet11SF ) > fabs( SFDown - subjet11SF ) ? fabs( SFUp - subjet11SF ) : fabs( SFDown - subjet11SF );
 			  if ( subjet11PtTemp != subjet11Pt ) subjet11SFError *= 2;
-			  //			  subjet11btagEff = EffMapC->GetBinContent( EffMapB->GetXaxis()->FindBin(subjet11Pt), EffMapC->GetYaxis()->FindBin(fabs(subjet11Eta)));
 			}				
 			else if ( fabs(subjet11Flavor) != 0 ) {
 			  subjet11SF = readerLight.eval(BTagEntry::FLAV_UDSG, subjet11Eta, subjet11PtTemp);
 			  double SFUp = readerLightUp.eval(BTagEntry::FLAV_UDSG, subjet11Eta, subjet11PtTemp);
 			  double SFDown = readerLightDown.eval(BTagEntry::FLAV_UDSG, subjet11Eta, subjet11PtTemp);
 			  subjet11SFError = fabs( SFUp - subjet11SF ) > fabs( SFDown - subjet11SF ) ? fabs( SFUp - subjet11SF ) : fabs( SFDown - subjet11SF );
-			  //			  subjet11btagEff = EffMapUDSG->GetBinContent( EffMapUDSG->GetXaxis()->FindBin(subjet11Pt), EffMapUDSG->GetYaxis()->FindBin(fabs(subjet11Eta)));
 			}
 			
 			double subjet12PtTemp  = JETS[0].subjet1.Pt();
@@ -932,7 +909,6 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			  double SFDown = readerDown.eval(BTagEntry::FLAV_B, subjet12Eta, subjet12PtTemp);
 			  subjet12SFError = fabs( SFUp - subjet12SF ) > fabs( SFDown - subjet12SF ) ? fabs( SFUp - subjet12SF ) : fabs( SFDown - subjet12SF );
 			  if ( subjet12PtTemp != subjet12Pt ) subjet12SFError *= 2;
-			  //			  subjet12btagEff = EffMapB->GetBinContent( EffMapB->GetXaxis()->FindBin(subjet12Pt), EffMapB->GetYaxis()->FindBin(fabs(subjet12Eta)));
 			}
 			else if ( fabs( subjet12Flavor ) == 4 ) {
 			  subjet12SF = reader.eval(BTagEntry::FLAV_C, subjet12Eta, subjet12PtTemp);
@@ -940,14 +916,12 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			  double SFDown = readerDown.eval(BTagEntry::FLAV_C, subjet12Eta, subjet12PtTemp);
 			  subjet12SFError = fabs( SFUp - subjet12SF ) > fabs( SFDown - subjet12SF ) ? fabs( SFUp - subjet12SF ) : fabs( SFDown - subjet12SF );
 			  if ( subjet12PtTemp != subjet12Pt ) subjet12SFError *= 2;
-			  //			  subjet12btagEff = EffMapC->GetBinContent( EffMapB->GetXaxis()->FindBin(subjet12Pt), EffMapC->GetYaxis()->FindBin(fabs(subjet12Eta)));
 			}	
 			else if ( fabs( subjet12Flavor ) != 0 ) {
 			  subjet12SF = readerLight.eval(BTagEntry::FLAV_UDSG, subjet12Eta, subjet12PtTemp);
 			  double SFUp = readerLightUp.eval(BTagEntry::FLAV_UDSG, subjet12Eta, subjet12PtTemp);
 			  double SFDown = readerLightDown.eval(BTagEntry::FLAV_UDSG, subjet12Eta, subjet12PtTemp);
 			  subjet12SFError = fabs( SFUp - subjet12SF ) > fabs( SFDown - subjet12SF ) ? fabs( SFUp - subjet12SF ) : fabs( SFDown - subjet12SF );
-			  //			  subjet12btagEff = EffMapUDSG->GetBinContent( EffMapUDSG->GetXaxis()->FindBin(subjet12Pt), EffMapUDSG->GetYaxis()->FindBin(fabs(subjet12Eta)));
 			}
 			
 			double subjet21PtTemp  = JETS[1].subjet0.Pt();
@@ -969,7 +943,6 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			  double SFDown = readerDown.eval(BTagEntry::FLAV_B, subjet21Eta, subjet21PtTemp);
 			  subjet21SFError = fabs( SFUp - subjet21SF ) > fabs( SFDown - subjet21SF ) ? fabs( SFUp - subjet21SF ) : fabs( SFDown - subjet21SF );
 			  if ( subjet21PtTemp != subjet21Pt ) subjet21SFError *= 2;
-			  //			  subjet21btagEff = EffMapB->GetBinContent( EffMapB->GetXaxis()->FindBin(subjet21Pt), EffMapB->GetYaxis()->FindBin(fabs(subjet21Eta)));
 			}
 			else if ( fabs( subjet21Flavor ) == 4 ) {
 			  subjet21SF = reader.eval(BTagEntry::FLAV_C, subjet21Eta, subjet21PtTemp);
@@ -977,14 +950,12 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			  double SFDown = readerDown.eval(BTagEntry::FLAV_C, subjet21Eta, subjet21PtTemp);
 			  subjet21SFError = fabs( SFUp - subjet21SF ) > fabs( SFDown - subjet21SF ) ? fabs( SFUp - subjet21SF ) : fabs( SFDown - subjet21SF );
 			  if ( subjet21PtTemp != subjet21Pt ) subjet21SFError *= 2;
-			  //			  subjet21btagEff = EffMapC->GetBinContent( EffMapB->GetXaxis()->FindBin(subjet21Pt), EffMapC->GetYaxis()->FindBin(fabs(subjet21Eta)));
 			}	
 			else if ( fabs( subjet21Flavor ) != 0 ) {
 			  subjet21SF = readerLight.eval(BTagEntry::FLAV_UDSG, subjet21Eta, subjet21PtTemp);
 			  double SFUp = readerLightUp.eval(BTagEntry::FLAV_UDSG, subjet21Eta, subjet21PtTemp);
 			  double SFDown = readerLightDown.eval(BTagEntry::FLAV_UDSG, subjet21Eta, subjet21PtTemp);
 			  subjet21SFError = fabs( SFUp - subjet21SF ) > fabs( SFDown - subjet21SF ) ? fabs( SFUp - subjet21SF ) : fabs( SFDown - subjet21SF );
-			  //			  subjet21btagEff = EffMapUDSG->GetBinContent( EffMapUDSG->GetXaxis()->FindBin(subjet21Pt), EffMapUDSG->GetYaxis()->FindBin(fabs(subjet21Eta)));
 			}
 
 			
@@ -1007,7 +978,6 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			  double SFDown = readerDown.eval(BTagEntry::FLAV_B, subjet22Eta, subjet22PtTemp);
 			  subjet22SFError = fabs( SFUp - subjet22SF ) > fabs( SFDown - subjet22SF ) ? fabs( SFUp - subjet22SF ) : fabs( SFDown - subjet22SF );
 			  if ( subjet22PtTemp != subjet22Pt ) subjet22SFError *= 2;
-			  //			  subjet22btagEff = EffMapB->GetBinContent( EffMapB->GetXaxis()->FindBin(subjet22Pt), EffMapB->GetYaxis()->FindBin(fabs(subjet22Eta)));
 			}
 			else if ( fabs( subjet22Flavor ) == 4 ) {
 			  subjet22SF = reader.eval(BTagEntry::FLAV_C, subjet22Eta, subjet22PtTemp);
@@ -1015,14 +985,12 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			  double SFDown = readerDown.eval(BTagEntry::FLAV_C, subjet22Eta, subjet22PtTemp);
 			  subjet22SFError = fabs( SFUp - subjet22SF ) > fabs( SFDown - subjet22SF ) ? fabs( SFUp - subjet22SF ) : fabs( SFDown - subjet22SF );
 			  if ( subjet22PtTemp != subjet22Pt ) subjet22SFError *= 2;
-			  //			  subjet22btagEff = EffMapC->GetBinContent( EffMapB->GetXaxis()->FindBin(subjet22Pt), EffMapC->GetYaxis()->FindBin(fabs(subjet22Eta)));
 			}	
 			else if ( fabs( subjet22Flavor ) != 0 ) {
 			  subjet22SF = readerLight.eval(BTagEntry::FLAV_UDSG, subjet22Eta, subjet22PtTemp);
 			  double SFUp = readerLightUp.eval(BTagEntry::FLAV_UDSG, subjet22Eta, subjet22PtTemp);
 			  double SFDown = readerLightDown.eval(BTagEntry::FLAV_UDSG, subjet22Eta, subjet22PtTemp);
 			  subjet22SFError = fabs( SFUp - subjet22SF ) > fabs( SFDown - subjet22SF ) ? fabs( SFUp - subjet22SF ) : fabs( SFDown - subjet22SF );
-			  //			  subjet22btagEff = EffMapUDSG->GetBinContent( EffMapUDSG->GetXaxis()->FindBin(subjet22Pt), EffMapUDSG->GetYaxis()->FindBin(fabs(subjet22Eta)));
 			}
 
 
@@ -1337,7 +1305,6 @@ void RUNBoostedAnalysis::beginJob() {
 	RUNAtree->Branch( "subjet11btagCMVAv2", &subjet11btagCMVAv2, "subjet11btagCMVAv2/F" );
 	RUNAtree->Branch( "subjet11SF", &subjet11SF, "subjet11SF/F" );
 	RUNAtree->Branch( "subjet11SFError", &subjet11SFError, "subjet11SFError/F" );
-	//	RUNAtree->Branch( "subjet11btagEff", &subjet11btagEff, "subjet11btagEff/F" );
 	RUNAtree->Branch( "subjet11PartonFlavor", &subjet11Flavor, "subjet11PartonFlavor/F" );
 	RUNAtree->Branch( "subjet12Pt", &subjet12Pt, "subjet12Pt/F" );
 	RUNAtree->Branch( "subjet12Eta", &subjet12Eta, "subjet12Eta/F" );
@@ -1347,7 +1314,6 @@ void RUNBoostedAnalysis::beginJob() {
 	RUNAtree->Branch( "subjet12btagCMVAv2", &subjet12btagCMVAv2, "subjet12btagCMVAv2/F" );
 	RUNAtree->Branch( "subjet12SF", &subjet12SF, "subjet12SF/F" );
 	RUNAtree->Branch( "subjet12SFError", &subjet12SFError, "subjet12SFError/F" );
-	//	RUNAtree->Branch( "subjet12btagEff", &subjet12btagEff, "subjet12btagEff/F" );
 	RUNAtree->Branch( "subjet12PartonFlavor", &subjet12Flavor, "subjet12PartonFlavor/F" );
 	RUNAtree->Branch( "subjet21Pt", &subjet21Pt, "subjet21Pt/F" );
 	RUNAtree->Branch( "subjet21Eta", &subjet21Eta, "subjet21Eta/F" );
@@ -1357,7 +1323,6 @@ void RUNBoostedAnalysis::beginJob() {
 	RUNAtree->Branch( "subjet21btagCMVAv2", &subjet21btagCMVAv2, "subjet21btagCMVAv2/F" );
 	RUNAtree->Branch( "subjet21SF", &subjet21SF, "subjet21SF/F" );
 	RUNAtree->Branch( "subjet21SFError", &subjet21SFError, "subjet21SFError/F" );
-	//	RUNAtree->Branch( "subjet21btagEff", &subjet21btagEff, "subjet21btagEff/F" );
 	RUNAtree->Branch( "subjet21PartonFlavor", &subjet21Flavor, "subjet21PartonFlavor/F" );
 	RUNAtree->Branch( "subjet22Pt", &subjet22Pt, "subjet22Pt/F" );
 	RUNAtree->Branch( "subjet22Eta", &subjet22Eta, "subjet22Eta/F" );
@@ -1367,7 +1332,6 @@ void RUNBoostedAnalysis::beginJob() {
 	RUNAtree->Branch( "subjet22btagCMVAv2", &subjet22btagCMVAv2, "subjet22btagCMVAv2/F" );
 	RUNAtree->Branch( "subjet22SF", &subjet22SF, "subjet22SF/F" );
 	RUNAtree->Branch( "subjet22SFError", &subjet22SFError, "subjet22SFError/F" );
-	//	RUNAtree->Branch( "subjet22btagEff", &subjet22btagEff, "subjet22btagEff/F" );
 	RUNAtree->Branch( "subjet22PartonFlavor", &subjet22Flavor, "subjet22PartonFlavor/F" );
 	RUNAtree->Branch( "massAve", &massAve, "massAve/F" );
 	RUNAtree->Branch( "massAsym", &massAsym, "massAsym/F" );
@@ -1642,7 +1606,6 @@ void RUNBoostedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descr
 	desc.add<string>("systematics", "None");
 	desc.add<string>("PUMethod", "chs");
 	desc.add<double>("scale", 1);
-	//        desc.add<string>("EffMapName", "supportFiles/EfficiencyMapsSubjets.root");       
 	vector<string> HLTPass;
 	HLTPass.push_back("HLT_AK8PFHT700_TrimR0p1PT0p03Mass50");
 	desc.add<vector<string>>("triggerPass",	HLTPass);
@@ -1652,7 +1615,6 @@ void RUNBoostedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descr
 	desc.add<InputTag>("Event", 	InputTag("eventInfo:evtInfoEventNumber"));
 	desc.add<InputTag>("generator", 	InputTag("generator"));
 	desc.add<InputTag>("extLHEProducer", 	InputTag("externalLHEProducer"));
-	//	desc.add<InputTag>("extLHEProducer", 	InputTag("source"));
 	desc.add<InputTag>("bunchCross", 	InputTag("eventUserData:puBX"));
 	desc.add<InputTag>("rho", 	InputTag("vertexInfo:rho"));
 	desc.add<InputTag>("puNumInt", 	InputTag("eventUserData:puNInt"));
@@ -1728,7 +1690,6 @@ void RUNBoostedAnalysis::beginRun(const Run& iRun, const EventSetup& iSetup){
 	if (!isData ) {
 		Handle<LHERunInfoProduct> lheRunInfo;
 		iRun.getByLabel( "externalLHEProducer", lheRunInfo );
-		//iRun.getByLabel( "source", lheRunInfo );
 
 		if (lheRunInfo.isValid()) {
 			// Check which PDF set was used
