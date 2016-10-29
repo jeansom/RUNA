@@ -148,7 +148,6 @@ process.ResolvedAnalysisPlotsJERDown = process.ResolvedAnalysisPlots.clone( syst
 
 
 process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
-#		EffMapName              = cms.string( "EfficiencyMapsSubjets"+NAME+".root"),
 		triggerPass 		= cms.vstring( [ 'HLT_AK8PFHT650_TrimR0p1PT0p03Mass50', 'HLT_PFHT800'] ),
 		bjSample		= cms.bool( bjsample ),
 		dataPUFile		= cms.string( options.namePUFile  ),
