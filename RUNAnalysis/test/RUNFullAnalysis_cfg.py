@@ -15,7 +15,7 @@ options.register('PROC',
 		"name"
 		)
 options.register('local', 
-		True,
+		False,
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.bool,
 		"Run locally or crab"
@@ -47,47 +47,6 @@ options.register('namePUFile',
 
 
 
-### Resolved Analysis Options
-options.register('MassRes', 
-		0.20,
-		VarParsing.multiplicity.singleton,
-		VarParsing.varType.float,
-		"MassRes cut"
-		)
-options.register('Delta', 
-		180.0,
-		VarParsing.multiplicity.singleton,
-		VarParsing.varType.float,
-		"Delta cut"
-		)
-options.register('DeltaR', 
-		1.5,
-		VarParsing.multiplicity.singleton,
-		VarParsing.varType.float,
-		"DeltaR cut"
-		)
-options.register('EtaBand', 
-		0.75,
-		VarParsing.multiplicity.singleton,
-		VarParsing.varType.float,
-		"EtaBand cut"
-		)
-options.register('ResolvedCosThetaStar', 
-		0.6,
-		VarParsing.multiplicity.singleton,
-		VarParsing.varType.float,
-		"Resolved CosThetaStar cut"
-		)
-
-### Boosted Analysis Options
-options.register('btag', 
-		#0.244,  ## CSVL
-		0.679, ## CSVM
-		VarParsing.multiplicity.singleton,
-		VarParsing.varType.float,
-		"Btag cut"
-		)
-
 options.parseArguments()
 
 process = cms.Process("RUNAnalysis")
@@ -100,9 +59,8 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 		fileNames = cms.untracked.vstring(
-			'/store/user/algomez/RPVStopStopToJets_UDD312_M-150_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0/160331_081614/0000/B2GEDMNtuple_1.root',
-			#'/store/user/algomez/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v1p0/160310_090317/0000/B2GEDMNtuple_1.root',
-			#'/store/user/jkarancs/SusyAnalysis/B2GEdmNtuple/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/160401_100723/0000/B2GEDMNtuple_1.root',
+			'/store/user/grauco/B2GAnaFW/B2GAnaFW_80X_V2p1/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_80X_V2p1/161018_070036/0000/B2GEDMNtuple_1.root',
+			#'/store/group/phys_b2g/B2GAnaFW_80X_V2p1/JetHT/Run2016C/JetHT/Run2016C-PromptReco-v2_B2GAnaFW_80X_V2p1/161013_132254/0000/B2GEDMNtuple_10.root',
 
 	    )
 	)
@@ -110,7 +68,6 @@ else:
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32 (options.maxEvents) )
 
 from RUNA.RUNAnalysis.scaleFactors import scaleFactor
-
 
 bjsample = True if 'bj' in NAME else False
 if 'JetHT' in NAME: 
@@ -122,38 +79,61 @@ else:
 	SF = scaleFactor(NAME)
 
 
-process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNAnalysis',
-		cutMassAsym 		= cms.double( options.MassRes ),
-		cutDelta 		= cms.double( options.Delta ),
-		cutDeltaR 		= cms.double( options.DeltaR ),
-		cutCosThetaStar 	= cms.double( options.ResolvedCosThetaStar ),
-		cutDEta    		= cms.double( options.EtaBand ),
-		triggerPass 		= cms.vstring( [ 'HLT_PFHT800', 'HLT_PFHT750_4JetPt' ] ),
-		bjSample		= cms.bool( bjsample ),
+##############################
+#####   Resolved analysis
+
+ResolvedTriggers =  [ ( 'HLT_PFHT900' if 'Run2016H' in NAME else 'HLT_PFHT800'), 'HLT_PFHT750_4JetPt' ]
+
+process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNResolvedAnalysis',
+		#cutAK4jetPt 		= cms.double( 80.0 ),	# default 80.0
+		#cutAK4HT 		= cms.double( 800.0 ),	# default 800.0
+		#cutAK4MassAsym		= cms.double( 0.2 ),	# default 0.2
+		#cutDelta 		= cms.double( 180 ),	# default 180.0
+		#cutDeltaEtaDijetSyst	= cms.double( .75 ),	# default .75
+		triggerPass 		= cms.vstring( ResolvedTriggers ),
 		scale 			= cms.double( SF ),
 		dataPUFile		= cms.string( options.namePUFile  ),
 		jecVersion		= cms.string( options.jecVersion ),
 		isData			= cms.bool( isData ),
+		massPairing		= cms.bool( False ),
+		mkTree			= cms.bool( True ),
 )
-process.ResolvedAnalysisPlotsJESUp = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JESUp' ) )
-process.ResolvedAnalysisPlotsJESDown = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JESDown' ) )
-process.ResolvedAnalysisPlotsJERUp = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JERUp' ) )
-process.ResolvedAnalysisPlotsJERDown = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JERDown' ) )
 
+process.ResolvedAnalysisPlotsMassPairing = process.ResolvedAnalysisPlots.clone( massPairing = cms.bool( True ), mkTree = cms.bool( False ) )
+
+process.ResolvedAnalysisPlotsJESUp = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JESUp' ), mkTree = cms.bool( False ) )
+process.ResolvedAnalysisPlotsJESDown = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JESDown' ), mkTree = cms.bool( False ) )
+process.ResolvedAnalysisPlotsJERUp = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JERUp' ), mkTree = cms.bool( False ) )
+process.ResolvedAnalysisPlotsJERDown = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JERDown' ), mkTree = cms.bool( False ) )
+
+############################################################
+
+
+##############################
+#####   Boosted analysis
+BoostedTriggers =  [ ( 'HLT_PFHT900' if 'Run2016H' in NAME else 'HLT_PFHT800'), 'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50' ]
 
 process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
-		triggerPass 		= cms.vstring( [ 'HLT_AK8PFHT650_TrimR0p1PT0p03Mass50', 'HLT_PFHT800'] ),
-		bjSample		= cms.bool( bjsample ),
+		#cutAK8jetPt 		= cms.double( 150.0 ),	# default 150.0
+		#cutAK8HT 		= cms.double( 900.0 ),	# default 900.0
+		#cutAK8MassAsym		= cms.double( 0.1 ),	# default 0.1
+		#cutTau21 		= cms.double( 0.45 ),	# default 0.45
+		#cutDeltaEtaDijet	= cms.double( 1.5 ),	# default 1.5
+		triggerPass 		= cms.vstring( BoostedTriggers ),
 		dataPUFile		= cms.string( options.namePUFile  ),
 		jecVersion		= cms.string( options.jecVersion ),
 		isData			= cms.bool( isData ),
 		scale 			= cms.double( SF ),
+		mkTree			= cms.bool( True ),
 )
 
-process.BoostedAnalysisPlotsJESUp = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JESUp' ) )
-process.BoostedAnalysisPlotsJESDown = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JESDown' ) )
-process.BoostedAnalysisPlotsJERUp = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JERUp' ) )
-process.BoostedAnalysisPlotsJERDown = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JERDown' ) )
+process.BoostedAnalysisPlotsSortInMass = process.BoostedAnalysisPlots.clone( sortInMass = cms.bool( True ), mkTree = cms.bool( False ) )
+process.BoostedAnalysisPlotsSortInTau21 = process.BoostedAnalysisPlots.clone( sortInTau21 = cms.bool( True ), mkTree = cms.bool( False ) )
+
+process.BoostedAnalysisPlotsJESUp = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JESUp' ), mkTree = cms.bool( False ) )
+process.BoostedAnalysisPlotsJESDown = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JESDown' ), mkTree = cms.bool( False ) )
+process.BoostedAnalysisPlotsJERUp = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JERUp' ), mkTree = cms.bool( False ) )
+process.BoostedAnalysisPlotsJERDown = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JERDown' ), mkTree = cms.bool( False ) )
 
 process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone( 
 		PUMethod		= cms.string('Puppi'),
@@ -161,11 +141,10 @@ process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone(
 		jetEta			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiEta'),
 		jetPhi 			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiPhi'),
 		jetE 			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiE'),
-		jetMass 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppiMass'),
 		jetTrimmedMass 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppitrimmedMass'),
-		jetPrunedMass 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppiprunedMass'),
+		jetPrunedMass 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppisoftDropMass'),
 		jetFilteredMass 	= cms.InputTag('jetsAK8Puppi:jetAK8PuppifilteredMass'),
-		jetSoftDropMass		= cms.InputTag('jetsAK8Puppi:jetAK8PuppisoftDropMass'),
+		jetSoftDropMass		= cms.InputTag('jetsAK8Puppi:jetAK8PuppiprunedMass'), 	#### Change name for puppi+softdrop
 		jetTau1 		= cms.InputTag('jetsAK8Puppi:jetAK8Puppitau1'),
 		jetTau2 		= cms.InputTag('jetsAK8Puppi:jetAK8Puppitau2'),
 		jetTau3 		= cms.InputTag('jetsAK8Puppi:jetAK8Puppitau3'),
@@ -184,13 +163,12 @@ process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone(
 		jetGenPhi 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppiGenJetPhi'),
 		jetGenE 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppiGenJetE'),
 		jecFactor 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppijecFactor0'),
-		neutralHadronEnergy 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppineutralHadronEnergy'),
-		neutralEmEnergy 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppineutralEmEnergy'),
-		chargedEmEnergy 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppichargedEmEnergy'),
-		muonEnergy 			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiMuonEnergy'),
-		chargedHadronEnergy 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppichargedHadronEnergy'),
-		chargedHadronMultiplicity 	= cms.InputTag('jetsAK8Puppi:jetAK8PuppiChargedHadronMultiplicity'),
-		neutralHadronMultiplicity 	= cms.InputTag('jetsAK8Puppi:jetAK8PuppineutralHadronMultiplicity'),
+		neutralHadronEnergyFrac		= cms.InputTag('jetsAK8Puppi:jetAK8PuppineutralHadronEnergyFrac'),
+		neutralEmEnergyFrac 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppineutralEmEnergyFrac'),
+		chargedEmEnergyFrac 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppichargedEmEnergyFrac'),
+		muonEnergyFrac 			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiMuonEnergy'),
+		chargedHadronEnergyFrac		= cms.InputTag('jetsAK8Puppi:jetAK8PuppichargedHadronEnergyFrac'),
+		neutralMultiplicity 	= cms.InputTag('jetsAK8Puppi:jetAK8PuppineutralMultiplicity'),
 		chargedMultiplicity 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppichargedMultiplicity'),
 		#### Subjets
 		subjetPt 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiPt'),
@@ -200,6 +178,7 @@ process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone(
 		subjetMass 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiMass'),
 		subjetCSVv2 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiCSVv2'),
 		subjetCMVAv2 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiCMVAv2'),
+		mkTree 			= cms.bool( False )
 		)
 
 process.BoostedAnalysisPlotsPuppiJESUp = process.BoostedAnalysisPlotsPuppi.clone( systematics = cms.string( 'JESUp' ) )
@@ -207,21 +186,26 @@ process.BoostedAnalysisPlotsPuppiJESDown = process.BoostedAnalysisPlotsPuppi.clo
 process.BoostedAnalysisPlotsPuppiJERUp = process.BoostedAnalysisPlotsPuppi.clone( systematics = cms.string( 'JERUp' ) )
 process.BoostedAnalysisPlotsPuppiJERDown = process.BoostedAnalysisPlotsPuppi.clone( systematics = cms.string( 'JERDown' ) )
 
+############################################################
 
 
 process.p = cms.Path()
 if 'Resolved' in options.version:
 	outputNAME = 'ResolvedAnalysis_'
 	process.p += process.ResolvedAnalysisPlots
+	process.p += process.ResolvedAnalysisPlotsMassPairing
 	if options.systematics:
 		process.p += process.ResolvedAnalysisPlotsJESUp
 		process.p += process.ResolvedAnalysisPlotsJESDown
 		process.p += process.ResolvedAnalysisPlotsJERUp
 		process.p += process.ResolvedAnalysisPlotsJERDown
+
 elif 'Boosted' in options.version:
 	outputNAME = 'BoostedAnalysis_'
 	process.p += process.BoostedAnalysisPlots
 	process.p += process.BoostedAnalysisPlotsPuppi
+	process.p += process.BoostedAnalysisPlotsSortInMass
+	process.p += process.BoostedAnalysisPlotsSortInTau21
 	if options.systematics:
 		process.p += process.BoostedAnalysisPlotsJESUp
 		process.p += process.BoostedAnalysisPlotsJESDown
@@ -232,8 +216,12 @@ elif 'Boosted' in options.version:
 else: 
 	outputNAME = 'FullAnalysis_'
 	process.p += process.ResolvedAnalysisPlots
+	process.p += process.ResolvedAnalysisPlotsMassPairing
 	process.p += process.BoostedAnalysisPlots
+	process.p += process.BoostedAnalysisPlotsSortInMass
+	process.p += process.BoostedAnalysisPlotsSortInTau21
 	process.p += process.BoostedAnalysisPlotsPuppi
+
 	if options.systematics:
 		process.p += process.BoostedAnalysisPlotsJESUp
 		process.p += process.BoostedAnalysisPlotsJESDown

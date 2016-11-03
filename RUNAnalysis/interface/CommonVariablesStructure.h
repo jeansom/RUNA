@@ -113,51 +113,55 @@ inline float cosThetaStar( TLorentzVector jet1, TLorentzVector jet2 ){
 	return valueCosThetaStar;
 }
 
-inline bool jetID( double jetEta, double jetE, double jecFactor, double neutralHadronEnergy, double neutralEmEnergy, double chargedHadronEnergy, double muonEnergy, double chargedEmEnergy, int chargedHadronMultiplicity, int neutralHadronMultiplicity, double chargedMultiplicity ){ 
+inline bool jetID( double jetEta, double jetE, double jecFactor, double neutralHadronEnergy, double neutralEmEnergy, double chargedHadronEnergy, double muonEnergy, double chargedEmEnergy, double chargedMultiplicity, double neutralMultiplicity, string jetIDtype ){ 
 
-	double jec = 1. / ( jecFactor * jetE );
-	double nhf = neutralHadronEnergy * jec;
-	double nEMf = neutralEmEnergy * jec;
-	double chf = chargedHadronEnergy * jec;
-	double muf = muonEnergy * jec;
-	double cEMf = chargedEmEnergy * jec;
-	int numConst = chargedHadronMultiplicity + neutralHadronMultiplicity ; 
-	double chm = chargedMultiplicity * jec;
+	double jec = 1. / ( jecFactor );
+	double NHF = neutralHadronEnergy * jec;
+	double NEMF = neutralEmEnergy * jec;
+	double CHF = chargedHadronEnergy * jec;
+	double MUF = muonEnergy * jec;
+	double CEMF = chargedEmEnergy * jec;
+	int NumConst = chargedMultiplicity + neutralMultiplicity ; 
+	double CHM = chargedMultiplicity * jec;
 
-	//bool idL = ( (nhf<0.99) && (nEMf<0.99) && (muf<0.8) && (cEMf<0.9) );  /// 8TeV recommendation
-	//bool id = (nhf<0.99 && nEMf<0.99 && numConst>1) && ((abs(jetEta)<=2.4 && chf>0 && chm>0 && cEMf<0.99) || abs(jetEta)>2.4) && abs(jetEta)<=3.0; // looseJetID 
-	//bool id = (nhf<0.90 && nEMf<0.90 && numConst>1) && ((abs(jetEta)<=2.4 && chf>0 && chm>0 && cEMf<0.99) || abs(jetEta)>2.4) && abs(jetEta)<=3.0; // tightJetID 
-	bool id = ( nhf<0.90 && nEMf<0.90 && numConst>1 && muf<0.8) && ((abs(jetEta)<=2.4 && chf>0 && chm>0 && cEMf<0.90) || abs(jetEta)>2.4) && abs(jetEta)<=3.0; //tightLepVetoJetID
+	bool id = 0;
+	if ( jetIDtype == "looseJetID" ) id = (NHF<0.99 && NEMF<0.99 && NumConst>1) && ((abs(jetEta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(jetEta)>2.4) && abs(jetEta)<=2.7;
+	else if ( jetIDtype == "tightJetID" ) id = (NHF<0.90 && NEMF<0.90 && NumConst>1) && ((abs(jetEta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || abs(jetEta)>2.4) && abs(jetEta)<=2.7;
+	else if ( jetIDtype == "tightLepVetoJetID" ) id = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((abs(jetEta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.90) || abs(jetEta)>2.4) && abs(jetEta)<=2.7;
+	else LogError("jetID") << "jetID function only takes the following jetID names: looseJetID, tightJetID, tightLepVetoJetID.";
 
 	return id;
 }
 
-inline bool checkTriggerBits( Handle<vector<string>> triggerNames, Handle<vector<float>> triggerBits, TString HLTtrigger  ){
+inline bool checkTriggerBits( vector<string> triggerNames, Handle<vector<float>> triggerBits, TString HLTtrigger  ){
 
 	float triggerFired = 0;
-	for (size_t t = 0; t < triggerNames->size(); t++) {
-		if ( TString( (*triggerNames)[t] ).Contains( HLTtrigger ) ) {
+	for (size_t t = 0; t < triggerNames.size(); t++) {
+		if ( TString( triggerNames[t] ).Contains( HLTtrigger ) ) {
 			triggerFired = (*triggerBits)[t];
-			//LogWarning("triggerbit") << (*triggerNames)[t] << " " <<  (*triggerBits)[t];
+			//LogWarning("triggerbit") << triggerNames[t] << " " <<  (*triggerBits)[t];
 		}
 	}
 	if ( HLTtrigger.Contains( "NOTRIGGER" ) ) triggerFired = 1;
-
 	return triggerFired;
 }	
 
-inline bool checkORListOfTriggerBits( Handle<vector<string>> triggerNames, Handle<vector<float>> triggerBits, vector<string>  triggerPass  ){
+inline bool checkORListOfTriggerBits( vector<string> triggerNames, Handle<vector<float>> triggerBits, vector<string>  triggerPass  ){
 
-	vector<bool> triggersFired;
-	for (size_t t = 0; t < triggerPass.size(); t++) {
-		bool triggerFired = checkTriggerBits( triggerNames, triggerBits, triggerPass[t] );
-		triggersFired.push_back( triggerFired );
-		//if ( triggerFired ) LogWarning("test") << triggerPass[t] << " " << triggerFired;
-	}
-	
-	bool ORTriggers = !none_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
-	//if( ORTriggers ) LogWarning("OR") << std::none_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
-	
+	bool ORTriggers = 0;
+	if ( triggerNames.size() == triggerBits->size() ) {
+
+		vector<bool> triggersFired;
+		for (size_t t = 0; t < triggerPass.size(); t++) {
+			bool triggerFired = checkTriggerBits( triggerNames, triggerBits, triggerPass[t] );
+			triggersFired.push_back( triggerFired );
+			//if ( triggerFired ) LogWarning("test") << triggerPass[t] << " " << triggerFired;
+		}
+		
+		ORTriggers = !none_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
+		//if( ORTriggers ) LogWarning("OR") << std::none_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
+	} else LogError("TriggerBits") << "triggerNameList has different size than triggerBit";
+
 	return ORTriggers;
 }
 
