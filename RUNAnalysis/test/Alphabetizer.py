@@ -19,6 +19,7 @@ from RUNA.RUNAnalysis.Distribution_Header import *
 import RUNA.RUNAnalysis.Alphabet
 from RUNA.RUNAnalysis.Alphabet import *
 
+# Samples
 DATA = DIST( "DATA", "RootFiles/RUNAnalysis_JetHT_Run2015D-16Dec2015-v1_v76x_v2p0_v05.root", "BoostedAnalysisPlots/RUNATree", "1" )
 QCD = DIST( "QCD", "RootFiles/RUNAnalysis_QCDPtAll_RunIIFall15MiniAODv2_v76x_v2p0_v05.root", "BoostedAnalysisPlots/RUNATree", "2666*puWeight*lumiWeight*.77" )
 SIG = DIST( "SIG", "RootFiles/RUNAnalysis_RPVStopStopToJets_UDD323_M-100_RunIISummer16MiniAODv2_v76x_v2p0_v05.root", "BoostedAnalysisPlots/RUNATree", "2666*puWeight*lumiWeight" )
@@ -29,71 +30,83 @@ WZ = DIST( "WZ", "RootFiles/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v2p0_v05.ro
 ZZ = DIST( "ZZ", "RootFiles/RUNAnalysis_ZZTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_v05.root", "BoostedAnalysisPlots/RUNATree", "2666*puWeight*lumiWeight" )
 ZJets = DIST( "ZJets", "RootFiles/RUNAnalysis_ZJetsToQQ_RunIIFall15MiniAODv2_v76x_v2p0_v05.root", "BoostedAnalysisPlots/RUNATree", "2666*puWeight*lumiWeight" )
 
+# Samples to run estimation on
 Dists = [ QCD, TTJets, WJets, WW, WZ, ZZ, ZJets ]
 DistsData = [ DATA ]
 #Dists = [ QCD ]
-EstMass = Alphabetizer( "BkgEstMass", Dists, [] )
-EstMass1 = Alphabetizer( "BkgEstMassData", DistsData, [] )
-EstHT1 = Alphabetizer( "BkgEstHTData", DistsData, [] )
-EstPt = Alphabetizer( "BkgEstPt", Dists, [] )
-EstHT = Alphabetizer( "BkgEstHT", Dists, [] )
+
+# Initialize Alphabetizer Objects for differently binned transfer functions
+EstMass = Alphabetizer( "BkgEstMass", Dists, [] ) # Average Mass binned
+EstMass1 = Alphabetizer( "BkgEstMassData", DistsData, [] ) # For data ave mass binned bkg est
+
+EstPt = Alphabetizer( "BkgEstPt", Dists, [] ) # Sum leading jet pt binned
+
+EstHT = Alphabetizer( "BkgEstHT", Dists, [] ) # HT binned
+EstHT1 = Alphabetizer( "BkgEstHTData", DistsData, [] ) # For data HT binned
+
+# Cuts for defining ABCD regions
 presel = "jet1Tau21<0.6&jet2Tau21<0.6&(subjet11btagCSVv2>0.800||subjet12btagCSVv2>0.800)&(subjet21btagCSVv2>0.800||subjet22btagCSVv2>0.800)"
 #presel = "jet1Tau21<0.6&jet2Tau21<0.6"
 tag = presel + "&prunedMassAsym<0.1&deltaEtaDijet<1.0"
 antitag = presel + "&prunedMassAsym>0.1&deltaEtaDijet<1.0"
+
+# Cuts for defining ABCD regions -- btag defined
 #presel = "jet1Tau21<0.6&jet2Tau21<0.6&prunedMassAsym<0.1&deltaEtaDijet<1.0"
 #btagCutJet1 = "(subjet11btagCSVv2>0.800||subjet12btagCSVv2>0.800)"
 #btagCutJet2 = "(subjet21btagCSVv2>0.800||subjet22btagCSVv2>0.800)"
 #tag = presel + "&" + btagCutJet1 + "&" + btagCutJet2
 #antitag = presel + "&" + btagCutJet1 + "&!" + btagCutJet2
 
-#var_arrayMass = [ "massAve", "floor((subjet11btagCSVv2-0.800))+floor((subjet12btagCSVv2-0.800))", 6, 50., 350., 8, -4., 4. ]
+# for 2D ABCD plot
+#var_arrayMass = [ "massAve", "floor((subjet11btagCSVv2-0.800))+floor((subjet12btagCSVv2-0.800))", 6, 50., 350., 8, -4., 4. ] # for b-tag defined ABCD - possible buggy
 var_arrayMass = [ "massAve", "prunedMassAsym", 12, 50., 350., 20, 0., 1. ]
 var_arrayPt = [ "jet1Pt+jet2Pt", "prunedMassAsym", 34, 100., 2000., 20, 0., 1. ]
 var_arrayHT = [ "HT", "prunedMassAsym", 21, 900., 5100., 20, 0., 1. ]
 
+#Defines B vs D regions
 cut = [ 0.1, "<" ]
-#bins = [[50,60],[60,70],[70,80],[80,90],[90,100],[100,110],[110,120],[120,130],[130,140],[140,150],[150,160],[160,170],[170,180],[180,190],[190,200],[200,220],[220,220],[220,230],[230,240],[240,250],[250,260],[260,270],[270,280],[280,290],[290,300],[300,310],[310,320],[320,330],[330,340],[340,350]]
+
 binsMass = [[50,75],[75,100],[100,125],[125,150],[150,175],[175,200],[200,225],[225,250],[250,275],[275,300],[300,325],[325,350]]
-#binsMass = [[50,100],[100,150],[150,200],[200,250],[250,300],[300,350]]
-#bins = [[200,225],[225,250],[250,275],[275,300]]
-#bins = [ [0, .25], [.25,.5],[.5,.75],[.75,1.0],[1.0,1.25] ]
 binsHT = [ [900,1100],[1100,1300],[1300,1500],[1500,1700],[1700,1900],[1900,2100], [2100,2300],[2300,2500],[2500,2700],[2700,2900],[2900,3100], [3100,3300],[3300,3500],[3500,3700],[3700,3900],[3900,4100],[4100,4300],[4300,4500],[4500,4700],[4700,4900],[4900,5100] ]
-#bins = [ [400,600],[600,800],[800,1000],[1000,1200],[1200,1400]]
-#bins = [[600,700],[700,800],[800,900],[900,1000],[1000,1100],[1100,1200]]
 binsPt = [[600,650],[650,700],[700,750],[750,800],[800,850],[850,900],[900,950],[950,1000],[1050,1100],[1100,1150],[1150,1200],[1200,1250],[1250,1300],[1300,150],[1350,1400],[1400,1450],[1450,1500],[1500,1550],[1550,1600],[1600,1650],[1650,1700],[1700,1750],[1750,1800],[1800,1850],[1850,1900],[1900,1950],[1950,2000]]
-#bins = [[600,650],[650,700],[700,750],[750,800],[800,850],[850,900],[900,950],[950,1000],[1050,1100],[1100,1150],[1150,1200],[1200,1250],[1250,1300],[1300,150],[1350,1400],[1400,1450],[1450,1500],[1500,1550],[1550,1600],[1600,1650],[1650,1700],[1700,1750],[1750,1800],[1800,1850],[1850,1900],[1900,1950],[1950,2000]]
-#bins = [ [500,1000],[1000,1500],[1500,2000],[2000,2500],[2500,3000],[3000,3500],[3500,4000],[4000,4500],[4500,5000] ]
+
 truthbins = []
 center = 0
-#F = CubicFit([0.01,0.01,0.01,0.01],50,350,"cubicfit","")
-FMass = SigmoidFit([1.7, .76, -3.5e-07 ],50,350,"Mass","")
-FMass1 = SigmoidFit([1.7, .76, -3.5e-07 ],50,350,"Mass1","")
-#FMass = CubicFit([-0.01, -0.01, 0.0 ],50,350,"Mass","")
-FHT = CubicFit([-0.01, -0.01,0,0.],900,5000,"cubicfitHT","")
-FHT1 = CubicFit([-0.01, -0.01,0,0.],900,5000,"cubicfitHT1","")
-FPt = CubicFit([3.72297e-01, -1.14569e-04,-0.01,0.],600,2000,"cubicfitPt","")
 
-#for Est in [ [EstMass, FMass, binsMass, "MassAve", var_arrayMass], [EstPt, FPt, binsPt, "ptSum", var_arrayPt], [EstHT, FHT, binsHT, "HT", var_arrayHT] ]:
-for Est in [ [EstMass1, FMass, binsMass, "MassAve", var_arrayMass, EstMass, FMass1 ] ]:
-#for Est in [ [EstPt, FPt, binsPt, "ptSum", var_arrayPt] ]:
-#for Est in [ [EstHT1, FHT, binsHT, "HT", var_arrayHT, EstHT, FHT1] ]:
+# Transfer functions, initialized with Ale's values, option "R" runs on range
+FMass = SigmoidFit([1.7, .76, -3.5e-07 ],50,350,"Mass","R")
+FMass1 = SigmoidFit([1.7, .76, -3.5e-07 ],50,350,"Mass1","R")
+#FMass = CubicFit([-0.01, -0.01, 0.0 ],50,350,"Mass","R")
+FHT = CubicFit([-0.01, -0.01,0,0.],900,5000,"cubicfitHT","R")
+FHT1 = CubicFit([-0.01, -0.01,0,0.],900,5000,"cubicfitHT1","R")
+FPt = CubicFit([3.72297e-01, -1.14569e-04,-0.01,0.],600,2000,"cubicfitPt","R")
+
+
+#for Est in [ [EstMass, FMass, binsMass, "MassAve", var_arrayMass], [EstPt, FPt, binsPt, "ptSum", var_arrayPt], [EstHT, FHT, binsHT, "HT", var_arrayHT] ]: # For looping over different Transfer functions -- DOESN'T WORK YET
+
+# How to bin transfer function
+# 6th and 7th list items for data background estimation
+# Used to make the data_obs plot without unblinding
+for Est in [ [EstMass1, FMass, binsMass, "MassAve", var_arrayMass, EstMass, FMass1 ] ]: # Ave Mass
+#for Est in [ [EstPt, FPt, binsPt, "ptSum", var_arrayPt] ]: # Sum Pt
+#for Est in [ [EstHT1, FHT, binsHT, "HT", var_arrayHT, EstHT, FHT1] ]: # HT
+
     Est[0].SetRegions( Est[4], presel+"&deltaEtaDijet>1.0")
-    Est[5].SetRegions( Est[4], presel+"&deltaEtaDijet>1.0")
+    Est[5].SetRegions( Est[4], presel+"&deltaEtaDijet>1.0") # For data_obs plot with data bkg est
 
 #    Est[0].SetRegions( Est[4], presel+"&!"+btagCutJet2)
+
     Est[0].TwoDPlot.SetStats(0)
     C1 = TCanvas("C1", "", 800, 600)
     C1.cd()
     Est[0].TwoDPlot.Draw("COLZ")
-#Est.TwoDPlot.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
     Est[0].TwoDPlot.GetXaxis().SetTitle(Est[3]+" [GeV]")
     Est[0].TwoDPlot.GetYaxis().SetTitle("Pruned Mass Asymmetry")
     C1.SaveAs("outputs/"+Est[3]+"Est_2D.png")
 
 
     Est[0].GetRates(cut, Est[2], truthbins, center, Est[1])
-    Est[5].GetRates(cut, Est[2], truthbins, center, Est[6])
+    Est[5].GetRates(cut, Est[2], truthbins, center, Est[6]) # For data_obs plot with data bkg est
     leg = TLegend(0.11,0.6,0.4,0.8)
     leg.SetLineColor(0)
     leg.SetFillColor(4001)
@@ -109,12 +122,7 @@ for Est in [ [EstMass1, FMass, binsMass, "MassAve", var_arrayMass, EstMass, FMas
     Est[0].G.GetXaxis().SetTitle(Est[3]+" (GeV)")
     Est[0].G.GetYaxis().SetTitle("R_{p/f}")
     Est[0].G.GetYaxis().SetTitleOffset(1.3)
-#    Est[0].G.PaintStats( Est[0].Fit.fit )
-#Est[0].truthG.SetLineColor(kBlue)
-#Est[0].truthG.SetLineWidth(2)
     gStyle.SetOptFit()
-#    stats=(TPaveStats)(Est[0].G.GetListOfFunctions().FindObject("stats"))
-#    stats.Draw()
     Est[0].Fit.fit.Draw("same")
     Est[0].Fit.ErrUp.SetLineStyle(2)
     Est[0].Fit.ErrUp.Draw("same")
@@ -132,12 +140,12 @@ for Est in [ [EstMass1, FMass, binsMass, "MassAve", var_arrayMass, EstMass, FMas
 
 
     Est[0].MakeEstVariable(variable, binBoundaries, antitag, tag)
-    Est[5].MakeEstVariable(variable, binBoundaries, antitag, tag)
+    Est[5].MakeEstVariable(variable, binBoundaries, antitag, tag) # For data_obs plot with data bkg est
     FILE = TFile("outputs/"+Est[3]+"Est.root", "RECREATE")
     FILE.cd()
     V = TH1F("data_obs", "", len(binBoundaries)-1, array('d',binBoundaries))
     VStack = THStack("data_obs", "")
-    for i in (Est[5]).hists_MSR:
+    for i in (Est[5]).hists_MSR: # Makes data_obs from MC bkgs - no unblinding
         i.Sumw2()
         i.SetStats(0)
         V.Add(i)
