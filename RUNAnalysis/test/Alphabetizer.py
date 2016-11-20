@@ -35,34 +35,44 @@ ZJets = DIST( "ZJets", "RootFiles/RUNAnalysis_ZJetsToQQ_RunIIFall15MiniAODv2_v76
 
 # Creating Alphabet objects to run estimate on
 
+DistsQCD = [ QCD ]
 Dists = [ QCD, TTJets, WJets, WW, WZ, ZZ, ZJets ]
 DistsData = [ DATA ]
-DistsSub = [ TTJets, WJets ]
+DistsSub = [ WW, WZ, ZZ, ZJets, WJets, TTJets ]
+DistsNothing = []
 
 ## Average mass binned fit
-EstMass = Alphabet( "BkgEstMass", Dists, DistsSub )
+EstMass = Alphabet( "BkgEstMass", Dists, DistsNothing )
 EstMassData = Alphabet( "BkgEstMassData", DistsData, DistsSub )
-EstMass1 = Alphabet( "BkgEstMass1", Dists, DistsSub )
+EstMass1 = Alphabet( "BkgEstMass1", Dists, DistsNothing )
 
-var_arrayMass = [ "massAve", "prunedMassAsym", 12, 50., 350., 20, 0., 1. ] # For making B,D plot
+var_arrayMass = [ "prunedMassAve", "prunedMassAsym", 12, 50., 350., 20, 0., 1. ] # For making B,D plot
 
 #### Makes list with bins for fit
 binsMass = []
-diff = (float(var_arrayMass[4] - var_arrayMass[3]))/var_arrayMass[2]
-for i in xrange( 0, var_arrayMass[2] ):
-    binsMass.append( [ var_arrayMass[3]+diff*i, var_arrayMass[3]+diff*(i+1) ] )
+binWidth = 25
+NBins = int(((var_arrayMass[4] - var_arrayMass[3]))/binWidth)
+#diff = (float(500))/20
+
+for i in xrange( 0, NBins ):
+    binsMass.append( [ var_arrayMass[3]+binWidth*i, var_arrayMass[3]+binWidth*(i+1) ] )
 print binsMass
 
 #### Form of fit
-FMass = CubicFit([ 0,0,0,0 ],50,350,"Mass","")
-FMass1 = CubicFit([ 0,0,0,0 ],50,350,"Mass1","")
+FMass = SigmoidFit([ 1.733,.7634,-3.516e-07,0,0 ],60,350,"Mass","MIRS")
+FMass1 = SigmoidFit([ 1.7,.76,-3.5e-07,0,0 ],60,350,"Mass1","SEMR")
+#FMass = SigmoidFit([ 1.829,.3742,-3.046e-07,0,0 ],60,350,"Mass","MIRS")
+#FMass1 = SigmoidFit([ 1.829,.3742,-3.046e-07,0,0 ],60,350,"Mass1","SEMR")
+
+#FMass = CubicFit([ 0,0,0,0,0 ],50,350,"Mass","SEMR")
+#FMass1 = CubicFit([ -0.1,-0.1,-0.1,-0.1,-0.1 ],50,350,"Mass1","SEMR")
 
 ## HT binned fit
 EstHT = Alphabet( "BkgEstHT", Dists, DistsSub )
 EstHTData = Alphabet( "BkgEstHTData", DistsData, DistsSub )
 EstHT1 = Alphabet( "BkgEstHT1", Dists, DistsSub )
 
-var_arrayHT = [ "HT", "prunedMassAsym", 21, 900., 5100., 20, 0., 1. ] # For making B,D plot
+var_arrayHT = [ "HT", "prunedMassAsym", 35, 900., 10000., 20, 0., 1. ] # For making B,D plot
 
 #### Makes list with bins for fit
 binsHT = []
@@ -71,21 +81,27 @@ for i in xrange( 0, var_arrayHT[2] ):
     binsHT.append( [ var_arrayHT[3]+diff*i, var_arrayHT[3]+diff*(i+1) ] )
 
 #### Form of fit
-FHT = QuadraticFit([0,0],900,5000,"quadraticfitHT","")
-FHT1 = QuadraticFit([0,0],900,5000,"quadraticfitHT1","")
+FHT = CubicFit([.7432,-0.0007489,3.731e-07,-5.84e-11],900,10000,"quadraticfitHT","")
+FHT1 = CubicFit([0,0,0,0],900,10000,"quadraticfitHT1","")
 
 # Setting cuts
-presel = "jet1Tau21<0.6&jet2Tau21<0.6&(subjet11btagCSVv2>0.800||subjet12btagCSVv2>0.800)&(subjet21btagCSVv2>0.800||subjet22btagCSVv2>0.800)"
+#presel = "jet1Tau21<0.6&jet2Tau21<0.6&(subjet11btagCSVv2>0.800||subjet12btagCSVv2>0.800)&(subjet21btagCSVv2>0.800||subjet22btagCSVv2>0.800)"
+presel = "jet1Tau21<0.45&jet2Tau21<0.45"
 
-tag = presel + "&prunedMassAsym<0.1&deltaEtaDijet<1.0" # Defines A region
-antitag = presel + "&prunedMassAsym>0.1&deltaEtaDijet<1.0" # Defines C region
-
+tag = presel + "&prunedMassAsym<0.1&deltaEtaDijet<1.5" # Defines A region
+antitag = presel + "&prunedMassAsym>0.1&deltaEtaDijet<1.5" # Defines C region
+tagB = presel + "&prunedMassAsym<0.1&deltaEtaDijet>1.5"
+tagD = presel + "&prunedMassAsym>0.1&deltaEtaDijet>1.5"
 cut = [ 0.1, "<" ] # For defining B vs D regions
 center = 0 # Where to center 2D plot
 
+# Bins for final estimation plot
 binBoundaries = []
-for i in xrange( 50, 350 ):
+for i in xrange( 60, 351 ):
     if i%5 == 0: binBoundaries.append(i)
 
-MakeFitPlots( EstMass, FMass, binsMass, "HT", "Pruned Mass Asymmetry", var_arrayMass, presel, "deltaEtaDijet>1.0", cut, center, "", "", False )
-MakeEstPlots( EstMass, "massAve", "Average Mass", binBoundaries, antitag, tag, "HT", "", False )
+MakeFitPlots( EstMass, FMass, binsMass, "prunedMassAve", "Pruned Mass Asymmetry", var_arrayMass, presel, "deltaEtaDijet>1.5", tagB, tagD, cut, center, EstMass1, FMass1, False )
+#MakeEstPlots( EstMass, "prunedMassAve", "Average Mass", binBoundaries, antitag, tag, "prunedMassAve", EstMass1, False )
+
+#MakeFitPlots( EstHT, FHT, binsHT, "HT", "Pruned Mass Asymmetry", var_arrayHT, presel, "deltaEtaDijet>1.0", cut, center, "", "", False )
+#MakeEstPlots( EstHT, "prunedMassAve", "Average Mass", binBoundaries, antitag, tag, "HT", "", False )

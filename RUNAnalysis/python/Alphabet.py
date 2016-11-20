@@ -55,18 +55,35 @@ class Alphabet:
     # The variable to bin the fit in is on the x axis
     #### var_array: [ x var, y var, x n bins, x min, x max, y n bins, y min, y max ]
     #### presel: Set of cuts to apply as preselection before defining B vs D, includes the inverse of the cut that defines B vs A
-    def SetRegions( self, var_array, presel ):
+    def SetRegions( self, var_array, presel, tagB, tagD ):
         self.X = var_array[0] # variable to bin the fit in
         self.Pplots = TH2F( "added" + self.name, "", var_array[2], var_array[3], var_array[4], var_array[5], var_array[6], var_array[7] ) # Plot with the samples to add for the bkg est
         self.Mplots = TH2F( "subbed" + self.name, "", var_array[2], var_array[3], var_array[4], var_array[5], var_array[6], var_array[7] ) # Plot with the samples to subtract for the bkg est
+        self.PplotsB = TH1F( "addedB" + self.name, "", var_array[2], var_array[3], var_array[4] ) # Plot with the samples to add for the bkg est
+        self.MplotsB = TH1F( "subbedB" + self.name, "", var_array[2], var_array[3], var_array[4] ) # Plot with the samples to subtract for the bkg est
+        self.PplotsD = TH1F( "addedD" + self.name, "", var_array[2], var_array[3], var_array[4] ) # Plot with the samples to add for the bkg est
+        self.MplotsD = TH1F( "subbedD" + self.name, "", var_array[2], var_array[3], var_array[4] ) # Plot with the samples to subtract for the bkg est
+
         # Actual making of plots
         for i in self.DP:
+#            print "here"
             quick2dplot( i.File, i.Tree, self.Pplots, var_array[0], var_array[1], presel, i.weight )
+            quickplot( i.File, i.Tree, self.PplotsB, var_array[0], tagB, i.weight )
+            quickplot( i.File, i.Tree, self.PplotsD, var_array[0],  tagD, i.weight )
         for j in self.DM:
             quick2dplot( j.File, j.Tree, self.Mplots, var_array[0], var_array[1], presel, j.weight )
+            quickplot( j.File, j.Tree, self.MplotsB, var_array[0], tagB, j.weight )
+            quickplot( j.File, j.Tree, self.MplotsD, var_array[0], tagD, j.weight )
         
-            self.TwoDPlot = self.Pplots.Clone( "TwoDPlot_"+self.name) #Final 2D plot
-            self.TwoDPlot.Add( self.Mplots, -1. )
+        self.TwoDPlot = self.Pplots.Clone( "TwoDPlot_"+self.name) #Final 2D plot
+        self.TwoDPlot.Add( self.Mplots, -1. )
+
+        self.BPlot = self.PplotsB.Clone( "BPlot_"+self.name )
+        self.BPlot.Add( self.MplotsB, -1. )
+
+        self.DPlot = self.PplotsD.Clone( "DPlot_"+self.name )
+        self.DPlot.Add( self.MplotsD, -1. )
+
 
     ############################################################
     ########### SKIPPED TRUTHBINS - WHAT ARE THEY? #############
@@ -76,9 +93,10 @@ class Alphabet:
     #### bins: bins to measure B/D in 
     #### center: the x-var is recentered about the middle of the blinded region. This tells where to recenter to. Can be left as 0.
     #### FIT: Form to fit B/D to, should be a member of one of the Converters.py classes, already initialized and set up
-    def GetRates( self, cut, bins, center, FIT ):
+    def GetRates( self, cut, bins, center, FIT  ):
         self.center = center
-        self.G = AlphabetSlicer( self.TwoDPlot, bins, cut[0], cut[1], center ) # Returns a TGraphAsymErrors containing B/D
+#        self.G = AlphabetSlicer( self.TwoDPlot, bins, cut[0], cut[1], center ) # Returns a TGraphAsymErrors containing B/D
+        self.G = AlphabetDivide( self.BPlot, self.DPlot, bins )
         self.Fit = FIT
         AlphabetFitter( self.G, self.Fit ) # Does the entire fitting; creates all three distributions (nominal, up, down); saves as self.Fit.fit, self.Fit.ErrUp, self.Fit.ErrDn
 
@@ -112,8 +130,8 @@ class Alphabet:
             # Fills the above histograms
             quickplot( i.File, i.Tree, temphist, variable, tag, i.weight )
             quickplot( i.File, i.Tree, temphistN, variable, antitag, "("+i.weight+"*"+self.Fit.ConvFact+")" )
-            quickplot( i.File, i.Tree, temphistU, variable, antitag, "("+i.weight+"*"+self.Fit.ConvFactUp+")" )
-            quickplot( i.File, i.Tree, temphistD, variable, antitag, "("+i.weight+"*"+self.Fit.ConvFactDn+")" )
+            quickplot( i.File, i.Tree, temphistU, variable, antitag, "("+i.weight+"*"+"("+self.Fit.ConvFactUp+")"+")" )
+            quickplot( i.File, i.Tree, temphistD, variable, antitag, "("+i.weight+"* ("+self.Fit.ConvFactDn +"))" )
             quickplot( i.File, i.Tree, temphistA, variable, antitag, i.weight )
 
             # Adds the histograms for each distribution together
