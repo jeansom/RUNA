@@ -235,9 +235,9 @@ class SigmoidFit:
         self.rp = range_max
         self.name = name
         self.fit = TF1("SigmoidFit"+self.name, "([0]+ exp([1] + ([2]*x*x*x)))^(-1)",self.rm,self.rp)
-        self.fit.FixParameter(0, init_var[0]) 
-        self.fit.FixParameter(1, init_var[1])
-        self.fit.FixParameter(2, init_var[2])
+        self.fit.SetParameter(0, init_var[0]) 
+        self.fit.SetParameter(1, init_var[1])
+        self.fit.SetParameter(2, init_var[2])
 
     # Makes the fit function with error up and error down
     def Converter(self, fitter):
