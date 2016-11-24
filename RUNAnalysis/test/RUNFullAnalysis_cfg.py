@@ -59,8 +59,9 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 		fileNames = cms.untracked.vstring(
-			'/store/user/grauco/B2GAnaFW/B2GAnaFW_80X_V2p1/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_80X_V2p1/161018_070036/0000/B2GEDMNtuple_1.root',
+			#'/store/user/grauco/B2GAnaFW/B2GAnaFW_80X_V2p1/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_80X_V2p1/161018_070036/0000/B2GEDMNtuple_1.root',
 			#'/store/group/phys_b2g/B2GAnaFW_80X_V2p1/JetHT/Run2016C/JetHT/Run2016C-PromptReco-v2_B2GAnaFW_80X_V2p1/161013_132254/0000/B2GEDMNtuple_10.root',
+			'/store/group/phys_b2g/B2GAnaFW_80X_V2p1/QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/RunIISpring16MiniAODv2/QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1/161109_110436/0000/B2GEDMNtuple_1.root',
 
 	    )
 	)
@@ -88,18 +89,20 @@ process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNResolvedAnalysis',
 		#cutAK4jetPt 		= cms.double( 80.0 ),	# default 80.0
 		#cutAK4HT 		= cms.double( 800.0 ),	# default 800.0
 		#cutAK4MassAsym		= cms.double( 0.2 ),	# default 0.2
-		#cutDelta 		= cms.double( 180 ),	# default 180.0
-		#cutDeltaEtaDijetSyst	= cms.double( .75 ),	# default .75
+		cutDelta 		= cms.double( 100 ),	# default 180.0
+		cutDeltaEtaDijetSyst	= cms.double( 1.2 ),	# default .75
 		triggerPass 		= cms.vstring( ResolvedTriggers ),
 		scale 			= cms.double( SF ),
 		dataPUFile		= cms.string( options.namePUFile  ),
 		jecVersion		= cms.string( options.jecVersion ),
 		isData			= cms.bool( isData ),
+		LHEcont			= cms.bool( True if 'QCD_Pt' in NAME else False ), ## logic is oposite
 		massPairing		= cms.bool( False ),
-		mkTree			= cms.bool( True ),
+		mkTree			= cms.bool( False ),
 )
 
-process.ResolvedAnalysisPlotsMassPairing = process.ResolvedAnalysisPlots.clone( massPairing = cms.bool( True ), mkTree = cms.bool( False ) )
+process.ResolvedAnalysisPlotsScouting = process.ResolvedAnalysisPlots.clone( cutAK4jetPt = cms.double( 50.0 ), cutAK4HT = cms.double( 450 ),  mkTree = cms.bool( True ) )
+process.ResolvedAnalysisPlotsMassPairing = process.ResolvedAnalysisPlots.clone( massPairing = cms.bool( True ) )
 
 process.ResolvedAnalysisPlotsJESUp = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JESUp' ), mkTree = cms.bool( False ) )
 process.ResolvedAnalysisPlotsJESDown = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JESDown' ), mkTree = cms.bool( False ) )
@@ -123,12 +126,13 @@ process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		dataPUFile		= cms.string( options.namePUFile  ),
 		jecVersion		= cms.string( options.jecVersion ),
 		isData			= cms.bool( isData ),
+		LHEcont			= cms.bool( True if 'QCD_Pt' in NAME else False ), ## logic is oposite
 		scale 			= cms.double( SF ),
 		mkTree			= cms.bool( True ),
 )
 
-process.BoostedAnalysisPlotsSortInMass = process.BoostedAnalysisPlots.clone( sortInMass = cms.bool( True ), mkTree = cms.bool( False ) )
-process.BoostedAnalysisPlotsSortInTau21 = process.BoostedAnalysisPlots.clone( sortInTau21 = cms.bool( True ), mkTree = cms.bool( False ) )
+#process.BoostedAnalysisPlotsSortInMass = process.BoostedAnalysisPlots.clone( sortInMass = cms.bool( True ), mkTree = cms.bool( False ) )
+#process.BoostedAnalysisPlotsSortInTau21 = process.BoostedAnalysisPlots.clone( sortInTau21 = cms.bool( True ), mkTree = cms.bool( False ) )
 
 process.BoostedAnalysisPlotsJESUp = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JESUp' ), mkTree = cms.bool( False ) )
 process.BoostedAnalysisPlotsJESDown = process.BoostedAnalysisPlots.clone( systematics = cms.string( 'JESDown' ), mkTree = cms.bool( False ) )
@@ -178,7 +182,7 @@ process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone(
 		subjetMass 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiMass'),
 		subjetCSVv2 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiCSVv2'),
 		subjetCMVAv2 		= cms.InputTag('subjetsAK8Puppi:subjetAK8PuppiCMVAv2'),
-		mkTree 			= cms.bool( False )
+		mkTree 			= cms.bool( True )
 		)
 
 process.BoostedAnalysisPlotsPuppiJESUp = process.BoostedAnalysisPlotsPuppi.clone( systematics = cms.string( 'JESUp' ) )
@@ -216,10 +220,11 @@ elif 'Boosted' in options.version:
 else: 
 	outputNAME = 'FullAnalysis_'
 	process.p += process.ResolvedAnalysisPlots
+	process.p += process.ResolvedAnalysisPlotsScouting
 	process.p += process.ResolvedAnalysisPlotsMassPairing
 	process.p += process.BoostedAnalysisPlots
-	process.p += process.BoostedAnalysisPlotsSortInMass
-	process.p += process.BoostedAnalysisPlotsSortInTau21
+	#process.p += process.BoostedAnalysisPlotsSortInMass
+	#process.p += process.BoostedAnalysisPlotsSortInTau21
 	process.p += process.BoostedAnalysisPlotsPuppi
 
 	if options.systematics:

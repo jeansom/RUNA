@@ -77,6 +77,7 @@ class RUNResolvedAnalysis : public EDAnalyzer {
 		map< string, double > cutmap;
 
 		bool isData;
+		bool LHEcont;
 		bool mkTree;
 		bool massPairing;
 		string dataPUFile;
@@ -206,6 +207,7 @@ RUNResolvedAnalysis::RUNResolvedAnalysis(const ParameterSet& iConfig):
 	cutDeltaEtaDijetSyst	= iConfig.getParameter<double>("cutDeltaEtaDijetSyst");
 	triggerPass 	= iConfig.getParameter<vector<string>>("triggerPass");
 	isData 		= iConfig.getParameter<bool>("isData");
+	LHEcont		= iConfig.getParameter<bool>("LHEcont");
 	mkTree 		= iConfig.getParameter<bool>("mkTree");
 	massPairing	= iConfig.getParameter<bool>("massPairing");
 	dataPUFile 	= iConfig.getParameter<string>("dataPUFile");
@@ -349,7 +351,7 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 	Handle<vector<float> > muonEnergy;
 	iEvent.getByToken(muonEnergy_, muonEnergy);
 
-	if ( !isData ) {
+	if ( !isData && !LHEcont ) {
 
 		// all this section is based on https://github.com/jkarancs/B2GTTrees/blob/master/plugins/B2GEdmExtraVarProducer.cc#L215-L281
 		/////////// GEN weight
@@ -796,7 +798,6 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 					}
 				}
 
-				/// TEST
 				if ( ( qgl1 > 0.7 ) && ( qgl2 > 0.7 ) && ( qgl3 > 0.7 ) && ( qgl4 > 0.7 ) ) {
 					histos1D_[ "massAve_cutQGL" ]->Fill( avgMass, totalWeight );
 					histos1D_[ "massAsym_cutQGL" ]->Fill( massAsym, totalWeight );
@@ -810,7 +811,7 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 				}
 			}
 
-			if ( numJets > 4 ){
+			/*if ( numJets > 4 ){
 				for (unsigned int ijet = 4; ijet < JETS.size(); ijet++) {
 					jetsPt->push_back( JETS[ ijet ].p4.Pt() );
 					jetsEta->push_back( JETS[ ijet ].p4.Eta() );
@@ -818,7 +819,7 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 					jetsE->push_back( JETS[ ijet ].p4.E() );
 					jetsQGL->push_back( JETS[ ijet ].qgl );
 				}
-			}
+			}*/
 		}
 	}
 	JETS.clear();
@@ -1113,6 +1114,7 @@ void RUNResolvedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & desc
 	desc.add<double>("cutDelta", 180);
 	desc.add<double>("cutDeltaEtaDijetSyst", .75);
 	desc.add<bool>("isData", false);
+	desc.add<bool>("LHEcont", false);
 	desc.add<bool>("mkTree", false);
 	desc.add<bool>("massPairing", false);
 	desc.add<double>("scale", 1);
@@ -1168,7 +1170,7 @@ void RUNResolvedAnalysis::beginRun(const Run& iRun, const EventSetup& iSetup){
 	 * Notice that to be used they need to be renormalized to the central event weight
 	 * at LHE level which may be different from genEvtInfo->weight()
 	 */
-	if (!isData) {
+	if (!isData && !LHEcont) {
 		Handle<LHERunInfoProduct> lheRunInfo;
 		iRun.getByLabel( "externalLHEProducer", lheRunInfo );
 

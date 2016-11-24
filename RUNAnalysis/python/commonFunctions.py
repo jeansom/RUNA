@@ -42,3 +42,55 @@ boostedMassAveBinSize = array( 'd', [ 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 
 
 ##### from MC true, sigma from fit.
 massWidthList = [8.56280909196305, 8.445039648677378, 8.950556420141245, 9.860254339542022, 8.814786972730516, 10.021433248818914, 10.392360104091987, 9.435770844457956, 10.268425520508536, 10.45176971177987, 12.86644189449206, 10.084924444431165, 12.431737065699405, 10.809084324420656, 12.94592267653858, 15.762703291273564]
+
+###### Rebin 2D plots
+def Rebin2D( h1, rebinx, rebiny ):
+	"""docstring for Rebin2D"""
+
+	tmph1 = h1.Clone()
+	nbinsx = h1.GetXaxis().GetNbins()
+	nbinsy = h1.GetYaxis().GetNbins()
+	xmin  = h1.GetXaxis().GetXmin()
+	xmax  = h1.GetXaxis().GetXmax()
+	ymin  = h1.GetYaxis().GetXmin()
+	ymax  = h1.GetYaxis().GetXmax()
+	nx = nbinsx/rebinx
+	ny = nbinsy/rebiny
+	h1.SetBins( nx, xmin, xmax, ny, ymin, ymax )
+
+	for biny in range( 1, nbinsy):
+		for binx in range(1, nbinsx):
+			ibin1 = h1.GetBin(binx,biny)
+			h1.SetBinContent( ibin1, 0 )
+		
+	for biny in range( 1, nbinsy):
+		by = tmph1.GetYaxis().GetBinCenter( biny )
+		iy = h1.GetYaxis().FindBin(by)
+		for binx in range(1, nbinsx):
+			bx = tmph1.GetXaxis().GetBinCenter(binx)
+			ix  = h1.GetXaxis().FindBin(bx)
+			bin = tmph1.GetBin(binx,biny)
+			ibin= h1.GetBin(ix,iy)
+			cu  = tmph1.GetBinContent(bin)
+			h1.AddBinContent(ibin,cu)
+	return h1
+
+def getHistoFromTree( fileName, treeName, plotVar, cuts, histo, weight  ):
+	"""docstring for getHistoFromTree"""
+
+	chain = TChain( treeName )
+	chain.Add( fileName ) 
+	#print '|---> Plotting: '+plotVar+'>>'+str(histo.GetName()), '('+str(weight)+')*('+cuts+')' 
+	chain.Draw( plotVar+'>>'+str(histo.GetName()), '('+str(weight)+')*('+cuts+')' )
+
+	return histo
+
+def get2DHistoFromTree( fileName, treeName, plotVar1, plotVar2, cuts, histo, weight  ):
+	"""docstring for getHistoFromTree"""
+
+	chain = TChain( treeName )
+	chain.Add( fileName ) 
+	#print '|---> Plotting: '+plotVar1+':'+plotVar2+'>>'+str(histo.GetName()), '('+str(weight)+')*('+cuts+')' 
+	chain.Draw( plotVar2+':'+plotVar1+'>>'+str(histo.GetName()), '('+str(weight)+')*('+cuts+')' )
+
+	return histo
