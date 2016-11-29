@@ -293,7 +293,7 @@ if __name__ == '__main__':
 	parser.add_argument( '-d', '--decay', action='store',  dest='decay', default='UDD312', help='Decay: UDD312 or UDD323.' )
 	parser.add_argument( '-s', '--sample', action='store',   dest='samples', default='RPV', help='Type of sample' )
 	parser.add_argument( '-u', '--unc', action='store',  dest='unc', default='', help='Process: all or single.' )
-	parser.add_argument( '-b', '--batchSys', action='store',  dest='batchSys', type=bool, default=False, help='Process: all or single.' )
+	parser.add_argument( '-b', '--batchSys', action='store_true',  dest='batchSys', type=bool, default=False, help='Process: all or single.' )
 	parser.add_argument( '-v', '--version', action='store', default='v00p3', dest='version', help='Version of the RUNAnalysis file.' )
 	parser.add_argument( '-l', '--lumi', action='store', dest='lumi', type=int, default=2643, help='Mass of the Stop' )
 	parser.add_argument( '-q', '--qcd', action='store', default='Pt', dest='qcd', help='Type of QCD binning, example: HT.' )
