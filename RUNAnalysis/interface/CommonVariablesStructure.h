@@ -27,12 +27,19 @@
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
+#include "DataFormats/Common/interface/Ref.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/HLTReco/interface/TriggerObject.h"
+#include "DataFormats/HLTReco/interface/TriggerEvent.h"
+#include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
+#include "DataFormats/PatCandidates/interface/PackedTriggerPrescales.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
+
 
 using namespace edm;
 using namespace std;
+using namespace pat;
 
 
 
@@ -133,62 +140,62 @@ inline bool jetID( double jetEta, double jetE, double jecFactor, double neutralH
 	return id;
 }
 
-inline bool checkTriggerBits( vector<string> triggerNames, Handle<vector<float>> triggerBits, TString HLTtrigger  ){
+inline bool checkTriggerBits( vector<string> triggerNames, Handle<vector<float>> triggerBits, Handle<vector<int>> triggerPrescale, TString HLTtrigger, bool baselineTrigger  ){
 
 	float triggerFired = 0;
 	for (size_t t = 0; t < triggerNames.size(); t++) {
+		//LogWarning("triggerbit") << triggerNames[t] << " " <<  (*triggerBits)[t] << " " << (*triggerPrescale)[t];
 		if ( TString( triggerNames[t] ).Contains( HLTtrigger ) ) {
-			triggerFired = (*triggerBits)[t];
-			//LogWarning("triggerbit") << triggerNames[t] << " " <<  (*triggerBits)[t];
+			if ( ((*triggerPrescale)[t] == 1) || baselineTrigger ) triggerFired = (*triggerBits)[t];
 		}
 	}
 	if ( HLTtrigger.Contains( "NOTRIGGER" ) ) triggerFired = 1;
 	return triggerFired;
 }	
 
-inline bool checkORListOfTriggerBits( vector<string> triggerNames, Handle<vector<float>> triggerBits, vector<string>  triggerPass  ){
+inline bool checkORListOfTriggerBits( vector<string> triggerNames, Handle<vector<float>> triggerBits, Handle<vector<int>> triggerPrescale, vector<string> triggerPass, bool baselineTrigger ){
 
 	bool ORTriggers = 0;
 	if ( triggerNames.size() == triggerBits->size() ) {
 
 		vector<bool> triggersFired;
 		for (size_t t = 0; t < triggerPass.size(); t++) {
-			bool triggerFired = checkTriggerBits( triggerNames, triggerBits, triggerPass[t] );
+			bool triggerFired = checkTriggerBits( triggerNames, triggerBits, triggerPrescale, triggerPass[t], baselineTrigger );
 			triggersFired.push_back( triggerFired );
+			//LogWarning("test") << triggerPass[t] << " " << triggerFired;
 			//if ( triggerFired ) LogWarning("test") << triggerPass[t] << " " << triggerFired;
 		}
 		
-		ORTriggers = !none_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
-		//if( ORTriggers ) LogWarning("OR") << std::none_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
+		ORTriggers = any_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
 	} else LogError("TriggerBits") << "triggerNameList has different size than triggerBit";
 
 	return ORTriggers;
 }
 
-inline bool checkTriggerBitsMiniAOD( TriggerNames triggerNames, Handle<TriggerResults> triggerBits, TString HLTtrigger  ){
+inline bool checkTriggerBitsMiniAOD( TriggerNames triggerNames, Handle<TriggerResults> triggerBits, Handle<PackedTriggerPrescales> triggerPrescales, TString HLTtrigger, bool baselineTrigger  ){
 
   	bool triggerFired = 0;
 	for (unsigned int i = 0, n = triggerBits->size(); i < n; ++i) {
+		//LogWarning("triggerbit") << triggerNames.triggerName(i) << " " <<  triggerBits->accept(i) << " " << triggerPrescales->getPrescaleForIndex(i);
 		if (TString(triggerNames.triggerName(i)).Contains(HLTtrigger) && (triggerBits->accept(i))) {
-		       	triggerFired=1;
-			//LogWarning("test") << "Trigger " << triggerNames.triggerName(i) << ": " << (triggerBits->accept(i) ? "PASS" : "fail (or not run)") ;
+			if ( (triggerPrescales->getPrescaleForIndex(i) == 1) || baselineTrigger ) triggerFired=1;
 		}
 	}
 
 	return triggerFired;
 }	
 
-inline bool checkORListOfTriggerBitsMiniAOD( TriggerNames triggerNames, Handle<TriggerResults> triggerBits, vector<string>  triggerPass  ){
+inline bool checkORListOfTriggerBitsMiniAOD( TriggerNames triggerNames, Handle<TriggerResults> triggerBits, Handle<PackedTriggerPrescales> triggerPrescales, vector<string>  triggerPass, bool baselineTrigger  ){
 
 	vector<bool> triggersFired;
 	for (size_t t = 0; t < triggerPass.size(); t++) {
-		bool triggerFired = checkTriggerBitsMiniAOD( triggerNames, triggerBits, triggerPass[t] );
+		bool triggerFired = checkTriggerBitsMiniAOD( triggerNames, triggerBits, triggerPrescales, triggerPass[t], baselineTrigger );
 		triggersFired.push_back( triggerFired );
+		//LogWarning("test") << triggerPass[t] << " " << triggerFired;
 		//if ( triggerFired ) LogWarning("test") << triggerPass[t] << " " << triggerFired;
 	}
 	
-	bool ORTriggers = !none_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
-	//if( ORTriggers ) LogWarning("OR") << std::none_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
+	bool ORTriggers = any_of(triggersFired.begin(), triggersFired.end(), [](bool v) { return v; }); 
 	
 	return ORTriggers;
 }
