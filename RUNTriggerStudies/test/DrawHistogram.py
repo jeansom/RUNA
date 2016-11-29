@@ -396,9 +396,9 @@ if __name__ == '__main__':
 			BASEDTrigger = 'PFHT475'
 	else:
 		#inputTrigger = TFile.Open('RUNFullTriggerEfficiency_JetHT_Run2015C.root' ) 
-		#inputTrigger = TFile.Open('RUNTriggerValAndEff_JetHT_Run2016C.root' ) 
+		inputTrigger = TFile.Open('RUNResolvedTriggerEfficiency_JetHT_Run2015C.root' ) 
 		#inputTrigger = TFile.Open('Rootfiles/RUNTriggerEfficiencies_JetHT_Run2016C_V2p1_v00.root')
-		inputTrigger = TFile.Open('Rootfiles/RUNTriggerEfficiencies_JetHT_Run2016C_V2p1_v00p3.root')
+		#inputTrigger = TFile.Open('Rootfiles/RUNTriggerEfficiencies_JetHT_Run2016C_V2p1_v00p3.root')
 		#inputTrigger = TFile.Open('Rootfiles/RUNFullTriggerEfficiency_JetHTRun2016C_v00_1.root')
 		BASEDTrigger = 'PFHT475'
 		CMS_lumi.lumi_13TeV = "1.9 pb^{-1}"

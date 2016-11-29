@@ -50,19 +50,14 @@ if __name__ == '__main__':
 		parser.print_help()
 		sys.exit(0)
 
-	if 'B2G' in args.sample:
-		config.Data.inputDBS = 'https://cmsweb.cern.ch/dbs/prod/phys03/DBSReader'
-		supportFiles = glob.glob('../../RUNAnalysis/test/supportFiles/*')
-		config.JobType.inputFiles = supportFiles
-
 	Samples = {}
 
-	Samples[ 'B2GJetHTB' ] = [ '/JetHT/algomez-Run2016B-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10 ]
-	Samples[ 'B2GJetHTC' ] = [ '/JetHT/algomez-Run2016C-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10 ]
-	Samples[ 'B2GJetHTD' ] = [ '/JetHT/algomez-Run2016D-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10 ]
-	Samples[ 'B2GJetHTE' ] = [ '/JetHT/algomez-Run2016E-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10 ]
-	Samples[ 'B2GJetHTF' ] = [ '/JetHT/algomez-Run2016F-PromptReco-v1_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10 ]
-	Samples[ 'B2GJetHTG' ] = [ '/JetHT/algomez-Run2016G-PromptReco-v1_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10 ]
+	Samples[ 'B2GJetHTB' ] = [ '/JetHT/algomez-Run2016B-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'B2GJetHTC' ] = [ '/JetHT/algomez-Run2016C-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'B2GJetHTD' ] = [ '/JetHT/algomez-Run2016D-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'B2GJetHTE' ] = [ '/JetHT/algomez-Run2016E-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8E' ]
+	Samples[ 'B2GJetHTF' ] = [ '/JetHT/algomez-Run2016F-PromptReco-v1_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8F' ]
+	Samples[ 'B2GJetHTG' ] = [ '/JetHT/algomez-Run2016G-PromptReco-v1_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8p2' ]
 	Samples[ 'miniAODJetHTB' ] = [ '/JetHT/Run2016B-PromptReco-v2/MINIAOD', 10 ]
 	Samples[ 'miniAODJetHTC' ] = [ '/JetHT/Run2016C-PromptReco-v2/MINIAOD', 10 ]
 	Samples[ 'miniAODJetHTD' ] = [ '/JetHT/Run2016D-PromptReco-v2/MINIAOD', 10 ]
@@ -71,12 +66,13 @@ if __name__ == '__main__':
 	Samples[ 'miniAODJetHTG' ] = [ '/JetHT/Run2016G-PromptReco-v1/MINIAOD', 10 ]
 	Samples[ 'miniAODJetHTH' ] = [ '/JetHT/Run2016H-PromptReco-v2/MINIAOD', 10 ]
 
-	Samples[ 'B2GSingleMuonB' ] = [ '/SingleMuon/algomez-Run2016B-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10 ]
-	Samples[ 'B2GSingleMuonC' ] = [ '/SingleMuon/algomez-Run2016C-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10 ]
-	Samples[ 'B2GSingleMuonD' ] = [ '/SingleMuon/algomez-Run2016D-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10 ]
-	Samples[ 'B2GSingleMuonE' ] = [ '/SingleMuon/algomez-Run2016E-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10 ]
-	Samples[ 'B2GSingleMuonF' ] = [ '/SingleMuon/algomez-Run2016F-PromptReco-v1_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10 ]
-	Samples[ 'B2GSingleMuonG' ] = [ '/SingleMuon/algomez-Run2016G-PromptReco-v1_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10 ]
+	Samples[ 'B2GSingleMuonB' ] = [ '/SingleMuon/algomez-Run2016B-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'B2GSingleMuonC' ] = [ '/SingleMuon/algomez-Run2016C-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'B2GSingleMuonD' ] = [ '/SingleMuon/algomez-Run2016D-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'B2GSingleMuonE' ] = [ '/SingleMuon/algomez-Run2016E-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8E' ]
+	Samples[ 'B2GSingleMuonF' ] = [ '/SingleMuon/algomez-Run2016F-PromptReco-v1_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8F' ]
+	Samples[ 'B2GSingleMuonG' ] = [ '/SingleMuon/algomez-Run2016G-PromptReco-v1_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8p2' ]
+	Samples[ 'B2GSingleMuonH' ] = [ '/SingleMuon/algomez-Run2016H-PromptReco-v2_B2GAnaFW_80X_V2p01p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8p2' ]
 	Samples[ 'miniAODSingleMuonB' ] = [ '/SingleMuon/Run2016B-PromptReco-v2/MINIAOD', 10 ]
 	Samples[ 'miniAODSingleMuonC' ] = [ '/SingleMuon/Run2016C-PromptReco-v2/MINIAOD', 10 ]
 	Samples[ 'miniAODSingleMuonD' ] = [ '/SingleMuon/Run2016D-PromptReco-v2/MINIAOD', 10 ]
@@ -101,7 +97,12 @@ if __name__ == '__main__':
 
 		config.Data.inputDataset = dataset
 		config.General.requestName = procName
-		config.JobType.pyCfgParams = [ 'PROC='+procName, ( 'miniAOD=True' if 'miniAOD' in args.sample else 'jecVersion=Spring16_25nsV7BCD') ]
+		if 'B2G' in args.sample:
+			config.Data.inputDBS = 'https://cmsweb.cern.ch/dbs/prod/phys03/DBSReader'
+			supportFiles = glob.glob('../../RUNAnalysis/test/supportFiles/'+processingSamples[sam][2]+'*txt')
+			config.JobType.inputFiles = supportFiles
+
+		config.JobType.pyCfgParams = [ 'PROC='+procName, ( 'miniAOD=True' if 'miniAOD' in args.sample else 'jecVersion='+processingSamples[sam][2]) ]
 		#crabCommand('submit', config = config)
 		p = Process(target=submit, args=(config,))
 		p.start()

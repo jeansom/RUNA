@@ -52,7 +52,7 @@ class RUNDijetTriggerEfficiency : public EDAnalyzer {
 		virtual void endJob() override;
 
 		virtual void beginRun(Run const&, EventSetup const&) override;
-		//virtual void endRun(Run const&, EventSetup const&) override;
+		virtual void endRun(Run const&, EventSetup const&) override;
 		//virtual void beginLuminosityBlock(LuminosityBlock const&, EventSetup const&) override;
 		//virtual void endLuminosityBlock(LuminosityBlock const&, EventSetup const&) override;
 
@@ -67,7 +67,13 @@ class RUNDijetTriggerEfficiency : public EDAnalyzer {
 		double cutAK8jet1Pt;
 		double cutAK8jet1Mass;
 		TString baseTrigger;
+		string jecVersion;
+		string PUMethod;
 		vector<string> triggerPass, triggerNamesList;
+		vector<JetCorrectorParameters> jetPar;
+		FactorizedJetCorrector * jetJECAK8;
+		vector<JetCorrectorParameters> massPar;
+		FactorizedJetCorrector * massJECAK8;
 
 		EDGetTokenT<vector<float>> jetPt_;
 		EDGetTokenT<vector<float>> jetEta_;
@@ -77,7 +83,9 @@ class RUNDijetTriggerEfficiency : public EDAnalyzer {
 		EDGetTokenT<vector<float>> jetSoftDropMass_;
 		EDGetTokenT<vector<float>> jetCSVv2_;
 		EDGetTokenT<vector<float>> jetCSVv2V1_;
+		EDGetTokenT<vector<float>> jetArea_;
 		EDGetTokenT<int> NPV_;
+		EDGetTokenT<vector<float>> rho_;
 		EDGetTokenT<unsigned int> lumi_;
 		EDGetTokenT<unsigned int> run_;
 		EDGetTokenT<ULong64_t> event_;
@@ -113,7 +121,9 @@ RUNDijetTriggerEfficiency::RUNDijetTriggerEfficiency(const ParameterSet& iConfig
 	jetPrunedMass_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetPrunedMass"))),
 	jetSoftDropMass_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetSoftDropMass"))),
 	jetCSVv2_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetCSVv2"))),
+	jetArea_(consumes<vector<float>>(iConfig.getParameter<InputTag>("jetArea"))),
 	NPV_(consumes<int>(iConfig.getParameter<InputTag>("NPV"))),
+	rho_(consumes<vector<float>>(iConfig.getParameter<InputTag>("rho"))),
 	lumi_(consumes<unsigned int>(iConfig.getParameter<InputTag>("Lumi"))),
 	run_(consumes<unsigned int>(iConfig.getParameter<InputTag>("Run"))),
 	event_(consumes<ULong64_t>(iConfig.getParameter<InputTag>("Event"))),
@@ -136,6 +146,37 @@ RUNDijetTriggerEfficiency::RUNDijetTriggerEfficiency(const ParameterSet& iConfig
 	cutAK8jet1Mass = iConfig.getParameter<double>("cutAK8jet1Mass");
 	baseTrigger = iConfig.getParameter<string>("baseTrigger");
 	triggerPass = iConfig.getParameter<vector<string>>("triggerPass");
+	jecVersion 	= iConfig.getParameter<string>("jecVersion");
+	PUMethod 	= iConfig.getParameter<string>("PUMethod");
+
+	/////// JECs
+	string prefix;
+	prefix = jecVersion + "_DATA_";
+
+	// all jet
+	vector<string> jecAK8PayloadNames_;
+	jecAK8PayloadNames_.push_back(prefix + "L1FastJet_AK8PF"+PUMethod+".txt");
+	jecAK8PayloadNames_.push_back(prefix + "L2Relative_AK8PF"+PUMethod+".txt");
+	jecAK8PayloadNames_.push_back(prefix + "L3Absolute_AK8PF"+PUMethod+".txt");
+	jecAK8PayloadNames_.push_back(prefix + "L2L3Residual_AK8PF"+PUMethod+".txt");
+
+	for ( vector<string>::const_iterator payloadBegin = jecAK8PayloadNames_.begin(), payloadEnd = jecAK8PayloadNames_.end(), ipayload = payloadBegin; ipayload != payloadEnd; ++ipayload ) {
+		JetCorrectorParameters pars(*ipayload);
+		jetPar.push_back(pars);
+	}
+	jetJECAK8 = new FactorizedJetCorrector(jetPar);
+
+	// jet mass
+	vector<string> massjecAK8PayloadNames_;
+	massjecAK8PayloadNames_.push_back(prefix + "L2Relative_AK8PF"+PUMethod+".txt");
+	massjecAK8PayloadNames_.push_back(prefix + "L3Absolute_AK8PF"+PUMethod+".txt");
+	massjecAK8PayloadNames_.push_back(prefix + "L2L3Residual_AK8PF"+PUMethod+".txt");
+
+	for ( vector<string>::const_iterator payloadBegin = massjecAK8PayloadNames_.begin(), payloadEnd = massjecAK8PayloadNames_.end(), ipayload = payloadBegin; ipayload != payloadEnd; ++ipayload ) {
+		JetCorrectorParameters massPars(*ipayload);
+		massPar.push_back(massPars);
+	}
+	massJECAK8 = new FactorizedJetCorrector(massPar);
 }
 
 
@@ -176,8 +217,14 @@ void RUNDijetTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& i
 	Handle<vector<float> > jetCSVv2;
 	iEvent.getByToken(jetCSVv2_, jetCSVv2);
 
+	Handle<vector<float> > jetArea;
+	iEvent.getByToken(jetArea_, jetArea);
+
 	Handle<int> NPV;
 	iEvent.getByToken(NPV_, NPV);
+
+	Handle<vector<float>> rho;
+	iEvent.getByToken(rho_, rho);
 
 	Handle<unsigned int> Lumi;
 	iEvent.getByToken(lumi_, Lumi);
@@ -220,8 +267,8 @@ void RUNDijetTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& i
 	Handle<vector<float> > muonEnergy;
 	iEvent.getByToken(muonEnergy_, muonEnergy);
 
-	bool basedTriggerFired = checkTriggerBits( triggerNamesList, triggerBit, baseTrigger  );
-	bool ORTriggers = checkORListOfTriggerBits( triggerNamesList, triggerBit, triggerPass );
+	bool basedTriggerFired = checkTriggerBits( triggerNamesList, triggerBit, triggerPrescale, baseTrigger, true  );
+	bool ORTriggers = checkORListOfTriggerBits( triggerNamesList, triggerBit, triggerPrescale, triggerPass, false );
 
 	/// Applying kinematic, trigger and jet ID
 	vector< myJet > JETS;
@@ -231,19 +278,26 @@ void RUNDijetTriggerEfficiency::analyze(const Event& iEvent, const EventSetup& i
 
 		if( TMath::Abs( (*jetEta)[i] ) > 2.4 ) continue;
 		string typeOfJetID = "looseJetID";	// check trigger with looser jet id
-		bool idL = jetID( (*jetEta)[i], (*jetE)[i], (*jecFactor)[i], (*neutralHadronEnergyFrac)[i], (*neutralEmEnergyFrac)[i], (*chargedHadronEnergyFrac)[i], (*muonEnergy)[i], (*chargedEmEnergyFrac)[i], (*chargedMultiplicity)[i], (*neutralMultiplicity)[i], typeOfJetID ); 
+		bool jetId = jetID( (*jetEta)[i], (*jetE)[i], (*jecFactor)[i], (*neutralHadronEnergyFrac)[i], (*neutralEmEnergyFrac)[i], (*chargedHadronEnergyFrac)[i], (*muonEnergy)[i], (*chargedEmEnergyFrac)[i], (*chargedMultiplicity)[i], (*neutralMultiplicity)[i], typeOfJetID ); 
 
-		if( (*jetPt)[i] > cutAK8jetPt && idL ) { 
+		TLorentzVector tmpJet, rawJet, corrJet, genJet, smearJet;
+		tmpJet.SetPtEtaPhiE( (*jetPt)[i], (*jetEta)[i], (*jetPhi)[i], (*jetE)[i] );
+		rawJet = tmpJet* (*jecFactor)[i] ;
 
-			HT += (*jetPt)[i];
-			TLorentzVector tmpJet;
-			tmpJet.SetPtEtaPhiE( (*jetPt)[i], (*jetEta)[i], (*jetPhi)[i], (*jetE)[i] );
+		double JEC = corrections( rawJet, (*jetArea)[i], (*rho)[i] ,*NPV, jetJECAK8); 
+		corrJet = rawJet* ( JEC ); 
+
+		if( ( corrJet.Pt() > cutAK8jetPt ) && jetId ) { 
+
+			HT += corrJet.Pt();
+			double massJEC = corrections( rawJet, (*jetArea)[i], (*rho)[i] ,*NPV, massJECAK8); 
+			double corrSoftDropMass = (*jetSoftDropMass)[i] * massJEC ;
+			double corrPrunedMass = (*jetPrunedMass)[i] * massJEC ;
 
 			myJet tmpJET;
-			tmpJET.p4 = tmpJet;
-			tmpJET.prunedMass = (*jetPrunedMass)[i] ;
-			tmpJET.softDropMass = (*jetSoftDropMass)[i] ;
-			tmpJET.btagCSVv2 = (*jetCSVv2)[i];
+			tmpJET.p4 = corrJet;
+			tmpJET.prunedMass = corrPrunedMass;
+			tmpJET.softDropMass = corrSoftDropMass;
 			JETS.push_back( tmpJET );
 		}
 	}
@@ -468,6 +522,8 @@ void RUNDijetTriggerEfficiency::fillDescriptions(edm::ConfigurationDescriptions 
 	desc.add<double>("cutAK8jet1Pt", 500.);
 	desc.add<double>("cutAK8jet1Mass", 60.);
 	desc.add<string>("baseTrigger", "HLT_PFHT475");
+	desc.add<string>("jecVersion", "supportFiles/Fall15_25nsV2");
+	desc.add<string>("PUMethod", "chs");
 	vector<string> HLTPass;
 	HLTPass.push_back("HLT_AK8PFHT700_TrimR0p1PT0p03Mass50");
 	desc.add<vector<string>>("triggerPass",	HLTPass);
@@ -475,7 +531,9 @@ void RUNDijetTriggerEfficiency::fillDescriptions(edm::ConfigurationDescriptions 
 	desc.add<InputTag>("Lumi", 	InputTag("eventInfo:evtInfoLumiBlock"));
 	desc.add<InputTag>("Run", 	InputTag("eventInfo:evtInfoRunNumber"));
 	desc.add<InputTag>("Event", 	InputTag("eventInfo:evtInfoEventNumber"));
-	desc.add<InputTag>("NPV", 	InputTag("eventUserData:npv"));
+	desc.add<InputTag>("rho", 	InputTag("vertexInfo:rho"));
+	desc.add<InputTag>("NPV", 	InputTag("vertexInfo:npv"));
+	desc.add<InputTag>("jetArea", 	InputTag("jetsAK8Puppi:jetAK8PuppijetArea"));
 	desc.add<InputTag>("jetPt", 	InputTag("jetsAK8Puppi:jetAK8PuppiPt"));
 	desc.add<InputTag>("jetEta", 	InputTag("jetsAK8Puppi:jetAK8PuppiEta"));
 	desc.add<InputTag>("jetPhi", 	InputTag("jetsAK8Puppi:jetAK8PuppiPhi"));
@@ -511,6 +569,10 @@ void RUNDijetTriggerEfficiency::beginRun(const Run& iRun, const EventSetup& iSet
 	}
 	if ( triggerNamesList.size() == 0 ) LogError("TriggerNames") << "No triggers found.";
 		
+}
+
+void RUNDijetTriggerEfficiency::endRun(const Run& iRun, const EventSetup& iSetup){
+	triggerNamesList.clear();
 }
 
 //define this as a plug-in

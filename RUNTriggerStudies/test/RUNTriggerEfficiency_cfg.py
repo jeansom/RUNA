@@ -40,11 +40,12 @@ process = cms.Process("TriggerEfficiency")
 process.load("FWCore.MessageService.MessageLogger_cfi")
 NAME = options.PROC
 
-#process.load('JetHT_Run2015C_B2GNtuple_cfi')
+#process.load('JetHT_Run2016C_B2GNtuple_cfi')
 #process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange('275657:1-275657:5')
 process.source = cms.Source("PoolSource",
 		fileNames = cms.untracked.vstring(
-			'/store/data/Run2016C/JetHT/MINIAOD/PromptReco-v2/000/275/657/00000/0ED91D8C-913B-E611-8C29-02163E0142F6.root',
+			#'file:../../RUNAnalysis/test/pickevent.root',
+			#'/store/data/Run2016C/JetHT/MINIAOD/PromptReco-v2/000/275/657/00000/0ED91D8C-913B-E611-8C29-02163E0142F6.root',
 			'/store/data/Run2016C/JetHT/MINIAOD/PromptReco-v2/000/275/657/00000/2A1EB5E4-633B-E611-B444-02163E014607.root',
 #			#'/store/data/Run2016C/JetHT/MINIAOD/PromptReco-v2/000/275/657/00000/40CF17F5-603B-E611-AC93-02163E0119FB.root',
 #			#'/store/data/Run2016C/JetHT/MINIAOD/PromptReco-v2/000/275/657/00000/DAD5ADB7-6C3B-E611-9635-02163E0135FB.root',
@@ -53,7 +54,7 @@ process.source = cms.Source("PoolSource",
 #			'/store/group/phys_b2g/B2GAnaFW_80X_V2p1/JetHT/Run2016C/JetHT/Run2016C-PromptReco-v2_B2GAnaFW_80X_V2p1/161013_132254/0000/B2GEDMNtuple_10.root',
 			),
 #		#lumisToProcess = cms.untracked.VLuminosityBlockRange('275657:1-275657:max'),
-#		eventsToProcess = cms.untracked.VEventRange('275657:48885724-275657:48885729'),
+		#eventsToProcess = cms.untracked.VEventRange('275657:143390422','275657:143448798','275657:142430327','275657:143044677','275657:142507402'),
 )
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32 (options.maxEvents) )
@@ -94,8 +95,8 @@ process.BoostedTriggerEfficiency = cms.EDAnalyzer( ('RUNBoostedMiniAODTriggerEff
 		#cutAK8jet2Pt	= cms.double( 450.0 ),		# default 450.
 		#cutAK8jet1Mass	= cms.double( 60.0 ),		# default 60.
 		baseTrigger	= cms.string(basedline),
-		#jecVersion	= cms.string( options.jecVersion ),
-		triggerPass	= cms.vstring( [ 'HLT_PFHT800', 'HLT_PFHT900', 'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFHT750_TrimMass50', 'HLT_PFJet450' ] ),
+		jecVersion	= cms.string( options.jecVersion ),
+		triggerPass	= cms.vstring( [ 'HLT_PFHT800', 'HLT_PFHT900', 'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFHT750_TrimMass50' ] ),
 )
 
 process.BoostedTriggerEfficiencyPFHT800 = process.BoostedTriggerEfficiency.clone( 
@@ -116,10 +117,13 @@ process.BoostedTriggerEfficiencyAK8DiPFJet280220TrimMass30Btagp20 = process.Boos
 process.BoostedTriggerEfficiencyAK8DiPFJet280220TrimMass30 = process.BoostedTriggerEfficiency.clone( 
 		triggerPass = cms.vstring( [ 'HLT_AK8DiPFJet280_200_TrimMass30'] ) )
 
+process.BoostedTriggerEfficiencyPFJet450 = process.BoostedTriggerEfficiency.clone( 
+		triggerPass = cms.vstring( [ 'HLT_PFHT800', 'HLT_PFHT900', 'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFHT750_TrimMass50', 'HLT_PFJet450' ] ) )
+
 process.BoostedTriggerEfficiencySeveralTriggers = process.BoostedTriggerEfficiency.clone( 
 		triggerPass = cms.vstring( [ 'HLT_PFHT800', 'HLT_PFHT900', 
 			'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFHT750_TrimMass50',
-			'HLT_AK8PFJet360_TrimMass30',
+			'HLT_AK8PFJet360_TrimMass30', 'HLT_PFJet450',
 			'HLT_PFHT750_4JetPt', 'HLT_PFHT800_4Jet50',
 			'HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p20',
 			'HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p087',
@@ -132,6 +136,7 @@ if not options.miniAOD:
 			jetEta = cms.InputTag("jetsAK8Puppi:jetAK8PuppiEta"),
 			jetPhi = cms.InputTag("jetsAK8Puppi:jetAK8PuppiPhi"),
 			jetE = cms.InputTag("jetsAK8Puppi:jetAK8PuppiE"),
+			jetArea = cms.InputTag("jetsAK8Puppi:jetAK8PuppijetArea"),
 			jetTrimmedMass = cms.InputTag("jetsAK8Puppi:jetAK8PuppitrimmedMass"),
 			jetPrunedMass = cms.InputTag("jetsAK8Puppi:jetAK8PuppiprunedMass"),
 			jetSoftDropMass = cms.InputTag("jetsAK8Puppi:jetAK8PuppisoftDropMass"),
@@ -164,13 +169,17 @@ if not options.miniAOD:
 	process.BoostedTriggerEfficiencyPuppiAK8DiPFJet280220TrimMass30 = process.BoostedTriggerEfficiencyPuppi.clone( 
 			triggerPass = cms.vstring( [ 'HLT_AK8DiPFJet280_200_TrimMass30'] ) )
 
+	process.BoostedTriggerEfficiencyPuppiPFJet450 = process.BoostedTriggerEfficiencyPuppi.clone( 
+			triggerPass = cms.vstring( [ 'HLT_PFHT800', 'HLT_PFHT900', 'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFHT750_TrimMass50', 'HLT_PFJet450' ] ) )
+
 	process.BoostedTriggerEfficiencyPuppiSeveralTriggers = process.BoostedTriggerEfficiencyPuppi.clone( 
 			triggerPass = cms.vstring( [ 'HLT_PFHT800', 'HLT_PFHT900', 
-				'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50',
-				'HLT_AK8PFJet360_TrimMass30',
-				'HLT_PFHT750_4JetPt',
+				'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFHT750_TrimMass50',
+				'HLT_AK8PFJet360_TrimMass30', 'HLT_PFJet450',
+				'HLT_PFHT750_4JetPt', 'HLT_PFHT800_4Jet50',
 				'HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p20',
-				'HLT_AK8DiPFJet280_200_TrimMass30'] ) )
+				'HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p087',
+				'HLT_AK8DiPFJet300_200_TrimMass30_BTagCSV_p20' ] ) )
 ############################################################
 
 
@@ -181,8 +190,10 @@ process.DijetTriggerEfficiency = cms.EDAnalyzer( ('RUNDijetMiniAODTriggerEfficie
 		#cutAK8jetPt	= cms.double( 150.0 ),		# default 150.
 		#cutAK8jet1Pt	= cms.double( 500.0 ),		# default 500.
 		#cutAK8jet1Mass	= cms.double( 60.0 ),		# default 60.
-		baseTrigger		= cms.string(basedline),
-		triggerPass		= cms.vstring( [ 'HLT_PFHT800', 'HLT_PFHT900', 'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFHT750_TrimMass50', 'HLT_AK8PFJet360_TrimMass30' ] ),
+		PUMethod 	= cms.string('Puppi'),
+		jecVersion	= cms.string( options.jecVersion ),
+		baseTrigger	= cms.string(basedline),
+		triggerPass	= cms.vstring( [ 'HLT_PFHT800', 'HLT_PFHT900', 'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFHT750_TrimMass50', 'HLT_AK8PFJet360_TrimMass30' ] ),
 )
 
 process.DijetTriggerEfficiencyPFHT800 = process.DijetTriggerEfficiency.clone( 
@@ -203,10 +214,13 @@ process.DijetTriggerEfficiencyAK8DiPFJet280220TrimMass30Btagp20 = process.DijetT
 process.DijetTriggerEfficiencyAK8DiPFJet280220TrimMass30 = process.DijetTriggerEfficiency.clone( 
 		triggerPass = cms.vstring( [ 'HLT_AK8DiPFJet280_200_TrimMass30'] ) )
 
+process.DijetTriggerEfficiencyPFJet450 = process.DijetTriggerEfficiency.clone( 
+		triggerPass = cms.vstring( [ 'HLT_PFHT800', 'HLT_PFHT900', 'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFHT750_TrimMass50', 'HLT_AK8PFJet360_TrimMass30', 'HLT_PFJet450' ] ) )
+
 process.DijetTriggerEfficiencySeveralTriggers = process.DijetTriggerEfficiency.clone( 
 		triggerPass = cms.vstring( [ 'HLT_PFHT800', 'HLT_PFHT900', 
 			'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFHT750_TrimMass50',
-			'HLT_AK8PFJet360_TrimMass30',
+			'HLT_AK8PFJet360_TrimMass30', 'HLT_PFJet450',
 			'HLT_PFHT750_4JetPt', 'HLT_PFHT800_4Jet50',
 			'HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p20',
 			'HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p087',
@@ -232,6 +246,7 @@ elif 'Boosted' in options.version:
 	process.p += process.BoostedTriggerEfficiencyAK8DiPFJet280220TrimMass30Btagp20
 	process.p += process.BoostedTriggerEfficiencyAK8DiPFJet280220TrimMass30
 	process.p += process.BoostedTriggerEfficiencySeveralTriggers
+	process.p += process.BoostedTriggerEfficiencyPFJet450
 	if not options.miniAOD:
 		process.p += process.BoostedTriggerEfficiencyPuppi
 		process.p += process.BoostedTriggerEfficiencyPuppiPFHT800
@@ -240,6 +255,7 @@ elif 'Boosted' in options.version:
 		process.p += process.BoostedTriggerEfficiencyPuppiAK8PFHT7504Jet
 		process.p += process.BoostedTriggerEfficiencyPuppiAK8DiPFJet280220TrimMass30Btagp20
 		process.p += process.BoostedTriggerEfficiencyPuppiAK8DiPFJet280220TrimMass30
+		process.p += process.BoostedTriggerEfficiencyPuppiPFJet450
 		process.p += process.BoostedTriggerEfficiencyPuppiSeveralTriggers
 
 elif 'Dijet' in options.version:
@@ -251,12 +267,14 @@ elif 'Dijet' in options.version:
 	process.p += process.DijetTriggerEfficiencyAK8PFHT7504Jet
 	process.p += process.DijetTriggerEfficiencyAK8DiPFJet280220TrimMass30Btagp20
 	process.p += process.DijetTriggerEfficiencyAK8DiPFJet280220TrimMass30
+	process.p += process.DijetTriggerEfficiencyPFJet450
 	process.p += process.DijetTriggerEfficiencySeveralTriggers
 else: 
 	outputNAME = 'Full'
 	process.p += process.ResolvedTriggerEfficiency
 	process.p += process.ResolvedTriggerEfficiencyPFHT7504Jet
 	process.p += process.ResolvedTriggerEfficiencyPFHT800
+	process.p += process.ResolvedTriggerEfficiencyPFJet450
 	process.p += process.BoostedTriggerEfficiency
 	process.p += process.BoostedTriggerEfficiencyPFHT800
 	process.p += process.BoostedTriggerEfficiencyAK8PFHT700TrimMass50
@@ -264,6 +282,7 @@ else:
 	process.p += process.BoostedTriggerEfficiencyAK8PFHT7504Jet
 	process.p += process.BoostedTriggerEfficiencyAK8DiPFJet280220TrimMass30Btagp20
 	process.p += process.BoostedTriggerEfficiencyAK8DiPFJet280220TrimMass30
+	process.p += process.BoostedTriggerEfficiencyPFJet450
 	process.p += process.BoostedTriggerEfficiencySeveralTriggers
 	if not options.miniAOD:
 		process.p += process.BoostedTriggerEfficiencyPuppi
@@ -273,6 +292,7 @@ else:
 		process.p += process.BoostedTriggerEfficiencyPuppiAK8PFHT7504Jet
 		process.p += process.BoostedTriggerEfficiencyPuppiAK8DiPFJet280220TrimMass30Btagp20
 		process.p += process.BoostedTriggerEfficiencyPuppiAK8DiPFJet280220TrimMass30
+		process.p += process.BoostedTriggerEfficiencyPuppiPFJet450
 		process.p += process.BoostedTriggerEfficiencyPuppiSeveralTriggers
 	process.p += process.DijetTriggerEfficiency
 	process.p += process.DijetTriggerEfficiencyPFHT800
@@ -281,6 +301,7 @@ else:
 	process.p += process.DijetTriggerEfficiencyAK8PFHT7504Jet
 	process.p += process.DijetTriggerEfficiencyAK8DiPFJet280220TrimMass30Btagp20
 	process.p += process.DijetTriggerEfficiencyAK8DiPFJet280220TrimMass30
+	process.p += process.DijetTriggerEfficiencyPFJet450
 	process.p += process.DijetTriggerEfficiencySeveralTriggers
 
 if options.miniAOD: outputNAME = outputNAME+'miniAOD'

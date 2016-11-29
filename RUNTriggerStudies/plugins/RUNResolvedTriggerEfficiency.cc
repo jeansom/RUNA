@@ -51,8 +51,8 @@ class RUNResolvedTriggerEfficiency : public EDAnalyzer {
 		virtual void analyze(const Event&, const EventSetup&) override;
 		virtual void endJob() override;
 		virtual void beginRun(Run const&, EventSetup const&) override;
+		virtual void endRun(Run const&, EventSetup const&) override;
 
-		//virtual void endRun(Run const&, EventSetup const&) override;
 		//virtual void beginLuminosityBlock(LuminosityBlock const&, EventSetup const&) override;
 		//virtual void endLuminosityBlock(LuminosityBlock const&, EventSetup const&) override;
 
@@ -220,9 +220,8 @@ void RUNResolvedTriggerEfficiency::analyze(const Event& iEvent, const EventSetup
 	Handle<vector<float> > muonEnergy;
 	iEvent.getByToken(muonEnergy_, muonEnergy);
 
-
-	bool basedTriggerFired = checkTriggerBits( triggerNamesList, triggerBit, baseTrigger  );
-	bool ORTriggers = checkORListOfTriggerBits( triggerNamesList, triggerBit, triggerPass );
+	bool basedTriggerFired = checkTriggerBits( triggerNamesList, triggerBit, triggerPrescale, baseTrigger, true  );
+	bool ORTriggers = checkORListOfTriggerBits( triggerNamesList, triggerBit, triggerPrescale, triggerPass, false );
 
 	/// Applying kinematic, trigger and jet ID
 	vector< TLorentzVector > JETS;
@@ -460,6 +459,9 @@ void RUNResolvedTriggerEfficiency::beginRun(const Run& iRun, const EventSetup& i
 	}
 	if ( triggerNamesList.size() == 0 ) LogError("TriggerNames") << "No triggers found.";
 		
+}
+void RUNResolvedTriggerEfficiency::endRun(const Run& iRun, const EventSetup& iSetup){
+	triggerNamesList.clear();
 }
 
 //define this as a plug-in
