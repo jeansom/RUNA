@@ -138,7 +138,7 @@ def dijetVar( listJets ):
 def myAnalyzer( dictSamples, presel, cuts, signalName, UNC ):
 
 
-	outputFileName = 'Rootfiles/RUNMiniResolvedAnalysis_'+signalName+UNC+'_'+args.version+'p1.root' 
+	outputFileName = 'Rootfiles/RUNMiniScoutingResolvedAnalysis_'+signalName+UNC+'_'+( '' if 'JetHT' in signalName else '80X_')+'V2p1_'+args.version+'p1.root' 
 	outputFile = TFile( outputFileName, 'RECREATE' )
 
 
@@ -213,31 +213,33 @@ def myAnalyzer( dictSamples, presel, cuts, signalName, UNC ):
 		##### checking diff deltas
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'avgMass',
-				fullSel.replace('(delta1>100) * (delta2>100)', '(delta1>50) * (delta2>50)'),
+				fullSel.replace('(delta1>200) * (delta2>200)', '(delta1>50) * (delta2>50)'),
 				allHistos[ 'massAve_delta50_'+sample ], 
 				SF ) 
 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'avgMass',
-				fullSel,
-				allHistos[ 'massAve_delta100_'+sample ], 
-				SF ) 
-
-		getHistoFromTree( dictSamples[ sample ], treeName,
-				'avgMass',
-				fullSel.replace('(delta1>100) * (delta2>100)', '(delta1>150) * (delta2>150)'),
-				allHistos[ 'massAve_delta150_'+sample ], 
-				SF ) 
-
-		getHistoFromTree( dictSamples[ sample ], treeName,
-				'avgMass',
-				fullSel.replace('(delta1>100) * (delta2>100)', '(delta1>200) * (delta2>200)'),
+				#fullSel,
+				fullSel.replace('(delta1>200) * (delta2>200)', '(delta1>100) * (delta2>100)'),
 				allHistos[ 'massAve_delta200_'+sample ], 
 				SF ) 
 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'avgMass',
-				fullSel.replace('(delta1>100) * (delta2>100)', '(delta1>250) * (delta2>250)'),
+				fullSel.replace('(delta1>200) * (delta2>200)', '(delta1>150) * (delta2>150)'),
+				allHistos[ 'massAve_delta150_'+sample ], 
+				SF ) 
+
+		getHistoFromTree( dictSamples[ sample ], treeName,
+				'avgMass',
+				fullSel,
+				#fullSel.replace('(delta1>200) * (delta2>200)', '(delta1>200) * (delta2>200)'),
+				allHistos[ 'massAve_delta200_'+sample ], 
+				SF ) 
+
+		getHistoFromTree( dictSamples[ sample ], treeName,
+				'avgMass',
+				fullSel.replace('(delta1>200) * (delta2>200)', '(delta1>250) * (delta2>250)'),
 				allHistos[ 'massAve_delta250_'+sample ], 
 				SF ) 
 
@@ -246,24 +248,28 @@ def myAnalyzer( dictSamples, presel, cuts, signalName, UNC ):
 		#### n-1 plots
 		get2DHistoFromTree( dictSamples[ sample ], treeName,
 				'avgMass', 'delta1', 
-				fullSel.replace('* (delta1>100)','').replace('* (delta2>100)',''), 
+				fullSel.replace('* (delta1>200)','').replace('* (delta2>200)',''), 
+				#fullSel.replace('* (delta1>100)','').replace('* (delta2>100)',''), 
 				allHistos[ 'deltavsMassAve_n-1_'+sample ], 
 				SF ) 
 		get2DHistoFromTree( dictSamples[ sample ], treeName,
 				'avgMass', 'delta2', 
-				fullSel.replace('* (delta1>100)','').replace('* (delta2>100)',''), 
+				#fullSel.replace('* (delta1>100)','').replace('* (delta2>100)',''), 
+				fullSel.replace('* (delta1>200)','').replace('* (delta2>200)',''), 
 				allHistos[ 'deltavsMassAve_n-1_'+sample ], 
 				SF ) 
 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'massAsym',
-				fullSel.replace('* (massAsym<0.2)',''), 
+				#fullSel.replace('* (massAsym<0.2)',''), 
+				fullSel.replace('* (massAsym<0.1)',''), 
 				allHistos[ 'massAsym_n-1_'+sample ], 
 				SF ) 
 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'deltaEta',
-				fullSel.replace('* (deltaEta<1.2)',''), 
+				#fullSel.replace('* (deltaEta<1.2)',''), 
+				fullSel.replace('* (deltaEta<1.5)',''), 
 				allHistos[ 'deltaEta_n-1_'+sample ], 
 				SF ) 
 
@@ -302,9 +308,12 @@ if __name__ == '__main__':
 	else: folder = 'Rootfiles/'
 
 	allSamples = {}
-	allSamples[ 'DATA'] = 'Rootfiles/RUNAnalysis_JetHT_Run2016C_V2p1_'+args.version+'.root'
+	allSamples[ 'JetHT_Run2016C'] = 'Rootfiles/RUNAnalysis_JetHT_Run2016C_V2p1_'+args.version+'.root'
 	allSamples[ 'RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass) ] = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_'+args.decay+'_M-'+args.mass+'_80X_V2p1_'+args.version+'.root'
-	#allSamples[ 'TTJets' ] = 'Rootfiles/RUNAnalysis_TTJets_80X_V2p1_'+args.version+'.root'
+	allSamples[ 'TTJets' ] = 'Rootfiles/RUNAnalysis_TTJets_80X_V2p1_'+args.version+'.root'
+    	allSamples[ 'ZJetsToQQ' ] = 'Rootfiles/RUNAnalysis_ZJetsToQQ_80X_V2p1_'+args.version+'.root'
+    	allSamples[ 'WJetsToQQ' ] = 'Rootfiles/RUNAnalysis_WJetsToQQ_80X_V2p1_'+args.version+'.root'
+	allSamples[ 'Dibosons' ] = 'Rootfiles/RUNAnalysis_Dibosons_80X_V2p1_'+args.version+'.root'
 	allSamples[ 'QCD'+args.qcd+'All' ] = 'Rootfiles/RUNAnalysis_QCD'+args.qcd+'All_80X_V2p1_'+args.version+'.root'
 
 	if 'RPV' in args.samples: args.samples = 'RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)
@@ -317,8 +326,10 @@ if __name__ == '__main__':
 		dictSamples = allSamples
 		signalSample = 'RPVStopStopToJets_'+args.decay+'_M-'+args.mass+'_All'
 
-	preselection = '(jetsPt[0]>80) * (jetsPt[1]>80) *(jetsPt[2]>80) *(jetsPt[3]>80) * (HT>800)' 
-	cuts = '(delta1>100) * (delta2>100) * (massAsym<0.2) * (deltaEta<1.2)'
+	#preselection = '(jetsPt[0]>80) * (jetsPt[1]>80) *(jetsPt[2]>80) *(jetsPt[3]>80) * (HT>800)' 
+	#cuts = '(delta1>100) * (delta2>100) * (massAsym<0.2) * (deltaEta<1.2)'
+	preselection = '(jetsPt[0]>50) * (jetsPt[1]>50) *(jetsPt[2]>50) *(jetsPt[3]>50) * (HT>500)' 
+	cuts = '(delta1>200) * (delta2>200) * (massAsym<0.1) * (deltaEta<1.5)'
 
 	allHistos = {}
 	if ('RPV' in args.samples) and args.unc:

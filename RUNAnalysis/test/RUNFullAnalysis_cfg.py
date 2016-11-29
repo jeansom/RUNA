@@ -60,8 +60,8 @@ else:
 	process.source = cms.Source("PoolSource",
 		fileNames = cms.untracked.vstring(
 			#'/store/user/grauco/B2GAnaFW/B2GAnaFW_80X_V2p1/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_80X_V2p1/161018_070036/0000/B2GEDMNtuple_1.root',
-			#'/store/group/phys_b2g/B2GAnaFW_80X_V2p1/JetHT/Run2016C/JetHT/Run2016C-PromptReco-v2_B2GAnaFW_80X_V2p1/161013_132254/0000/B2GEDMNtuple_10.root',
-			'/store/group/phys_b2g/B2GAnaFW_80X_V2p1/QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/RunIISpring16MiniAODv2/QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1/161109_110436/0000/B2GEDMNtuple_1.root',
+			'/store/group/phys_b2g/B2GAnaFW_80X_V2p1/JetHT/Run2016C/JetHT/Run2016C-PromptReco-v2_B2GAnaFW_80X_V2p1/161013_132254/0000/B2GEDMNtuple_10.root',
+			#'/store/group/phys_b2g/B2GAnaFW_80X_V2p1/QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/RunIISpring16MiniAODv2/QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1/161109_110436/0000/B2GEDMNtuple_1.root',
 
 	    )
 	)
@@ -83,14 +83,14 @@ else:
 ##############################
 #####   Resolved analysis
 
-ResolvedTriggers =  [ ( 'HLT_PFHT900' if 'Run2016H' in NAME else 'HLT_PFHT800'), 'HLT_PFHT750_4JetPt' ]
+ResolvedTriggers = [  'HLT_PFHT800', 'HLT_PFHT900', 'HLT_PFHT750_4Jet', 'HLT_PFHT800_4Jet50', 'HLT_PFJet450' ]
 
 process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNResolvedAnalysis',
-		#cutAK4jetPt 		= cms.double( 80.0 ),	# default 80.0
+		cutAK4jetPt 		= cms.double( 50.0 ),	# default 80.0
 		#cutAK4HT 		= cms.double( 800.0 ),	# default 800.0
 		#cutAK4MassAsym		= cms.double( 0.2 ),	# default 0.2
-		cutDelta 		= cms.double( 100 ),	# default 180.0
-		cutDeltaEtaDijetSyst	= cms.double( 1.2 ),	# default .75
+		cutDelta 		= cms.double( 200 ),	# default 180.0
+		cutDeltaEtaDijetSyst	= cms.double( 1.0 ),	# default .75
 		triggerPass 		= cms.vstring( ResolvedTriggers ),
 		scale 			= cms.double( SF ),
 		dataPUFile		= cms.string( options.namePUFile  ),
@@ -98,11 +98,11 @@ process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNResolvedAnalysis',
 		isData			= cms.bool( isData ),
 		LHEcont			= cms.bool( True if 'QCD_Pt' in NAME else False ), ## logic is oposite
 		massPairing		= cms.bool( False ),
-		mkTree			= cms.bool( False ),
+		mkTree			= cms.bool( True ),
 )
 
-process.ResolvedAnalysisPlotsScouting = process.ResolvedAnalysisPlots.clone( cutAK4jetPt = cms.double( 50.0 ), cutAK4HT = cms.double( 450 ),  mkTree = cms.bool( True ) )
-process.ResolvedAnalysisPlotsMassPairing = process.ResolvedAnalysisPlots.clone( massPairing = cms.bool( True ) )
+#process.ResolvedAnalysisPlotsScouting = process.ResolvedAnalysisPlots.clone( cutAK4jetPt = cms.double( 50.0 ), cutAK4HT = cms.double( 450 ), mkTree = cms.bool( True ) )
+process.ResolvedAnalysisPlotsMassPairing = process.ResolvedAnalysisPlots.clone( massPairing = cms.bool( True ), mkTree = cms.bool( False ) )
 
 process.ResolvedAnalysisPlotsJESUp = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JESUp' ), mkTree = cms.bool( False ) )
 process.ResolvedAnalysisPlotsJESDown = process.ResolvedAnalysisPlots.clone( systematics = cms.string( 'JESDown' ), mkTree = cms.bool( False ) )
@@ -114,7 +114,7 @@ process.ResolvedAnalysisPlotsJERDown = process.ResolvedAnalysisPlots.clone( syst
 
 ##############################
 #####   Boosted analysis
-BoostedTriggers =  [ ( 'HLT_PFHT900' if 'Run2016H' in NAME else 'HLT_PFHT800'), 'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50' ]
+BoostedTriggers =  [ 'HLT_PFHT800', 'HLT_PFHT900', 'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFHT750_TrimMass50', 'HLT_PFJet450' ] 
 
 process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		#cutAK8jetPt 		= cms.double( 150.0 ),	# default 150.0
@@ -141,6 +141,7 @@ process.BoostedAnalysisPlotsJERDown = process.BoostedAnalysisPlots.clone( system
 
 process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone( 
 		PUMethod		= cms.string('Puppi'),
+		cutDeltaEtaDijet	= cms.double( 1. ),	# default 1.5
 		jetPt 			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiPt'),
 		jetEta			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiEta'),
 		jetPhi 			= cms.InputTag('jetsAK8Puppi:jetAK8PuppiPhi'),
@@ -208,8 +209,8 @@ elif 'Boosted' in options.version:
 	outputNAME = 'BoostedAnalysis_'
 	process.p += process.BoostedAnalysisPlots
 	process.p += process.BoostedAnalysisPlotsPuppi
-	process.p += process.BoostedAnalysisPlotsSortInMass
-	process.p += process.BoostedAnalysisPlotsSortInTau21
+	#process.p += process.BoostedAnalysisPlotsSortInMass
+	#process.p += process.BoostedAnalysisPlotsSortInTau21
 	if options.systematics:
 		process.p += process.BoostedAnalysisPlotsJESUp
 		process.p += process.BoostedAnalysisPlotsJESDown
@@ -220,7 +221,7 @@ elif 'Boosted' in options.version:
 else: 
 	outputNAME = 'FullAnalysis_'
 	process.p += process.ResolvedAnalysisPlots
-	process.p += process.ResolvedAnalysisPlotsScouting
+	#process.p += process.ResolvedAnalysisPlotsScouting
 	process.p += process.ResolvedAnalysisPlotsMassPairing
 	process.p += process.BoostedAnalysisPlots
 	#process.p += process.BoostedAnalysisPlotsSortInMass

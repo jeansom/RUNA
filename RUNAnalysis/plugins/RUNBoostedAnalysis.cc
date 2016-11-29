@@ -58,8 +58,8 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 		virtual void analyze(const Event&, const EventSetup&) override;
 		virtual void endJob() override;
 		virtual void beginRun(const Run&, const EventSetup&) override;
+		virtual void endRun(Run const&, EventSetup const&) override;
 
-		//virtual void endRun(Run const&, EventSetup const&) override;
 		//virtual void beginLuminosityBlock(LuminosityBlock const&, EventSetup const&) override;
 		//virtual void endLuminosityBlock(LuminosityBlock const&, EventSetup const&) override;
 
@@ -100,28 +100,30 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 		ULong64_t event = 0;
 		int numJets = 0, numPV = 0;
 		unsigned int lumi = 0, run=0;
-		float AK4HT = 0, HT = 0, trimmedMass = -999, puWeight = -999, genWeight = -999, lumiWeight = -999, pdfWeight = -999, MET = -999,
+		float AK4HT = 0, HT = 0, trimmedMass = -999, 
+		      puWeight = -999, genWeight = -999, lumiWeight = -999, pdfWeight = -999, MET = -999,
 		      jet1Pt = -999, jet1Eta = -999, jet1Phi = -999, jet1E = -999, jet1btagCSVv2 = -9999, jet1btagCMVAv2 = -9999, jet1btagDoubleB = -9999,
 		      jet2Pt = -999, jet2Eta = -999, jet2Phi = -999, jet2E = -999, jet2btagCSVv2 = -9999, jet2btagCMVAv2 = -9999, jet2btagDoubleB = -9999,
 		      subjet11Pt = -999, subjet11Eta = -999, subjet11Phi = -999, subjet11E = -999, subjet11btagCSVv2 = -9999, subjet11btagCMVAv2 = -9999, 
 		      subjet12Pt = -999, subjet12Eta = -999, subjet12Phi = -999, subjet12E = -999, subjet12btagCSVv2 = -9999, subjet12btagCMVAv2 = -9999, 
 		      subjet21Pt = -999, subjet21Eta = -999, subjet21Phi = -999, subjet21E = -999, subjet21btagCSVv2 = -9999, subjet21btagCMVAv2 = -9999, 
 		      subjet22Pt = -999, subjet22Eta = -999, subjet22Phi = -999, subjet22E = -999, subjet22btagCSVv2 = -9999, subjet22btagCMVAv2 = -9999,
-		      massAve = -9999, massAsym = -9999, 
+		      //massAve = -9999, massAsym = -9999, 
 		      jet1PrunedMass = -9999, jet2PrunedMass = -9999,
 		      jet1SoftDropMass = -9999, jet2SoftDropMass = -9999,
-		      trimmedMassAve = -9999, trimmedMassAsym = -9999, 
+		      //trimmedMassAve = -9999, trimmedMassAsym = -9999, 
 		      prunedMassAve = -9999, prunedMassAsym = -9999, 
-		      filteredMassAve = -9999, filteredMassAsym = -9999, 
-		      softDropMassAve = -9999, softDropMassAsym = -9999, 
-		      jet1CosThetaStar = -9999, jet2CosThetaStar = -9999, deltaEtaDijet = -9999,
+		      //filteredMassAve = -9999, filteredMassAsym = -9999, 
+		      //softDropMassAve = -9999, softDropMassAsym = -9999, 
+		      jet1CosThetaStar = -9999, //jet2CosThetaStar = -9999, 
+		      deltaEtaDijet = -9999,
 		      jet1Tau21 = -9999, jet1Tau31 = -9999, jet1Tau32 = -9999,
-		      jet2Tau21 = -9999, jet2Tau31 = -9999, jet2Tau32 = -9999,
-		      jet1SubjetPtRatio = -999, jet2SubjetPtRatio = -999, jet1SubjetMass21Ratio = -999, jet1Subjet112MassRatio = -999, jet1Subjet1JetMassRatio = - 999, jet1Subjet212MassRatio = - 999, jet1Subjet2JetMassRatio = - 999,
-		      jet2SubjetMass21Ratio = -999, jet2Subjet112MassRatio = -999, jet2Subjet1JetMassRatio = - 999, jet2Subjet212MassRatio = - 999, jet2Subjet2JetMassRatio = - 999, 
-		      cosPhi13412 = -9999, cosPhi31234 = -9999,
-		      dalitzY1 = -9999, dalitzY2 = -9999, dalitzY3 = -9999, dalitzY4 = -9999, dalitzY5 = -9999, dalitzY6 = -9999, 
-		      dalitzX1 = -9999, dalitzX2 = -9999, dalitzX3 = -9999, dalitzX4 = -9999, dalitzX5 = -9999, dalitzX6 = -9999;
+		      jet2Tau21 = -9999, jet2Tau31 = -9999, jet2Tau32 = -9999;
+		      //jet1SubjetPtRatio = -999, jet2SubjetPtRatio = -999, jet1SubjetMass21Ratio = -999, jet1Subjet112MassRatio = -999, jet1Subjet1JetMassRatio = - 999, jet1Subjet212MassRatio = - 999, jet1Subjet2JetMassRatio = - 999,
+		      //jet2SubjetMass21Ratio = -999, jet2Subjet112MassRatio = -999, jet2Subjet1JetMassRatio = - 999, jet2Subjet212MassRatio = - 999, jet2Subjet2JetMassRatio = - 999, 
+		      //cosPhi13412 = -9999, cosPhi31234 = -9999,
+		      //dalitzY1 = -9999, dalitzY2 = -9999, dalitzY3 = -9999, dalitzY4 = -9999, dalitzY5 = -9999, dalitzY6 = -9999, 
+		      //dalitzX1 = -9999, dalitzX2 = -9999, dalitzX3 = -9999, dalitzX4 = -9999, dalitzX5 = -9999, dalitzX6 = -9999;
 		vector<float> scaleWeights, pdfWeights, alphaWeights;
 
 		EDGetTokenT<vector<float>> jetAK4Pt_;
@@ -529,7 +531,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 
 	////////// Check trigger fired
 	bool ORTriggers = false;
-	if ( isData ) ORTriggers = checkORListOfTriggerBits( triggerNamesList, triggerBit, triggerPass );
+	if ( isData ) ORTriggers = checkORListOfTriggerBits( triggerNamesList, triggerBit, triggerPrescale, triggerPass, false );
 	else ORTriggers = true;
 	///////////////////////////////////////////////////*/
 	
@@ -761,16 +763,16 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 
 
 			// Mass average and asymmetry
-			massAve = massAverage( JETS[0].mass, JETS[1].mass );
-			massAsym = massAsymmetry( JETS[0].mass, JETS[1].mass );
-			trimmedMassAve = massAverage( JETS[0].trimmedMass, JETS[1].trimmedMass );
-			trimmedMassAsym = massAsymmetry( JETS[0].trimmedMass, JETS[1].trimmedMass );
+			//massAve = massAverage( JETS[0].mass, JETS[1].mass );
+			//massAsym = massAsymmetry( JETS[0].mass, JETS[1].mass );
+			//trimmedMassAve = massAverage( JETS[0].trimmedMass, JETS[1].trimmedMass );
+			//trimmedMassAsym = massAsymmetry( JETS[0].trimmedMass, JETS[1].trimmedMass );
 			prunedMassAve = massAverage( JETS[0].prunedMass, JETS[1].prunedMass );
 			prunedMassAsym = massAsymmetry( JETS[0].prunedMass, JETS[1].prunedMass );
-			filteredMassAve = massAverage( JETS[0].filteredMass, JETS[1].filteredMass );
-			filteredMassAsym = massAsymmetry( JETS[0].filteredMass, JETS[1].filteredMass );
-			softDropMassAve = massAverage( JETS[0].softDropMass, JETS[1].softDropMass );
-			softDropMassAsym = massAsymmetry( JETS[0].softDropMass, JETS[1].softDropMass );
+			//filteredMassAve = massAverage( JETS[0].filteredMass, JETS[1].filteredMass );
+			//filteredMassAsym = massAsymmetry( JETS[0].filteredMass, JETS[1].filteredMass );
+			//softDropMassAve = massAverage( JETS[0].softDropMass, JETS[1].softDropMass );
+			//softDropMassAsym = massAsymmetry( JETS[0].softDropMass, JETS[1].softDropMass );
 			//////////////////////////////////////////////////////////////////////////
 			
 			// Btag
@@ -786,7 +788,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 
 			// Cos theta star
 			jet1CosThetaStar = calculateCosThetaStar( JETS[0].p4, JETS[1].p4 ) ;
-			jet2CosThetaStar = calculateCosThetaStar( JETS[1].p4, JETS[0].p4 ) ;
+			//jet2CosThetaStar = calculateCosThetaStar( JETS[1].p4, JETS[0].p4 ) ;
 
 			// Nsubjetiness
 			jet1Tau21 = JETS[0].tau2 / JETS[0].tau1;
@@ -798,7 +800,7 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 			////////////////////////////////////////////////////////////////////////////////
 
 
-			// Subjet variables
+			/*/ Subjet variables
 			jet1SubjetsTLV.push_back( JETS[0].subjet0 );
 			jet1SubjetsTLV.push_back( JETS[0].subjet1 );
 			//LogWarning("subjet0") <<  jet1SubjetsTLV[0].M() << " " <<  jet1SubjetsTLV[1].M();
@@ -812,23 +814,22 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 				// Subjet Pt ratio, subjet mass ratio 
 				//LogWarning("subjet0") <<  jet1SubjetsTLV[0].Pt() << " " <<  jet1SubjetsTLV[1].Pt();
 				jet1SubjetPtRatio = min( jet1SubjetsTLV[0].Pt(), jet1SubjetsTLV[1].Pt() ) / max( jet1SubjetsTLV[0].Pt(), jet1SubjetsTLV[1].Pt() );
-				/*jet1SubjetMass21Ratio =  jet1SubjetsTLV[1].M() / jet1SubjetsTLV[0].M() ;
+				jet1SubjetMass21Ratio =  jet1SubjetsTLV[1].M() / jet1SubjetsTLV[0].M() ;
 				jet1Subjet112MassRatio = jet1SubjetsTLV[0].M() / ( jet1SubjetsTLV[0] + jet1SubjetsTLV[1] ).M();
 				jet1Subjet1JetMassRatio = jet1SubjetsTLV[0].M() /JETS[0].mass;
 				jet1Subjet212MassRatio = jet1SubjetsTLV[1].M() / ( jet1SubjetsTLV[0] + jet1SubjetsTLV[1] ).M();
 				jet1Subjet2JetMassRatio = jet1SubjetsTLV[1].M() /JETS[0].mass;
-				*/
 
 				jet2SubjetPtRatio = min( jet2SubjetsTLV[0].Pt(), jet2SubjetsTLV[1].Pt() ) / max( jet2SubjetsTLV[0].Pt(), jet2SubjetsTLV[1].Pt() );
-				/*jet2SubjetMass21Ratio =  jet2SubjetsTLV[1].M()/jet2SubjetsTLV[0].M();
+				jet2SubjetMass21Ratio =  jet2SubjetsTLV[1].M()/jet2SubjetsTLV[0].M();
 				jet2Subjet112MassRatio = jet2SubjetsTLV[0].M()/ ( jet2SubjetsTLV[0] + jet2SubjetsTLV[1] ).M();
 				jet2Subjet1JetMassRatio = jet2SubjetsTLV[0].M()/JETS[1].mass;
 				jet2Subjet212MassRatio = jet2SubjetsTLV[1].M()/ ( jet2SubjetsTLV[0] + jet2SubjetsTLV[1] ).M();
 				jet2Subjet2JetMassRatio = jet2SubjetsTLV[1].M()/JETS[1].mass;
-				/////////////////////////////////////////////////////////////////////////////////*/
+				//////////////////////////////////////////////////////////////////////////////////
 
 			
-				/*/ SUbjet Polarization angle & dalitz variables
+				// SUbjet Polarization angle & dalitz variables
 				double m1 = jet1SubjetsTLV[0].M();
 				double m2 = jet1SubjetsTLV[1].M();
 				double m3 = jet2SubjetsTLV[0].M();
@@ -903,9 +904,8 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 				dalitzY4 = ( dalitz2[2] + ( 2 * dalitz2[1] ) ) / TMath::Sqrt(3);
 				dalitzY5 = ( dalitz2[0] + ( 2 * dalitz2[2] ) ) / TMath::Sqrt(3);
 				dalitzY6 = ( dalitz2[1] + ( 2 * dalitz2[2] ) ) / TMath::Sqrt(3);
-				//////////////////////////////////////////////////////////////////////////////////////*/
-
 			}
+			//////////////////////////////////////////////////////////////////////////////////////*/
 
 
 			// Cut Pt
@@ -1038,7 +1038,8 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 						
 						}
 					}
-
+					
+					///// Regular ABCD
 					if ( ( prunedMassAsym < cutAK8MassAsym ) && ( deltaEtaDijet < cutDeltaEtaDijet ) ) {
 						histos1D_[ "massAve_prunedMassAsymVsdeltaEtaDijet_A" ]->Fill( prunedMassAve, totalWeight );
 						histos2D_[ "prunedMassAsymVsdeltaEtaDijet_A" ]->Fill( prunedMassAsym, deltaEtaDijet, totalWeight );
@@ -1051,8 +1052,27 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 					} else {
 						histos1D_[ "massAve_prunedMassAsymVsdeltaEtaDijet_D" ]->Fill( prunedMassAve, totalWeight );
 						histos2D_[ "prunedMassAsymVsdeltaEtaDijet_D" ]->Fill( prunedMassAsym, deltaEtaDijet, totalWeight );
+//					}
+
+					
+					///// Regular ABCD
+					if ( ( jet1btagCSVv2 > 0.8 ) && ( jet2btagCSVv2 > 0.8 ) ) {
+						if ( ( prunedMassAsym < cutAK8MassAsym ) && ( deltaEtaDijet < cutDeltaEtaDijet ) ) {
+							histos1D_[ "massAve_prunedMassAsymVsdeltaEtaDijet_btag_A" ]->Fill( prunedMassAve, totalWeight );
+							histos2D_[ "prunedMassAsymVsdeltaEtaDijet_btag_A" ]->Fill( prunedMassAsym, deltaEtaDijet, totalWeight );
+						} else if ( ( prunedMassAsym < cutAK8MassAsym ) && ( deltaEtaDijet > cutDeltaEtaDijet ) ) {
+							histos1D_[ "massAve_prunedMassAsymVsdeltaEtaDijet_btag_B" ]->Fill( prunedMassAve, totalWeight );
+							histos2D_[ "prunedMassAsymVsdeltaEtaDijet_btag_B" ]->Fill( prunedMassAsym, deltaEtaDijet, totalWeight );
+						} else if ( ( prunedMassAsym > cutAK8MassAsym ) && ( deltaEtaDijet < cutDeltaEtaDijet ) ) {
+							histos1D_[ "massAve_prunedMassAsymVsdeltaEtaDijet_btag_C" ]->Fill( prunedMassAve, totalWeight );
+							histos2D_[ "prunedMassAsymVsdeltaEtaDijet_btag_C" ]->Fill( prunedMassAsym, deltaEtaDijet, totalWeight );
+						} else {
+							histos1D_[ "massAve_prunedMassAsymVsdeltaEtaDijet_btag_D" ]->Fill( prunedMassAve, totalWeight );
+							histos2D_[ "prunedMassAsymVsdeltaEtaDijet_btag_D" ]->Fill( prunedMassAsym, deltaEtaDijet, totalWeight );
+						}
 					}
 				}
+
 				if ( ( jet1Tau21 < cutTau21 ) && ( jet2Tau21 < cutTau21 ) && ( prunedMassAsym < cutAK8MassAsym ) )
 					histos1D_[ "deltaEtaDijet_n-1" ]->Fill( deltaEtaDijet, totalWeight );
 				if ( ( jet1Tau21 < cutTau21 ) && ( jet2Tau21 < cutTau21 ) && ( deltaEtaDijet < cutDeltaEtaDijet ) ) 
@@ -1091,8 +1111,8 @@ void RUNBoostedAnalysis::beginJob() {
 		RUNAtree->Branch( "genWeight", &genWeight, "genWeight/F" );
 		RUNAtree->Branch( "HT", &HT, "HT/F" );
 		RUNAtree->Branch( "MET", &MET, "MET/F" );
-		RUNAtree->Branch( "AK4HT", &AK4HT, "AK4HT/F" );
-		RUNAtree->Branch( "trimmedMass", &trimmedMass, "trimmedMass/F" );
+		//RUNAtree->Branch( "AK4HT", &AK4HT, "AK4HT/F" );
+		//RUNAtree->Branch( "trimmedMass", &trimmedMass, "trimmedMass/F" );
 		RUNAtree->Branch( "jet1Pt", &jet1Pt, "jet1Pt/F" );
 		RUNAtree->Branch( "jet1Eta", &jet1Eta, "jet1Eta/F" );
 		RUNAtree->Branch( "jet1Phi", &jet1Phi, "jet1Phi/F" );
@@ -1135,29 +1155,29 @@ void RUNBoostedAnalysis::beginJob() {
 		RUNAtree->Branch( "subjet22E", &subjet22E, "subjet22E/F" );
 		RUNAtree->Branch( "subjet22btagCSVv2", &subjet22btagCSVv2, "subjet22btagCSVv2/F" );
 		RUNAtree->Branch( "subjet22btagCMVAv2", &subjet22btagCMVAv2, "subjet22btagCMVAv2/F" );
-		RUNAtree->Branch( "massAve", &massAve, "massAve/F" );
-		RUNAtree->Branch( "massAsym", &massAsym, "massAsym/F" );
-		RUNAtree->Branch( "trimmedMassAve", &trimmedMassAve, "trimmedMassAve/F" );
-		RUNAtree->Branch( "trimmedMassAsym", &trimmedMassAsym, "trimmedMassAsym/F" );
+		//RUNAtree->Branch( "massAve", &massAve, "massAve/F" );
+		//RUNAtree->Branch( "massAsym", &massAsym, "massAsym/F" );
+		//RUNAtree->Branch( "trimmedMassAve", &trimmedMassAve, "trimmedMassAve/F" );
+		//RUNAtree->Branch( "trimmedMassAsym", &trimmedMassAsym, "trimmedMassAsym/F" );
 		RUNAtree->Branch( "prunedMassAve", &prunedMassAve, "prunedMassAve/F" );
 		RUNAtree->Branch( "prunedMassAsym", &prunedMassAsym, "prunedMassAsym/F" );
-		RUNAtree->Branch( "filteredMassAve", &filteredMassAve, "filteredMassAve/F" );
-		RUNAtree->Branch( "filteredMassAsym", &filteredMassAsym, "filteredMassAsym/F" );
-		RUNAtree->Branch( "softDropMassAve", &softDropMassAve, "softDropMassAve/F" );
-		RUNAtree->Branch( "softDropMassAsym", &softDropMassAsym, "softDropMassAsym/F" );
+		//RUNAtree->Branch( "filteredMassAve", &filteredMassAve, "filteredMassAve/F" );
+		//RUNAtree->Branch( "filteredMassAsym", &filteredMassAsym, "filteredMassAsym/F" );
+		//RUNAtree->Branch( "softDropMassAve", &softDropMassAve, "softDropMassAve/F" );
+		//RUNAtree->Branch( "softDropMassAsym", &softDropMassAsym, "softDropMassAsym/F" );
 		RUNAtree->Branch( "deltaEtaDijet", &deltaEtaDijet, "deltaEtaDijet/F" );
 		RUNAtree->Branch( "jet1CosThetaStar", &jet1CosThetaStar, "jet1CosThetaStar/F" );
-		RUNAtree->Branch( "jet2CosThetaStar", &jet2CosThetaStar, "jet2CosThetaStar/F" );
+		//RUNAtree->Branch( "jet2CosThetaStar", &jet2CosThetaStar, "jet2CosThetaStar/F" );
 		RUNAtree->Branch( "jet1Tau21", &jet1Tau21, "jet1Tau21/F" );
 		RUNAtree->Branch( "jet1Tau31", &jet1Tau31, "jet1Tau31/F" );
 		RUNAtree->Branch( "jet1Tau32", &jet1Tau32, "jet1Tau32/F" );	
 		RUNAtree->Branch( "jet2Tau21", &jet2Tau21, "jet2Tau21/F" );
 		RUNAtree->Branch( "jet2Tau31", &jet2Tau31, "jet2Tau31/F" );
 		RUNAtree->Branch( "jet2Tau32", &jet2Tau32, "jet2Tau32/F" );	
-		RUNAtree->Branch( "jet1SubjetPtRatio", &jet1SubjetPtRatio, "jet1SubjetPtRatio/F" );
-		RUNAtree->Branch( "jet2SubjetPtRatio", &jet2SubjetPtRatio, "jet2SubjetPtRatio/F" );
-		RUNAtree->Branch( "cosPhi13412", &cosPhi13412, "cosPhi13412/F" );
-		RUNAtree->Branch( "cosPhi31234", &cosPhi31234, "cosPhi31234/F" );
+		//RUNAtree->Branch( "jet1SubjetPtRatio", &jet1SubjetPtRatio, "jet1SubjetPtRatio/F" );
+		//RUNAtree->Branch( "jet2SubjetPtRatio", &jet2SubjetPtRatio, "jet2SubjetPtRatio/F" );
+		//RUNAtree->Branch( "cosPhi13412", &cosPhi13412, "cosPhi13412/F" );
+		//RUNAtree->Branch( "cosPhi31234", &cosPhi31234, "cosPhi31234/F" );
 		//RUNAtree->Branch( "scaleWeights", &scaleWeights );
 		//RUNAtree->Branch( "pdfWeights", &pdfWeights );
 		//RUNAtree->Branch( "alphaWeights", &alphaWeights );
@@ -1186,6 +1206,7 @@ void RUNBoostedAnalysis::beginJob() {
 	histos1D_[ "neutralHadronEnergyFrac" ] = fs_->make< TH1D >( "neutralHadronEnergyFrac", "neutralHadronEnergyFrac", 50, 0., 1. );
 	histos1D_[ "neutralEmEnergyFrac" ] = fs_->make< TH1D >( "neutralEmEnergyFrac", "neutralEmEnergyFrac", 50, 0., 1. );
 	histos1D_[ "chargedEmEnergyFrac" ] = fs_->make< TH1D >( "chargedEmEnergyFrac", "chargedEmEnergyFrac", 50, 0., 1. );
+	histos1D_[ "chargedHadronEnergyFrac" ] = fs_->make< TH1D >( "chargedHadronEnergyFrac", "chargedHadronEnergyFrac", 50, 0., 1. );
 	histos1D_[ "chargedMultiplicity" ] = fs_->make< TH1D >( "chargedMultiplicity", "chargedMultiplicity", 50, 0., 1. );
 	histos1D_[ "numConst" ] = fs_->make< TH1D >( "numConst", "numConst", 200, 0., 200. );
 
@@ -1250,8 +1271,10 @@ void RUNBoostedAnalysis::beginJob() {
 	histos1D_[ "jet2PrunedMass_cutEffTrigger" ] = fs_->make< TH1D >( "jet2PrunedMass_cutEffTrigger", "jet2PrunedMass_cutEffTrigger", 600, 0., 600. );
 	histos1D_[ "jet2TrimmedMass_cutEffTrigger" ] = fs_->make< TH1D >( "jet2TrimmedMass_cutEffTrigger", "jet2TrimmedMass_cutEffTrigger", 600, 0., 600. );
 	histos1D_[ "jet2SoftDropMass_cutEffTrigger" ] = fs_->make< TH1D >( "jet2SoftDropMass_cutEffTrigger", "jet2SoftDropMass_cutEffTrigger", 600, 0., 600. );
+	histos1D_[ "jet2FilteredMass_cutEffTrigger" ] = fs_->make< TH1D >( "jet2FilteredMass_cutEffTrigger", "jet2FilteredMass_cutEffTrigger", 600, 0., 600. );
 	histos1D_[ "MET_cutEffTrigger" ] = fs_->make< TH1D >( "MET_cutEffTrigger", "MET_cutEffTrigger", 20, 0., 200. );
 	histos1D_[ "METHT_cutEffTrigger" ] = fs_->make< TH1D >( "METHT_cutEffTrigger", "METHT_cutEffTrigger", 50, 0., 1. );
+	histos1D_[ "neutralHadronEnergyFrac_cutEffTrigger" ] = fs_->make< TH1D >( "neutralHadronEnergyFrac_cutEffTrigger", "neutralHadronEnergyFrac_cutEffTrigger", 50, 0., 1. );
 	histos1D_[ "neutralEmEnergyFrac_cutEffTrigger" ] = fs_->make< TH1D >( "neutralEmEnergyFrac_cutEffTrigger", "neutralEmEnergyFrac", 50, 0., 1. );
 	histos1D_[ "chargedHadronEnergyFrac_cutEffTrigger" ] = fs_->make< TH1D >( "chargedHadronEnergyFrac_cutEffTrigger", "chargedHadronEnergyFrac", 50, 0., 1. );
 	histos1D_[ "chargedEmEnergyFrac_cutEffTrigger" ] = fs_->make< TH1D >( "chargedEmEnergyFrac_cutEffTrigger", "chargedEmEnergyFrac", 50, 0., 1. );
@@ -1289,6 +1312,15 @@ void RUNBoostedAnalysis::beginJob() {
 	histos2D_[ "prunedMassAsymVsdeltaEtaDijet_C" ] = fs_->make< TH2D >( "prunedMassAsymVsdeltaEtaDijet_C", "prunedMassAsymVsdeltaEtaDijet_C", 20, 0., 1., 100, 0., 5. );
 	histos1D_[ "massAve_prunedMassAsymVsdeltaEtaDijet_D" ] = fs_->make< TH1D >( "massAve_prunedMassAsymVsdeltaEtaDijet_D", "massAve", 500, 0., 500. );
 	histos2D_[ "prunedMassAsymVsdeltaEtaDijet_D" ] = fs_->make< TH2D >( "prunedMassAsymVsdeltaEtaDijet_D", "prunedMassAsymVsdeltaEtaDijet_D", 20, 0., 1., 100, 0., 5. );
+
+	histos1D_[ "massAve_prunedMassAsymVsdeltaEtaDijet_btag_A" ] = fs_->make< TH1D >( "massAve_prunedMassAsymVsdeltaEtaDijet_btag_A", "massAve", 500, 0., 500. );
+	histos2D_[ "prunedMassAsymVsdeltaEtaDijet_btag_A" ] = fs_->make< TH2D >( "prunedMassAsymVsdeltaEtaDijet_btag_A", "prunedMassAsymVsdeltaEtaDijet_btag_A", 20, 0., 1., 100, 0., 5. );
+	histos1D_[ "massAve_prunedMassAsymVsdeltaEtaDijet_btag_B" ] = fs_->make< TH1D >( "massAve_prunedMassAsymVsdeltaEtaDijet_btag_B", "massAve", 500, 0., 500. );
+	histos2D_[ "prunedMassAsymVsdeltaEtaDijet_btag_B" ] = fs_->make< TH2D >( "prunedMassAsymVsdeltaEtaDijet_btag_B", "prunedMassAsymVsdeltaEtaDijet_btag_B", 20, 0., 1., 100, 0., 5. );
+	histos1D_[ "massAve_prunedMassAsymVsdeltaEtaDijet_btag_C" ] = fs_->make< TH1D >( "massAve_prunedMassAsymVsdeltaEtaDijet_btag_C", "massAve", 500, 0., 500. );
+	histos2D_[ "prunedMassAsymVsdeltaEtaDijet_btag_C" ] = fs_->make< TH2D >( "prunedMassAsymVsdeltaEtaDijet_btag_C", "prunedMassAsymVsdeltaEtaDijet_btag_C", 20, 0., 1., 100, 0., 5. );
+	histos1D_[ "massAve_prunedMassAsymVsdeltaEtaDijet_btag_D" ] = fs_->make< TH1D >( "massAve_prunedMassAsymVsdeltaEtaDijet_btag_D", "massAve", 500, 0., 500. );
+	histos2D_[ "prunedMassAsymVsdeltaEtaDijet_btag_D" ] = fs_->make< TH2D >( "prunedMassAsymVsdeltaEtaDijet_btag_D", "prunedMassAsymVsdeltaEtaDijet_btag_D", 20, 0., 1., 100, 0., 5. );
 
 	histos1D_[ "jet1Tau21_n-1" ] = fs_->make< TH1D >( "jet1Tau21_n-1", "jet1Tau21", 20, 0., 1. );
 	histos1D_[ "jet2Tau21_n-1" ] = fs_->make< TH1D >( "jet2Tau21_n-1", "jet2Tau21", 20, 0., 1. );
@@ -1462,6 +1494,11 @@ void RUNBoostedAnalysis::beginRun(const Run& iRun, const EventSetup& iSetup){
 	}
 		
 }
+
+void RUNBoostedAnalysis::endRun(const Run& iRun, const EventSetup& iSetup){
+	triggerNamesList.clear();
+}
+
 
 
 //define this as a plug-in

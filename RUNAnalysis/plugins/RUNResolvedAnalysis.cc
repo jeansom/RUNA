@@ -60,8 +60,8 @@ class RUNResolvedAnalysis : public EDAnalyzer {
 		virtual void endJob() override;
 		virtual void clearVariables();
 		virtual void beginRun(const Run&, const EventSetup&) override;
+		virtual void endRun(Run const&, EventSetup const&) override;
 
-		//virtual void endRun(Run const&, EventSetup const&) override;
 		//virtual void beginLuminosityBlock(LuminosityBlock const&, EventSetup const&) override;
 		//virtual void endLuminosityBlock(LuminosityBlock const&, EventSetup const&) override;
 
@@ -378,7 +378,7 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 
 	////////// Check trigger fired
 	bool ORTriggers = false;
-	if ( isData ) ORTriggers = checkORListOfTriggerBits( triggerNamesList, triggerBit, triggerPass );
+	if ( isData ) ORTriggers = checkORListOfTriggerBits( triggerNamesList, triggerBit, triggerPrescale, triggerPass, false );
 	else ORTriggers = true;
 	///////////////////////////////////////////////////*/
 	
@@ -1212,6 +1212,10 @@ void RUNResolvedAnalysis::beginRun(const Run& iRun, const EventSetup& iSetup){
 		if ( triggerNamesList.size() == 0 ) LogError("TriggerNames") << "No triggers found.";
 	}
 		
+}
+      
+void RUNResolvedAnalysis::endRun(const Run& iRun, const EventSetup& iSetup){
+	triggerNamesList.clear();
 }
 
 //define this as a plug-in
