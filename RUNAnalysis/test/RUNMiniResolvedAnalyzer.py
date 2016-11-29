@@ -304,17 +304,17 @@ if __name__ == '__main__':
 		parser.print_help()
 		sys.exit(0)
 
-	if args.batchSys: folder = '/cms/gomez/archiveEOS/Archive/763patch2/v5/'
+	if args.batchSys: folder = '/cms/gomez/archiveEOS/Archive/v8020/Analysis/'+args.version+'/'
 	else: folder = 'Rootfiles/'
 
 	allSamples = {}
-	allSamples[ 'JetHT_Run2016C'] = 'Rootfiles/RUNAnalysis_JetHT_Run2016C_V2p1_'+args.version+'.root'
-	allSamples[ 'RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass) ] = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_'+args.decay+'_M-'+args.mass+'_80X_V2p1_'+args.version+'.root'
-	allSamples[ 'TTJets' ] = 'Rootfiles/RUNAnalysis_TTJets_80X_V2p1_'+args.version+'.root'
-    	allSamples[ 'ZJetsToQQ' ] = 'Rootfiles/RUNAnalysis_ZJetsToQQ_80X_V2p1_'+args.version+'.root'
-    	allSamples[ 'WJetsToQQ' ] = 'Rootfiles/RUNAnalysis_WJetsToQQ_80X_V2p1_'+args.version+'.root'
-	allSamples[ 'Dibosons' ] = 'Rootfiles/RUNAnalysis_Dibosons_80X_V2p1_'+args.version+'.root'
-	allSamples[ 'QCD'+args.qcd+'All' ] = 'Rootfiles/RUNAnalysis_QCD'+args.qcd+'All_80X_V2p1_'+args.version+'.root'
+	allSamples[ 'JetHT_Run2016C'] = folder+'/RUNAnalysis_JetHT_Run2016C_V2p1_'+args.version+'.root'
+	allSamples[ 'RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass) ] = folder+'/RUNAnalysis_RPVStopStopToJets_'+args.decay+'_M-'+args.mass+'_80X_V2p1_'+args.version+'.root'
+	allSamples[ 'TTJets' ] = folder+'/RUNAnalysis_TTJets_80X_V2p1_'+args.version+'.root'
+    	allSamples[ 'ZJetsToQQ' ] = folder+'/RUNAnalysis_ZJetsToQQ_80X_V2p1_'+args.version+'.root'
+    	allSamples[ 'WJetsToQQ' ] = folder+'/RUNAnalysis_WJetsToQQ_80X_V2p1_'+args.version+'.root'
+	allSamples[ 'Dibosons' ] = folder+'/RUNAnalysis_Dibosons_80X_V2p1_'+args.version+'.root'
+	allSamples[ 'QCD'+args.qcd+'All' ] = folder+'/RUNAnalysis_QCD'+args.qcd+'All_80X_V2p1_'+args.version+'.root'
 
 	if 'RPV' in args.samples: args.samples = 'RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)
 	if 'single' in args.process: 

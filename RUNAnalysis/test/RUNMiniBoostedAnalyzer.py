@@ -612,20 +612,20 @@ if __name__ == '__main__':
 	if 'Pt' in args.qcd: QCDSF = ( 0.86 if 'Puppi' in args.grooming else 0.89 ) 
 	else: QCDSF = 1
 
-	if args.batchSys: folder = '/cms/gomez/archiveEOS/Archive/763patch2/v5/'
+	if args.batchSys: folder = '/cms/gomez/archiveEOS/Archive/v8020/Analysis/'+args.version+'/'
 	else: folder = 'Rootfiles/'
 
 	allSamples = {}
-	allSamples[ 'JetHT_Run2016C'] = 'Rootfiles/RUNAnalysis_JetHT_Run2016C_V2p1_'+args.version+'.root'
-	allSamples[ 'RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass) ] = 'Rootfiles/RUNAnalysis_RPVStopStopToJets_'+args.decay+'_M-'+args.mass+'_80X_V2p1_'+args.version+'.root'
-	allSamples[ 'TTJets' ] = 'Rootfiles/RUNAnalysis_TTJets_80X_V2p1_'+args.version+'.root'
-    	allSamples[ 'ZJetsToQQ' ] = 'Rootfiles/RUNAnalysis_ZJetsToQQ_80X_V2p1_'+args.version+'.root'
-    	allSamples[ 'WJetsToQQ' ] = 'Rootfiles/RUNAnalysis_WJetsToQQ_80X_V2p1_'+args.version+'.root'
-	allSamples[ 'Dibosons' ] = 'Rootfiles/RUNAnalysis_Dibosons_80X_V2p1_'+args.version+'.root'
-	#allSamples[ 'WWTo4Q' ] = 'Rootfiles/RUNAnalysis_WWTo4Q_80X_V2p1_'+args.version+'.root'
-	#allSamples[ 'ZZTo4Q' ] = 'Rootfiles/RUNAnalysis_ZZTo4Q_80X_V2p1_'+args.version+'.root'
-	#allSamples[ 'WZ' ] = 'Rootfiles/RUNAnalysis_WZ_80X_V2p1_'+args.version+'.root'
-	allSamples[ 'QCD'+args.qcd+'All' ] = 'Rootfiles/RUNAnalysis_QCD'+args.qcd+'All_80X_V2p1_'+args.version+'.root'
+	allSamples[ 'JetHT_Run2016C'] = folder+'/RUNAnalysis_JetHT_Run2016C_V2p1_'+args.version+'.root'
+	allSamples[ 'RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass) ] = folder+'/RUNAnalysis_RPVStopStopToJets_'+args.decay+'_M-'+args.mass+'_80X_V2p1_'+args.version+'.root'
+	allSamples[ 'TTJets' ] = folder+'/RUNAnalysis_TTJets_80X_V2p1_'+args.version+'.root'
+    	allSamples[ 'ZJetsToQQ' ] = folder+'/RUNAnalysis_ZJetsToQQ_80X_V2p1_'+args.version+'.root'
+    	allSamples[ 'WJetsToQQ' ] = folder+'/RUNAnalysis_WJetsToQQ_80X_V2p1_'+args.version+'.root'
+	allSamples[ 'Dibosons' ] = folder+'/RUNAnalysis_Dibosons_80X_V2p1_'+args.version+'.root'
+	#allSamples[ 'WWTo4Q' ] = folder+'/RUNAnalysis_WWTo4Q_80X_V2p1_'+args.version+'.root'
+	#allSamples[ 'ZZTo4Q' ] = folder+'/RUNAnalysis_ZZTo4Q_80X_V2p1_'+args.version+'.root'
+	#allSamples[ 'WZ' ] = folder+'/RUNAnalysis_WZ_80X_V2p1_'+args.version+'.root'
+	allSamples[ 'QCD'+args.qcd+'All' ] = folder+'/RUNAnalysis_QCD'+args.qcd+'All_80X_V2p1_'+args.version+'.root'
 
 	if 'pruned' in args.grooming: cuts = [ [ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] ]
 	else: cuts = [ [ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1. ] ]
