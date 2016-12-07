@@ -59,6 +59,7 @@ if __name__ == '__main__':
 	Samples[ 'JetHTE' ] = [ '/JetHT/algomez-Run2016E-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8E' ]
 	Samples[ 'JetHTF' ] = [ '/JetHT/algomez-Run2016F-PromptReco-v1_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8F' ]
 	Samples[ 'JetHTG' ] = [ '/JetHT/algomez-Run2016G-PromptReco-v1_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8p2' ]
+	Samples[ 'JetHTH' ] = [ '/JetHT/algomez-Run2016H-PromptReco-v2_B2GAnaFW_80X_V2p01p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8p2' ]
 
 	Samples[ 'QCDHT300' ] = [ '/QCD_HT300to500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/algomez-RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1_B2GAnaFW_80X_V2p1-edbed0685401a5848e7d61871b3a63d8/USER', 30, 'Spring16_25nsV8BCD' ]
 	Samples[ 'QCDHT500' ] = [ '/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/algomez-RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1_B2GAnaFW_80X_V2p1-edbed0685401a5848e7d61871b3a63d8/USER', 30, 'Spring16_25nsV8BCD' ]
