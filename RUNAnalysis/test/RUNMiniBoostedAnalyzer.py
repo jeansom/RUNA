@@ -74,6 +74,13 @@ def myAnalyzer( dictSamples, listCuts, signalName, UNC ):
 		allHistos[ "NPV_preSel_medNPV_"+sam ] = TH1F( "NPV_preSel_medNPV_"+sam, "NPV_preSel_medNPV_"+sam, 50, 0, 50 )
 		allHistos[ "massAve_preSel_highNPV_"+sam ] = TH1F( "massAve_preSel_highNPV_"+sam, "massAve_preSel_highNPV_"+sam, massBins, massXmin, massXmax )
 		allHistos[ "NPV_preSel_highNPV_"+sam ] = TH1F( "NPV_preSel_highNPV_"+sam, "NPV_preSel_highNPV_"+sam, 50, 0, 50 )
+		allHistos[ "HT_preSel_"+sam ] = TH1F( "HT_preSel_"+sam, "HT_preSel_"+sam, 5000, 0, 5000 )
+		allHistos[ "deltaEtaDijet_preSel_"+sam ] = TH1F( "deltaEtaDijet_preSel_"+sam, "deltaEtaDijet_preSel_"+sam, 50, 0., 5 )
+		allHistos[ "prunedMassAsym_preSel_"+sam ] = TH1F( "prunedMassAsym_preSel_"+sam, "prunedMassAsym_preSel_"+sam, 20, 0., 1 )
+		allHistos[ "jet1Tau21_preSel_"+sam ] = TH1F( "jet1Tau21_preSel_"+sam, "jet1Tau21_preSel_"+sam, 20, 0., 1 )
+		allHistos[ "jet2Tau21_preSel_"+sam ] = TH1F( "jet2Tau21_preSel_"+sam, "jet2Tau21_preSel_"+sam, 20, 0., 1 )
+		allHistos[ "jet1Tau31_preSel_"+sam ] = TH1F( "jet1Tau31_preSel_"+sam, "jet1Tau31_preSel_"+sam, 20, 0., 1 )
+		allHistos[ "jet2Tau31_preSel_"+sam ] = TH1F( "jet2Tau31_preSel_"+sam, "jet2Tau31_preSel_"+sam, 20, 0., 1 )
 
 		allHistos[ "deltaEtaDijet_n-1_"+sam ] = TH1F( "deltaEtaDijet_n-1_"+sam, "deltaEtaDijet_n-1_"+sam, 50, 0., 5 )
 		allHistos[ "prunedMassAsym_n-1_"+sam ] = TH1F( "prunedMassAsym_n-1_"+sam, "prunedMassAsym_n-1_"+sam, 20, 0., 1 )
@@ -158,50 +165,91 @@ def myAnalyzer( dictSamples, listCuts, signalName, UNC ):
 
 	for sample in dictSamples:
 
-		if 'DATA' in sample: SF = 1
+		if 'JetHT' in sample: SF = 1
 
 		### Preselection
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'prunedMassAve', 
 				preselection, 
 				allHistos[ 'massAve_preSel_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'prunedMassAve', 
 				preselection+' * (numPV<12)', 
 				allHistos[ 'massAve_preSel_lowNPV_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'numPV', 
 				preselection+' * (numPV<12)', 
 				allHistos[ 'NPV_preSel_lowNPV_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'prunedMassAve', 
 				preselection+' * (numPV>12) * (numPV<24)', 
 				allHistos[ 'massAve_preSel_medNPV_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'numPV', 
 				preselection+' * (numPV>12) * (numPV<24)', 
 				allHistos[ 'NPV_preSel_medNPV_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'prunedMassAve', 
 				preselection+' * (numPV>24)', 
 				allHistos[ 'massAve_preSel_highNPV_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'numPV', 
 				preselection+' * (numPV>24)', 
 				allHistos[ 'NPV_preSel_highNPV_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+
+		getHistoFromTree( dictSamples[ sample ], treeName,
+				'HT', 
+				preselection,
+				allHistos[ 'HT_preSel_'+sample ], 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+
+		getHistoFromTree( dictSamples[ sample ], treeName,
+				'prunedMassAsym', 
+				preselection,
+				allHistos[ 'prunedMassAsym_preSel_'+sample ], 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+
+		getHistoFromTree( dictSamples[ sample ], treeName,
+				'deltaEtaDijet', 
+				preselection,
+				allHistos[ 'deltaEtaDijet_preSel_'+sample ], 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+		getHistoFromTree( dictSamples[ sample ], treeName,
+				'jet1Tau21', 
+				preselection,
+				allHistos[ 'jet1Tau21_preSel_'+sample ], 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+		getHistoFromTree( dictSamples[ sample ], treeName,
+				'jet2Tau21', 
+				preselection,
+				allHistos[ 'jet2Tau21_preSel_'+sample ], 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+
 
 
 		### All selection
@@ -209,43 +257,50 @@ def myAnalyzer( dictSamples, listCuts, signalName, UNC ):
 				'prunedMassAve', 
 				selection, 
 				allHistos[ 'massAve_deltaEtaDijet_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'prunedMassAve', 
 				selection+' * (numPV<12)', 
 				allHistos[ 'massAve_deltaEtaDijet_lowNPV_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'numPV', 
 				selection+' * (numPV<12)', 
 				allHistos[ 'NPV_deltaEtaDijet_lowNPV_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'prunedMassAve', 
 				selection+' * (numPV>12) * (numPV<24)', 
 				allHistos[ 'massAve_deltaEtaDijet_medNPV_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'numPV', 
 				selection+' * (numPV>12) * (numPV<24)', 
 				allHistos[ 'NPV_deltaEtaDijet_medNPV_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'prunedMassAve', 
 				selection+' * (numPV>24)', 
 				allHistos[ 'massAve_deltaEtaDijet_highNPV_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'numPV', 
 				selection+' * (numPV>24)', 
 				allHistos[ 'NPV_deltaEtaDijet_highNPV_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 
 
 		### n-1 selection
@@ -253,23 +308,27 @@ def myAnalyzer( dictSamples, listCuts, signalName, UNC ):
 				'prunedMassAsym', 
 				selection.replace('* (prunedMassAsym<0.1)',''), 
 				allHistos[ 'prunedMassAsym_n-1_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'deltaEtaDijet', 
 				selection.replace(('* (deltaEtaDijet<1.5)' if 'pruned' in args.grooming else '* (deltaEtaDijet<1.0)' ),''), 
 				allHistos[ 'deltaEtaDijet_n-1_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'jet1Tau21', 
 				selection.replace('* (jet1Tau21<0.45)',''), 
 				allHistos[ 'jet1Tau21_n-1_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'jet2Tau21', 
 				selection.replace('* (jet2Tau21<0.45)',''), 
 				allHistos[ 'jet2Tau21_n-1_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 
 		### ABCD plots
 		for region, sel in ABCDRegions.items():
@@ -277,33 +336,38 @@ def myAnalyzer( dictSamples, listCuts, signalName, UNC ):
 					'prunedMassAve', 
 					sel, 
 					allHistos[ 'massAve_prunedMassAsymVsdeltaEtaDijet_'+sample+region ], 
-					SF ) 
+					SF, 
+					( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 		
 			get2DHistoFromTree( dictSamples[ sample ], treeName,
 					'prunedMassAsym', 'deltaEtaDijet',
 					sel, 
 					allHistos[ 'prunedMassAsymVsdeltaEtaDijet_'+sample+region ],
-					SF ) 
+					SF, 
+					( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 
 		## Btagging
 		getHistoFromTree( dictSamples[ sample ], treeName,
 				'prunedMassAve', 
 				btagSelection, 
 				allHistos[ 'massAve_btag_'+sample ], 
-				SF ) 
+				SF, 
+				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 
 		for region, sel in ABCDRegionsBtag.items():
 			getHistoFromTree( dictSamples[ sample ], treeName,
 					'prunedMassAve', 
 					sel, 
 					allHistos[ 'massAve_prunedMassAsymVsdeltaEtaDijet_'+sample+'_btag'+region ], 
-					SF ) 
+					SF, 
+					( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 		
 			get2DHistoFromTree( dictSamples[ sample ], treeName,
 					'prunedMassAsym', 'deltaEtaDijet',
 					sel, 
 					allHistos[ 'prunedMassAsymVsdeltaEtaDijet_'+sample+'_btag'+region ],
-					SF ) 
+					SF, 
+					( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
 
 
 #	for sample in dictSamples:
@@ -599,7 +663,7 @@ if __name__ == '__main__':
 	parser.add_argument( '-s', '--sample', action='store',   dest='samples', default='RPV', help='Type of sample' )
 	parser.add_argument( '-u', '--unc', action='store',  dest='unc', default='', help='Process: all or single.' )
 	parser.add_argument( '-q', '--qcd', action='store', default='Pt', dest='qcd', help='Type of QCD binning, example: HT.' )
-	parser.add_argument( '-l', '--lumi', action='store', type=float, default=2643, help='Luminosity, example: 1.' )
+	parser.add_argument( '-l', '--lumi', action='store', type=float, default=1787, help='Luminosity, example: 1.' )
 	parser.add_argument( '-b', '--batchSys', action='store_true',  dest='batchSys', default=False, help='Process: all or single.' )
 	parser.add_argument( '-v', '--version', action='store', default='v05', dest='version', help='Version of the RUNAnalysis file.' )
 
@@ -616,9 +680,9 @@ if __name__ == '__main__':
 	else: folder = 'Rootfiles/'
 
 	allSamples = {}
-	allSamples[ 'JetHT_Run2016C'] = folder+'/RUNAnalysis_JetHT_Run2016C_V2p1_'+args.version+'.root'
+	allSamples[ 'JetHT_Run2016'] = folder+'/RUNAnalysis_JetHT_Run2016_V2p1_'+args.version+'.root'
 	allSamples[ 'RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass) ] = folder+'/RUNAnalysis_RPVStopStopToJets_'+args.decay+'_M-'+args.mass+'_80X_V2p1_'+args.version+'.root'
-	allSamples[ 'TTJets' ] = folder+'/RUNAnalysis_TTJets_80X_V2p1_'+args.version+'.root'
+	allSamples[ 'TTJets' ] = folder+'/RUNAnalysis_TT_80X_V2p1_'+args.version+'.root'
     	allSamples[ 'ZJetsToQQ' ] = folder+'/RUNAnalysis_ZJetsToQQ_80X_V2p1_'+args.version+'.root'
     	allSamples[ 'WJetsToQQ' ] = folder+'/RUNAnalysis_WJetsToQQ_80X_V2p1_'+args.version+'.root'
 	allSamples[ 'Dibosons' ] = folder+'/RUNAnalysis_Dibosons_80X_V2p1_'+args.version+'.root'
