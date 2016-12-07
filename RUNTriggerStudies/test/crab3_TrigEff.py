@@ -58,6 +58,7 @@ if __name__ == '__main__':
 	Samples[ 'B2GJetHTE' ] = [ '/JetHT/algomez-Run2016E-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8E' ]
 	Samples[ 'B2GJetHTF' ] = [ '/JetHT/algomez-Run2016F-PromptReco-v1_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8F' ]
 	Samples[ 'B2GJetHTG' ] = [ '/JetHT/algomez-Run2016G-PromptReco-v1_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8p2' ]
+	Samples[ 'B2GJetHTH' ] = [ '/JetHT/algomez-Run2016H-PromptReco-v2_B2GAnaFW_80X_V2p01p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8p2' ]
 	Samples[ 'miniAODJetHTB' ] = [ '/JetHT/Run2016B-PromptReco-v2/MINIAOD', 10 ]
 	Samples[ 'miniAODJetHTC' ] = [ '/JetHT/Run2016C-PromptReco-v2/MINIAOD', 10 ]
 	Samples[ 'miniAODJetHTD' ] = [ '/JetHT/Run2016D-PromptReco-v2/MINIAOD', 10 ]

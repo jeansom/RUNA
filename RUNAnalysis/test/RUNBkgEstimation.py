@@ -283,7 +283,7 @@ def alternativeABCDCombined( nameInRoot, binning, minX, maxX, hDataB, hDataC, hD
 	hBkgD = rebin( hBkgD, binning ) 
 	hBkgCD = hBkgC.Clone()
 	hBkgCD.Reset()
-	hBkgCD.Divide( hBkgC, hBkgD, 1., 1., '' )
+	hBkgCD.Divide( hBkgC, hBkgD, 1, 1, '' )
 	if isinstance( ttbarC, TH1F ): httbarC = rebin( ttbarC, binning ) 
 	######################################################
 
@@ -330,10 +330,10 @@ def alternativeABCDCombined( nameInRoot, binning, minX, maxX, hDataB, hDataC, hD
 	
 	#### Create rootfile for limit setting
 	if rootFile:
-		tmpFile = TFile('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_DATA_ABCDBkg_'+args.version+'.root', 'recreate' )
-		hDataBCD.SetName( 'massAve_prunedMassAsymVsdeltaEtaDijet_DATA_ABCDProj' )
+		tmpFile = TFile('Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_JetHT_Run2016_ABCDBkg_V2p1_'+args.version+'.root', 'recreate' )
+		hDataBCD.SetName( 'massAve_prunedMassAsymVsdeltaEtaDijet_JetHT_Run2016_ABCDProj' )
 		hDataBCD.Write()
-		hDataRatioCD.SetName( 'massAve_prunedMassAsymVsdeltaEtaDijet_DATA_RatioBD' )
+		hDataRatioCD.SetName( 'massAve_prunedMassAsymVsdeltaEtaDijet_JetHT_Run2016_RatioBD' )
 		hDataRatioCD.Write()
 		hDataMinusTTbarBCD.SetName( 'massAve_prunedMassAsymVsdeltaEtaDijet_DATAMinusTTbar_ABCDProj' )
 		hDataMinusTTbarBCD.Write()
@@ -545,7 +545,7 @@ def plotBkgEstimation( dataFile, bkgFiles, signalFiles, Groom, nameInRoot, xmin,
 		dummySig+=8
 
 	
-	dataNameHisto = ( nameInRoot+'_DATA' if args.miniTree else 'BoostedAnalysisPlots/'+nameInRoot )
+	dataNameHisto = ( nameInRoot+'_JetHT_Run2016' if args.miniTree else 'BoostedAnalysisPlots/'+nameInRoot )
 	hData =  dataFile.Get( dataNameHisto+'_A' )
 	hData = rebin( hData, ( rebinX if 'simple' in args.binning else args.binning ) )
 	hDataB =  dataFile.Get( dataNameHisto+'_B' )
@@ -614,9 +614,9 @@ def plotBkgEstimation( dataFile, bkgFiles, signalFiles, Groom, nameInRoot, xmin,
 
 	
 	####### ttbar sample btag
-	hDataAbTag =  dataFile.Get( ( nameInRoot+'_DATA_btag_A' if args.miniTree else nameInRoot+'_btag_A' ) )
+	hDataAbTag =  dataFile.Get( ( nameInRoot+'_JetHT_Run2016_btag_A' if args.miniTree else nameInRoot+'_btag_A' ) )
 	hDataAbTag = rebin( hDataAbTag, 20 )
-	hDataCbTag =  dataFile.Get( ( nameInRoot+'_DATA_btag_C' if args.miniTree else nameInRoot+'_btag_C' ) )
+	hDataCbTag =  dataFile.Get( ( nameInRoot+'_JetHT_Run2016_btag_C' if args.miniTree else nameInRoot+'_btag_C' ) )
 	hDataCbTag = rebin( hDataCbTag, 20 )
 
 	hTTbarAbTag = bkgFiles[ 'TTJets' ][0].Get( ( nameInRoot+'_TTJets_btag_A' if args.miniTree else nameInRoot+'_btag_A' ) )
@@ -1352,7 +1352,7 @@ if __name__ == '__main__':
 	parser.add_argument('-g', '--grooming', action='store', default='pruned', help='Grooming Algorithm, example: Pruned, Filtered.' )
 	parser.add_argument('-m', '--mass', action='store', default='100', help='Mass of Stop, example: 100' )
 	parser.add_argument('-q', '--qcd', action='store', default='Pt', dest='qcd', help='Type of QCD binning, example: HT.' )
-	parser.add_argument('-l', '--lumi', action='store', type=float, default=2643, help='Luminosity, example: 1.' )
+	parser.add_argument('-l', '--lumi', action='store', type=float, default=1787, help='Luminosity, example: 1.' )
 	parser.add_argument('-e', '--extension', action='store', default='png', help='Extension of plots.' )
 	parser.add_argument('-B', '--bkgPlots', action='store_true', default=False, help='Binning: resoBased or simple' )
 	parser.add_argument('-f', '--final', action='store_true', default=False, help='Final distributions.' )
@@ -1367,7 +1367,7 @@ if __name__ == '__main__':
 	
 	if 'Pt' in args.qcd: 
 		#bkgLabel='(w QCD pythia8)'
-		QCDSF = ( 0.86 if 'Puppi' in args.grooming else 0.89 ) 
+		QCDSF = 0.67 #( 0.86 if 'Puppi' in args.grooming else 0.89 ) 
 	else: 
 		#bkgLabel='(w QCD madgraphMLM+pythia8)'
 		QCDSF = 1
@@ -1382,7 +1382,7 @@ if __name__ == '__main__':
 	bkgFiles = OrderedDict() 
 	signalFiles = {}
 	#dataFile = TFile.Open(filePrefix+'_DATA_'+args.version+'.root')
-	dataFile = TFile.Open(filePrefix+'_JetHT_Run2016C_V2p1_'+args.version+'.root')
+	dataFile = TFile.Open(filePrefix+'_JetHT_Run2016_V2p1_'+args.version+'.root')
 	signalFiles[ args.mass ] = [ TFile.Open(filePrefix+'_RPVStopStopToJets_'+args.decay+'_M-'+args.mass+'_80X_V2p1_'+args.version+'.root'), scale, 'M_{#tilde{t}} = '+args.mass+' GeV', kRed]
 	#signalFiles[ '80' ] = [ TFile.Open(filePrefix+'_RPVStopStopToJets_'+args.decay+'_M-80_80X_V2p1_'+args.version+'.root'), scale, 'M_{#tilde{t}} = 80 GeV', kRed]
 	#signalFiles[ '170' ] = [ TFile.Open(filePrefix+'_RPVStopStopToJets_'+args.decay+'_M-170_80X_V2p1_'+args.version+'.root'), scale, 'M_{#tilde{t}} = 170 GeV', kMagenta]

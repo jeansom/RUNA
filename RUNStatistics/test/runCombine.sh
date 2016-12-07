@@ -1,6 +1,13 @@
-if [ -z "$1" ]
+if [ "$1" == "all" ]
 then
-	masses="80 90 100 110 120 130 140 150 170 180 190 210 220 230 240 300"
+	if [ $2 == "Resolved" ]
+	then
+		masses="300 350 400 450 500 550 600 650 700 750 800"
+	else
+		#masses="80 90 100 110 120 130 140 150 170 180 190 210 220 230 240 300"
+		masses="80 100 120 140 170 180 190 230 240 "
+	fi
+
 else
 	masses="$1"
 fi
@@ -11,16 +18,22 @@ do
 
 	if [ -z "$2" ]
 	then
-		#combine -M Asymptotic Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_v05_bins.txt -n UDD312RPVSt_M-${mass}_v05_bins
-		#combine -M Asymptotic Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_altBkg_NOSys_v05p3_bins.txt -n UDD312RPVSt_M-${mass}_altBkg_NOSys_v05p3_bins -S 0
-		combine -M Asymptotic Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_altBkg_Bin5_v05p3_bins.txt -n UDD312RPVSt_M-${mass}_altBkg_Bin5_v05p3 
-		#combine -M Asymptotic Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_Bin1_v05p4_bins.txt -n UDD312RPVSt_M-${mass}_altBkg_Bin5_v05p4 
-		#combine -M Asymptotic Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_Bin5_v05p3.txt -n UDD312RPVSt_M-${mass}_v05p3_Bin5
-		#combine -M Asymptotic Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_v05p2.txt -n UDD312RPVSt_M-${mass}_v05p2_withPoissonBin10
-		#combine -M Asymptotic Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_v05p2_GaussShape.txt -n UDD312RPVSt_M-${mass}_v05p2_withPoissonBin10GaussShape
-		#combine -M MarkovChainMC Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_v05.txt -n UDD312RPVSt_M-${mass}_v05 --tries 1000
-		#combine -M ProfileLikelihood Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_v05.txt -n UDD312RPVSt_M-${mass}_v05 -t 1000
-		#combine -M ProfileLikelihood -t 500 Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_v04.txt -n UDD312RPVSt_M-${mass} 
+		combine -M Asymptotic Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_withMC_altBkg_NOSys_v02p1_bins.txt -n UDD312RPVSt_M-${mass}_Boosted_NOSys_v02
+
+	elif [ $2 == "Resolved" ]
+	then
+		combine -M Asymptotic Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_Resolved_v02p1.txt -n UDD312RPVSt_M-${mass}_Resolved_v02
+
+	elif [ $2 == "fullCLs" ]
+	then
+		combine -M HybridNew --testStat=LHC --frequentist Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_withMC_altBkg_NOSys_v02p1_bins.txt -T 2000 -H ProfileLikelihood --fork 4 -n UDD312RPVSt_M-${mass}_Boosted_NOSys_v02
+		combine -M HybridNew --testStat=LHC --frequentist Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_withMC_altBkg_NOSys_v02p1_bins.txt -T 2000 -H ProfileLikelihood --fork 4 -n UDD312RPVSt_M-${mass}_Boosted_NOSys_v02 --expectedFromGrid 0.025
+		combine -M HybridNew --testStat=LHC --frequentist Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_withMC_altBkg_NOSys_v02p1_bins.txt -T 2000 -H ProfileLikelihood --fork 4 -n UDD312RPVSt_M-${mass}_Boosted_NOSys_v02 --expectedFromGrid 0.16
+		combine -M HybridNew --testStat=LHC --frequentist Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_withMC_altBkg_NOSys_v02p1_bins.txt -T 2000 -H ProfileLikelihood --fork 4 -n UDD312RPVSt_M-${mass}_Boosted_NOSys_v02 --expectedFromGrid 0.5
+		combine -M HybridNew --testStat=LHC --frequentist Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_withMC_altBkg_NOSys_v02p1_bins.txt -T 2000 -H ProfileLikelihood --fork 4 -n UDD312RPVSt_M-${mass}_Boosted_NOSys_v02 --expectedFromGrid 0.84
+		combine -M HybridNew --testStat=LHC --frequentist Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_withMC_altBkg_NOSys_v02p1_bins.txt -T 2000 -H ProfileLikelihood --fork 4 -n UDD312RPVSt_M-${mass}_Boosted_NOSys_v02 --expectedFromGrid 0.975
+		hadd higgsCombineUDD312RPVSt_M-${mass}_Boosted_NOSys_v02.HybridNewAll.mH120.root higgsCombineUDD312RPVSt_M-${mass}_Boosted_NOSys_v02.HybridNew*root 
+
 	else
 		for ((i=0;i<=$2;i++)); do
 			echo "+++++++ Running pseudoExperiment "${i}
