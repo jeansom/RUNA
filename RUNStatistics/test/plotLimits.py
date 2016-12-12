@@ -90,7 +90,7 @@ def plotLimits( listMasses  ):
 
 			if 'Resolved' in args.boosted: XS = 1
 
-			tmpFile, tmpTree, tmpEntries = getTree( "higgsCombineUDD312RPVSt_M-"+str(mass)+'_'+args.boosted+'_'+args.sys+'_'+args.version+'.'+args.method+".mH120.root", "limit" )
+			tmpFile, tmpTree, tmpEntries = getTree( "higgsCombineUDD312RPVSt_M-"+str(mass)+'_'+args.grooming+'_'+args.boosted+'_'+args.sys+'_'+args.version+'.'+args.method+".mH120.root", "limit" )
 			for i in xrange(tmpEntries):
 				tmpTree.GetEntry(i)
 				tmp = round( tmpTree.quantileExpected, 2)
@@ -244,7 +244,7 @@ def plotLimits( listMasses  ):
 
 	c.SetLogy()
 	#fileName = 'xs_limit_%s_%s.%s'%(args.method,args.final_state + ( ('_' + args.postfix) if args.postfix != '' else '' ), args.fileFormat.lower())
-	fileName = 'xs_limit_RPVStop_UDD312_'+args.boosted+'_'+args.sys+'_'+args.method+'_'+args.version+'.'+args.ext
+	fileName = 'xs_limit_RPVStop_UDD312_'+args.grooming+'_'+args.boosted+'_'+args.sys+'_'+args.method+'_'+args.version+'.'+args.ext
 	if args.theta: fileName = fileName.replace('limit', 'limit_theta')
 	if 'gaus' in args.process: fileName = fileName.replace('limit', 'limit_gaus')
 	if args.addComparison: fileName = fileName.replace('limit', 'limit_comparison')
@@ -256,12 +256,13 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-p', '--proc', dest='process', action='store', default='1D', help='Process to draw, example: 1D, 2D, MC.' )
 	parser.add_argument('-d', '--decay', dest='jj', action='store', default='jj', help='Decay, example: jj, bj.' )
-	parser.add_argument('-b', '--booted', dest='boosted', action='store', default='Boosted', help='Boosted or non version, example: Boosted' )
-	parser.add_argument('-v', '--version', dest='version', action='store', default='v05', help='Boosted or non version, example: Boosted' )
-	parser.add_argument('-t', '--theta', dest='theta', action='store', type=float, default=False, help='Boosted or non version, example: Boosted' )
+	parser.add_argument('-b', '--boosted', dest='boosted', action='store', default='Boosted', help='Boosted or non version, example: Boosted' )
+	parser.add_argument('-g', '--grooming', dest='grooming', action='store', default='pruned', help='Grooming: pruned or puppi' )
+	parser.add_argument('-v', '--version', dest='version', action='store', default='v05', help='Version of the root files' )
+	parser.add_argument('-t', '--theta', dest='theta', action='store', type=float, default=False, help='Input from theta or not.' )
 	parser.add_argument('-l', '--lumi', dest='lumi', action='store', type=float, default=149.9, help='Luminosity, example: 1.' )
 	parser.add_argument('-e', '--extension', dest='ext', action='store', default='png', help='Extension of plots.' )
-	parser.add_argument('-s', '--sys', dest='sys', action='store', default='_NOSys', help='Decay, example: jj, bj.' )
+	parser.add_argument('-s', '--sys', dest='sys', action='store', default='_NOSys', help='With systematics or not.' )
 	parser.add_argument('-m', '--method', dest='method', action='store', default='Asymptotic', help='Limit method: Asymptotic, HybridNew' )
 	parser.add_argument('-a', '--addComparison', dest='addComparison', action='store', type=bool, default=False, help='Adding comparisons to plots.' )
 

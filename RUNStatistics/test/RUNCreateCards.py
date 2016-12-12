@@ -836,13 +836,13 @@ if __name__ == '__main__':
 		bkgFileHistos[ 'TTJets' ] =  currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_TTJets_80X_V2p1_'+args.version+'.root'
 		bkgFileHistos[ 'WJetsToQQ' ] =  currentDir+'/../../RUNAnalysis/test/Rootfiles/RUNMiniBoostedAnalysis_'+args.grooming+'_WJetsToQQ_80X_V2p1_'+args.version+'.root'
 
-		if args.unc: outputName = signalSample+'_Bin'+str(args.reBin)+'_'+args.version
-		else: outputName = signalSample+'_NOSys_'+args.version
+		if args.unc: outputName = signalSample+'_'+args.grooming+'_Bin'+str(args.reBin)+'_'+args.version
+		else: outputName = signalSample+'_'+args.grooming+'_NOSys_'+args.version
 		if args.signalInjec: 
-			outputName = outputName.replace( signalSample, signalSample+'_signalInjectionTest'+str(dummy0) )
+			outputName = outputName.replace( args.grooming, args.grooming+'_signalInjectionTest'+str(dummy0) )
 			dummy0 += 1
-		if args.altBkg: outputName = outputName.replace( signalSample, signalSample+'_altBkg' )
-		if args.addingMCbkg: outputName = outputName.replace( signalSample, signalSample+'_withMC' )
+		if args.altBkg: outputName = outputName.replace( args.grooming, args.grooming+'_altBkg' )
+		if args.addingMCbkg: outputName = outputName.replace( args.grooming, args.grooming+'_withMC' )
 		if 'gaus' in args.job: 
 			outputName = outputName+'_GaussShape'
 			signalFileHistos = gausFunctList[ mass ] 
