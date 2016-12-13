@@ -105,7 +105,7 @@ class RUNResolvedAnalysis : public EDAnalyzer {
 		ULong64_t event = 0;
 		int numJets = 0, numPV = 0;
 		unsigned int lumi = 0, run=0;
-		float HT = 0, mass1 = -999, mass2 = -999, avgMass = -999, MET = -999,
+		float HT = 0, mass1 = -999, mass2 = -999, massAve = -999, MET = -999,
 		      delta1 = -999, delta2 = -999, massAsym = -999, eta1 = -999, eta2 = -999, deltaEta = -999, 
 		      deltaR = -999, cosThetaStar1 = -999, cosThetaStar2 = -999,
 		      puWeight = -999, genWeight = -999, lumiWeight = -999, pdfWeight = -999 ;
@@ -513,8 +513,7 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 
 			if( ( numJets == 4 ) && ( HT > cutAK4HT ) && ( JETS[3].p4.Pt() > cutAK4jetPt ) ){
 				
-				TLorentzVector j1, j2, j3, j4;
-				double qgl1 = -9999, qgl2 = -9999, qgl3 = -9999, qgl4 = -9999;
+				myJet j1, j2, j3, j4;
 				int tmpMin = - 999;
 				bool maxdR1234 = 0, maxdR1324 = 0, maxdR1423 = 0;
 
@@ -566,100 +565,84 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 
 				if( tmpMin == 0 ){
 					if ( maxdR1234 ){
-						j1 = JETS[0].p4;
-						j2 = JETS[1].p4;
-						j3 = JETS[2].p4;
-						j4 = JETS[3].p4;
-						qgl1 = JETS[0].qgl;
-						qgl2 = JETS[1].qgl;
-						qgl3 = JETS[2].qgl;
-						qgl4 = JETS[3].qgl;
+						j1 = JETS[0];
+						j2 = JETS[1];
+						j3 = JETS[2];
+						j4 = JETS[3];
 					} else{
-						j1 = JETS[2].p4;
-						j2 = JETS[3].p4;
-						j3 = JETS[0].p4;
-						j4 = JETS[1].p4;
-						qgl1 = JETS[2].qgl;
-						qgl2 = JETS[3].qgl;
-						qgl3 = JETS[0].qgl;
-						qgl4 = JETS[1].qgl;
+						j1 = JETS[2];
+						j2 = JETS[3];
+						j3 = JETS[0];
+						j4 = JETS[1];
 					}
 				} else if ( tmpMin == 1 ) {
 					if ( maxdR1324 ){
-						j1 = JETS[0].p4;
-						j2 = JETS[2].p4;
-						j3 = JETS[1].p4;
-						j4 = JETS[3].p4;
-						qgl1 = JETS[0].qgl;
-						qgl2 = JETS[2].qgl;
-						qgl3 = JETS[1].qgl;
-						qgl4 = JETS[3].qgl;
+						j1 = JETS[0];
+						j2 = JETS[2];
+						j3 = JETS[1];
+						j4 = JETS[3];
 					} else {
-						j1 = JETS[1].p4;
-						j2 = JETS[3].p4;
-						j3 = JETS[0].p4;
-						j4 = JETS[2].p4;
-						qgl1 = JETS[1].qgl;
-						qgl2 = JETS[3].qgl;
-						qgl3 = JETS[0].qgl;
-						qgl4 = JETS[2].qgl;
+						j1 = JETS[1];
+						j2 = JETS[3];
+						j3 = JETS[0];
+						j4 = JETS[2];
 					}
 				} else if ( tmpMin == 2 ) {
 					if ( maxdR1423 ){
-						j1 = JETS[0].p4;
-						j2 = JETS[3].p4;
-						j3 = JETS[1].p4;
-						j4 = JETS[2].p4;
-						qgl1 = JETS[0].qgl;
-						qgl2 = JETS[3].qgl;
-						qgl3 = JETS[1].qgl;
-						qgl4 = JETS[2].qgl;
+						j1 = JETS[0];
+						j2 = JETS[3];
+						j3 = JETS[1];
+						j4 = JETS[2];
 					} else {
-						j1 = JETS[1].p4;
-						j2 = JETS[2].p4;
-						j3 = JETS[0].p4;
-						j4 = JETS[3].p4;
-						qgl1 = JETS[1].qgl;
-						qgl2 = JETS[2].qgl;
-						qgl3 = JETS[0].qgl;
-						qgl4 = JETS[3].qgl;
+						j1 = JETS[1];
+						j2 = JETS[2];
+						j3 = JETS[0];
+						j4 = JETS[3];
 					}
 				}
 
-				mass1 = ( j1 + j2 ).M();
-				mass2 = ( j3 + j4 ).M();
-				avgMass = ( mass1 + mass2 ) / 2;
-				delta1 = ( j1.Pt() + j2.Pt() ) - avgMass;
-				delta2 = ( j3.Pt() + j4.Pt() ) - avgMass;
+				mass1 = ( j1.p4 + j2.p4 ).M();
+				mass2 = ( j3.p4 + j4.p4 ).M();
+				massAve = ( mass1 + mass2 ) / 2;
+				delta1 = ( j1.p4.Pt() + j2.p4.Pt() ) - massAve;
+				delta2 = ( j3.p4.Pt() + j4.p4.Pt() ) - massAve;
 				massAsym = TMath::Abs( mass1 - mass2 ) / (mass1 + mass2) ;
-				eta1 = ( j1 + j2 ).Eta();
-				eta2 = ( j3 + j4 ).Eta();
+				eta1 = ( j1.p4 + j2.p4 ).Eta();
+				eta2 = ( j3.p4 + j4.p4 ).Eta();
 				deltaEta = TMath::Abs( eta1 - eta2 );
-				deltaR = abs( ( j1.DeltaR( j2 ) - 0.8 )  + abs( ( j3.DeltaR( j4 ) - 0.8 ) ) );
-				cosThetaStar1 = cosThetaStar( j1, j2 );
-				cosThetaStar2 = cosThetaStar( j3, j4 );
+				deltaR = abs( ( j1.p4.DeltaR( j2.p4 ) - 0.8 )  + abs( ( j3.p4.DeltaR( j4.p4 ) - 0.8 ) ) );
+				cosThetaStar1 = cosThetaStar( j1.p4, j2.p4 );
+				cosThetaStar2 = cosThetaStar( j3.p4, j4.p4 );
 				
 				if ( mkTree ) {
-					jetsPt->push_back( j1.Pt() );
-					jetsPt->push_back( j2.Pt() );
-					jetsPt->push_back( j3.Pt() );
-					jetsPt->push_back( j4.Pt() );
-					jetsEta->push_back( j1.Eta() );
-					jetsEta->push_back( j2.Eta() );
-					jetsEta->push_back( j3.Eta() );
-					jetsEta->push_back( j4.Eta() );
-					jetsPhi->push_back( j1.Phi() );
-					jetsPhi->push_back( j2.Phi() );
-					jetsPhi->push_back( j3.Phi() );
-					jetsPhi->push_back( j4.Phi() );
-					jetsE->push_back( j1.E() );
-					jetsE->push_back( j2.E() );
-					jetsE->push_back( j3.E() );
-					jetsE->push_back( j4.E() );
-					jetsQGL->push_back( qgl1 );
-					jetsQGL->push_back( qgl2 );
-					jetsQGL->push_back( qgl3 );
-					jetsQGL->push_back( qgl4 );
+					jetsPt->push_back( j1.p4.Pt() );
+					jetsPt->push_back( j2.p4.Pt() );
+					jetsPt->push_back( j3.p4.Pt() );
+					jetsPt->push_back( j4.p4.Pt() );
+					jetsEta->push_back( j1.p4.Eta() );
+					jetsEta->push_back( j2.p4.Eta() );
+					jetsEta->push_back( j3.p4.Eta() );
+					jetsEta->push_back( j4.p4.Eta() );
+					jetsPhi->push_back( j1.p4.Phi() );
+					jetsPhi->push_back( j2.p4.Phi() );
+					jetsPhi->push_back( j3.p4.Phi() );
+					jetsPhi->push_back( j4.p4.Phi() );
+					jetsE->push_back( j1.p4.E() );
+					jetsE->push_back( j2.p4.E() );
+					jetsE->push_back( j3.p4.E() );
+					jetsE->push_back( j4.p4.E() );
+					jetsQGL->push_back( j1.qgl );
+					jetsQGL->push_back( j2.qgl );
+					jetsQGL->push_back( j3.qgl );
+					jetsQGL->push_back( j4.qgl );
+					jetsCSVv2->push_back( j1.btagCSVv2 );
+					jetsCSVv2->push_back( j2.btagCSVv2 );
+					jetsCSVv2->push_back( j3.btagCSVv2 );
+					jetsCSVv2->push_back( j4.btagCSVv2 );
+					jetsCMVAv2->push_back( j1.btagCMVAv2 );
+					jetsCMVAv2->push_back( j2.btagCMVAv2 );
+					jetsCMVAv2->push_back( j3.btagCMVAv2 );
+					jetsCMVAv2->push_back( j4.btagCMVAv2 );
 
 					RUNAtree->Fill();
 				}
@@ -673,10 +656,10 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 				histos1D_[ "jet2Pt_cutBestPair" ]->Fill( JETS[1].p4.Pt(), totalWeight );
 				histos1D_[ "jet3Pt_cutBestPair" ]->Fill( JETS[2].p4.Pt(), totalWeight );
 				histos1D_[ "jet4Pt_cutBestPair" ]->Fill( JETS[3].p4.Pt(), totalWeight );
-				histos1D_[ "jet1QGL_cutBestPair" ]->Fill( qgl1, totalWeight );
-				histos1D_[ "jet2QGL_cutBestPair" ]->Fill( qgl2, totalWeight );
-				histos1D_[ "jet3QGL_cutBestPair" ]->Fill( qgl3, totalWeight );
-				histos1D_[ "jet4QGL_cutBestPair" ]->Fill( qgl4, totalWeight );
+				histos1D_[ "jet1QGL_cutBestPair" ]->Fill( JETS[0].qgl, totalWeight );
+				histos1D_[ "jet2QGL_cutBestPair" ]->Fill( JETS[1].qgl, totalWeight );
+				histos1D_[ "jet3QGL_cutBestPair" ]->Fill( JETS[2].qgl, totalWeight );
+				histos1D_[ "jet4QGL_cutBestPair" ]->Fill( JETS[3].qgl, totalWeight );
 				histos1D_[ "NPV_cutBestPair" ]->Fill( numPV, totalWeight );
 
 				for (int i = 0; i < numJets; i++) {
@@ -688,14 +671,14 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 					histos1D_[ "chargedMultiplicity_cutBestPair" ]->Fill( JETS[i].chm, totalWeight );
 				}
 
-				histos1D_[ "massAve_cutBestPair" ]->Fill( avgMass, totalWeight );
+				histos1D_[ "massAve_cutBestPair" ]->Fill( massAve, totalWeight );
 				histos1D_[ "massAsym_cutBestPair" ]->Fill( massAsym, totalWeight );
 				histos1D_[ "deltaEta_cutBestPair" ]->Fill( deltaEta, totalWeight );
 				histos1D_[ "deltaR_cutBestPair" ]->Fill( deltaR , totalWeight );
 				histos1D_[ "cosThetaStar1_cutBestPair" ]->Fill( cosThetaStar1 , totalWeight );
 				histos1D_[ "cosThetaStar2_cutBestPair" ]->Fill( cosThetaStar2 , totalWeight );
-				histos2D_[ "deltavsMassAve_cutBestPair" ]->Fill( avgMass, delta1 , totalWeight );
-				histos2D_[ "deltavsMassAve_cutBestPair" ]->Fill( avgMass, delta2 , totalWeight );
+				histos2D_[ "deltavsMassAve_cutBestPair" ]->Fill( massAve, delta1 , totalWeight );
+				histos2D_[ "deltavsMassAve_cutBestPair" ]->Fill( massAve, delta2 , totalWeight );
 				histos2D_[ "dijetsEta_cutBestPair" ]->Fill( eta1, eta2, totalWeight );
 
 				if ( massPairing ) {
@@ -707,11 +690,11 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 						histos1D_[ "jet2Pt_cutDeltaEtaDijetSyst" ]->Fill( JETS[1].p4.Pt(), totalWeight );
 						histos1D_[ "jet3Pt_cutDeltaEtaDijetSyst" ]->Fill( JETS[2].p4.Pt(), totalWeight );
 						histos1D_[ "jet4Pt_cutDeltaEtaDijetSyst" ]->Fill( JETS[3].p4.Pt(), totalWeight );
-						histos1D_[ "massAve_cutDeltaEtaDijetSyst" ]->Fill( avgMass, totalWeight );
+						histos1D_[ "massAve_cutDeltaEtaDijetSyst" ]->Fill( massAve, totalWeight );
 						histos1D_[ "massAsym_cutDeltaEtaDijetSyst" ]->Fill( massAsym, totalWeight );
 						histos1D_[ "deltaEta_cutDeltaEtaDijetSyst" ]->Fill( deltaEta, totalWeight );
-						histos2D_[ "deltavsMassAve_cutDeltaEtaDijetSyst" ]->Fill( avgMass, delta1 , totalWeight );
-						histos2D_[ "deltavsMassAve_cutDeltaEtaDijetSyst" ]->Fill( avgMass, delta2 , totalWeight );
+						histos2D_[ "deltavsMassAve_cutDeltaEtaDijetSyst" ]->Fill( massAve, delta1 , totalWeight );
+						histos2D_[ "deltavsMassAve_cutDeltaEtaDijetSyst" ]->Fill( massAve, delta2 , totalWeight );
 						histos2D_[ "dijetsEta_cutDeltaEtaDijetSyst" ]->Fill( eta1, eta2, totalWeight );
 						
 						if ( ( delta1 > cutDelta ) && ( delta2  > cutDelta ) ) {
@@ -722,11 +705,11 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 							histos1D_[ "jet2Pt_cutDelta" ]->Fill( JETS[1].p4.Pt(), totalWeight );
 							histos1D_[ "jet3Pt_cutDelta" ]->Fill( JETS[2].p4.Pt(), totalWeight );
 							histos1D_[ "jet4Pt_cutDelta" ]->Fill( JETS[3].p4.Pt(), totalWeight );
-							histos1D_[ "massAve_cutDelta" ]->Fill( avgMass, totalWeight );
+							histos1D_[ "massAve_cutDelta" ]->Fill( massAve, totalWeight );
 							histos1D_[ "massAsym_cutDelta" ]->Fill( massAsym, totalWeight );
 							histos1D_[ "deltaEta_cutDelta" ]->Fill( deltaEta, totalWeight );
-							histos2D_[ "deltavsMassAve_cutDelta" ]->Fill( avgMass, delta1 , totalWeight );
-							histos2D_[ "deltavsMassAve_cutDelta" ]->Fill( avgMass, delta2 , totalWeight );
+							histos2D_[ "deltavsMassAve_cutDelta" ]->Fill( massAve, delta1 , totalWeight );
+							histos2D_[ "deltavsMassAve_cutDelta" ]->Fill( massAve, delta2 , totalWeight );
 							histos2D_[ "dijetsEta_cutDelta" ]->Fill( eta1, eta2, totalWeight );
 
 							if ( massAsym < cutAK4MassAsym ) { 
@@ -738,11 +721,11 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 								histos1D_[ "jet2Pt_cutMassAsym" ]->Fill( JETS[1].p4.Pt(), totalWeight );
 								histos1D_[ "jet3Pt_cutMassAsym" ]->Fill( JETS[2].p4.Pt(), totalWeight );
 								histos1D_[ "jet4Pt_cutMassAsym" ]->Fill( JETS[3].p4.Pt(), totalWeight );
-								histos1D_[ "massAve_cutMassAsym" ]->Fill( avgMass, totalWeight );
+								histos1D_[ "massAve_cutMassAsym" ]->Fill( massAve, totalWeight );
 								histos1D_[ "massAsym_cutMassAsym" ]->Fill( massAsym, totalWeight );
 								histos1D_[ "deltaEta_cutMassAsym" ]->Fill( deltaEta, totalWeight );
-								histos2D_[ "deltavsMassAve_cutMassAsym" ]->Fill( avgMass, delta1 , totalWeight );
-								histos2D_[ "deltavsMassAve_cutMassAsym" ]->Fill( avgMass, delta2 , totalWeight );
+								histos2D_[ "deltavsMassAve_cutMassAsym" ]->Fill( massAve, delta1 , totalWeight );
+								histos2D_[ "deltavsMassAve_cutMassAsym" ]->Fill( massAve, delta2 , totalWeight );
 								histos2D_[ "dijetsEta_cutMassAsym" ]->Fill( eta1, eta2, totalWeight );
 							}
 						}
@@ -757,11 +740,11 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 						histos1D_[ "jet2Pt_cutMassAsym" ]->Fill( JETS[1].p4.Pt(), totalWeight );
 						histos1D_[ "jet3Pt_cutMassAsym" ]->Fill( JETS[2].p4.Pt(), totalWeight );
 						histos1D_[ "jet4Pt_cutMassAsym" ]->Fill( JETS[3].p4.Pt(), totalWeight );
-						histos1D_[ "massAve_cutMassAsym" ]->Fill( avgMass, totalWeight );
+						histos1D_[ "massAve_cutMassAsym" ]->Fill( massAve, totalWeight );
 						histos1D_[ "massAsym_cutMassAsym" ]->Fill( massAsym, totalWeight );
 						histos1D_[ "deltaEta_cutMassAsym" ]->Fill( deltaEta, totalWeight );
-						histos2D_[ "deltavsMassAve_cutMassAsym" ]->Fill( avgMass, delta1 , totalWeight );
-						histos2D_[ "deltavsMassAve_cutMassAsym" ]->Fill( avgMass, delta2 , totalWeight );
+						histos2D_[ "deltavsMassAve_cutMassAsym" ]->Fill( massAve, delta1 , totalWeight );
+						histos2D_[ "deltavsMassAve_cutMassAsym" ]->Fill( massAve, delta2 , totalWeight );
 						histos2D_[ "dijetsEta_cutMassAsym" ]->Fill( eta1, eta2, totalWeight );
 					
 						if ( deltaEta <  cutDeltaEtaDijetSyst ) {
@@ -772,11 +755,11 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 							histos1D_[ "jet2Pt_cutDeltaEtaDijetSyst" ]->Fill( JETS[1].p4.Pt(), totalWeight );
 							histos1D_[ "jet3Pt_cutDeltaEtaDijetSyst" ]->Fill( JETS[2].p4.Pt(), totalWeight );
 							histos1D_[ "jet4Pt_cutDeltaEtaDijetSyst" ]->Fill( JETS[3].p4.Pt(), totalWeight );
-							histos1D_[ "massAve_cutDeltaEtaDijetSyst" ]->Fill( avgMass, totalWeight );
+							histos1D_[ "massAve_cutDeltaEtaDijetSyst" ]->Fill( massAve, totalWeight );
 							histos1D_[ "massAsym_cutDeltaEtaDijetSyst" ]->Fill( massAsym, totalWeight );
 							histos1D_[ "deltaEta_cutDeltaEtaDijetSyst" ]->Fill( deltaEta, totalWeight );
-							histos2D_[ "deltavsMassAve_cutDeltaEtaDijetSyst" ]->Fill( avgMass, delta1 , totalWeight );
-							histos2D_[ "deltavsMassAve_cutDeltaEtaDijetSyst" ]->Fill( avgMass, delta2 , totalWeight );
+							histos2D_[ "deltavsMassAve_cutDeltaEtaDijetSyst" ]->Fill( massAve, delta1 , totalWeight );
+							histos2D_[ "deltavsMassAve_cutDeltaEtaDijetSyst" ]->Fill( massAve, delta2 , totalWeight );
 							histos2D_[ "dijetsEta_cutDeltaEtaDijetSyst" ]->Fill( eta1, eta2, totalWeight );
 							
 							if ( ( delta1 > cutDelta ) && ( delta2  > cutDelta ) ) {
@@ -787,28 +770,17 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 								histos1D_[ "jet2Pt_cutDelta" ]->Fill( JETS[1].p4.Pt(), totalWeight );
 								histos1D_[ "jet3Pt_cutDelta" ]->Fill( JETS[2].p4.Pt(), totalWeight );
 								histos1D_[ "jet4Pt_cutDelta" ]->Fill( JETS[3].p4.Pt(), totalWeight );
-								histos1D_[ "massAve_cutDelta" ]->Fill( avgMass, totalWeight );
+								histos1D_[ "massAve_cutDelta" ]->Fill( massAve, totalWeight );
 								histos1D_[ "massAsym_cutDelta" ]->Fill( massAsym, totalWeight );
 								histos1D_[ "deltaEta_cutDelta" ]->Fill( deltaEta, totalWeight );
-								histos2D_[ "deltavsMassAve_cutDelta" ]->Fill( avgMass, delta1 , totalWeight );
-								histos2D_[ "deltavsMassAve_cutDelta" ]->Fill( avgMass, delta2 , totalWeight );
+								histos2D_[ "deltavsMassAve_cutDelta" ]->Fill( massAve, delta1 , totalWeight );
+								histos2D_[ "deltavsMassAve_cutDelta" ]->Fill( massAve, delta2 , totalWeight );
 								histos2D_[ "dijetsEta_cutDelta" ]->Fill( eta1, eta2, totalWeight );
 							}
 						}
 					}
 				}
 
-				if ( ( qgl1 > 0.7 ) && ( qgl2 > 0.7 ) && ( qgl3 > 0.7 ) && ( qgl4 > 0.7 ) ) {
-					histos1D_[ "massAve_cutQGL" ]->Fill( avgMass, totalWeight );
-					histos1D_[ "massAsym_cutQGL" ]->Fill( massAsym, totalWeight );
-					histos1D_[ "deltaEta_cutQGL" ]->Fill( deltaEta, totalWeight );
-					histos1D_[ "deltaR_cutQGL" ]->Fill( deltaR , totalWeight );
-					histos1D_[ "cosThetaStar1_cutQGL" ]->Fill( cosThetaStar1 , totalWeight );
-					histos1D_[ "cosThetaStar2_cutQGL" ]->Fill( cosThetaStar2 , totalWeight );
-					histos2D_[ "deltavsMassAve_cutQGL" ]->Fill( avgMass, delta1 , totalWeight );
-					histos2D_[ "deltavsMassAve_cutQGL" ]->Fill( avgMass, delta2 , totalWeight );
-					histos2D_[ "dijetsEta_cutQGL" ]->Fill( eta1, eta2, totalWeight );
-				}
 			}
 
 			/*if ( numJets > 4 ){
@@ -846,7 +818,7 @@ void RUNResolvedAnalysis::beginJob() {
 		RUNAtree->Branch( "HT", &HT, "HT/F" );
 		RUNAtree->Branch( "mass1", &mass1, "mass1/F" );
 		RUNAtree->Branch( "mass2", &mass2, "mass2/F" );
-		RUNAtree->Branch( "avgMass", &avgMass, "avgMass/F" );
+		RUNAtree->Branch( "massAve", &massAve, "massAve/F" );
 		RUNAtree->Branch( "delta1", &delta1, "delta1/F" );
 		RUNAtree->Branch( "delta2", &delta2, "delta2/F" );
 		RUNAtree->Branch( "massAsym", &massAsym, "massAsym/F" );
@@ -1052,23 +1024,6 @@ void RUNResolvedAnalysis::beginJob() {
 	histos2D_[ "deltavsMassAve_cutDelta" ]->Sumw2();
 	histos2D_[ "dijetsEta_cutDelta" ] = fs_->make< TH2D >( "dijetsEta_cutDelta", "dijetsEta_cutDelta", 48, -3., 3., 48, -3., 3. );
 	histos2D_[ "dijetsEta_cutDelta" ]->Sumw2();
-
-	histos1D_[ "massAve_cutQGL" ] = fs_->make< TH1D >( "massAve_cutQGL", "massAve_cutQGL", 200, 0., 2000. );
-	histos1D_[ "massAve_cutQGL" ]->Sumw2();
-	histos1D_[ "massAsym_cutQGL" ] = fs_->make< TH1D >( "massAsym_cutQGL", "massAsym_cutQGL", 50, 0., 2. );
-	histos1D_[ "massAsym_cutQGL" ]->Sumw2();
-	histos1D_[ "deltaEta_cutQGL" ] = fs_->make< TH1D >( "deltaEta_cutQGL", "deltaEta_cutQGL", 50, 0., 10. );
-	histos1D_[ "deltaEta_cutQGL" ]->Sumw2();
-	histos1D_[ "deltaR_cutQGL" ] = fs_->make< TH1D >( "deltaR_cutQGL", "deltaR_cutQGL", 50, 0., 5. );
-	histos1D_[ "deltaR_cutQGL" ]->Sumw2();
-	histos1D_[ "cosThetaStar1_cutQGL" ] = fs_->make< TH1D >( "cosThetaStar1_cutQGL", "cosThetaStar1_cutQGL", 10, 0., 1. );
-	histos1D_[ "cosThetaStar1_cutQGL" ]->Sumw2();
-	histos1D_[ "cosThetaStar2_cutQGL" ] = fs_->make< TH1D >( "cosThetaStar2_cutQGL", "cosThetaStar2_cutQGL", 10, 0., 1. );
-	histos1D_[ "cosThetaStar2_cutQGL" ]->Sumw2();
-	histos2D_[ "deltavsMassAve_cutQGL" ] = fs_->make< TH2D >( "deltavsMassAve_cutQGL", "deltavsMassAve_cutQGL", 200, 0., 2000.,  300, -500., 1000. );
-	histos2D_[ "deltavsMassAve_cutQGL" ]->Sumw2();
-	histos2D_[ "dijetsEta_cutQGL" ] = fs_->make< TH2D >( "dijetsEta_cutQGL", "dijetsEta_cutQGL", 48, -3., 3., 48, -3., 3. );
-	histos2D_[ "dijetsEta_cutQGL" ]->Sumw2();
 
 
 	cutLabels.push_back("Processed");
