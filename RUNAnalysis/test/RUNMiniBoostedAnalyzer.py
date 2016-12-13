@@ -12,6 +12,7 @@ from collections import OrderedDict
 from multiprocessing import Process
 from ROOT import *
 from array import array
+from random import randint
 try: 
 	from RUNA.RUNAnalysis.commonFunctions import *
 	from RUNA.RUNAnalysis.cuts import selection
@@ -141,233 +142,218 @@ def myAnalyzer( dictSamples, listCuts, signalName, UNC ):
 	for h in allHistos: allHistos[h].Sumw2()
 
 	################################################################################################## Running the Analysis
-	SF = 'lumiWeight * puWeight * '+str(args.lumi)
 	print '-'*40
-	preselection = '(HT>900) '
-	selection = preselection
-	for var in listCuts: selection = selection+' * ('+var[0]+'<'+str(var[1])+')'
-	print '---- Cuts applied: ', selection
+	SF = TCut('lumiWeight * puWeight') # * '+str(args.lumi))
+	preselection = TCut('HT>900') + SF 
+	selection = '' 
+	for var in listCuts: selection = selection+'('+var[0]+'<'+str(var[1])+')'
+	selection = selection.replace(')(',') && (')
+	print '---- Cuts applied: ', selection, preselection + TCut( selection )
+	if 'JetHT' in args.samples: 
+		for era in [ 'B', 'C', 'D', 'E', 'F', 'G', 'H' ]:
+			dictSamples[ 'JetHT_Run2016'+era ] = dictSamples[ 'JetHT_Run2016' ].replace('2016', '2016'+era)
+		dictSamples.pop( 'JetHT_Run2016' )
+		selection = selection + ' && (Entry$ % '+str(randint(0,10))+' == 0)'
 
 	ABCDRegions = {}
-	ABCDRegions[ '_A' ] = selection
-	ABCDRegions[ '_B' ] = selection.replace('deltaEtaDijet<', 'deltaEtaDijet>')
-	ABCDRegions[ '_C' ] = selection.replace('prunedMassAsym<', 'prunedMassAsym>')
-	ABCDRegions[ '_D' ] = selection.replace('prunedMassAsym<', 'prunedMassAsym>').replace('deltaEtaDijet<', 'deltaEtaDijet>')
+	ABCDRegions[ '_A' ] = TCut( selection )
+	ABCDRegions[ '_B' ] = TCut( selection.replace('deltaEtaDijet<', 'deltaEtaDijet>') )
+	ABCDRegions[ '_C' ] = TCut( selection.replace('prunedMassAsym<', 'prunedMassAsym>') )
+	ABCDRegions[ '_D' ] = TCut( selection.replace('prunedMassAsym<', 'prunedMassAsym>').replace('deltaEtaDijet<', 'deltaEtaDijet>') )
 
-	btagSelection = selection + '* (jet1btagCSVv2 > 0.8) * (jet2btagCSVv2 > 0.8)'
+	btagSelection = selection + '&& (jet1btagCSVv2 > 0.8) && (jet2btagCSVv2 > 0.8)'
 	ABCDRegionsBtag = {}
-	ABCDRegionsBtag[ '_A' ] = btagSelection
-	ABCDRegionsBtag[ '_B' ] = btagSelection.replace('deltaEtaDijet<', 'deltaEtaDijet>')
-	ABCDRegionsBtag[ '_C' ] = btagSelection.replace('prunedMassAsym<', 'prunedMassAsym>')
-	ABCDRegionsBtag[ '_D' ] = btagSelection.replace('prunedMassAsym<', 'prunedMassAsym>').replace('deltaEtaDijet<', 'deltaEtaDijet>')
+	ABCDRegionsBtag[ '_A' ] = TCut( btagSelection )
+	ABCDRegionsBtag[ '_B' ] = TCut( btagSelection.replace('deltaEtaDijet<', 'deltaEtaDijet>') )
+	ABCDRegionsBtag[ '_C' ] = TCut( btagSelection.replace('prunedMassAsym<', 'prunedMassAsym>') )
+	ABCDRegionsBtag[ '_D' ] = TCut( btagSelection.replace('prunedMassAsym<', 'prunedMassAsym>').replace('deltaEtaDijet<', 'deltaEtaDijet>') )
+
+	sel = preselection + TCut( selection )
+	btagSel = sel + TCut( btagSelection )
 
 	treeName = 'BoostedAnalysisPlots'+('Puppi' if 'Puppi' in args.grooming else '')+'/RUNATree'
 
 	for sample in dictSamples:
 
-		if 'JetHT' in sample: SF = 1
+		fileSample = dictSamples[ sample ]
+		print '--- Sample ', sample
+		if 'JetHT' in sample: 
+			sample = 'JetHT_Run2016'
+			SF = 1
 
 		### Preselection
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'prunedMassAve', 
 				preselection, 
 				allHistos[ 'massAve_preSel_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'prunedMassAve', 
-				preselection+' * (numPV<12)', 
+				preselection+TCut( '(numPV<12)' ), 
 				allHistos[ 'massAve_preSel_lowNPV_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'numPV', 
-				preselection+' * (numPV<12)', 
+				preselection+TCut( '(numPV<12)' ), 
 				allHistos[ 'NPV_preSel_lowNPV_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'prunedMassAve', 
-				preselection+' * (numPV>12) * (numPV<24)', 
+				preselection+TCut( '(numPV>12) && (numPV<24)' ), 
 				allHistos[ 'massAve_preSel_medNPV_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'numPV', 
-				preselection+' * (numPV>12) * (numPV<24)', 
+				preselection+TCut( '(numPV>12) && (numPV<24)' ), 
 				allHistos[ 'NPV_preSel_medNPV_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'prunedMassAve', 
-				preselection+' * (numPV>24)', 
+				preselection+TCut( '(numPV>24)' ), 
 				allHistos[ 'massAve_preSel_highNPV_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'numPV', 
-				preselection+' * (numPV>24)', 
+				preselection+TCut( '(numPV>24)' ), 
 				allHistos[ 'NPV_preSel_highNPV_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'HT', 
 				preselection,
 				allHistos[ 'HT_preSel_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'prunedMassAsym', 
 				preselection,
 				allHistos[ 'prunedMassAsym_preSel_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'deltaEtaDijet', 
 				preselection,
 				allHistos[ 'deltaEtaDijet_preSel_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+				( True if 'JetHT' in sample else False ) ) 
+		getHistoFromTree( fileSample, treeName,
 				'jet1Tau21', 
 				preselection,
 				allHistos[ 'jet1Tau21_preSel_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+				( True if 'JetHT' in sample else False ) ) 
+		getHistoFromTree( fileSample, treeName,
 				'jet2Tau21', 
 				preselection,
 				allHistos[ 'jet2Tau21_preSel_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
 
 
 		### All selection
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'prunedMassAve', 
-				selection, 
+				sel, 
 				allHistos[ 'massAve_deltaEtaDijet_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'prunedMassAve', 
-				selection+' * (numPV<12)', 
+				sel+TCut('(numPV<12)'), 
 				allHistos[ 'massAve_deltaEtaDijet_lowNPV_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'numPV', 
-				selection+' * (numPV<12)', 
+				sel+TCut('(numPV<12)'), 
 				allHistos[ 'NPV_deltaEtaDijet_lowNPV_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'prunedMassAve', 
-				selection+' * (numPV>12) * (numPV<24)', 
+				sel+TCut('(numPV>12) && (numPV<24)'), 
 				allHistos[ 'massAve_deltaEtaDijet_medNPV_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'numPV', 
-				selection+' * (numPV>12) * (numPV<24)', 
+				sel+TCut('(numPV>12) && (numPV<24)'), 
 				allHistos[ 'NPV_deltaEtaDijet_medNPV_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'prunedMassAve', 
-				selection+' * (numPV>24)', 
+				sel+TCut('(numPV>24)'), 
 				allHistos[ 'massAve_deltaEtaDijet_highNPV_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'numPV', 
-				selection+' * (numPV>24)', 
+				sel+TCut('(numPV>24)'), 
 				allHistos[ 'NPV_deltaEtaDijet_highNPV_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
 
 		### n-1 selection
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'prunedMassAsym', 
-				selection.replace('* (prunedMassAsym<0.1)',''), 
+				preselection + TCut( selection.replace('&& (prunedMassAsym<0.1)','') ), 
 				allHistos[ 'prunedMassAsym_n-1_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'deltaEtaDijet', 
-				selection.replace(('* (deltaEtaDijet<1.5)' if 'pruned' in args.grooming else '* (deltaEtaDijet<1.0)' ),''), 
+				preselection + TCut( selection.replace(('&& (deltaEtaDijet<1.5)' if 'pruned' in args.grooming else '&& (deltaEtaDijet<1.0)' ),'') ), 
 				allHistos[ 'deltaEtaDijet_n-1_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+				( True if 'JetHT' in sample else False ) ) 
+		getHistoFromTree( fileSample, treeName,
 				'jet1Tau21', 
-				selection.replace('* (jet1Tau21<0.45)',''), 
+				preselection + TCut( selection.replace('&& (jet1Tau21<0.45)','') ), 
 				allHistos[ 'jet1Tau21_n-1_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+				( True if 'JetHT' in sample else False ) ) 
+		getHistoFromTree( fileSample, treeName,
 				'jet2Tau21', 
-				selection.replace('* (jet2Tau21<0.45)',''), 
+				preselection + TCut( selection.replace('&& (jet2Tau21<0.45)','') ), 
 				allHistos[ 'jet2Tau21_n-1_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
 		### ABCD plots
-		for region, sel in ABCDRegions.items():
-			getHistoFromTree( dictSamples[ sample ], treeName,
+		for region, selABCD in ABCDRegions.items():
+			getHistoFromTree( fileSample, treeName,
 					'prunedMassAve', 
-					sel, 
+					selABCD, 
 					allHistos[ 'massAve_prunedMassAsymVsdeltaEtaDijet_'+sample+region ], 
-					SF, 
-					( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+					( True if 'JetHT' in sample else False ) ) 
 		
-			get2DHistoFromTree( dictSamples[ sample ], treeName,
+			get2DHistoFromTree( fileSample, treeName,
 					'prunedMassAsym', 'deltaEtaDijet',
-					sel, 
+					selABCD, 
 					allHistos[ 'prunedMassAsymVsdeltaEtaDijet_'+sample+region ],
-					SF, 
-					( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+					( True if 'JetHT' in sample else False ) ) 
 
 		## Btagging
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'prunedMassAve', 
-				btagSelection, 
+				btagSel, 
 				allHistos[ 'massAve_btag_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
-		for region, sel in ABCDRegionsBtag.items():
-			getHistoFromTree( dictSamples[ sample ], treeName,
+		for region, selABCD in ABCDRegionsBtag.items():
+			getHistoFromTree( fileSample, treeName,
 					'prunedMassAve', 
-					sel, 
+					selABCD, 
 					allHistos[ 'massAve_prunedMassAsymVsdeltaEtaDijet_'+sample+'_btag'+region ], 
-					SF, 
-					( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+					( True if 'JetHT' in sample else False ) ) 
 		
-			get2DHistoFromTree( dictSamples[ sample ], treeName,
+			get2DHistoFromTree( fileSample, treeName,
 					'prunedMassAsym', 'deltaEtaDijet',
-					sel, 
+					selABCD, 
 					allHistos[ 'prunedMassAsymVsdeltaEtaDijet_'+sample+'_btag'+region ],
-					SF, 
-					( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+					( True if 'JetHT' in sample else False ) ) 
 
 
 #	for sample in dictSamples:

@@ -75,26 +75,26 @@ def Rebin2D( h1, rebinx, rebiny ):
 			h1.AddBinContent(ibin,cu)
 	return h1
 
-def getHistoFromTree( fileName, treeName, plotVar, cuts, histo, weight, numentries=False, skipEvents=0 ):
+def getHistoFromTree( fileName, treeName, plotVar, cuts, histo, numentries=False, skipEvents=0 ):
 	"""docstring for getHistoFromTree"""
 
 	chain = TChain( treeName )
 	chain.Add( fileName ) 
 	if not numentries: numEntries = chain.GetEntries()
-	else: numEntries = int( chain.GetEntries()*0.05)
-	#print '|---> Plotting: '+plotVar+'>>'+str(histo.GetName()), '('+str(weight)+')*('+cuts+')' 
-	chain.Draw( plotVar+'>>'+str(histo.GetName()), '('+str(weight)+')*('+cuts+')', 'goff', numEntries, skipEvents ) ### goff no graphics generated
+	else: numEntries = int( chain.GetEntries()*0.1)
+	#print '|---> Plotting: '+plotVar+'>>'+str(histo.GetName()), numEntries, chain.GetEntries()  # '('+str(weight)+')*('+cuts+')' 
+	chain.Draw( plotVar+'>>'+str(histo.GetName()), cuts, 'goff', numEntries, skipEvents ) ### goff no graphics generated
 
 	return histo
 
-def get2DHistoFromTree( fileName, treeName, plotVar1, plotVar2, cuts, histo, weight, numEntries=False, skipEvents=0 ):
+def get2DHistoFromTree( fileName, treeName, plotVar1, plotVar2, cuts, histo, numEntries=False, skipEvents=0 ):
 	"""docstring for getHistoFromTree"""
 
 	chain = TChain( treeName )
 	chain.Add( fileName ) 
 	if not numEntries: numEntries = chain.GetEntriesFast()
-	else: numEntries = int( chain.GetEntriesFast()*0.05)
+	else: numEntries = int( chain.GetEntriesFast()*0.1)
 	#print '|---> Plotting: '+plotVar1+':'+plotVar2+'>>'+str(histo.GetName()), '('+str(weight)+')*('+cuts+')' 
-	chain.Draw( plotVar2+':'+plotVar1+'>>'+str(histo.GetName()), '('+str(weight)+')*('+cuts+')', 'goff', numEntries, skipEvents  )
+	chain.Draw( plotVar2+':'+plotVar1+'>>'+str(histo.GetName()), cuts, 'goff', numEntries, skipEvents  )
 
 	return histo
