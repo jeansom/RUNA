@@ -533,7 +533,7 @@ if __name__ == '__main__':
 	parser.add_argument( '-e', '--eff', action='store', dest='effS', type=int, default=0, help='Mass of the Stop' )
 	parser.add_argument( '-l', '--lumi', action='store', dest='lumi', type=int, default=2643, help='Mass of the Stop' )
 	parser.add_argument( '-E', '--extension', action='store', dest='ext', default='png', help='Extension of plots.' )
-	parser.add_argument( '-B', '--batchSys', action='store',  dest='batchSys', type=bool, default=False, help='Process: all or single.' )
+	parser.add_argument( '-B', '--batchSys', action='store',  dest='batchSys', type=bool, default=False, help='BatchSys: False (lxplus), True hexfarm.' )
 	parser.add_argument( '-v', '--version', action='store', default='v01', help='Version: v01, v02.' )
 	parser.add_argument( '-q', '--qcd', action='store', default='HT', dest='qcd', help='Type of QCD binning, example: HT.' )
 
@@ -543,24 +543,25 @@ if __name__ == '__main__':
 		parser.print_help()
 		sys.exit(0)
 
-	if args.batchSys: folder = '/cms/gomez/archiveEOS/Archive/763patch2/v5/'
+	if args.batchSys: folder = '/cms/gomez/archiveEOS/Archive/v8020/Analysis/'+args.version+'/'
 	else: folder = 'Rootfiles/'
 
 	bkgSamples = OrderedDict()
 	bkgSamples[ 'QCD'+args.qcd+'All' ] = [ folder+'/RUNAnalysis_QCD'+args.qcd+'All_80X_V2p1_'+args.version+'.root', kBlue-4 ]
-	bkgSamples[ 'TTJets' ] = [ folder+'/RUNAnalysis_TTJets_80X_V2p1_'+args.version+'.root', kGreen+2 ]
-	bkgSamples[ 'WJetsToQQ' ] = [ folder+'/RUNAnalysis_WJetsToQQ_80X_V2p1_'+args.version+'.root', 38 ]
-	bkgSamples[ 'ZJetsToQQ' ] = [ folder+'/RUNAnalysis_ZJetsToQQ_80X_V2p1_'+args.version+'.root', kOrange ]
-	bkgSamples[ 'Dibosons' ] = [ folder+'/RUNAnalysis_Dibosons_80X_V2p1_'+args.version+'.root', kMagenta+2 ]
-	#bkgSamples[ 'WWTo4Q' ] = [ folder+'/RUNAnalysis_WWTo4Q_80X_V2p1_'+args.version+'.root', kMagenta+2 ]
-	#bkgSamples[ 'ZZTo4Q' ] = [ folder+'/RUNAnalysis_ZZTo4Q_80X_V2p1_'+args.version+'.root', kOrange+2 ]
-	#bkgSamples[ 'WZ' ] = [ folder+'/RUNAnalysis_WZ_80X_V2p1_'+args.version+'.root', kCyan ]
+	if 'Boosted' in args.boosted:
+		bkgSamples[ 'TTJets' ] = [ folder+'/RUNAnalysis_TTJets_80X_V2p1_'+args.version+'.root', kGreen+2 ]
+		bkgSamples[ 'WJetsToQQ' ] = [ folder+'/RUNAnalysis_WJetsToQQ_80X_V2p1_'+args.version+'.root', 38 ]
+		bkgSamples[ 'ZJetsToQQ' ] = [ folder+'/RUNAnalysis_ZJetsToQQ_80X_V2p1_'+args.version+'.root', kOrange ]
+		bkgSamples[ 'Dibosons' ] = [ folder+'/RUNAnalysis_Dibosons_80X_V2p1_'+args.version+'.root', kMagenta+2 ]
+		#bkgSamples[ 'WWTo4Q' ] = [ folder+'/RUNAnalysis_WWTo4Q_80X_V2p1_'+args.version+'.root', kMagenta+2 ]
+		#bkgSamples[ 'ZZTo4Q' ] = [ folder+'/RUNAnalysis_ZZTo4Q_80X_V2p1_'+args.version+'.root', kOrange+2 ]
+		#bkgSamples[ 'WZ' ] = [ folder+'/RUNAnalysis_WZ_80X_V2p1_'+args.version+'.root', kCyan ]
 
 	sigSamples = {}
 	sigSamples[ args.mass ] = folder+'/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(args.mass)+'_80X_V2p1_'+args.version+'.root'
 
 	SigSample = folder+'/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(args.mass)+'-madgraph_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
-	treename = "ResolvedAnalysisPlotsScouting/RUNATree" if ( 'Resolved' in args.boosted ) else 'BoostedAnalysisPlots'+args.grooming+'/RUNATree'
+	treename = "ResolvedAnalysisPlots/RUNATree" if ( 'Resolved' in args.boosted ) else 'BoostedAnalysisPlots'+args.grooming+'/RUNATree'
 
 	var = [
 		#[ 'Resolved', 'mindR', 50, 0., 5., True, 0., 0.8 ],
@@ -569,11 +570,11 @@ if __name__ == '__main__':
 		#[ 'Resolved', 'jetsQGL[2]', 50, 0., 1., False, 0., 0., 5, 1 ],
 		#[ 'Resolved', 'jetsQGL[3]', 50, 0., 1., False, 0., 0., 5, 1 ],
 		[ 'Resolved', 'deltaEta', 50, 0., 5., True, 0, 0., 5, 1 ],
-		[ 'Resolved', 'massAsym', 20, 0., 1., True, 0., 0., 1, 2 ],
+		[ 'Resolved', 'massAsym', 20, 0., 1., True, 0.1, 0., 1, 2 ],
 		[ 'Resolved', 'cosThetaStar1', 20, 0., 1., True, 0., 0., 1, 3 ],
 		[ 'Resolved', 'cosThetaStar2', 20, 0., 1., True, 0., 0., 1, 4 ],
-		[ 'Resolved', 'delta1', 50, 0, 500,  False, 0, 0., 500, 5 ],
-		[ 'Resolved', 'delta2', 50, 0, 500, False, 0, 0., 500, 6 ],
+		[ 'Resolved', 'delta1', 50, 0, 500,  False, 200, 0., 500, 5 ],
+		[ 'Resolved', 'delta2', 50, 0, 500, False, 200, 0., 500, 6 ],
 		#[ 'Resolved', 'xi1', 20, 0., 1., True, 0, 0.6 ],
 		#[ 'Resolved', 'xi2', 20, 0., 1., True , 0, 0.6],
 		[ 'Boosted', "prunedMassAsym", 20, 0., 1., True, 0., 0.2, 1, 1 ],
@@ -594,7 +595,7 @@ if __name__ == '__main__':
 	if 'calcROC' in args.process: 
 		variables = [ x[1:] for x in var if ( args.boosted in x[0] ) ]
 		cuts = [ x[1:] for x in var if ( ( args.boosted in x[0] ) and ( x[6]!=x[3] ) ) ]
-		p0 = Process( target=calcROCs, args=( bkgSamples, sigSamples, treename, variables, ( 20 if 'Resolved' in args.boosted else 20 ), cuts ) )
+		p0 = Process( target=calcROCs, args=( bkgSamples, sigSamples, treename, variables, ( 30 if 'Resolved' in args.boosted else 20 ), cuts ) )
 		p0.start()
 		p0.join()
 	

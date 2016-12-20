@@ -1,0 +1,5 @@
+*pyc
+__init__.py
+RUNAnalysis/test/supportFiles/*tar.gz
+RUNAnalysis/test/supportFiles/*txt
+RUNStatistics/test/higgsCombine*

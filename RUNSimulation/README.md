@@ -1,28 +1,40 @@
-# Instructions to generate samples 13TeV - pythia8 for different PU scenarios 
+# Instructions to generate private Moriond17 samples 13TeV 
 
 ## Brief explanation
 
-We are going to split the entire generation in 4 pieces. (Four if you don't have an lhe file)
+We are going to split the entire generation in 4 pieces. 
 
 1. Step0: 
-	First we are going to hadronize our lhe file, and simulate how particles interact with the detector (GENSIM). 
-	This step is common for all the pileup scenarios, so this you should do it only ONCE.
+	First we are going to hadronize our madgraph generated file (from a gridpack or an lhe file), and simulate how particles interact with the detector (GENSIM).  This step *HAS* to be done in CMSSW_7_1_25_patch1 (use branch [[v7125patch1][https://github.com/RutgersHEX/RUNA/tree/v7125patch1/RUNSimulation]].
 2. Step1: 
 	We add pileup, simulate L1 and digitalize the signal (RAWSIM). This step saves the RAW data.  
-	This step is different for each pileup case.
 3. Step2: 
 	We reconstruct your objects and save them in the CMS format (AODSIM). 
-	This step is the same for each pileup case. 
 4. Step3:
 	We are going to take the AOD files an store only high level objets in a compress way, i.e. MiniAOD.
-	This step is the same for each pileup case. 
+5. Step23:
+	For simplicity I merge step2 and step3. If you are having problems you can run each job separated.
 
 
 ## To run the code
 
+1. Step0 you need to be run in CMSSW_7_1_25_patch1, therefore:
+```
+cmsrel CMSSW_7_1_25_patch1
+cd CMSSW_7_1_25_patch1/src/
+cmsenv
+git clone git@github.com:RutgersHEX/RUNA.git -b v7125patch1
+scram b -j 18
+cmsenv
+cd RUNA/RUNSimulation/test/
+```
+
 Go to RUNA/RUNSimulation/test/
 There you have a file called createJobs_CRAB.sh. You only need to modify the first part, PARAMETERS.
-To run: `./createJobs_CRAB.sh`
+To run: 
+```
+./createJobs_CRAB.sh (total number of events) (RPV stop mass)
+```
 
 You will create a folder with the name of the process that you wrote in createJobs_CRAB.sh script.
 There you will have python files and crab files almost ready to run. (You shouldn't change anything there)

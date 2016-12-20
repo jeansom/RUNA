@@ -10,7 +10,7 @@ Description: My Draw histograms. Check for options at the end.
 from ROOT import *
 import time, os, math, sys
 from array import array
-import argparse
+import argparse, argcomplete
 from collections import OrderedDict
 try:
 	from RUNA.RUNAnalysis.histoLabels import labels, labelAxis, finalLabels, setSelection
@@ -1194,7 +1194,7 @@ def tmpplotDiffSample( qcdFile, ttbarFile, signalFile, name, reBin, xmax, labX, 
 if __name__ == '__main__':
 
 	parser = argparse.ArgumentParser()
-	parser.add_argument('-p', '--proc', action='store', default='1D', dest='process', help='Process to draw, example: 1D, 2D, MC.' )
+	parser.add_argument('-p', '--proc', action='store', default='1D', dest='process', help='Process to draw, example: 1D, 2D, MC.' ). #completer = choicesCompleter(('1D', '2D'))
 	parser.add_argument('-d', '--decay', action='store', default='UDD312', dest='decay', help='Decay, example: UDD312, UDD323.' )
 	parser.add_argument('-b', '--boosted', action='store', default='Boosted', help='Boosted or non boosted, example: Boosted' )
 	parser.add_argument('-v', '--version', action='store', default='v00', help='Version: v01, v02.' )
@@ -1212,6 +1212,7 @@ if __name__ == '__main__':
 	parser.add_argument('-t', '--miniTree', action='store_true', default=False, help='miniTree: if plots coming from miniTree or RUNAnalysis.' )
 
 	try:
+		argcomplete.autocomplete(parser)
 		args = parser.parse_args()
 	except:
 		parser.print_help()

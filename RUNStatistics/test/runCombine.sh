@@ -16,11 +16,7 @@ for mass in $masses
 do
 	echo "======= Running datacard_RPVStopStopToJets_UDD312_M-${mass}_v05.txt"
 
-	if [ -z "$2" ]
-	then
-		combine -M Asymptotic Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_withMC_altBkg_NOSys_v02p1_bins.txt -n UDD312RPVSt_M-${mass}_Boosted_NOSys_v02
-
-	elif [ $2 == "Resolved" ]
+	if [ $2 == "Resolved" ]
 	then
 		combine -M Asymptotic Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_Resolved_v02p1.txt -n UDD312RPVSt_M-${mass}_Resolved_v02
 
@@ -34,10 +30,14 @@ do
 		combine -M HybridNew --testStat=LHC --frequentist Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_withMC_altBkg_NOSys_v02p1_bins.txt -T 2000 -H ProfileLikelihood --fork 4 -n UDD312RPVSt_M-${mass}_Boosted_NOSys_v02 --expectedFromGrid 0.975
 		hadd higgsCombineUDD312RPVSt_M-${mass}_Boosted_NOSys_v02.HybridNewAll.mH120.root higgsCombineUDD312RPVSt_M-${mass}_Boosted_NOSys_v02.HybridNew*root 
 
-	else
+	elif [ $2 == "pseudo" ]
+	then
 		for ((i=0;i<=$2;i++)); do
 			echo "+++++++ Running pseudoExperiment "${i}
 			combine -M Asymptotic Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_altBkg_signalInjectionTest${i}_Bin5_v05p3_bins.txt -n UDD312RPVSt_M-${mass}_altBkg_signalInjectionTest${i}_Bin5_v05p3 
 		done
+	else
+		combine -M Asymptotic Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_${2}_withMC_altBkg_NOSys_v02p1_bins.txt -n UDD312RPVSt_M-${mass}_${2}_Boosted_NOSys_v02
+
 	fi
 done

@@ -104,9 +104,9 @@ def rootFitter( inFileBkg, hist, scale, fitFunction, fitParam, minX, maxX, rebin
 	binContents = np.array(tmpBkgBinContent)
 	binError = np.array(tmpBkgBinError)
 	#print 'QCD bins NO normalized:', tmpBkgBinContent
-	sumBinContents = np.sum(binContents)
-	binContents = binContents/sumBinContents
-	binError = binError/sumBinContents		####################### CHECK THE STUPID ERRORS!!!!
+	#sumBinContents = np.sum(binContents)
+	#binContents = binContents/sumBinContents
+	#binError = binError/sumBinContents		####################### CHECK THE STUPID ERRORS!!!!
 
 	#print 'QCD bins :', binContents
 	#print 'QCD bins error :', binError
@@ -199,7 +199,7 @@ def FitterCombination( inFileData, inFileBkg, inFileSignal, hist, scale, bkgFunc
 
 	if runData:
 		print "|----> Fitting Data"
-		DataParameters = rootFitter( inFileData, hist+('JetHT_Run2016' if args.miniTree else ''), scale, P4, bkgParameters, minX, maxX, rebinX, False )
+		DataParameters = rootFitter( inFileData, hist+('JetHT_Run2016' if args.miniTree else ''), 1, P4, bkgParameters, minX, maxX, rebinX, False )
 		dataParameters = DataParameters[0]
 		dataAcceptance = DataParameters[1]
 		points = DataParameters[2]
@@ -739,7 +739,8 @@ if __name__ == '__main__':
 	if args.miniTree: 
 		filePrefix = 'Rootfiles/RUNMiniResolvedAnalysis'
 		hist = 'massAve_delta_'
-		scale = 1
+		#scale = 1
+		scale = args.lumi * 0.75 
 		rebinX = 20
 	else: 
 		filePrefix = 'Rootfiles/RUNAnalysis' 

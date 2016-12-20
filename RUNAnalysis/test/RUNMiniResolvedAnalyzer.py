@@ -14,6 +14,7 @@ from multiprocessing import Process
 from ROOT import *
 from array import array
 import numpy as np
+from random import randint
 try: 
 	import RUNA.RUNAnalysis.tdrstyle as tdrstyle
 	from RUNA.RUNAnalysis.commonFunctions import *
@@ -169,132 +170,238 @@ def myAnalyzer( dictSamples, presel, cuts, signalName, UNC ):
 		allHistos[ "deltaEta_n-1_"+sam ] = TH1F( "deltaEta_n-1_"+sam, "deltaEta_n-1_"+sam, 50, 0., 5 )
 		allHistos[ 'deltavsMassAve_n-1_'+sam ] = TH2F( 'deltavsMassAve_n-1_'+sam, 'deltavsMassAve_n-1_'+sam, 1000, 0., 1000, 1000, 0., 1000. )
 
+		allHistos[ "massAve_delta_1qgl_"+sam ] = TH1F( "massAve_delta_1qgl_"+sam, "massAve_delta_1qgl_"+sam, 1000, 0., 1000 )
+		allHistos[ "massAve_delta_2qgl_"+sam ] = TH1F( "massAve_delta_2qgl_"+sam, "massAve_delta_2qgl_"+sam, 1000, 0., 1000 )
+		allHistos[ "jet1QGL_delta_"+sam ] = TH1F( "jet1QGL_delta_"+sam, "jet1QGL_delta_"+sam, 20, 0., 1 )
+		allHistos[ "jet2QGL_delta_"+sam ] = TH1F( "jet2QGL_delta_"+sam, "jet2QGL_delta_"+sam, 20, 0., 1 )
+		allHistos[ "jet3QGL_delta_"+sam ] = TH1F( "jet3QGL_delta_"+sam, "jet3QGL_delta_"+sam, 20, 0., 1 )
+		allHistos[ "jet4QGL_delta_"+sam ] = TH1F( "jet4QGL_delta_"+sam, "jet4QGL_delta_"+sam, 20, 0., 1 )
+
+		allHistos[ "massAve_delta_4qgl_"+sam ] = TH1F( "massAve_delta_4qgl_"+sam, "massAve_delta_4qgl_"+sam, 1000, 0., 1000 )
+
+		allHistos[ "massAve_delta_1btag_"+sam ] = TH1F( "massAve_delta_1btag_"+sam, "massAve_delta_1btag_"+sam, 1000, 0., 1000 )
+		allHistos[ "massAve_delta_2btag_"+sam ] = TH1F( "massAve_delta_2btag_"+sam, "massAve_delta_2btag_"+sam, 1000, 0., 1000 )
+		allHistos[ "jet1Btag_delta_"+sam ] = TH1F( "jet1Btag_delta_"+sam, "jet1Btag_delta_"+sam, 20, 0., 1 )
+		allHistos[ "jet2Btag_delta_"+sam ] = TH1F( "jet2Btag_delta_"+sam, "jet2Btag_delta_"+sam, 20, 0., 1 )
+		allHistos[ "jet3Btag_delta_"+sam ] = TH1F( "jet3Btag_delta_"+sam, "jet3Btag_delta_"+sam, 20, 0., 1 )
+		allHistos[ "jet4Btag_delta_"+sam ] = TH1F( "jet4Btag_delta_"+sam, "jet4Btag_delta_"+sam, 20, 0., 1 )
 
 	for h in allHistos: allHistos[h].Sumw2()
 
 	################################################################################################## Running the Analysis
-	SF = 'lumiWeight * puWeight * '+str(args.lumi)
-	fullSel = presel + ' * '+cuts
+	SF = TCut('lumiWeight * puWeight') # * '+str(args.lumi))
+	presel = TCut( presel ) + SF
+	fullSel = presel + TCut( cuts )
 	print '-'*40
 	print '---- Cuts applied: ', fullSel
 
 	#treeName = 'ResolvedAnalysisPlotsScouting/RUNATree'
 	treeName = 'ResolvedAnalysisPlots/RUNATree'
 
+	if 'JetHT' in args.samples: 
+		for era in [ 'B', 'C', 'D', 'E', 'F', 'G', 'H' ]:
+			dictSamples[ 'JetHT_Run2016'+era ] = dictSamples[ 'JetHT_Run2016' ].replace('2016', '2016'+era)
+		dictSamples.pop( 'JetHT_Run2016' )
+		fullSel = fullSel + TCut('Entry$ % '+str(randint(0,10))+' == 0')
+
 	for sample in dictSamples:
+
+		fileSample = dictSamples[ sample ]
+		print '--- Sample ', sample
+		if 'JetHT' in sample: sample = 'JetHT_Run2016'
+
 		### All selection
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'avgMass', 
-				fullSel, 
+				fullSel,
 				allHistos[ 'massAve_delta_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) ) 
 
 		#### preselection plots
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'HT', 
-				fullSel, 
+				presel,
 				allHistos[ 'HT_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
-		get2DHistoFromTree( dictSamples[ sample ], treeName,
+				( True if 'JetHT' in sample else False ) )
+		get2DHistoFromTree( fileSample, treeName,
 				'avgMass', 'delta1',
 				presel,
 				allHistos[ 'deltavsMassAve_cutBestPair_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
-		get2DHistoFromTree( dictSamples[ sample ], treeName,
+				( True if 'JetHT' in sample else False ) )
+		get2DHistoFromTree( fileSample, treeName,
 				'avgMass', 'delta2',
 				presel,
 				allHistos[ 'deltavsMassAve_cutBestPair_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) )
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'massAsym',
 				presel,
 				allHistos[ 'massAsym_cutBestPair_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) )
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'deltaEta',
 				presel,
 				allHistos[ 'deltaEta_cutBestPair_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) )
 
 		##### checking diff deltas
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'avgMass',
-				fullSel.replace('(delta1>200) * (delta2>200)', '(delta1>50) * (delta2>50)'),
+				TCut( presel ) + TCut( cuts.replace('(delta1>200) && (delta2>200)', '(delta1>50) && (delta2>50)') ),
 				allHistos[ 'massAve_delta50_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) )
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'avgMass',
-				#fullSel,
-				fullSel.replace('(delta1>200) * (delta2>200)', '(delta1>100) * (delta2>100)'),
-				allHistos[ 'massAve_delta200_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				TCut( presel ) + TCut( cuts.replace('(delta1>200) && (delta2>200)', '(delta1>100) && (delta2>100)') ),
+				allHistos[ 'massAve_delta100_'+sample ], 
+				( True if 'JetHT' in sample else False ) )
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'avgMass',
-				fullSel.replace('(delta1>200) * (delta2>200)', '(delta1>150) * (delta2>150)'),
+				TCut( presel ) + TCut( cuts.replace('(delta1>200) && (delta2>200)', '(delta1>150) && (delta2>150)') ),
 				allHistos[ 'massAve_delta150_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) )
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'avgMass',
 				fullSel,
-				#fullSel.replace('(delta1>200) * (delta2>200)', '(delta1>200) * (delta2>200)'),
 				allHistos[ 'massAve_delta200_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) )
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'avgMass',
-				fullSel.replace('(delta1>200) * (delta2>200)', '(delta1>250) * (delta2>250)'),
+				TCut( presel ) + TCut( cuts.replace('(delta1>200) && (delta2>200)', '(delta1>250) && (delta2>250)') ),
 				allHistos[ 'massAve_delta250_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) )
 
 
 
 		#### n-1 plots
-		get2DHistoFromTree( dictSamples[ sample ], treeName,
+		get2DHistoFromTree( fileSample, treeName,
 				'avgMass', 'delta1', 
-				fullSel.replace('* (delta1>200)','').replace('* (delta2>200)',''), 
-				#fullSel.replace('* (delta1>100)','').replace('* (delta2>100)',''), 
+				TCut( presel ) + TCut( cuts.replace('&& (delta1>200)','').replace('&& (delta2>200)','') ), 
+				#TCut( presel ) + TCut( cuts.replace('&& (delta1>100)','').replace('&& (delta2>100)',''), 
 				allHistos[ 'deltavsMassAve_n-1_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
-		get2DHistoFromTree( dictSamples[ sample ], treeName,
+				( True if 'JetHT' in sample else False ) )
+		get2DHistoFromTree( fileSample, treeName,
 				'avgMass', 'delta2', 
-				#fullSel.replace('* (delta1>100)','').replace('* (delta2>100)',''), 
-				fullSel.replace('* (delta1>200)','').replace('* (delta2>200)',''), 
+				#TCut( presel ) + TCut( cuts.replace('&& (delta1>100)','').replace('&& (delta2>100)',''), 
+				TCut( presel ) + TCut( cuts.replace('&& (delta1>200)','').replace('&& (delta2>200)','') ), 
 				allHistos[ 'deltavsMassAve_n-1_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) )
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'massAsym',
-				#fullSel.replace('* (massAsym<0.2)',''), 
-				fullSel.replace('* (massAsym<0.1)',''), 
+				#TCut( presel ) + TCut( cuts.replace('&& (massAsym<0.2)',''), 
+				TCut( presel ) + TCut( cuts.replace('&& (massAsym<0.1)','') ), 
 				allHistos[ 'massAsym_n-1_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) )
 
-		getHistoFromTree( dictSamples[ sample ], treeName,
+		getHistoFromTree( fileSample, treeName,
 				'deltaEta',
-				#fullSel.replace('* (deltaEta<1.2)',''), 
-				fullSel.replace('* (deltaEta<1.5)',''), 
+				#TCut( presel ) + TCut( cuts.replace('&& (deltaEta<1.2)',''), 
+				TCut( presel ) + TCut( cuts.replace('&& (deltaEta<1.)','') ), 
 				allHistos[ 'deltaEta_n-1_'+sample ], 
-				SF, 
-				( True if 'JetHT' in sample else False ), ( 551966 if 'JetHT' in sample else 0 ) ) 
+				( True if 'JetHT' in sample else False ) )
+
+		### Test QGL
+
+		oneQGL = TCut('( (jetsQGL[0]>0.5) || (jetsQGL[1]>0.5) || (jetsQGL[2]>0.5) || (jetsQGL[3]>0.5) )')
+		getHistoFromTree( fileSample, treeName,
+				'avgMass', 
+				fullSel+oneQGL, 
+				allHistos[ 'massAve_delta_1qgl_'+sample ], 
+				( True if 'JetHT' in sample else False ) )
+
+		twoQGL = TCut('( (jetsQGL[0]>0.5) || (jetsQGL[1]>0.5)) && ((jetsQGL[2]>0.5) || (jetsQGL[3]>0.5) )')
+		getHistoFromTree( fileSample, treeName,
+				'avgMass', 
+				fullSel+twoQGL, 
+				allHistos[ 'massAve_delta_2qgl_'+sample ], 
+				( True if 'JetHT' in sample else False ) )
+
+		fourQGL = TCut('(jetsQGL[0]>0.5) && (jetsQGL[1]>0.5) && (jetsQGL[2]>0.5) && (jetsQGL[3]>0.5)')
+		getHistoFromTree( fileSample, treeName,
+				'avgMass', 
+				fullSel+twoQGL, 
+				allHistos[ 'massAve_delta_4qgl_'+sample ], 
+				( True if 'JetHT' in sample else False ) )
+
+		getHistoFromTree( fileSample, treeName,
+				'jetsQGL[0]', 
+				fullSel,
+				allHistos[ 'jet1QGL_delta_'+sample ], 
+				( True if 'JetHT' in sample else False ) )
+
+		getHistoFromTree( fileSample, treeName,
+				'jetsQGL[1]', 
+				fullSel,
+				allHistos[ 'jet2QGL_delta_'+sample ], 
+				( True if 'JetHT' in sample else False ) )
+
+		getHistoFromTree( fileSample, treeName,
+				'jetsQGL[2]', 
+				fullSel,
+				allHistos[ 'jet3QGL_delta_'+sample ], 
+				( True if 'JetHT' in sample else False ) )
+
+		getHistoFromTree( fileSample, treeName,
+				'jetsQGL[3]', 
+				fullSel,
+				allHistos[ 'jet4QGL_delta_'+sample ], 
+				( True if 'JetHT' in sample else False ) )
+
+		### Test Btag
+		'''
+		oneBtag = TCut('( (jetsBtag[0]>0.5) || (jetsBtag[1]>0.5) || (jetsBtag[2]>0.5) || (jetsBtag[3]>0.5) )')
+		getHistoFromTree( fileSample, treeName,
+				'avgMass', 
+				fullSel+oneBtag, 
+				allHistos[ 'massAve_delta_1qgl_'+sample ], 
+				( True if 'JetHT' in sample else False ) )
+
+		twoBtag = TCut('( (jetsBtag[0]>0.5) || (jetsBtag[1]>0.5)) && ((jetsBtag[2]>0.5) || (jetsBtag[3]>0.5) )')
+		getHistoFromTree( fileSample, treeName,
+				'avgMass', 
+				fullSel+twoBtag, 
+				allHistos[ 'massAve_delta_2qgl_'+sample ], 
+				( True if 'JetHT' in sample else False ) )
+
+		fourBtag = TCut('(jetsBtag[0]>0.5) && (jetsBtag[1]>0.5) && (jetsBtag[2]>0.5) && (jetsBtag[3]>0.5)')
+		getHistoFromTree( fileSample, treeName,
+				'avgMass', 
+				fullSel+twoBtag, 
+				allHistos[ 'massAve_delta_4qgl_'+sample ], 
+				( True if 'JetHT' in sample else False ) )
+
+		getHistoFromTree( fileSample, treeName,
+				'jetsBtag[0]', 
+				fullSel,
+				allHistos[ 'jet1Btag_delta_'+sample ], 
+				( True if 'JetHT' in sample else False ) )
+
+		getHistoFromTree( fileSample, treeName,
+				'jetsBtag[1]', 
+				fullSel,
+				allHistos[ 'jet2Btag_delta_'+sample ], 
+				( True if 'JetHT' in sample else False ) )
+
+		getHistoFromTree( fileSample, treeName,
+				'jetsBtag[2]', 
+				fullSel,
+				allHistos[ 'jet3Btag_delta_'+sample ], 
+				( True if 'JetHT' in sample else False ) )
+
+		getHistoFromTree( fileSample, treeName,
+				'jetsBtag[3]', 
+				fullSel,
+				allHistos[ 'jet4Btag_delta_'+sample ], 
+				( True if 'JetHT' in sample else False ) )
+		'''
+
 
 
 	outputFile.Write()
@@ -318,7 +425,7 @@ if __name__ == '__main__':
 	parser.add_argument( '-u', '--unc', action='store',  dest='unc', default='', help='Process: all or single.' )
 	parser.add_argument( '-b', '--batchSys', action='store_true',  dest='batchSys', default=False, help='Process: all or single.' )
 	parser.add_argument( '-v', '--version', action='store', default='v00p3', dest='version', help='Version of the RUNAnalysis file.' )
-	parser.add_argument( '-l', '--lumi', action='store', type=float, default=1787, help='Luminosity, example: 1.' )
+	#parser.add_argument( '-l', '--lumi', action='store', type=float, default=1, help='Luminosity, example: 1.' )
 	parser.add_argument( '-q', '--qcd', action='store', default='Pt', dest='qcd', help='Type of QCD binning, example: HT.' )
 
 	try:
@@ -349,8 +456,8 @@ if __name__ == '__main__':
 		dictSamples = allSamples
 		signalSample = 'RPVStopStopToJets_'+args.decay+'_M-'+args.mass+'_All'
 
-	preselection = '(jetsPt[0]>80) * (jetsPt[1]>80) *(jetsPt[2]>80) *(jetsPt[3]>80) * (HT>850)' 
-	cuts = '(delta1>200) * (delta2>200) * (massAsym<0.2) * (deltaEta<1.2)'
+	preselection = '(jetsPt[0]>80) && (jetsPt[1]>80) && (jetsPt[2]>80) && (jetsPt[3]>80) && (HT>850)' 
+	cuts = '(delta1>200) && (delta2>200) && (massAsym<0.1) && (deltaEta<1.)'
 	#preselection = '(jetsPt[0]>50) * (jetsPt[1]>50) *(jetsPt[2]>50) *(jetsPt[3]>50) * (HT>500)' 
 	#cuts = '(delta1>200) * (delta2>200) * (massAsym<0.1) * (deltaEta<1.5)'
 

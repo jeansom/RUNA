@@ -5,7 +5,7 @@ config.General.requestName = 'NAME'
 config.General.workArea = 'crab_projects'
 
 config.JobType.pluginName = 'Analysis'
-config.JobType.psetName = 'test.py'
+config.JobType.psetName = 'test'
 
 config.Data.inputDataset = 'None'
 config.Data.inputDBS = 'phys03'
@@ -19,6 +19,3 @@ config.Data.ignoreLocality = True
 
 config.Site.storageSite = 'T3_US_FNALLPC'
 
-##### Only for hexfarm.. it still does not work
-#config.Data.outLFN = '/store/user/algomez/data23/'	### only for hexfarm
-#config.Site.storageSite = 'T3_US_Rutgers'
