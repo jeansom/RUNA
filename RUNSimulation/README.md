@@ -18,17 +18,6 @@ We are going to split the entire generation in 4 pieces.
 
 ## To run the code
 
-1. Step0 you need to be run in CMSSW_7_1_25_patch1, therefore:
-```
-cmsrel CMSSW_7_1_25_patch1
-cd CMSSW_7_1_25_patch1/src/
-cmsenv
-git clone git@github.com:RutgersHEX/RUNA.git -b v7125patch1
-scram b -j 18
-cmsenv
-cd RUNA/RUNSimulation/test/
-```
-
 Go to RUNA/RUNSimulation/test/
 There you have a file called createJobs_CRAB.sh. You only need to modify the first part, PARAMETERS.
 To run: 
