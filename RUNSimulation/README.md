@@ -18,6 +18,8 @@ We are going to split the entire generation in 4 pieces.
 
 ## To run the code
 
+*IMPORTANT* Steps 1-3 in this branch has to be submitted in CMSSW_8_0_21.
+
 Go to RUNA/RUNSimulation/test/
 There you have a file called createJobs_CRAB.sh. You only need to modify the first part, PARAMETERS.
 To run: 
