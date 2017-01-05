@@ -45,6 +45,7 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-s', '--sample', action='store', default='all', dest='sample', help='Sample to process. Example: QCD, RPV, TTJets.' )
 	parser.add_argument('-v', '--version', action='store', default='v01p0', dest='version', help='Version: v01, v02.' )
+	parser.add_argument('-b', '--btagCSVFile', action='store', default='CSVv2_ichep.csv', dest='btagCSVFile', help='BtagCSVFile: CSVv2_ichep.csv.' )
 
 	try: args = parser.parse_args()
 	except:
@@ -128,19 +129,19 @@ if __name__ == '__main__':
 	for sam in processingSamples:
 		dataset = processingSamples[sam][0]
 		jecVersion = processingSamples[sam][2]
-		supportFiles = glob.glob('supportFiles/'+jecVersion+'*txt')
+		supportFiles = glob.glob('supportFiles/'+jecVersion+'*txt') + glob.glob('supportFiles/'+args.btagCSVFile )
 		config.Data.inputDataset = dataset
 		config.Data.unitsPerJob = processingSamples[sam][1]
 		if 'JetHT' in dataset: 
 			procName = dataset.split('/')[1]+dataset.split('/')[2].split('-')[1]+'_'+args.version
 			config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt'
-			config.JobType.pyCfgParams = [ 'PROC='+procName, 'jecVersion='+jecVersion ]
+			config.JobType.pyCfgParams = [ 'PROC='+procName, 'jecVersion='+jecVersion, 'CSVFile='+args.btagCSVFile ]
 
 		else:
 			pileUpFile = 'PileupData2016BCDEFGH_271036-283685_69200.root'
 			supportFiles = supportFiles+glob.glob('supportFiles/'+pileUpFile)
 			procName = dataset.split('/')[1].split('_TuneCUETP8M1')[0]+args.version
-			config.JobType.pyCfgParams = ( [ 'PROC='+procName, 'systematics='+('0' if 'RPV' in sam else '0'), 'jecVersion='+jecVersion, 'namePUFile='+pileUpFile ] )
+			config.JobType.pyCfgParams = ( [ 'PROC='+procName, 'systematics='+('0' if 'RPV' in sam else '0'), 'jecVersion='+jecVersion, 'namePUFile='+pileUpFile, 'CSVFile='+args.btagCSVFile ] )
 
 		config.JobType.inputFiles =  supportFiles
 		config.General.requestName = procName

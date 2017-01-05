@@ -632,23 +632,23 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 				cosThetaStar2 = cosThetaStar( j3.p4, j4.p4 );
 				btagCSVv2Pair12 = ( (j1.btagCSVv2 > 0.8484) || (j2.btagCSVv2 > 0.8484) );
 				btagCSVv2Pair34 = ( (j3.btagCSVv2 > 0.8484) || (j4.btagCSVv2 > 0.8484) );
-				qglPair12 = ( (j1.qgl > 0.5) || (j2.qgl > 0.5) );
-				qglPair34 = ( (j3.qgl > 0.5) || (j4.qgl > 0.5) );
 
 				/// btag scale factors
-				string sysType;
-				if ( systematics.Contains("BtagUp") ) sysType = "up";
-				else if ( systematics.Contains("BtagDown") ) sysType = "down";
-				else sysType = "central";
-
 				double j1btagSF = 1, j2btagSF = 1, j3btagSF = 1, j4btagSF = 1;
-				if (j1.btagCSVv2 > 0.8484) {
-					j1btagSF = btagSF ( btagCSVFile, j1.p4.Pt(), j1.p4.Eta(), j1.hadronFlavour, sysType );
-					//LogWarning("btag") << j1btagSF << " " << j1.hadronFlavour;
+				if ( !isData ) {
+					string sysType;
+					if ( systematics.Contains("BtagUp") ) sysType = "up";
+					else if ( systematics.Contains("BtagDown") ) sysType = "down";
+					else sysType = "central";
+
+					if (j1.btagCSVv2 > 0.8484) {
+						j1btagSF = btagSF ( btagCSVFile, j1.p4.Pt(), j1.p4.Eta(), j1.hadronFlavour, sysType );
+						//LogWarning("btag") << j1btagSF << " " << j1.hadronFlavour;
+					}
+					if (j2.btagCSVv2 > 0.8484) j2btagSF = btagSF ( btagCSVFile, j2.p4.Pt(), j2.p4.Eta(), j2.hadronFlavour, sysType );
+					if (j3.btagCSVv2 > 0.8484) j3btagSF = btagSF ( btagCSVFile, j3.p4.Pt(), j3.p4.Eta(), j3.hadronFlavour, sysType );
+					if (j4.btagCSVv2 > 0.8484) j4btagSF = btagSF ( btagCSVFile, j4.p4.Pt(), j4.p4.Eta(), j4.hadronFlavour, sysType );
 				}
-				if (j2.btagCSVv2 > 0.8484) j2btagSF = btagSF ( btagCSVFile, j2.p4.Pt(), j2.p4.Eta(), j2.hadronFlavour, sysType );
-				if (j3.btagCSVv2 > 0.8484) j3btagSF = btagSF ( btagCSVFile, j3.p4.Pt(), j3.p4.Eta(), j3.hadronFlavour, sysType );
-				if (j4.btagCSVv2 > 0.8484) j4btagSF = btagSF ( btagCSVFile, j4.p4.Pt(), j4.p4.Eta(), j4.hadronFlavour, sysType );
 				///////////////////////////////////////////
 				
 				if ( mkTree ) {
