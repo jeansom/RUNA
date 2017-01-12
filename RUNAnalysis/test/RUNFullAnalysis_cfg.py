@@ -44,6 +44,19 @@ options.register('namePUFile',
 		VarParsing.varType.string,
 		"namePUFile"
 		)
+options.register('CSVFile', 
+		'supportFiles/CSVv2_ichep.csv',
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.string,
+		"CSVFile"
+		)
+
+options.register('subjetCSVFile', 
+		'supportFiles/subjet_CSVv2_ichep.csv',
+		VarParsing.multiplicity.singleton,
+		VarParsing.varType.string,
+		"subjetCSVFile"
+		)
 
 
 
@@ -60,8 +73,9 @@ else:
 	process.source = cms.Source("PoolSource",
 		fileNames = cms.untracked.vstring(
 			#'/store/user/grauco/B2GAnaFW/B2GAnaFW_80X_V2p1/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_80X_V2p1/161018_070036/0000/B2GEDMNtuple_1.root',
-			'/store/group/phys_b2g/B2GAnaFW_80X_V2p1/JetHT/Run2016C/JetHT/Run2016C-PromptReco-v2_B2GAnaFW_80X_V2p1/161013_132254/0000/B2GEDMNtuple_10.root',
-			#'/store/group/phys_b2g/B2GAnaFW_80X_V2p1/QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/RunIISpring16MiniAODv2/QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1/161109_110436/0000/B2GEDMNtuple_1.root',
+			#'/store/user/grauco/B2GAnaFW/B2GAnaFW_80X_V2p1/TT_TuneCUETP8M1_13TeV-powheg-pythia8/B2GAnaFW_80X_V2p1/161021_085128/0000/B2GEDMNtuple_10.root',
+			#'/store/group/phys_b2g/B2GAnaFW_80X_V2p1/JetHT/Run2016C/JetHT/Run2016C-PromptReco-v2_B2GAnaFW_80X_V2p1/161013_132254/0000/B2GEDMNtuple_10.root',
+			'/store/user/jsomalwa/B2GAnaFW_80X_V2p1/RPVStopStopToJets_UDD312_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISpring16MiniAODv2/RPVStopStopToJets_UDD312_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1/161018_211211/0000/B2GEDMNtuple_1.root',
 
 	    )
 	)
@@ -86,15 +100,16 @@ else:
 ResolvedTriggers = [  'HLT_PFHT800', 'HLT_PFHT900', 'HLT_PFHT750_4Jet', 'HLT_PFHT800_4Jet50', 'HLT_PFJet450' ]
 
 process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNResolvedAnalysis',
-		cutAK4jetPt 		= cms.double( 50.0 ),	# default 80.0
-		#cutAK4HT 		= cms.double( 800.0 ),	# default 800.0
-		#cutAK4MassAsym		= cms.double( 0.2 ),	# default 0.2
+		cutAK4jetPt 		= cms.double( 80.0 ),	# default 80.0
+		cutAK4HT 		= cms.double( 850.0 ),	# default 800.0
+		cutAK4MassAsym		= cms.double( 0.1 ),	# default 0.2
 		cutDelta 		= cms.double( 200 ),	# default 180.0
 		cutDeltaEtaDijetSyst	= cms.double( 1.0 ),	# default .75
 		triggerPass 		= cms.vstring( ResolvedTriggers ),
 		scale 			= cms.double( SF ),
 		dataPUFile		= cms.string( options.namePUFile  ),
 		jecVersion		= cms.string( options.jecVersion ),
+		btagCSVFile		= cms.string( options.CSVFile  ),
 		isData			= cms.bool( isData ),
 		LHEcont			= cms.bool( True if 'QCD_Pt' in NAME else False ), ## logic is oposite
 		massPairing		= cms.bool( False ),
@@ -126,6 +141,7 @@ process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		dataPUFile		= cms.string( options.namePUFile  ),
 		jecVersion		= cms.string( options.jecVersion ),
 		isData			= cms.bool( isData ),
+		btagCSVFile		= cms.string( options.subjetCSVFile  ),
 		LHEcont			= cms.bool( True if 'QCD_Pt' in NAME else False ), ## logic is oposite
 		scale 			= cms.double( SF ),
 		mkTree			= cms.bool( True ),
@@ -167,6 +183,7 @@ process.BoostedAnalysisPlotsPuppi = process.BoostedAnalysisPlots.clone(
 		jetGenEta		= cms.InputTag('jetsAK8Puppi:jetAK8PuppiGenJetEta'),
 		jetGenPhi 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppiGenJetPhi'),
 		jetGenE 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppiGenJetE'),
+		jetHadronFlavour 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppiHadronFlavour'),
 		jecFactor 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppijecFactor0'),
 		neutralHadronEnergyFrac		= cms.InputTag('jetsAK8Puppi:jetAK8PuppineutralHadronEnergyFrac'),
 		neutralEmEnergyFrac 		= cms.InputTag('jetsAK8Puppi:jetAK8PuppineutralEmEnergyFrac'),
@@ -238,5 +255,5 @@ else:
 		process.p += process.ResolvedAnalysisPlotsJERUp
 		process.p += process.ResolvedAnalysisPlotsJERDown
 
-process.TFileService=cms.Service("TFileService",fileName=cms.string( 'RUN'+outputNAME+NAME+'.root' ) )
+process.TFileService=cms.Service("TFileService",fileName=cms.string( ( 'Rootfiles/' if options.local else '' )+'RUN'+outputNAME+NAME+'.root' ) )
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000

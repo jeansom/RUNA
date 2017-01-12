@@ -105,8 +105,10 @@ class RUNResolvedAnalysis : public EDAnalyzer {
 		vector<float> *jetsCSVv2 = new std::vector<float>();
 		vector<float> *jetsCSVv2SF = new std::vector<float>();
 		vector<float> *jetsCMVAv2 = new std::vector<float>();
+		vector<float> *muonsPt = new std::vector<float>();
+		vector<float> *elesPt  = new std::vector<float>();
 		ULong64_t event = 0;
-		int numJets = 0, numPV = 0;
+		int numJets = 0, numPV = 0, numEle = 0, numMuon = 0;
 		unsigned int lumi = 0, run=0;
 		float HT = 0, mass1 = -999, mass2 = -999, massAve = -999, MET = -999,
 		      jet1Pt = -9999, jet2Pt = -9999, jet3Pt = -9999, jet4Pt = -9999,
@@ -116,6 +118,7 @@ class RUNResolvedAnalysis : public EDAnalyzer {
 		bool btagCSVv2Pair12 = 0, btagCSVv2Pair34 = 0;
 		vector<float> scaleWeights, pdfWeights, alphaWeights;
 
+		/// Jets
 		EDGetTokenT<vector<float>> jetPt_;
 		EDGetTokenT<vector<float>> jetEta_;
 		EDGetTokenT<vector<float>> jetPhi_;
@@ -129,6 +132,8 @@ class RUNResolvedAnalysis : public EDAnalyzer {
 		EDGetTokenT<vector<float>> jetGenPhi_;
 		EDGetTokenT<vector<float>> jetGenE_;
 		EDGetTokenT<vector<float>> jetHadronFlavour_;
+
+		/// Event variables
 		EDGetTokenT<int> NPV_;
 		EDGetTokenT<vector<float>> metPt_;
 		EDGetTokenT<int> trueNInt_;
@@ -156,6 +161,16 @@ class RUNResolvedAnalysis : public EDAnalyzer {
 		EDGetTokenT<vector<float>> chargedMultiplicity_;
 		EDGetTokenT<vector<float>> muonEnergy_; 
 
+		/// Muons
+		EDGetTokenT<vector<float>> muonPt_;
+		EDGetTokenT<vector<float>> muonEta_;
+		EDGetTokenT<vector<float>> muonIsLoose_;
+		EDGetTokenT<vector<float>> muonIsGlobal_;
+
+		/// Electrons
+		EDGetTokenT<vector<float>> elePt_;
+		EDGetTokenT<vector<float>> eleEta_;
+		EDGetTokenT<vector<float>> eleLoose_;
 
 };
 
@@ -203,7 +218,16 @@ RUNResolvedAnalysis::RUNResolvedAnalysis(const ParameterSet& iConfig):
 	chargedEmEnergyFrac_(consumes<vector<float>>(iConfig.getParameter<InputTag>("chargedEmEnergyFrac"))),
 	neutralMultiplicity_(consumes<vector<float>>(iConfig.getParameter<InputTag>("neutralMultiplicity"))),
 	chargedMultiplicity_(consumes<vector<float>>(iConfig.getParameter<InputTag>("chargedMultiplicity"))),
-	muonEnergy_(consumes<vector<float>>(iConfig.getParameter<InputTag>("muonEnergy")))
+	muonEnergy_(consumes<vector<float>>(iConfig.getParameter<InputTag>("muonEnergy"))), 
+	// Muons
+	muonPt_(consumes<vector<float>>(iConfig.getParameter<InputTag>("muonPt"))), 
+	muonEta_(consumes<vector<float>>(iConfig.getParameter<InputTag>("muonEta"))), 
+	muonIsLoose_(consumes<vector<float>>(iConfig.getParameter<InputTag>("muonIsLoose"))), 
+	muonIsGlobal_(consumes<vector<float>>(iConfig.getParameter<InputTag>("muonIsGlobal"))),
+	//Electrons
+	elePt_(consumes<vector<float>>(iConfig.getParameter<InputTag>("elePt"))), 
+	eleEta_(consumes<vector<float>>(iConfig.getParameter<InputTag>("eleEta"))), 
+	eleLoose_(consumes<vector<float>>(iConfig.getParameter<InputTag>("eleLoose"))) 
 {
 	consumes<LHERunInfoProduct,edm::InRun> (edm::InputTag("externalLHEProducer"));
 	scale 		= iConfig.getParameter<double>("scale");
@@ -363,6 +387,54 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 	Handle<vector<float> > muonEnergy;
 	iEvent.getByToken(muonEnergy_, muonEnergy);
 
+	/// Muons 
+	Handle<vector<float> > muonPt;
+	iEvent.getByToken(muonPt_, muonPt);
+
+	Handle<vector<float> > muonEta;
+	iEvent.getByToken(muonEta_, muonEta);
+
+	Handle<vector<float> > muonIsLoose;
+	iEvent.getByToken(muonIsLoose_, muonIsLoose);
+
+	Handle<vector<float> > muonIsGlobal;
+	iEvent.getByToken(muonIsGlobal_, muonIsGlobal);
+
+	/// Electrons
+	Handle<vector<float> > elePt;
+	iEvent.getByToken(elePt_, elePt);
+
+	Handle<vector<float> > eleEta;
+	iEvent.getByToken(eleEta_, eleEta);
+
+	Handle<vector<float> > eleLoose;
+	iEvent.getByToken(eleLoose_, eleLoose);
+
+	////// Muon veto
+	if ( muonPt->size() > 0 ) {
+		for (size_t m = 0; m < muonPt->size(); m++) {
+			if( ( (*muonIsLoose)[m] ) && ( (*muonPt)[m] > 10 ) && ( TMath::Abs((*muonEta)[m]) < 2.5 ) ) {
+				//LogWarning("muon") << (*muonPt)[m] << " " << (*muonEta)[m] << " " << (*muonIsLoose)[m] << " " << (*muonIsGlobal)[m] ;
+				muonsPt->push_back( (*muonPt)[m] );
+				numMuon++;
+			}
+		}
+	}
+	///////////////////////////////////////////////////*/
+	
+	////// Electron veto
+	if ( elePt->size() > 0 ) {
+		for (size_t m = 0; m < elePt->size(); m++) {
+			if( ( (*eleLoose)[m] ) && ( (*elePt)[m] > 10 ) && ( TMath::Abs((*eleEta)[m]) < 2.5 ) ){
+				//LogWarning("ele") << (*elePt)[m] << " " << (*eleEta)[m] << " " << (*eleLoose)[m] ;
+				elesPt->push_back( (*elePt)[m] );
+				numEle++;
+			}
+		}
+	}
+	///////////////////////////////////////////////////*/
+
+	///// LHE content
 	if ( !isData && !LHEcont ) {
 
 		// all this section is based on https://github.com/jkarancs/B2GTTrees/blob/master/plugins/B2GEdmExtraVarProducer.cc#L215-L281
@@ -387,6 +459,8 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 		pdfWeight = sqrt(sq_sum / pdfWeights.size());
 		////////////////////////////////////////////////////
 	}
+	///////////////////////////////////////////////////*/
+
 
 	////////// Check trigger fired
 	bool ORTriggers = false;
@@ -491,7 +565,9 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 	}
 	///////////////////////////////////////////////////*/
 
-	//sort(JETS.begin(), JETS.end(), [](const JETtype &p1, const JETtype &p2) { TLorentzVector tmpP1, tmpP2; tmpP1 = p1; tmpP2 = p2;  return tmpP1.M() > tmpP2.M(); }); 
+	
+	sort(JETS.begin(), JETS.end(), [](const myJet &p1, const myJet &p2) { return p1.p4.Pt() > p2.p4.Pt(); });  /// after corrections jets are not 100% sorted in Pt
+
 	numJets = numberJets;
 	histos1D_[ "jetNum" ]->Fill( numJets, totalWeight );
 	histos1D_[ "NPV" ]->Fill( numPV, totalWeight );
@@ -640,14 +716,15 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 					if ( systematics.Contains("BtagUp") ) sysType = "up";
 					else if ( systematics.Contains("BtagDown") ) sysType = "down";
 					else sysType = "central";
+					string measurementType = "comb";
 
 					if (j1.btagCSVv2 > 0.8484) {
-						j1btagSF = btagSF ( btagCSVFile, j1.p4.Pt(), j1.p4.Eta(), j1.hadronFlavour, sysType );
+						j1btagSF = btagSF ( btagCSVFile, j1.p4.Pt(), j1.p4.Eta(), j1.hadronFlavour, sysType, measurementType );
 						//LogWarning("btag") << j1btagSF << " " << j1.hadronFlavour;
 					}
-					if (j2.btagCSVv2 > 0.8484) j2btagSF = btagSF ( btagCSVFile, j2.p4.Pt(), j2.p4.Eta(), j2.hadronFlavour, sysType );
-					if (j3.btagCSVv2 > 0.8484) j3btagSF = btagSF ( btagCSVFile, j3.p4.Pt(), j3.p4.Eta(), j3.hadronFlavour, sysType );
-					if (j4.btagCSVv2 > 0.8484) j4btagSF = btagSF ( btagCSVFile, j4.p4.Pt(), j4.p4.Eta(), j4.hadronFlavour, sysType );
+					if (j2.btagCSVv2 > 0.8484) j2btagSF = btagSF ( btagCSVFile, j2.p4.Pt(), j2.p4.Eta(), j2.hadronFlavour, sysType, measurementType );
+					if (j3.btagCSVv2 > 0.8484) j3btagSF = btagSF ( btagCSVFile, j3.p4.Pt(), j3.p4.Eta(), j3.hadronFlavour, sysType, measurementType );
+					if (j4.btagCSVv2 > 0.8484) j4btagSF = btagSF ( btagCSVFile, j4.p4.Pt(), j4.p4.Eta(), j4.hadronFlavour, sysType, measurementType );
 				}
 				///////////////////////////////////////////
 				
@@ -919,6 +996,10 @@ void RUNResolvedAnalysis::beginJob() {
 		RUNAtree->Branch( "jet2Pt", &jet2Pt, "jet2Pt/F" );
 		RUNAtree->Branch( "jet3Pt", &jet3Pt, "jet3Pt/F" );
 		RUNAtree->Branch( "jet4Pt", &jet4Pt, "jet4Pt/F" );
+		RUNAtree->Branch( "muonsPt", "vector<float>", &muonsPt);
+		RUNAtree->Branch( "numMuon", &numMuon, "numMuon/I" );
+		RUNAtree->Branch( "elesPt", "vector<float>", &elesPt);
+		RUNAtree->Branch( "numEle", &numEle, "numEle/I" );
 		//RUNAtree->Branch( "scaleWeights", &scaleWeights );
 		//RUNAtree->Branch( "pdfWeights", &pdfWeights );
 		//RUNAtree->Branch( "alphaWeights", &alphaWeights );
@@ -1232,6 +1313,15 @@ void RUNResolvedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & desc
 	desc.add<InputTag>("triggerPrescale",		InputTag("TriggerUserData:triggerPrescaleTree"));
 	desc.add<InputTag>("triggerBit",		InputTag("TriggerUserData:triggerBitTree"));
 	desc.add<InputTag>("triggerName",		InputTag("TriggerUserData:triggerNameTree"));
+	// Muons
+	desc.add<InputTag>("muonPt", 		InputTag("muons:muPt"));
+	desc.add<InputTag>("muonEta", 		InputTag("muons:muEta"));
+	desc.add<InputTag>("muonIsLoose", 		InputTag("muons:muIsLooseMuon"));
+	desc.add<InputTag>("muonIsGlobal", 		InputTag("muons:muIsGlobalMuon"));
+	// Electrons
+	desc.add<InputTag>("elePt", 		InputTag("electrons:elPt"));
+	desc.add<InputTag>("eleEta", 		InputTag("electrons:elEta"));
+	desc.add<InputTag>("eleLoose", 		InputTag("electrons:elvidLoose"));
 	descriptions.addDefault(desc);
 }
       

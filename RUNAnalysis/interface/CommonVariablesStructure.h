@@ -294,7 +294,7 @@ inline void getWeights( Handle<LHEEventProduct> lheEvtInfo, int lha_pdf_id_, vec
 }
 
 //// Btagging scale factors
-inline double btagSF( string csvFile, double jetPt, double jetEta, double flavour, string sysType ){
+inline double btagSF( string csvFile, double jetPt, double jetEta, double flavour, string sysType, string measurementType ){
 
 	double jetSF = 1;
         BTagCalibration calib("csv", csvFile );
@@ -303,11 +303,11 @@ inline double btagSF( string csvFile, double jetPt, double jetEta, double flavou
 			{"up", "down"});			// other sys types
 
 	if ( TMath::Abs( flavour ) == 5 ) { 
-		reader.load( calib, BTagEntry::FLAV_B, "comb");
+		reader.load( calib, BTagEntry::FLAV_B, measurementType);
 		jetSF = reader.eval_auto_bounds( sysType, BTagEntry::FLAV_B, jetEta, jetPt );  
 
 	} else if ( TMath::Abs( flavour ) == 4 ) { 
-		reader.load( calib, BTagEntry::FLAV_C, "comb");
+		reader.load( calib, BTagEntry::FLAV_C, measurementType);
 		jetSF = reader.eval_auto_bounds( sysType, BTagEntry::FLAV_C, jetEta, jetPt ); 
 
 	} else if ( TMath::Abs( flavour ) == 0 ) {
