@@ -44,17 +44,9 @@ NAME = options.PROC
 #process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange('275657:1-275657:5')
 process.source = cms.Source("PoolSource",
 		fileNames = cms.untracked.vstring(
-			#'file:../../RUNAnalysis/test/pickevent.root',
-			#'/store/data/Run2016C/JetHT/MINIAOD/PromptReco-v2/000/275/657/00000/0ED91D8C-913B-E611-8C29-02163E0142F6.root',
-			'/store/data/Run2016C/JetHT/MINIAOD/PromptReco-v2/000/275/657/00000/2A1EB5E4-633B-E611-B444-02163E014607.root',
-#			#'/store/data/Run2016C/JetHT/MINIAOD/PromptReco-v2/000/275/657/00000/40CF17F5-603B-E611-AC93-02163E0119FB.root',
-#			#'/store/data/Run2016C/JetHT/MINIAOD/PromptReco-v2/000/275/657/00000/DAD5ADB7-6C3B-E611-9635-02163E0135FB.root',
-#			#'/store/data/Run2016C/JetHT/MINIAOD/PromptReco-v2/000/275/657/00000/F4AF8FFB-663B-E611-BA67-02163E0137AC.root',
-#			'/store/group/phys_b2g/B2GAnaFW_80X_V2p1/JetHT/Run2016C/JetHT/Run2016C-PromptReco-v2_B2GAnaFW_80X_V2p1/161013_132254/0000/B2GEDMNtuple_1.root',
-#			'/store/group/phys_b2g/B2GAnaFW_80X_V2p1/JetHT/Run2016C/JetHT/Run2016C-PromptReco-v2_B2GAnaFW_80X_V2p1/161013_132254/0000/B2GEDMNtuple_10.root',
+			'/store/group/phys_b2g/B2GAnaFW_80X_V2p4/SingleMuon/Run2016B-23Sep2016-v1_B2GAnaFW_80X_v2p4/161221_133516/0000/B2GEDMNtuple_10.root',
+			'/store/group/phys_b2g/B2GAnaFW_80X_V2p4/SingleMuon/Run2016B-23Sep2016-v1_B2GAnaFW_80X_v2p4/161221_133516/0000/B2GEDMNtuple_11.root',
 			),
-#		#lumisToProcess = cms.untracked.VLuminosityBlockRange('275657:1-275657:max'),
-		#eventsToProcess = cms.untracked.VEventRange('275657:143390422','275657:143448798','275657:142430327','275657:143044677','275657:142507402'),
 )
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32 (options.maxEvents) )
@@ -65,6 +57,8 @@ elif 'SingleMu' in NAME: basedline =  'HLT_Mu50' #'HLT_IsoMu17_eta2p1_v'
 #elif 'SingleElectron' in NAME: basedline =  'HLT_Mu50' #'HLT_IsoMu17_eta2p1_v'
 else: basedline = 'HLT_PFHT475'
 
+####### Adding Corrections
+process.load('JetMETCorrections.Configuration.JetCorrectors_cff')
 
 ####################
 #### Resolved 
@@ -232,6 +226,7 @@ process.DijetTriggerEfficiencyPFJet450 = process.DijetTriggerEfficiency.clone(
 process.DijetTriggerEfficiencySeveralTriggers = process.DijetTriggerEfficiency.clone( 
 		triggerPass = cms.vstring( [ 'HLT_PFHT800', 'HLT_PFHT900', 
 			'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFHT750_TrimMass50',
+			'HLT_PFHT650_WideJetMJJ900DEtaJJ1p5', 'HLT_PFHT650_WideJetMJJ950DEtaJJ1p5',
 			'HLT_AK8PFJet360_TrimMass30', 'HLT_PFJet450',
 			'HLT_PFHT750_4JetPt', 'HLT_PFHT800_4Jet50',
 			'HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p20',

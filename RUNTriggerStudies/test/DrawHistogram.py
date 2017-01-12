@@ -379,13 +379,15 @@ if __name__ == '__main__':
 
 	Samples = {}
 
-	Samples[ 'SingleMuonB' ] = [ 'RUNTriggerEfficiencies_SingleMuon_Run2016B_V2p1_'+args.version+'.root', 5878.96 ] 
-	Samples[ 'SingleMuonC' ] = [ 'RUNTriggerEfficiencies_SingleMuon_Run2016C_V2p1_'+args.version+'.root', 2645.97 ] 
-	Samples[ 'SingleMuonD' ] = [ 'RUNTriggerEfficiencies_SingleMuon_Run2016D_V2p1_'+args.version+'.root', 4353.45 ] 
-	Samples[ 'SingleMuonE' ] = [ 'RUNTriggerEfficiencies_SingleMuon_Run2016E_V2p1_'+args.version+'.root', 4049.73 ] 
+	Samples[ 'SingleMuonB' ] = [ 'RUNTriggerEfficiencies_SingleMuon_Run2016B_V2p1_'+args.version+'.root', 5928.83 ] # v03  5878.96 ] # v02
+	Samples[ 'SingleMuonC' ] = [ 'RUNTriggerEfficiencies_SingleMuon_Run2016C_V2p1_'+args.version+'.root', 2632.18 ] # 2645.97 ] 
+	Samples[ 'SingleMuonD' ] = [ 'RUNTriggerEfficiencies_SingleMuon_Run2016D_V2p1_'+args.version+'.root', 4344.64 ] # 4353.45 ] 
+	Samples[ 'SingleMuonE' ] = [ 'RUNTriggerEfficiencies_SingleMuon_Run2016E_V2p1_'+args.version+'.root', 4117.09 ] # 4049.73 ] 
 	Samples[ 'SingleMuonF' ] = [ 'RUNTriggerEfficiencies_SingleMuon_Run2016F_V2p1_'+args.version+'.root', 3147.82 ] 
-	Samples[ 'SingleMuonG' ] = [ 'RUNTriggerEfficiencies_SingleMuon_Run2016G_V2p1_'+args.version+'.root', 7115.97 ] 
-	Samples[ 'SingleMuonH' ] = [ 'RUNTriggerEfficiencies_SingleMuon_Run2016H_V2p1_'+args.version+'.root', 8545.04 ] 
+	Samples[ 'SingleMuonG' ] = [ 'RUNTriggerEfficiencies_SingleMuon_Run2016G_V2p1_'+args.version+'.root', 7721.06 ] # 7115.97 ] 
+	Samples[ 'SingleMuonH' ] = [ 'RUNTriggerEfficiencies_SingleMuon_Run2016H_V2p1_'+args.version+'.root', 8629.24 ] # 8545.04 ] 
+	Samples[ 'SingleMuonH3' ] = [ 'RUNTriggerEfficiencies_SingleMuon_Run2016H3_V2p1_'+args.version+'.root', 221.44 ]  
+	Samples[ 'SingleMuonAll' ] = [ 'RUNTriggerEfficiencies_SingleMuon_Run2016All_V2p1_'+args.version+'.root', 33594.44  ]  #### 36742.26
 
 	Samples[ 'JetHTB' ] = [ 'RUNTriggerEfficiencies_JetHT_Run2016B_V2p1_'+args.version+'.root', 40.49 ] 
 	Samples[ 'JetHTC' ] = [ 'RUNTriggerEfficiencies_JetHT_Run2016C_V2p1_'+args.version+'.root', 2.13 ] 
