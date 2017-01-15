@@ -208,9 +208,11 @@ class CubicFit:
     def MakeConvFactor(self, var, center):
         X = var + "-" + str(center)
         print X
-        self.ConvFact = "({0:2.9f} + (({4})*{1:2.9f}) + (({4})*({4})*{2:2.9f}) + (({4})*({4})*({4})*{3:2.9f}))".format(self.ErrUp.GetParameter(0),self.ErrUp.GetParameter(1),self.ErrUp.GetParameter(2),self.ErrUp.GetParameter(3),X)
-        self.ConvFactUp = "( ( {0:2.9f} + (({14})*{1:2.9f}) + (({14})*({14})*{2:2.9f}) + (({14})*({14})*({14})*{3:2.9f}) ) + ( ({4:2.9f}*{4:2.9f}+((2*{8:2.9f})*({14}))) + (({5:2.9f}+2*{9:2.9f})*({14})*({14})) + ((2*{10:2.9f}+2*{11:2.9f})*({14})*({14})*({14})) + (({6:2.9f}*{6:2.9f}+2*{12:2.9f})*({14})*({14})*({14})*({14})) + ((2*{13:2.9f})*({14})*({14})*({14})*({14})*({14})) + (({7:2.9f}*{7:2.9f})*({14})*({14})*({14})*({14})*({14})*({14})) )^0.5 )".format(self.ErrUp.GetParameter(0),self.ErrUp.GetParameter(1),self.ErrUp.GetParameter(2),self.ErrUp.GetParameter(3),self.ErrUp.GetParameter(4),self.ErrUp.GetParameter(5),self.ErrUp.GetParameter(6),self.ErrUp.GetParameter(7),self.ErrUp.GetParameter(8),self.ErrUp.GetParameter(9),self.ErrUp.GetParameter(10),self.ErrUp.GetParameter(11),self.ErrUp.GetParameter(12),self.ErrUp.GetParameter(13),X)
-        self.ConvFactDn = "( ( {0:2.9f} + (({14})*{1:2.9f}) + (({14})*({14})*{2:2.9f}) + (({14})*({14})*({14})*{3:2.9f}) ) - ( ({4:2.9f}*{4:2.9f}+((2*{8:2.9f})*({14}))) + (({5:2.9f}+2*{9:2.9f})*({14})*({14})) + ((2*{10:2.9f}+2*{11:2.9f})*({14})*({14})*({14})) + (({6:2.9f}*{6:2.9f}+2*{12:2.9f})*({14})*({14})*({14})*({14})) + ((2*{13:2.9f})*({14})*({14})*({14})*({14})*({14})) + (({7:2.9f}*{7:2.9f})*({14})*({14})*({14})*({14})*({14})*({14})) )^0.5 )".format(self.ErrUp.GetParameter(0),self.ErrUp.GetParameter(1),self.ErrUp.GetParameter(2),self.ErrUp.GetParameter(3),self.ErrUp.GetParameter(4),self.ErrUp.GetParameter(5),self.ErrUp.GetParameter(6),self.ErrUp.GetParameter(7),self.ErrUp.GetParameter(8),self.ErrUp.GetParameter(9),self.ErrUp.GetParameter(10),self.ErrUp.GetParameter(11),self.ErrUp.GetParameter(12),self.ErrUp.GetParameter(13),X)
+        self.ConvFact = "({0:6.36f} + (({4})*{1:6.36f}) + (({4})*({4})*{2:6.36f}) + (({4})*({4})*({4})*{3:6.36f}))".format(self.ErrUp.GetParameter(0),self.ErrUp.GetParameter(1),self.ErrUp.GetParameter(2),self.ErrUp.GetParameter(3),X)
+        ErrTerm =  "( {0:6.36f}*{0:6.36f} + 2*{4:6.36f}*{10} + ( {1:6.36f}*{1:6.36f} + 2*{5:6.36f} )*({10})*({10}) + ( 2*{6:6.36f} + 2*{7:6.36f} )*({10})*({10})*({10}) + ( {2:6.36f}*{2:6.36f} + 2*{8:6.36f} )*({10})*({10})*({10})*({10}) + (2*{9:6.36f})*({10})*({10})*({10})*({10})*({10}) + ({3:6.36f}*{3:6.36f})*({10})*({10})*({10})*({10})*({10})*({10})  )".format( self.ErrUp.GetParameter(4),self.ErrUp.GetParameter(5),self.ErrUp.GetParameter(6),self.ErrUp.GetParameter(7),self.ErrUp.GetParameter(8),self.ErrUp.GetParameter(9),self.ErrUp.GetParameter(10),self.ErrUp.GetParameter(11),self.ErrUp.GetParameter(12),self.ErrUp.GetParameter(13),X)
+        self.ConvFactUp = "(" + self.ConvFact + " + sqrt(" + ErrTerm + ") )"
+        self.ConvFactDn = "(" + self.ConvFact + " - sqrt(" + ErrTerm + ") )"
+
 #### LOGARITHMIC ####
 
 #### EXPONENTIAL ####
@@ -244,7 +246,6 @@ class SigmoidFit:
         D = "exp( [1] + [2]*x*x*x )"
         Q = " ([0] + "+D+")**(-4) "
         errTerm = "( " + Q + " * ([3]^2 + " + D + "^2 * ([4]^2 + [5]^2*x^6 + 2*[8]*x^3 ) + " + D + " * (2*[6] + 2*[7]*x^3) ))^0.5"
-#        errTerm = "( sqrt(( exp( [1] + [2]*x*x*x )^2)*( [4]*[4] + x*x*x*x*x*x*[5]*[5] + 2*x*x*x*[8]) + 2*( exp( [1] + [2]*x*x*x ) )*( [6] + x*x*x*[7] ) + [3]*[3] ) / ( [0] + exp( [1] + [2]*x*x*x ) )^2)"
         self.ErrUp = TF1("SigmoidFitErrorUp"+self.name, "(([0]+ exp([1] + [2]*x*x*x))^(-1) + " + errTerm + ")",self.rm,self.rp)
         self.ErrUp.SetParameter(0, self.fit.GetParameter(0))
         self.ErrUp.SetParameter(1, self.fit.GetParameter(1))
@@ -272,21 +273,21 @@ class SigmoidFit:
     #### center: The x-var is recentered about the middle of the blinded region. This tells where to recenter to. Can be left as 0.
     def MakeConvFactor(self, var, center):
         X = var + "-" + str(center)
-        self.ConvFact = "( (({0:6.36f}) + exp( ({1:6.36f}) + ({2:6.36f})*({3})*({3})*({3})))**(-1) )".format(self.ErrUp.GetParameter(0),self.ErrUp.GetParameter(1),self.ErrUp.GetParameter(2),X)
-        D = "exp( ({0:6.36f}) + ({1:6.36f})*({2})*({2})*({2}) )".format( self.ErrUp.GetParameter(1), self.ErrUp.GetParameter(2), X )
-        Q = (" 1/((({0:6.36f}) + "+D+")**4) ").format( self.ErrUp.GetParameter(0) )
-        self.ErrTerm = ("sqrt( " + Q + " * (({3:6.36f})*({3:6.36f}) + " + D + " * " + D + " * (({4:6.36f})*({4:6.36}) + ({5:6.36f})*({5:6.36})*({9})*({9})*({9})*({9})*({9})*({9}) + 2*({8:6.36f})*({9})*({9})*({9}) ) + " + D + " * (2*({6:6.36f}) + 2*({7:6.36f})*({9})*({9})*({9})) ))").format(self.ErrUp.GetParameter(0),self.ErrUp.GetParameter(1),self.ErrUp.GetParameter(2),self.ErrUp.GetParameter(3),self.ErrUp.GetParameter(4),self.ErrUp.GetParameter(5),self.ErrUp.GetParameter(6),self.ErrUp.GetParameter(7),self.ErrUp.GetParameter(8),X)
-
+        self.ConvFact = "( (({0:6.53f}) + exp( ({1:6.53f}) + ({2:6.53f})*({3})*({3})*({3})))**(-1) )".format(self.ErrUp.GetParameter(0),self.ErrUp.GetParameter(1),self.ErrUp.GetParameter(2),X)
+        D = "exp( ({0:6.53f}) + ({1:6.53f})*({2})*({2})*({2}) )".format( self.ErrUp.GetParameter(1), self.ErrUp.GetParameter(2), X )
+        Q = (" 1/((({0:6.53f}) + "+D+")**4) ").format( self.ErrUp.GetParameter(0) )
+        self.ErrTerm = ("sqrt( " + Q + " * (({3:6.53f})*({3:6.53f}) + " + D + " * " + D + " * (({4:6.53f})*({4:6.53}) + ({5:6.53f})*({5:6.53})*({9})*({9})*({9})*({9})*({9})*({9}) + 2*({8:6.53f})*({9})*({9})*({9}) ) + " + D + " * (2*({6:6.53f}) + 2*({7:6.53f})*({9})*({9})*({9})) ))").format(self.ErrUp.GetParameter(0),self.ErrUp.GetParameter(1),self.ErrUp.GetParameter(2),self.ErrUp.GetParameter(3),self.ErrUp.GetParameter(4),self.ErrUp.GetParameter(5),self.ErrUp.GetParameter(6),self.ErrUp.GetParameter(7),self.ErrUp.GetParameter(8),X)
+        for i in xrange(0,9):
+            print self.ErrUp.GetParameter(i)
+#        prunedMassAve=100
+#        print "D"
+#        print eval(D)
+#        print "Q"
+#        print eval(Q)
+        
         self.ConvFactUp = "("+self.ConvFact + " + " +  self.ErrTerm+")"
-#        self.ConvFactUp = "("+ErrTerm+")"
-        self.ConvFactDn = self.ConvFact + " - " + self.ErrTerm 
-#        for m in xrange( 50, 350):
-#            if m%5==0:
-#        print self.ErrUp.Eval(350) 
-
-#        self.ConvFactUp = ("( ({0:6.36f} + exp( {1:6.36f} + {2:6.36f}*({9})*({9})*({9})))^(-1) ) + ( " + Q + " * ({3:6.36f}^2 + " + D + "^2 * ({4:6.36f}^2 + {5:6.36f}^2*({9})^6 + 2*{8:6.36f}*({9})^3 ) + " + D + " * (2*{6:6.36f} + 2*{7:6.36f}*({9})^3) ))^0.5").format(self.ErrUp.GetParameter(0),self.ErrUp.GetParameter(1),self.ErrUp.GetParameter(2),self.ErrUp.GetParameter(3),self.ErrUp.GetParameter(4),self.ErrUp.GetParameter(5),self.ErrUp.GetParameter(6),self.ErrUp.GetParameter(7),self.ErrUp.GetParameter(8),X)
-
-#        self.ConvFactDn = ("( ({0:6.36f} + exp( {1:6.36f} + {2:6.36f}*({9})*({9})*({9})))^(-1) ) - ( " + Q + " * ({3:6.36f}^2 + " + D + "^2 * ({4:6.36f}^2 + {5:6.36f}^2*({9})^6 + 2*{8:6.36f}*({9})^3 ) + " + D + " * (2*{6:6.36f} + 2*{7:6.36f}*({9})^3) ))^0.5").format(self.ErrUp.GetParameter(0),self.ErrUp.GetParameter(1),self.ErrUp.GetParameter(2),self.ErrUp.GetParameter(3),self.ErrUp.GetParameter(4),self.ErrUp.GetParameter(5),self.ErrUp.GetParameter(6),self.ErrUp.GetParameter(7),self.ErrUp.GetParameter(8),X)
-
-#        self.ConvFactUp = "(( ({0:2.9f} + exp( {1:2.9f} + {2:2.9f}*({9})*({9})*({9})))^(-1) ) + (( sqrt(( exp( ({1:2.9f}) + ({2:2.9f})*({9})*({9})*({9}) )^2)*( ({4:2.9f})*({4:2.9f}) + ({9})*({9})*({9})*({9})*({9})*({9})*({5:2.9f})*({5:2.9f}) + ({9})*({9})*({9})*({8:2.9f})) + 2*( exp( ({1:2.9f}) + ({2:2.9f})*({9})*({9})*({9}) ) )*( ({6:2.9f}) + ({9})*({9})*({9})*({7:2.9f}) ) + ({3:2.9f})*({3:2.9f}) ) / ( ({0:2.9f}) + exp( ({1:2.9f}) + ({2:2.9f})*({9})*({9})*({9}) ) )^2)) )".format(self.ErrUp.GetParameter(0),self.ErrUp.GetParameter(1),self.ErrUp.GetParameter(2),self.ErrUp.GetParameter(3),self.ErrUp.GetParameter(4),self.ErrUp.GetParameter(5),self.ErrUp.GetParameter(6),self.ErrUp.GetParameter(7),self.ErrUp.GetParameter(8),X)
-#        self.ConvFactDn = "(( ({0:2.9f} + exp( {1:2.9f} + {2:2.9f}*({9})*({9})*({9})))^(-1) ) - (( sqrt(( exp( ({1:2.9f}) + ({2:2.9f})*({9})*({9})*({9}) )^2)*( ({4:2.9f})*({4:2.9f}) + ({9})*({9})*({9})*({9})*({9})*({9})*({5:2.9f})*({5:2.9f}) + ({9})*({9})*({9})*({8:2.9f})) + 2*( exp( ({1:2.9f}) + ({2:2.9f})*({9})*({9})*({9}) ) )*( ({6:2.9f}) + ({9})*({9})*({9})*({7:2.9f}) ) + ({3:2.9f})*({3:2.9f}) ) / ( ({0:2.9f}) + exp( ({1:2.9f}) + ({2:2.9f})*({9})*({9})*({9}) ) )^2)) )".format(self.ErrUp.GetParameter(0),self.ErrUp.GetParameter(1),self.ErrUp.GetParameter(2),self.ErrUp.GetParameter(3),self.ErrUp.GetParameter(4),self.ErrUp.GetParameter(5),self.ErrUp.GetParameter(6),self.ErrUp.GetParameter(7),self.ErrUp.GetParameter(8),X)
+        self.ConvFactDn = self.ConvFact + " - " + self.ErrTerm
+#        print "ErrTerm"
+#        print eval(self.ErrTerm)
+#        print "ConvFact"
+#        print eval(self.ConvFact)

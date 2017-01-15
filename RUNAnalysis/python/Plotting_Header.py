@@ -61,11 +61,32 @@ def quickprofiles( name, plot ):
 def FindAndSetMax( someset, log=True ):
     maximum = 0.0
     for i in someset: # Finds Maximum
-        i.SetStats(0)
+        if isinstance( i, ROOT.TH1 ): i.SetStats(0)
         t = i.GetMaximum()
+        print t
         if t > maximum:
             maximum = t
-
+    print maximum
     for j in someset: # Sets Maximum, Minimum
-        if log: j.GetYaxis().SetRangeUser( 0.001, maximum*1.35 )
-        else: j.GetYaxis().SetRangeUser( 0, maximum*1.35 )
+        if log:
+            j.SetMaximum(maximum*2.35)
+            j.SetMinimum(1)
+
+        else: 
+            j.SetMaximum(maximum*1.35)
+            j.SetMinimum(0)
+
+# Formats a float for printing
+#### N: a float
+def formatFloatForPrint(N):
+        if N > 1000.:
+                String = str(int(N))
+        elif N > 1.:
+                String = "{0:3.2f}".format(N)
+        elif N > 0.001:
+                String = "{0:2.1f}%".format(N*100.)
+        elif N > 0.0000001:
+                String = "{0:2.2f} ppm".format(N*1000000.)
+        else:
+                String = str(N)
+        return String

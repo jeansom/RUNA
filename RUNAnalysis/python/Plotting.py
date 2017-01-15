@@ -28,7 +28,7 @@ from RUNA.RUNAnalysis.Alphabet import *
 #### antitag: The inverse of the tag used to define A vs B
 #### cut: the cut to determine B vs D, in the form [ variableName, "<" or ">" ]
 #### center: Where to center the 2D plot, can be 0
-def MakeFitPlots( Est, F, bins, var1, var2, var_array, presel, antitag, tagB, tagD, cut, center, Est2, F2, blinded=True ):
+def MakeFitPlots( Est, F, bins, var1, var2, var_array, presel, antitag, tagB, tagD, cut, center, Est2, F2, folder, blinded=True ):
 
     Est.SetRegions( var_array, presel+"&"+antitag, tagB, tagD ) # Makes the 2D plot
     Est.TwoDPlot.SetStats(0)
@@ -41,49 +41,49 @@ def MakeFitPlots( Est, F, bins, var1, var2, var_array, presel, antitag, tagB, ta
     Est.TwoDPlot.Draw( "COLZ" )
     Est.TwoDPlot.GetXaxis().SetTitle( var1 )
     Est.TwoDPlot.GetYaxis().SetTitle( var2 )
-    EstProf.Draw("same")
-    C1.SaveAs( "outputs/"+var1+"_2D.png" )
+    C1.SaveAs( folder+var1+"_2D.png" )
 
     # Find the ratio B/D in the bins and fit to F
     Est.GetRates( cut, bins, center, F )
     
     if blinded:
         print "Staying blinded"
-        Est2.SetRegions( var_array, presel+"&"+antitag ) # Makes the 2D plot
+        Est2.SetRegions( var_array, presel+"&"+antitag, tagB, tagD ) # Makes the 2D plot
         Est2.GetRates( cut, bins, center, F2 )
     
     # Create legend for plot
-    leg = TLegend( 0.11, 0.6, 0.4, 0.8 )
+    leg = TLegend( 0.11, 0.68, 0.4, 0.85 )
     leg.SetLineColor(0)
     leg.SetFillColor(4001)
+    leg.SetFillStyle(0)
     leg.SetTextSize(0.03)
     leg.AddEntry( Est.G, "events used in fit", "PLE" )
     leg.AddEntry( Est.Fit.fit, "fit", "L" )
-    leg.AddEntry( Est.Fit.ErrDn, "fit errors", "L" )
-
 
     # Pretty up G, Fit, and save
     C2 = TCanvas( "C2", "", 10, 10, 750, 500 )
     C2.cd()
     C2.SetGrid( 4 )
     Est.G.SetTitle("")
+    Est.G.GetYaxis().SetRangeUser(0,0.87)
     Est.G.Draw("AP")
     Est.G.GetXaxis().SetTitle( var1 )
     Est.G.GetYaxis().SetTitle( "R_{p/f}" )
     Est.G.GetYaxis().SetTitleOffset( 1.3 )
     Est.G.GetYaxis().SetNdivisions( 28 )
-    Est.G.GetYaxis().SetRangeUser( .21, .78 )
     gStyle.SetOptFit()
 
     Est.Fit.fit.Draw("same")
-    Est.Fit.ErrUp.SetLineStyle(2)
-    Est.Fit.ErrUp.Draw("same")
-    Est.Fit.ErrDn.SetLineStyle(2)
-    Est.Fit.ErrDn.Draw("same")
+    if Est.G.GetN() > 0:
+        leg.AddEntry( Est.Fit.ErrDn, "fit errors", "L" )
+        Est.Fit.ErrUp.SetLineStyle(2)
+        Est.Fit.ErrUp.Draw("same")
+        Est.Fit.ErrDn.SetLineStyle(2)
+        Est.Fit.ErrDn.Draw("same")
     
     leg.Draw()
     
-    C2.SaveAs("outputs/"+var1+"Est_Fit.png")
+    C2.SaveAs(folder+var1+"Est_Fit.png")
 
 # Makes the final background estimation plots and saves them.
 # Draws the estimate with errors, and the actual signal region.
@@ -97,11 +97,11 @@ def MakeFitPlots( Est, F, bins, var1, var2, var_array, presel, antitag, tagB, ta
 #### var1: Variable fit is binned in
 #### Est2: ONLY IF RUNNING ON BLINDED DATA: The MC instance of alphabet to plot the signal region (see blinded)
 #### blinded: If running on data, should keep signal region blinded; If true, will plot the estimate on top of the MC signal region 
-def MakeEstPlots( Est, variable, varTitle, binBoundaries, antitag, tag, var1, Est2, blinded=True ):
+def MakeEstPlots( Est, variable, varTitle, binBoundaries, antitag, tag, var1, Est2, folder, blinded=True, Pull=TH1D()  ):
 
     Est.MakeEst( variable, binBoundaries, antitag, tag ) # Makes actual estimate
 
-    FILE = TFile( "outputs/"+var1+"Est.root", "RECREATE" ) # Creates a root file to store plots in
+    FILE = TFile( folder+var1+"Est.root", "RECREATE" ) # Creates a root file to store plots in
     FILE.cd()
     
     V = TH1F( "data_obs", "", len(binBoundaries)-1, array('d',binBoundaries) ) # Histogram for actual signal region plot
@@ -119,6 +119,7 @@ def MakeEstPlots( Est, variable, varTitle, binBoundaries, antitag, tag, var1, Es
     # Otherwise:
     else:
         for i in Est.hists_MSR:
+            print "here"
             i.Sumw2()
             i.SetStats(0)
             V.Add(i)
@@ -127,9 +128,12 @@ def MakeEstPlots( Est, variable, varTitle, binBoundaries, antitag, tag, var1, Es
 
     # The estimate is the sum of the histograms in self.hists_EST and self.hists_MSR_SUB
     N = TH1F( "EST", "", len(binBoundaries)-1, array('d',binBoundaries) ) # Nominal estimate histogram
+    N1 = TH1F( "EST1", "", len(binBoundaries)-1, array('d',binBoundaries) ) # Nominal estimate histogram
     NStack = THStack( "EST", "" )
     for i in Est.hists_EST:
         N.Add( i, 1. )
+        N1.Add( i, 1. )
+        i.SetLineColor(kBlack)
     if len(Est.hists_MSR_SUB) == 6:
         Est.hists_MSR_SUB[0].SetFillColor(6)
         Est.hists_MSR_SUB[1].SetFillColor(6)
@@ -137,6 +141,9 @@ def MakeEstPlots( Est, variable, varTitle, binBoundaries, antitag, tag, var1, Es
         Est.hists_MSR_SUB[3].SetFillColor(5)
         Est.hists_MSR_SUB[4].SetFillColor(8)
         Est.hists_MSR_SUB[5].SetFillColor(2)
+    elif len(Est.hists_MSR_SUB) == 2:
+        Est.hists_MSR_SUB[0].SetFillColor(8)
+        Est.hists_MSR_SUB[1].SetFillColor(2)        
     else:
         n = 7
         for hist in Est.hists_MSR_SUB:
@@ -145,8 +152,8 @@ def MakeEstPlots( Est, variable, varTitle, binBoundaries, antitag, tag, var1, Es
     for i in Est.hists_MSR_SUB:
         N.Add( i, 1. )
         NStack.Add(i)
-        
-    NStack.Add(N)
+        i.SetLineColor(kBlack)
+    NStack.Add(N1)
     
     # We can do the same thing for the Up and Down shapes:
     NU = TH1F( "EST_Up", "", len(binBoundaries)-1, array('d',binBoundaries) ) # Up estimate histogram
@@ -178,20 +185,21 @@ def MakeEstPlots( Est, variable, varTitle, binBoundaries, antitag, tag, var1, Es
     ND.SetLineColor( kBlack )
     NU.SetLineStyle(2)
     ND.SetLineStyle(2)
+    N1.SetLineColor( kBlack )
+    N1.SetFillColor( kBlue )
     N.SetLineColor( kBlack )
     N.SetFillColor( kBlue )
 
     V.SetStats(0)
     V.Sumw2()
-    V.SetLineColor(2)
-#    V.SetMarkerColor(1)
-#    V.SetMarkerStyle(20)
+    V.SetLineColor(kBlack)
+    V.SetMarkerColor(1)
+    V.SetMarkerStyle(20)
 
-    N.GetYaxis().SetTitle("events")
-    N.GetXaxis().SetTitle( varTitle )
+    N1.GetYaxis().SetTitle("events")
+    N1.GetXaxis().SetTitle( varTitle )
 
-    FindAndSetMax( [ V, N, NU, ND ] ) # Set maximum and minimum of all the plots
-    NStack.SetMaximum( NStack.GetMaximum() *100 )
+    FindAndSetMax( [ N, NU, ND ], False ) # Set maximum and minimum of all the plots
     Pull = V.Clone( "Pull" ) # Ratio (actual - est)/sigma_actual plot
     Pull.Add( N, -1 )
     
@@ -204,11 +212,8 @@ def MakeEstPlots( Est, variable, varTitle, binBoundaries, antitag, tag, var1, Es
     pBoxes = []
     maxy = 0.
     for i in range(1, N.GetNbinsX()+1):
-#        print "Bin: " + str(i)
         P = Pull.GetBinContent(i)
-#        print str(P) + " P "
         Ve = V.GetBinError(i)
-#        print str(Ve) + " Ve"
         if Ve > 1.:
             Pull.SetBinContent(i, P/Ve)
         Pull.SetBinError(i, 1.)
@@ -217,16 +222,9 @@ def MakeEstPlots( Est, variable, varTitle, binBoundaries, antitag, tag, var1, Es
         else:
             a = A.GetBinError(i)*N.GetBinContent(i)/A.GetBinContent(i)
         u = NU.GetBinContent(i) - N.GetBinContent(i)
-#        print str(u) + " u"
         d = N.GetBinContent(i) - ND.GetBinContent(i)
-#        print str(d) + " d"
         x1 = Pull.GetBinCenter(i) - (0.5*Pull.GetBinWidth(i))
-#        print str(x1) + " x1"        
         y1 = N.GetBinContent(i) - math.sqrt((d*d) + (a*a))
-#        print str(N.GetBinContent(i)) + " N"
-#        print str(d) + " d"
-#        y1 = N.GetBinContent(i) - ((d))
-#        print str(y1) + " y1"        
         s1 = N.GetBinContent(i) - a
         if y1 < 0.:
             y1 = 0
@@ -234,8 +232,6 @@ def MakeEstPlots( Est, variable, varTitle, binBoundaries, antitag, tag, var1, Es
             s1 = 0
         x2 = Pull.GetBinCenter(i) + (0.5*Pull.GetBinWidth(i))
         y2 = N.GetBinContent(i) + math.sqrt((u*u) + (a*a))
-#        y2 = N.GetBinContent(i) + u
-#        print str(y2) + " y2"        
         s2 = N.GetBinContent(i) + a
         if maxy < y2:
             maxy = y2
@@ -252,6 +248,8 @@ def MakeEstPlots( Est, variable, varTitle, binBoundaries, antitag, tag, var1, Es
         sBoxes.append(tempsbox)
         pBoxes.append(temppbox)
 
+    pullInt = Pull.Integral()
+
     # Pretty up pull plot
     Pull.GetXaxis().SetTitle("")
     Pull.SetStats(0)
@@ -262,6 +260,8 @@ def MakeEstPlots( Est, variable, varTitle, binBoundaries, antitag, tag, var1, Es
     Pull.GetXaxis().SetNdivisions(0)
     Pull.GetYaxis().SetNdivisions(4)
     Pull.GetYaxis().SetTitle("#frac{MC - Data Est}{#sigma_{MC}}")
+#    Pull.GetYaxis().SetTitle(""))
+    print pullInt
     Pull.GetYaxis().SetLabelSize(85/15*Pull.GetYaxis().GetLabelSize())
     Pull.GetYaxis().SetTitleSize(4.2*Pull.GetYaxis().GetTitleSize())
     Pull.GetYaxis().SetTitleOffset(0.175)
@@ -277,14 +277,19 @@ def MakeEstPlots( Est, variable, varTitle, binBoundaries, antitag, tag, var1, Es
         i.SetFillColor(38)
         i.SetFillStyle(3002)
 
-    leg2 = TLegend(0.4,0.7,0.89,0.89)
-#    leg2.SetColumns(2)
+    leg2 = TLegend(0.4,0.73,0.89,0.89)
     leg2.SetLineColor(0)
     leg2.SetFillColor(0)
-    leg2.AddEntry(V, "MC Backgrounds", "PL")
-    leg2.AddEntry(N, "Data background prediction", "F")
+    leg2.SetFillStyle(0)
+    leg2.AddEntry(V, "Data", "PL")
+    leg2.AddEntry( N1, "Data background prediction", "F")
+    leg2.AddEntry( Est.hists_MSR_SUB[0], "W Jets", "F")
+    leg2.AddEntry( Est.hists_MSR_SUB[1], "TT Jets", "F")
+#    leg2.AddEntry( 0, str(pullInt), "" )
     leg2.AddEntry(Boxes[0], "total uncertainty", "F")
-#    leg2.AddEntry(sBoxes[0], "background statistical component", "F")
+    leg2.AddEntry(sBoxes[0], "background statistical component", "F")
+    leg2.AddEntry( 0, "Number of predicted events: " + str(N.Integral()), "" )
+    leg2.AddEntry( 0, "Actual number of events: " + str(V.Integral()), "" )
     # A line at -2, -1, 0, 1, 2 for pull plot
     T0 = TLine(50,0.,350,0.)
     T0.SetLineColor(kBlue)
@@ -305,22 +310,26 @@ def MakeEstPlots( Est, variable, varTitle, binBoundaries, antitag, tag, var1, Es
     C4 = TCanvas("C4", "", 800, 800)
 
     # Draw all plots and save
-    plot = TPad("pad1", "The pad 80% of the height",0,0.15,1,1)
-    pull = TPad("pad2", "The pad 20% of the height",0,0,1.0,0.15)
+    plot = TPad("pad1", "The pad 80% of the height",0,0.10,1,1)
+    pull = TPad("pad2", "The pad 20% of the height",0,0,1.0,0.12)
     plot.Draw()
     pull.Draw()
     plot.cd()
 
     NStack.Draw("Hist")
+    NStack.GetYaxis().SetRangeUser( .5, 5000 )
+    NStack.SetMaximum( 5000 )
+    NStack.SetMinimum( .5 )
+    NStack.Draw("Hist")
     V.SetLineWidth(2)
-    V.Draw("same Hist E0")
+    V.GetYaxis().SetRangeUser( .5, 5000 )
+    V.Draw("same E0")
     plot.SetLogy()
     for i in Boxes:
         i.Draw("same")
-#    for i in sBoxes:
-#        i.Draw("same")
+    for i in sBoxes:
+        i.Draw("same")
     leg2.Draw()
-
     pull.cd()
     Pull.Draw("")
     for i in pBoxes:
@@ -333,8 +342,11 @@ def MakeEstPlots( Est, variable, varTitle, binBoundaries, antitag, tag, var1, Es
 
     Pull.Draw("same")
 
-    C4.SaveAs("outputs/"+var1+"Est_Plot.png")
+    C4.SaveAs(folder+var1+"Est_Plot.png")
 
     print str(N.Integral())
     print str(V.Integral())
+
+    print(Pull)
+    return pBoxes
 

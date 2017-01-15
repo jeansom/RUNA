@@ -78,6 +78,8 @@ class Alphabet:
         self.TwoDPlot = self.Pplots.Clone( "TwoDPlot_"+self.name) #Final 2D plot
         self.TwoDPlot.Add( self.Mplots, -1. )
 
+#        self.QuantileProfiles = GetQuantileProfiles( self.TwoDPlot, .1, "test" )
+
         self.BPlot = self.PplotsB.Clone( "BPlot_"+self.name )
         self.BPlot.Add( self.MplotsB, -1. )
 
@@ -95,17 +97,22 @@ class Alphabet:
     #### FIT: Form to fit B/D to, should be a member of one of the Converters.py classes, already initialized and set up
     def GetRates( self, cut, bins, center, FIT  ):
         self.center = center
-#        self.G = AlphabetSlicer( self.TwoDPlot, bins, cut[0], cut[1], center ) # Returns a TGraphAsymErrors containing B/D
-        self.G = AlphabetDivide( self.BPlot, self.DPlot, bins )
+        self.G = AlphabetSlicer( self.TwoDPlot, bins, cut[0], cut[1], center ) # Returns a TGraphAsymErrors containing B/D
+        self.fitter = False
         self.Fit = FIT
-        AlphabetFitter( self.G, self.Fit ) # Does the entire fitting; creates all three distributions (nominal, up, down); saves as self.Fit.fit, self.Fit.ErrUp, self.Fit.ErrDn
+        AlphabetFitter( self.G, self.Fit, self.fitter ) # Does the entire fitting; creates all three distributions (nominal, up, down); saves as self.Fit.fit, self.Fit.ErrUp, self.Fit.ErrDn
 
     # Makes the actual background estimation plots (nominal, up, down, signal region, antitag region...)
     #### binBoundaries: Boundary of the bins for the estimation plot
     #### antitag: cut that defines C region
     #### tag: cut that defines signal (A) region
     def MakeEst( self, variable, binBoundaries, antitag, tag ):
-        self.Fit.MakeConvFactor( self.X, self.center ) # Creates a string of the fit to B/D with self.X-self.center plugged in
+        if self.G.GetN() > 0:
+            self.Fit.MakeConvFactor( self.X, self.center ) # Creates a string of the fit to B/D with self.X-self.center plugged in
+        else:
+            self.Fit.ConvFact = "(0)"
+            self.Fit.ConvFactUp = "(0)"
+            self.Fit.ConvFactDn = "(0)"
         
         self.hists_EST = [] # Nomimal background estimation (C * (B/D) )
         self.hists_EST_SUB = [] # Background estimation for subtracted distributions (C * (B/D))
@@ -129,7 +136,7 @@ class Alphabet:
         
             # Fills the above histograms
             quickplot( i.File, i.Tree, temphist, variable, tag, i.weight )
-            quickplot( i.File, i.Tree, temphistN, variable, antitag, "("+i.weight+"*"+self.Fit.ConvFact+")" )
+            quickplot( i.File, i.Tree, temphistN, variable, antitag, "("+i.weight+"*("+self.Fit.ConvFact+"))" )
             quickplot( i.File, i.Tree, temphistU, variable, antitag, "("+i.weight+"*"+"("+self.Fit.ConvFactUp+")"+")" )
             quickplot( i.File, i.Tree, temphistD, variable, antitag, "("+i.weight+"* ("+self.Fit.ConvFactDn +"))" )
             quickplot( i.File, i.Tree, temphistA, variable, antitag, i.weight )
