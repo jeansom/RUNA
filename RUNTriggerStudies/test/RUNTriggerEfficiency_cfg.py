@@ -252,8 +252,9 @@ elif 'Boosted' in options.version:
 	process.p += process.BoostedTriggerEfficiencyAK8PFHT7504Jet
 	process.p += process.BoostedTriggerEfficiencyAK8DiPFJet280220TrimMass30Btagp20
 	process.p += process.BoostedTriggerEfficiencyAK8DiPFJet280220TrimMass30
-	process.p += process.BoostedTriggerEfficiencySeveralTriggers
+	process.p += process.BoostedTriggerEfficiencyPFHT650WideJetMJJ900 
 	process.p += process.BoostedTriggerEfficiencyPFJet450
+	process.p += process.BoostedTriggerEfficiencySeveralTriggers
 	if not options.miniAOD:
 		process.p += process.BoostedTriggerEfficiencyPuppi
 		process.p += process.BoostedTriggerEfficiencyPuppiPFHT800
@@ -291,6 +292,7 @@ else:
 	process.p += process.BoostedTriggerEfficiencyAK8DiPFJet280220TrimMass30Btagp20
 	process.p += process.BoostedTriggerEfficiencyAK8DiPFJet280220TrimMass30
 	process.p += process.BoostedTriggerEfficiencyPFJet450
+	process.p += process.BoostedTriggerEfficiencyPFHT650WideJetMJJ900 
 	process.p += process.BoostedTriggerEfficiencySeveralTriggers
 	if not options.miniAOD:
 		process.p += process.BoostedTriggerEfficiencyPuppi

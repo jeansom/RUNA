@@ -872,11 +872,11 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 				else sysType = "central";
 				string measurementType = "lt";
 
-				if (jet1btagCSVv2 > 0.8484) {
+				if (jet1btagCSVv2 > 0.8) {   
 					jet1btagSF = btagSF ( btagCSVFile, JETS[0].p4.Pt(), JETS[0].p4.Eta(), JETS[0].hadronFlavour, sysType, measurementType );
 					//LogWarning("btag") << j1btagSF << " " << j1.hadronFlavour;
 				}
-				if (jet2btagCSVv2 > 0.8484) jet2btagSF = btagSF ( btagCSVFile, JETS[1].p4.Pt(), JETS[1].p4.Eta(), JETS[1].hadronFlavour, sysType, measurementType );
+				if (jet2btagCSVv2 > 0.8) jet2btagSF = btagSF ( btagCSVFile, JETS[1].p4.Pt(), JETS[1].p4.Eta(), JETS[1].hadronFlavour, sysType, measurementType );
 			}
 			///////////////////////////////////////////
 

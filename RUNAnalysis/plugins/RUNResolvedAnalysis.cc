@@ -706,8 +706,8 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 				deltaR = abs( ( j1.p4.DeltaR( j2.p4 ) - 0.8 )  + abs( ( j3.p4.DeltaR( j4.p4 ) - 0.8 ) ) );
 				cosThetaStar1 = cosThetaStar( j1.p4, j2.p4 );
 				cosThetaStar2 = cosThetaStar( j3.p4, j4.p4 );
-				btagCSVv2Pair12 = ( (j1.btagCSVv2 > 0.8484) || (j2.btagCSVv2 > 0.8484) );
-				btagCSVv2Pair34 = ( (j3.btagCSVv2 > 0.8484) || (j4.btagCSVv2 > 0.8484) );
+				btagCSVv2Pair12 = ( (j1.btagCSVv2 > 0.8) || (j2.btagCSVv2 > 0.8) );
+				btagCSVv2Pair34 = ( (j3.btagCSVv2 > 0.8) || (j4.btagCSVv2 > 0.8) );
 
 				/// btag scale factors
 				double j1btagSF = 1, j2btagSF = 1, j3btagSF = 1, j4btagSF = 1;
@@ -718,13 +718,13 @@ void RUNResolvedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup)
 					else sysType = "central";
 					string measurementType = "comb";
 
-					if (j1.btagCSVv2 > 0.8484) {
+					if (j1.btagCSVv2 > 0.8) {
 						j1btagSF = btagSF ( btagCSVFile, j1.p4.Pt(), j1.p4.Eta(), j1.hadronFlavour, sysType, measurementType );
 						//LogWarning("btag") << j1btagSF << " " << j1.hadronFlavour;
 					}
-					if (j2.btagCSVv2 > 0.8484) j2btagSF = btagSF ( btagCSVFile, j2.p4.Pt(), j2.p4.Eta(), j2.hadronFlavour, sysType, measurementType );
-					if (j3.btagCSVv2 > 0.8484) j3btagSF = btagSF ( btagCSVFile, j3.p4.Pt(), j3.p4.Eta(), j3.hadronFlavour, sysType, measurementType );
-					if (j4.btagCSVv2 > 0.8484) j4btagSF = btagSF ( btagCSVFile, j4.p4.Pt(), j4.p4.Eta(), j4.hadronFlavour, sysType, measurementType );
+					if (j2.btagCSVv2 > 0.8) j2btagSF = btagSF ( btagCSVFile, j2.p4.Pt(), j2.p4.Eta(), j2.hadronFlavour, sysType, measurementType );
+					if (j3.btagCSVv2 > 0.8) j3btagSF = btagSF ( btagCSVFile, j3.p4.Pt(), j3.p4.Eta(), j3.hadronFlavour, sysType, measurementType );
+					if (j4.btagCSVv2 > 0.8) j4btagSF = btagSF ( btagCSVFile, j4.p4.Pt(), j4.p4.Eta(), j4.hadronFlavour, sysType, measurementType );
 				}
 				///////////////////////////////////////////
 				
@@ -1103,7 +1103,7 @@ void RUNResolvedAnalysis::beginJob() {
 	histos1D_[ "jet3QGL_cutBestPair" ]->Sumw2();
 	histos1D_[ "jet4QGL_cutBestPair" ] = fs_->make< TH1D >( "jet4QGL_cutBestPair", "jet4QGL_cutBestPair", 10, 0., 1. );
 	histos1D_[ "jet4QGL_cutBestPair" ]->Sumw2();
-	histos1D_[ "massAve_cutBestPair" ] = fs_->make< TH1D >( "massAve_cutBestPair", "massAve_cutBestPair", 200, 0., 2000. );
+	histos1D_[ "massAve_cutBestPair" ] = fs_->make< TH1D >( "massAve_cutBestPair", "massAve_cutBestPair", 2000, 0., 2000.);
 	histos1D_[ "massAve_cutBestPair" ]->Sumw2();
 	histos1D_[ "massAsym_cutBestPair" ] = fs_->make< TH1D >( "massAsym_cutBestPair", "massAsym_cutBestPair", 50, 0., 2. );
 	histos1D_[ "massAsym_cutBestPair" ]->Sumw2();
@@ -1132,7 +1132,7 @@ void RUNResolvedAnalysis::beginJob() {
 	histos1D_[ "jetNum_cutMassAsym" ]->Sumw2();
 	histos1D_[ "HT_cutMassAsym" ] = fs_->make< TH1D >( "HT_cutMassAsym", "HT_cutMassAsym", 300, 0., 3000. );
 	histos1D_[ "HT_cutMassAsym" ]->Sumw2();
-	histos1D_[ "massAve_cutMassAsym" ] = fs_->make< TH1D >( "massAve_cutMassAsym", "massAve_cutMassAsym", 200, 0., 2000. );
+	histos1D_[ "massAve_cutMassAsym" ] = fs_->make< TH1D >( "massAve_cutMassAsym", "massAve_cutMassAsym", 2000, 0., 2000.);
 	histos1D_[ "massAve_cutMassAsym" ]->Sumw2();
 	histos1D_[ "massAsym_cutMassAsym" ] = fs_->make< TH1D >( "massAsym_cutMassAsym", "massAsym_cutMassAsym", 50, 0., 2. );
 	histos1D_[ "massAsym_cutMassAsym" ]->Sumw2();
@@ -1155,7 +1155,7 @@ void RUNResolvedAnalysis::beginJob() {
 	histos1D_[ "jetNum_cutDeltaEtaDijetSyst" ]->Sumw2();
 	histos1D_[ "HT_cutDeltaEtaDijetSyst" ] = fs_->make< TH1D >( "HT_cutDeltaEtaDijetSyst", "HT_cutDeltaEtaDijetSyst", 300, 0., 3000. );
 	histos1D_[ "HT_cutDeltaEtaDijetSyst" ]->Sumw2();
-	histos1D_[ "massAve_cutDeltaEtaDijetSyst" ] = fs_->make< TH1D >( "massAve_cutDeltaEtaDijetSyst", "massAve_cutDeltaEtaDijetSyst", 200, 0., 2000. );
+	histos1D_[ "massAve_cutDeltaEtaDijetSyst" ] = fs_->make< TH1D >( "massAve_cutDeltaEtaDijetSyst", "massAve_cutDeltaEtaDijetSyst", 2000, 0., 2000.);
 	histos1D_[ "massAve_cutDeltaEtaDijetSyst" ]->Sumw2();
 	histos1D_[ "massAsym_cutDeltaEtaDijetSyst" ] = fs_->make< TH1D >( "massAsym_cutDeltaEtaDijetSyst", "massAsym_cutDeltaEtaDijetSyst", 50, 0., 2. );
 	histos1D_[ "massAsym_cutDeltaEtaDijetSyst" ]->Sumw2();
@@ -1181,7 +1181,7 @@ void RUNResolvedAnalysis::beginJob() {
 	histos1D_[ "jetNum_cutDelta" ]->Sumw2();
 	histos1D_[ "HT_cutDelta" ] = fs_->make< TH1D >( "HT_cutDelta", "HT_cutDelta", 300, 0., 3000. );
 	histos1D_[ "HT_cutDelta" ]->Sumw2();
-	histos1D_[ "massAve_cutDelta" ] = fs_->make< TH1D >( "massAve_cutDelta", "massAve_cutDelta", 200, 0., 2000. );
+	histos1D_[ "massAve_cutDelta" ] = fs_->make< TH1D >( "massAve_cutDelta", "massAve_cutDelta", 2000, 0., 2000.);
 	histos1D_[ "massAve_cutDelta" ]->Sumw2();
 	histos1D_[ "massAsym_cutDelta" ] = fs_->make< TH1D >( "massAsym_cutDelta", "massAsym_cutDelta", 50, 0., 2. );
 	histos1D_[ "massAsym_cutDelta" ]->Sumw2();
@@ -1204,7 +1204,7 @@ void RUNResolvedAnalysis::beginJob() {
 	histos1D_[ "jetNum_cutBtag" ]->Sumw2();
 	histos1D_[ "HT_cutBtag" ] = fs_->make< TH1D >( "HT_cutBtag", "HT_cutBtag", 300, 0., 3000. );
 	histos1D_[ "HT_cutBtag" ]->Sumw2();
-	histos1D_[ "massAve_cutBtag" ] = fs_->make< TH1D >( "massAve_cutBtag", "massAve_cutBtag", 200, 0., 2000. );
+	histos1D_[ "massAve_cutBtag" ] = fs_->make< TH1D >( "massAve_cutBtag", "massAve_cutBtag", 2000, 0., 2000.);
 	histos1D_[ "massAve_cutBtag" ]->Sumw2();
 	histos1D_[ "massAsym_cutBtag" ] = fs_->make< TH1D >( "massAsym_cutBtag", "massAsym_cutBtag", 50, 0., 2. );
 	histos1D_[ "massAsym_cutBtag" ]->Sumw2();

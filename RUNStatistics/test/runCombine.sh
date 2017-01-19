@@ -2,7 +2,7 @@ if [ "$1" == "all" ]
 then
 	if [ $2 == "Resolved" ]
 	then
-		masses="300 350 400 450 500 550 600 650 700 750 800"
+		masses="300 350 400 450 500 550 600 650"
 	else
 		#masses="80 90 100 110 120 130 140 150 170 180 190 210 220 230 240 300"
 		masses="80 100 120 140 170 180 190 230 240 "
@@ -18,7 +18,8 @@ do
 
 	if [ $2 == "Resolved" ]
 	then
-		combine -M Asymptotic Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_Resolved_v02p1.txt -n UDD312RPVSt_M-${mass}_Resolved_v02
+		combine -M Asymptotic Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_Resolved_${3}_v02p1.txt -n UDD312RPVSt_M-${mass}_Resolved_${3}_v02p1
+		#combine -M Asymptotic Datacards/datacard_RPVStopStopToJets_UDD312_M-${mass}_Resolved_${3}_v02.txt -n UDD312RPVSt_M-${mass}_Resolved_${3}_v02
 
 	elif [ $2 == "fullCLs" ]
 	then
