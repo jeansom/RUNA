@@ -111,11 +111,9 @@ def ThetaFileMaker( chan, chanCuts, bins, minBin, maxBin, Xcut, Ycut, isMC=True 
 
     while(temp>1): # Loops through, decreasing the temperature each time
 
-        dBinWidth=random.randint(min(-binWidth+1,3), 3) # How much to vary the bin width by, between 1 and 10, can be positive or negative
+        dBinWidth=random.randint(max(15-binWidth, -3), 3) # How much to vary the bin width by, between 15-binWidth (always less than 0) and 3, prevents binWisth from being less than 15
         binWidthtemp = binWidth+dBinWidth # Neighboring point to try
-        if binWidthtemp < 15: 
-            binWidthtemp=25
-            temp = temp + dtemp*2
+
         NBins = int(((350-50))/binWidthtemp) # Just some stuff for the MakeFitPlots function below
         binsMass = []
         var_arrayMass = [ "prunedMassAve", Xcut[0], NBins, 50., 350., Xcut [2], Xcut[3], Xcut[4] ] # For making B,D plot # Just some stuff for the MakeFitPlots function below
