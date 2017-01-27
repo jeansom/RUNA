@@ -14,6 +14,7 @@ import random
 import numpy as np
 from collections import OrderedDict
 from multiprocessing import Process
+from itertools import combinations
 try: 
 	import RUNA.RUNAnalysis.CMS_lumi as CMS_lumi 
 	from RUNA.RUNAnalysis.scaleFactors import * #scaleFactor as SF
@@ -176,11 +177,48 @@ def histoFunctionFit( nameHisto, initFitFunction, parameters, parErrors, massBin
 		histoFit.SetBinContent( ibin, massBin[ibin] )
 		histoFit.SetBinError( ibin, massBinErr[ibin] )
 			
-	histoFit.Fit( fitFunction, "MIR", "", minX, maxX )
+	histoFit.Fit( fitFunction, "ELLSR", "", minX, maxX )
 
 	return histoFit, fitFunction
 
 
+
+def residualAndPulls(dataPoints, dataErrPoints, function, histo, minX, maxX ):
+	"""docstring for residualAndPulls"""
+
+	hPull = TH1D("hpull_"+function.GetName(), "hpull_"+function.GetName(), len(dataPoints) , minX, maxX)
+	hPull.Sumw2()
+	hResidual = TH1D("hresidual_"+function.GetName(), "hresidual_"+function.GetName(), len(dataPoints) , minX, maxX)
+	hResidual.Sumw2()
+
+	######## Calculating Pull and Residual
+	chi2 = 0 
+	nof = 0
+	for ibin in range(0, len(dataPoints) ):
+	
+		binCont = dataPoints[ibin]
+		binErr = dataErrPoints[ibin]
+		valIntegral = function.Eval( histo.GetBinCenter(ibin) ) 
+		diff = (binCont - valIntegral)/ valIntegral
+		#errDiff = diff * TMath.Sqrt( TMath.Power( P4Gaus.GetParError(0) / P4Gaus.GetParameter(0),2 ) + TMath.Power( P4Gaus.GetParError(1)/ P4Gaus.GetParameter(1), 2 )  + TMath.Power( P4Gaus.GetParError(2)/ P4Gaus.GetParameter(2), 2 )  + TMath.Power( P4Gaus.GetParError(3)/ P4Gaus.GetParameter(3), 2 ) )
+		#errDiff = diff * TMath.Sqrt( TMath.Power( function.GetParError(0) / function.GetParameter(0),2 ) + TMath.Power( function.GetParError(1)/ function.GetParameter(1), 2 )  + TMath.Power( function.GetParError(2)/ function.GetParameter(2), 2 )  + TMath.Power( function.GetParError(3)/ function.GetParameter(3), 2 ) )
+		#print binCont, binErr, valIntegral 
+
+		if (binCont != 0):
+			pull = (binCont - valIntegral)/ binErr
+			chi2 += TMath.Power(pull,2)
+			nof += 1
+			
+			hPull.SetBinContent(ibin, pull)
+			hPull.SetBinError(ibin, 1.0)
+	
+			hResidual.SetBinContent(ibin, diff)
+			hResidual.SetBinError(ibin, binErr/valIntegral )
+
+	NDoF = nof - function.GetNpar() - 1
+	print '|----> ############### chi2 and nof: ', chi2, nof
+
+	return hPull, hResidual, chi2, NDoF
 
 
 
@@ -251,72 +289,7 @@ def FitterCombination( inFileData, inFileBkg, inFileSignal, hist, scale, bkgFunc
 	print '|----> DATA Plotted:', points
 	print '|----> DATA Err:', pointsErr
 
-	hPull = TH1D("hpull", "hpull", len(points) , minX, maxX)
-	hPull.Sumw2()
-	hResidual = TH1D("hresidual", "hresidual", len(points) , minX, maxX)
-	hResidual.Sumw2()
-
-	'''
-	for ibin in range( 0, len(points)):
-		hMain.SetBinContent( ibin, points[ibin] )
-		hMain.SetBinError( ibin, pointsErr[ibin] )
-			
-	#hMain.Fit( mainP4, "ELLSR", "", minX, maxX )
-	hMain.Fit( mainP4, "MIR", "", minX, maxX )
-	P4Gaus.SetParameter(0,bkgParameters[0])				
-	P4Gaus.SetParameter(1,bkgParameters[1])
-	P4Gaus.SetParameter(2,bkgParameters[2])
-	P4Gaus.SetParameter(3,bkgParameters[3])
-	P4Gaus.SetParameter(4,gausParameters[0])
-	P4Gaus.SetParameter(5,gausParameters[1])
-	P4Gaus.SetParameter(6,gausParameters[2])
-	hMain.Fit( P4Gaus, "ELLSR", "", minX, maxX)
-	hMain.Fit( P4Gaus, "ELLSR", "", minX, maxX)
-	hMain.Fit( P4Gaus, "ELLSR", "", minX, maxX)
-	P4_2 = TF1("P4_2", "[0]*pow(1-(x/13000.0),[1])/pow(x/13000.0,[2]+([3]*log(x/13000.)))", minX, maxX);
-	#P4_2.SetParameter(0, P4Gaus.GetParameter(0) )
-	#P4_2.SetParameter(1, P4Gaus.GetParameter(1) )
-	#P4_2.SetParameter(2, P4Gaus.GetParameter(2) )
-	#P4_2.SetParameter(3, P4Gaus.GetParameter(3) )
-	P4_2.SetParameter(0,bkgParameters[0])				
-	P4_2.SetParameter(1,bkgParameters[1])
-	P4_2.SetParameter(2,bkgParameters[2])
-	P4_2.SetParameter(3,bkgParameters[3])
-
-	#gaus2.SetParameter(0, P4Gaus.GetParameter(4) )
-	#gaus2.SetParameter(1, P4Gaus.GetParameter(5) )
-	#gaus2.SetParameter(2, P4Gaus.GetParameter(6) )
-	#print "SIGNALLLL", gaus2.Integral(args.mass-30, args.mass+30)
-	#P4_2Parameters = [ P4_2.GetParameter(0), P4_2.GetParameter(1), P4_2.GetParameter(2), P4_2.GetParameter(3), P4Gaus.GetParameter(4), P4Gaus.GetParameter(5), P4Gauss.GetParameter(6), sigAcceptance, minX, maxX ]
-	#print P4_2Parameters
-	'''
-
-
-	######## Calculating Pull and Residual
-	chi2 = 0 
-	nof = 0
-	for ibin in range(0, len(points) ):
-	
-		binCont = points[ibin]
-		binErr = pointsErr[ibin]
-		valIntegral = mainP4.Eval( hMain.GetBinCenter(ibin) ) 
-		diff = (binCont - valIntegral)/ valIntegral
-		#errDiff = diff * TMath.Sqrt( TMath.Power( P4Gaus.GetParError(0) / P4Gaus.GetParameter(0),2 ) + TMath.Power( P4Gaus.GetParError(1)/ P4Gaus.GetParameter(1), 2 )  + TMath.Power( P4Gaus.GetParError(2)/ P4Gaus.GetParameter(2), 2 )  + TMath.Power( P4Gaus.GetParError(3)/ P4Gaus.GetParameter(3), 2 ) )
-		#errDiff = diff * TMath.Sqrt( TMath.Power( mainP4.GetParError(0) / mainP4.GetParameter(0),2 ) + TMath.Power( mainP4.GetParError(1)/ mainP4.GetParameter(1), 2 )  + TMath.Power( mainP4.GetParError(2)/ mainP4.GetParameter(2), 2 )  + TMath.Power( mainP4.GetParError(3)/ mainP4.GetParameter(3), 2 ) )
-		#print binCont, binErr, valIntegral 
-
-		if (binCont != 0):
-			pull = (binCont - valIntegral)/ binErr
-			chi2 += TMath.Power(pull,2)
-			nof += 1
-			
-			hPull.SetBinContent(ibin, pull)
-			hPull.SetBinError(ibin, 1.0)
-	
-			hResidual.SetBinContent(ibin, diff)
-			hResidual.SetBinError(ibin, binErr/valIntegral )
-	print '|----> ############### chi2 and nof: ', chi2, nof
-
+	hPull, hResidual, chi2, NDF = residualAndPulls(points, pointsErr, mainP4, hMain, minX, maxX )
 
 	######### Plotting Histograms
 	maxXPlot = maxX+500
@@ -592,8 +565,60 @@ def createCards( dataFile, bkgFile, inFileSignal, hist, scale, bkgFunctions, min
 		datacard.close()
 		print '|----> Datacard created:', datacard
 
+def doftest( RSS1, RSS2, NDF1, NDF2, nPar1, nPar2, nBinsFit):
+	"""docstring for doftest"""
+
+	Fvalue = ( ( RSS1 - RSS2 ) / ( nPar2 - nPar1 ) ) / ( RSS2 / ( nBinsFit - nPar2 ) )
+
+	Fdist = TF1("Fdistr","TMath::Sqrt( (TMath::Power([0]*x,[0]) * TMath::Power([1],[1])) / (TMath::Power([0]*x + [1],[0]+[1])) / (x*TMath::Beta([0]/2,[1]/2)) )",0,100)
+	Fdist.SetParameter( 0, (nPar2-nPar1) )
+	Fdist.SetParameter( 1, (nBinsFit-nPar2) )
+	CL = 1 - Fdistr.Integral( 0.00000001, Fvalue )
+	altCL =  1. - TMath.FDistI( Fvalue, nPar2-nPar1, nBinsFit-nPar2 )
+
+	return [ Fvalue, CL, altCL, Fdist ]
+
+	
+
+def FisherTest( dataFile, hist, bkgFunctions, minX, maxX, rebinX ):
+	"""docstring for FisherTest"""
+
+	fitParameters = rootFitter( dataFile, 
+			hist+('JetHT_Run2016' if args.miniTree else ''), 
+			1, 
+			bkgFunctions,
+			minX, 
+			maxX, 
+			rebinX, 
+			False )
+
+	dictDataAndFunc = OrderedDict()
+	dictPullResChi2NDF = OrderedDict()
+	for func in bkgFunctions:
+		dictDataAndFunc[ func[0].GetName() ] = histoFunctionFit( 'Data_'+func[0].GetName(),
+									func[0], 
+									fitParameters[0], 
+									fitParameters[1], 
+									fitParameters[2],
+									fitParameters[3],
+									minX, maxX ) 
+		
+		dictPullResChi2NDF[ func[0].GetName() ] = residualAndPulls( fitParameters[2], 
+									fitParameters[3], 
+									dictDataAndFunc[ func[0].GetName() ][1],  
+									dictDataAndFunc[ func[0].GetName() ][0], 
+									minX, maxX )
+
+	dictFtest = OrderedDict()
+	for key1, key2 in combinations(dictPullResChi2NDF.keys(), r = 2):
+		dictFtest[ key1+'_'+key2 ] = doftest( dictPullResChi2NDF[ key1 ][2], dictPullResChi2NDF[ key2 ][2], dictPullResChi2NDF[ key1 ][3], dictPullResChi2NDF[ key2 ][3], dictDataAndFunc[ key1 ][1].GetNpar(),  dictDataAndFunc[ key2 ][1].GetNpar(), len(fitParameters[2]) )
+		print '|----> Ftest for ', key1, 'and', key2, ':', dictFtest[ key1+'_'+key2 ][1]
+		
 
 
+##########################################################
+##########################################################
+####  Code below is just for example, DONT USE IT
 def rooFitter( dataFile, bkgFile, inFileSignal, hist, scale, P4, minX, maxX, rebinX ):
 
 	myWS = RooWorkspace("myWS")
@@ -833,6 +858,7 @@ def rooFitterTree( inFileBkg, inFileSignal, inFileData, hist):
 	getattr( myWS, 'import')(modelConfig)
 	myWS.writeToFile("Rootfiles/workspace_QCD_RPVSt100tojj_FitP4Gaus_rooFitTree.root", True )
 	myWS.Print()
+####################################################################
 
 
 if __name__ == '__main__':
@@ -887,26 +913,36 @@ if __name__ == '__main__':
 
 	######## Fit Functions
 	fitFunctions = {}
-	fitFunctions['P4'] = [ TF1("P4", "[0]*TMath::Power(1-(x/13000.0),[1])/(TMath::Power(x/13000.0,[2]+([3]*log(x/13000.))))",0,2000), 
+	fitFunctions['P5'] = [ TF1("P5", "[0]*TMath::Power(1-(x/13000.0),[1])/(TMath::Power(x/13000.0,[2]+([3]*TMath::Log(x/13000.))+([4]*TMath::Power(TMath::Log(x/13000.),2))))",0,2000), 
+			[ 0, 100, 2, 0.1, 0.01], 
+			'(pow(1-@0/13000,@1)/pow(@0/13000,@2+@3*log(@0/13000)+@4*pow(log(@0/13000),2))' ]
+
+	fitFunctions['P4'] = [ TF1("P4", "[0]*TMath::Power(1-(x/13000.0),[1])/(TMath::Power(x/13000.0,[2]+([3]*TMath::Log(x/13000.))))",0,2000), 
 			[ 0, 100, 2, 0.1], 
-			'(pow(1-@0/13000,@1)/pow(@0/13000,@2+@3*log(@0/13000)))' ]
+			'pow(1-@0/13000,@1)/pow(@0/13000,@2+@3*log(@0/13000))' ]
 
 	fitFunctions['P3'] = [ TF1("P3", "[0]* TMath::Power(1-(x/13000.0),[1]) / (TMath::Power(x/13000.0,[2]))",0,2000), 
 			[ 0, 100, 2], 
-			'(pow(1-@0/13000,@1)/pow(@0/13000,@2))' ]
+			'pow(1-@0/13000,@1)/pow(@0/13000,@2)' ]
 
-	fitFunctions['expoPoli'] = [ TF1("expoPoli", "exp([0]+[1]*x+[2]*x*x+[3]*x*x*x+[4]*x*x*x*x)", 0, 1000 ), 
+	fitFunctions['P2'] = [ TF1("P2", "[0] / TMath::Power(x/13000.0,[1])",0,2000), 
+			[ ], 
+			'pow(@0/13000,-@1)' ]
+
+	fitFunctions['dijet'] = [ TF1("dijet", "[0]+ TMath::Exp( ([1]*TMath::Log(x/13000.0)) + ([2]*TMath::Power(TMath::Log(x/13000.0),2)) + ([3]*TMath::Power(TMath::Log(x/13000.0),3)))", 0, 2000 ), 
+			[ ],
+			'exp( (@1*log(@0/13000)) + (@2*pow(log(@0/13000),2)) + ( @3*pow(log(@0/13000),3)))']
+
+	fitFunctions['expoPoli'] = [ TF1("expoPoli", "[0]+exp([1]*x+[2]*x*x+[3]*x*x*x+[4]*x*x*x*x)", 0, 1000 ), 
 			[ ],
 			'(exp((@1*@0)+(@2*pow(@0,2))+(@3*pow(@0,3))+(@4*pow(@0,4))))']
 
 	fitFunctions['atlas'] = [ 
-			#TF1("atlas", "[0]* TMath::Power((1-TMath::Power(x/13000.0,0.33)),[1]) / TMath::Power(x/13000.0,[2]+([3]*TMath::Power(log(x/13000.0),2)))",0,2000), 
 			TF1("atlas", "[0]* TMath::Power((1-TMath::Power(x/13000.0,0.33)),[1]) / TMath::Power(x/13000.0,[2])",0,2000), 
 			[ ], 
 			'(pow(1-pow(@0/13000,0.33),@1)/pow(@0/13000,@2))' ]
 
 	fitFunctions['P1'] = [ TF1("P1", "[0] / (TMath::Power(x/13000.0,[1]))",0,2000), [ 0] ]
-	#fitFunctions['expoPoli'] = [ TF1("expoPoli", "exp([0]+[1]*x+[2]*x*x)", 0, 2000 ), [ 0, 100, 2, 0.1] ]
 	fitFunctions['landau'] = [ TF1("landau","[0]*TMath::Landau(-x,[1],[2])",0,2000), [ ] ]
 	fitFunctions['gaus'] = [ TF1("gaus", "gaus", 0, 2000), [ ] ]
 	fitFunctions['P4Gaus'] = [ TF1("P4Gaus", "[0]*pow(1-(x/13000.0),[1])/pow(x/13000.0,[2]+([3]*log(x/13000.)))+gaus(4)",0,2000), [] ]
@@ -922,8 +958,10 @@ if __name__ == '__main__':
 			'', 
 			hist, 
 			scale, 
-			[fitFunctions['atlas']], 
-			#[fitFunctions['P4']], #[fitFunctions['expoPoli']],
+			#[fitFunctions['dijet']], 
+			#[fitFunctions['atlas']], 
+			[fitFunctions['P4']], 
+			#[fitFunctions['expoPoli']],
 			minFit, maxFit, rebinX, True ))
 
 	elif 'RPV' in args.process:
@@ -945,13 +983,14 @@ if __name__ == '__main__':
 			filePrefix+'_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)+'_80X_V2p1_'+args.version+'.root', 
 			hist, 
 			scale, 
-			[ fitFunctions['P3'], fitFunctions['P4'], fitFunctions['expoPoli'] ], 
+			[ fitFunctions['P4'], fitFunctions['atlas'], fitFunctions['expoPoli'], fitFunctions['dijet'] ], 
 			minFit, maxFit, 1 ) )
-	else:
-		rooFitterTree( bkgFile, signalFile, dataFile, hist )
+
+	elif 'Fisher' in args.process:
+		p = Process( target=FisherTest, args=( dataFile, 
+			hist, 
+			[ fitFunctions['P2'], fitFunctions['P3'], fitFunctions['P4'], fitFunctions['P5'] ], 
+			minFit, maxFit, 10 ) )
+
 	p.start()
 	p.join()
-
-	
-
-
