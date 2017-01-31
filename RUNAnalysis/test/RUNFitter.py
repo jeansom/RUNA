@@ -134,7 +134,10 @@ def rootFitter( inFile, hist, scale, fitFunctions, minX, maxX, rebinX, plot, log
 			tmpFitFunc = finalHisto.GetFunction( fitFunc[0].GetName() )
 			chi2Ndf = tmpFitFunc.GetChisquare() / tmpFitFunc.GetNDF()
 			tmpStatus = ( tmpFit - fitFunc[0].GetParameter(1) ) / fitFunc[0].GetParameter(1)
-			if ((tmpStatus < 0.001) or (chi2Ndf < 1.5 ) ): keepFitting = False
+			if ((tmpStatus < 0.001) or (chi2Ndf < 1.5 ) ): 
+				keepFitting = False
+				print "|----> Final fit for ", fitFunc[0].GetName(), 'with chi2/ndf', tmpFitFunc.GetChisquare() , tmpFitFunc.GetNDF()
+
 			else: 
 				tmpFit = fitFunc[0].GetParameter(1)
 				print "|----> Keep fitting...."
@@ -143,6 +146,7 @@ def rootFitter( inFile, hist, scale, fitFunctions, minX, maxX, rebinX, plot, log
 		fitParameters[ fitFunc[0].GetName() ] = [ fitFunc[0].GetParameter(k) for k in range( numParam ) ]
 		fitParErrors[ fitFunc[0].GetName() ] =  [ fitFunc[0].GetParError(k) for k in range( numParam ) ]
 		print "|----> Fitter parameters for", fitFunc[0].GetName(), fitParameters[ fitFunc[0].GetName() ], fitParErrors[ fitFunc[0].GetName() ]
+
 
 		######### Plotting Histograms
 		if plot:
@@ -229,7 +233,7 @@ def FitterCombination( inFileData, inFileBkg, inFileSignal, hist, scale, bkgFunc
 	print "|----> Fitting MC QCD"
 	BkgParameters = rootFitter( inFileBkg, 
 			hist+('QCD'+args.qcd+'All' if args.miniTree else ''), 
-			scale*( 1 if args.miniTree else 0.75 ), 
+			scale*0.75, #( 1 if args.miniTree else 0.75 ), 
 			bkgFunction, 
 			minX, 
 			maxX, 
@@ -269,14 +273,19 @@ def FitterCombination( inFileData, inFileBkg, inFileSignal, hist, scale, bkgFunc
 		legend.AddEntry( qcdMCP4, 'Fit to MC QCD pythia', 'l' )
 
 		if isinstance( inFileSignal, TFile):
-			Bkg2Parameters = rootFitter( inFileSignal, hist+'QCDHerwigAll', scale, bkgFunction, minX, maxX, rebinX, True )
-			#Bkg2Parameters = rootFitter( inFileSignal, hist+'QCDHTAll', scale, bkgFunction, minX, maxX, rebinX, True )
+			Bkg2Parameters = rootFitter( inFileSignal, 
+							hist+('QCDHerwigAll' if args.miniTree else ''), 
+							scale, 
+							bkgFunction, 
+							minX, 
+							maxX, 
+							rebinX, 
+							True )
 			bkg2Parameters = Bkg2Parameters[0]
 			bkg2ParErrors = Bkg2Parameters[1]
-			bkg2Acceptance = Bkg2Parameters[2]
-			bkg2points = Bkg2Parameters[3]
-			bkg2pointsErr = Bkg2Parameters[4]
-			hBkg2, qcdHTMCP4 = histoFunctionFit( 'QCDHerwig', bkgFunction, bkg2Parameters, bkg2ParErrors, bkg2points, bkg2pointsErr, minX, maxX )
+			bkg2points = Bkg2Parameters[2]
+			bkg2pointsErr = Bkg2Parameters[3]
+			hBkg2, qcdHTMCP4 = histoFunctionFit( 'QCDHerwig', bkgFunction[0][0], bkg2Parameters, bkg2ParErrors, bkg2points, bkg2pointsErr, minX, maxX )
 			#hBkg2, qcdHTMCP4 = histoFunctionFit( 'QCDHT', bkg2Parameters, bkg2points, bkg2pointsErr, minX, maxX )
 			legend.AddEntry( qcdHTMCP4, 'Fit to MC QCD powheg', 'l' )
 			#legend.AddEntry( qcdHTMCP4, 'Fit to MC QCD madgraph+pythia', 'l' )
@@ -612,7 +621,7 @@ def FisherTest( dataFile, hist, bkgFunctions, minX, maxX, rebinX ):
 	dictFtest = OrderedDict()
 	for key1, key2 in combinations(dictPullResChi2NDF.keys(), r = 2):
 		dictFtest[ key1+'_'+key2 ] = doftest( dictPullResChi2NDF[ key1 ][2], dictPullResChi2NDF[ key2 ][2], dictPullResChi2NDF[ key1 ][3], dictPullResChi2NDF[ key2 ][3], dictDataAndFunc[ key1 ][1].GetNpar(),  dictDataAndFunc[ key2 ][1].GetNpar(), len(fitParameters[2]) )
-		print '|----> Ftest for ', key1, 'and', key2, ':', dictFtest[ key1+'_'+key2 ][1]
+		print '|----> Ftest for ', key1, 'and', key2, ':', dictFtest[ key1+'_'+key2 ]
 		
 
 
@@ -955,7 +964,7 @@ if __name__ == '__main__':
 		CMS_lumi.extraText = "Preliminary"
 		p = Process( target=FitterCombination, args=( dataFile, 
 			bkgFile, 
-			'', 
+			'', #bkgFile3, 
 			hist, 
 			scale, 
 			#[fitFunctions['dijet']], 
