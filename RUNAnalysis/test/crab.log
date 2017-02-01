@@ -1,0 +1,2804 @@
+DEBUG 2017-01-06 14:22:04,895: 	 Executing command: 'submit'
+DEBUG 2017-01-06 14:22:04,933: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 14:22:04,945: 	 Checking credentials
+DEBUG 2017-01-06 14:22:04,945: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 14:22:04,945: 	 Getting proxy life time left
+DEBUG 2017-01-06 14:22:05,048: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42275
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 14:22:05,151: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42274
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 14:22:05,152: 	 Proxy valid for 11:44:35 hours
+DEBUG 2017-01-06 14:22:05,845: 	 Executing command: 'submit'
+DEBUG 2017-01-06 14:22:05,850: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 14:22:05,858: 	 Checking credentials
+DEBUG 2017-01-06 14:22:05,858: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 14:22:05,858: 	 Getting proxy life time left
+DEBUG 2017-01-06 14:22:05,961: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42275
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 14:22:06,065: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42273
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 14:22:06,065: 	 Proxy valid for 11:44:35 hours
+DEBUG 2017-01-06 14:22:06,762: 	 Executing command: 'submit'
+DEBUG 2017-01-06 14:22:06,766: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 14:22:06,774: 	 Checking credentials
+DEBUG 2017-01-06 14:22:06,774: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 14:22:06,774: 	 Getting proxy life time left
+DEBUG 2017-01-06 14:22:06,877: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42274
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 14:22:06,981: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42273
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 14:22:06,981: 	 Proxy valid for 11:44:34 hours
+DEBUG 2017-01-06 14:22:07,675: 	 Executing command: 'submit'
+DEBUG 2017-01-06 14:22:07,680: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 14:22:07,688: 	 Checking credentials
+DEBUG 2017-01-06 14:22:07,688: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 14:22:07,689: 	 Getting proxy life time left
+DEBUG 2017-01-06 14:22:07,791: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42273
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 14:22:07,895: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42272
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 14:22:07,895: 	 Proxy valid for 11:44:33 hours
+DEBUG 2017-01-06 14:22:08,592: 	 Executing command: 'submit'
+DEBUG 2017-01-06 14:22:08,597: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 14:22:08,605: 	 Checking credentials
+DEBUG 2017-01-06 14:22:08,605: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 14:22:08,605: 	 Getting proxy life time left
+DEBUG 2017-01-06 14:22:08,708: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42272
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 14:22:08,812: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42271
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 14:22:08,812: 	 Proxy valid for 11:44:32 hours
+DEBUG 2017-01-06 14:22:09,916: 	 Executing command: 'submit'
+DEBUG 2017-01-06 14:22:09,921: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 14:22:09,929: 	 Checking credentials
+DEBUG 2017-01-06 14:22:09,929: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 14:22:09,930: 	 Getting proxy life time left
+DEBUG 2017-01-06 14:22:10,032: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42271
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 14:22:10,136: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42269
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 14:22:10,136: 	 Proxy valid for 11:44:31 hours
+DEBUG 2017-01-06 14:22:10,847: 	 Executing command: 'submit'
+DEBUG 2017-01-06 14:22:10,852: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 14:22:10,860: 	 Checking credentials
+DEBUG 2017-01-06 14:22:10,860: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 14:22:10,860: 	 Getting proxy life time left
+DEBUG 2017-01-06 14:22:10,963: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42270
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 14:24:22,770: 	 Executing command: 'submit'
+DEBUG 2017-01-06 14:24:22,803: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 14:24:22,837: 	 Checking credentials
+DEBUG 2017-01-06 14:24:22,837: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 14:24:22,837: 	 Getting proxy life time left
+DEBUG 2017-01-06 14:24:22,940: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42138
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 14:24:23,043: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42137
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 14:24:23,043: 	 Proxy valid for 11:42:18 hours
+DEBUG 2017-01-06 14:24:23,045: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 14:24:59,190: 	 Executing command: 'submit'
+DEBUG 2017-01-06 14:24:59,195: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 14:24:59,203: 	 Checking credentials
+DEBUG 2017-01-06 14:24:59,204: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 14:24:59,204: 	 Getting proxy life time left
+DEBUG 2017-01-06 14:24:59,306: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42101
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 14:24:59,410: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42100
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 14:24:59,410: 	 Proxy valid for 11:41:41 hours
+DEBUG 2017-01-06 14:24:59,411: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 14:25:00,987: 	 Executing command: 'submit'
+DEBUG 2017-01-06 14:25:00,992: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 14:25:00,999: 	 Checking credentials
+DEBUG 2017-01-06 14:25:01,000: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 14:25:01,000: 	 Getting proxy life time left
+DEBUG 2017-01-06 14:25:01,103: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42099
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:04,221: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:05:04,266: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:05:04,305: 	 Checking credentials
+DEBUG 2017-01-06 17:05:04,305: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:05:04,305: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:05:04,408: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42837
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:04,511: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42837
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:04,511: 	 Proxy valid for 11:53:57 hours
+DEBUG 2017-01-06 17:05:04,512: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:05:05,246: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:05:05,250: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:05:05,258: 	 Checking credentials
+DEBUG 2017-01-06 17:05:05,258: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:05:05,258: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:05:05,361: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42836
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:05,464: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42836
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:05,465: 	 Proxy valid for 11:53:56 hours
+DEBUG 2017-01-06 17:05:05,466: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:05:06,155: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:05:06,159: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:05:06,167: 	 Checking credentials
+DEBUG 2017-01-06 17:05:06,167: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:05:06,167: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:05:06,270: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42835
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:06,374: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42835
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:06,374: 	 Proxy valid for 11:53:55 hours
+DEBUG 2017-01-06 17:05:06,375: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:05:07,119: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:05:07,123: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:05:07,131: 	 Checking credentials
+DEBUG 2017-01-06 17:05:07,131: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:05:07,131: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:05:07,234: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42834
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:07,337: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42834
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:07,337: 	 Proxy valid for 11:53:54 hours
+DEBUG 2017-01-06 17:05:07,338: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:05:08,015: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:05:08,018: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:05:08,023: 	 Checking credentials
+DEBUG 2017-01-06 17:05:08,023: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:05:08,023: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:05:08,126: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42833
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:08,228: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42833
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:08,228: 	 Proxy valid for 11:53:53 hours
+DEBUG 2017-01-06 17:05:08,229: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:05:08,909: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:05:08,913: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:05:08,918: 	 Checking credentials
+DEBUG 2017-01-06 17:05:08,918: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:05:08,918: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:05:09,020: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42833
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:09,122: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42832
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:09,122: 	 Proxy valid for 11:53:53 hours
+DEBUG 2017-01-06 17:05:09,123: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:05:09,769: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:05:09,773: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:05:09,778: 	 Checking credentials
+DEBUG 2017-01-06 17:05:09,778: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:05:09,778: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:05:09,880: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42832
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:09,982: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42832
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:09,983: 	 Proxy valid for 11:53:52 hours
+DEBUG 2017-01-06 17:05:09,983: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:05:10,676: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:05:10,681: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:05:10,688: 	 Checking credentials
+DEBUG 2017-01-06 17:05:10,689: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:05:10,689: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:05:10,791: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42831
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:10,895: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42831
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:10,895: 	 Proxy valid for 11:53:51 hours
+DEBUG 2017-01-06 17:05:10,896: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:05:11,657: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:05:11,662: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:05:11,669: 	 Checking credentials
+DEBUG 2017-01-06 17:05:11,670: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:05:11,670: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:05:11,773: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42830
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:11,876: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42830
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:11,876: 	 Proxy valid for 11:53:50 hours
+DEBUG 2017-01-06 17:05:11,877: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:05:13,893: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:05:13,898: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:05:13,906: 	 Checking credentials
+DEBUG 2017-01-06 17:05:13,906: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:05:13,906: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:05:14,009: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42828
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:14,112: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42827
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:14,112: 	 Proxy valid for 11:53:48 hours
+DEBUG 2017-01-06 17:05:14,113: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:05:14,818: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:05:14,823: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:05:14,830: 	 Checking credentials
+DEBUG 2017-01-06 17:05:14,831: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:05:14,831: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:05:14,934: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42827
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:15,037: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42827
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:15,037: 	 Proxy valid for 11:53:47 hours
+DEBUG 2017-01-06 17:05:15,038: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:05:15,731: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:05:15,736: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:05:15,744: 	 Checking credentials
+DEBUG 2017-01-06 17:05:15,744: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:05:15,744: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:05:15,847: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42826
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:15,950: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42826
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:15,950: 	 Proxy valid for 11:53:46 hours
+DEBUG 2017-01-06 17:05:15,951: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:05:16,648: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:05:16,653: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:05:16,660: 	 Checking credentials
+DEBUG 2017-01-06 17:05:16,661: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:05:16,661: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:05:16,764: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42825
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:16,867: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42825
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:16,867: 	 Proxy valid for 11:53:45 hours
+DEBUG 2017-01-06 17:05:16,868: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:05:17,568: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:05:17,572: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:05:17,580: 	 Checking credentials
+DEBUG 2017-01-06 17:05:17,580: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:05:17,580: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:05:17,683: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42824
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:17,786: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42824
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:17,786: 	 Proxy valid for 11:53:44 hours
+DEBUG 2017-01-06 17:05:17,787: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:05:18,486: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:05:18,491: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:05:18,498: 	 Checking credentials
+DEBUG 2017-01-06 17:05:18,499: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:05:18,499: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:05:18,602: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42823
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:18,705: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42823
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:18,705: 	 Proxy valid for 11:53:43 hours
+DEBUG 2017-01-06 17:05:18,706: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:05:19,406: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:05:19,411: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:05:19,418: 	 Checking credentials
+DEBUG 2017-01-06 17:05:19,419: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:05:19,419: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:05:19,522: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42822
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:19,625: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42822
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:05:19,625: 	 Proxy valid for 11:53:42 hours
+DEBUG 2017-01-06 17:05:19,626: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:20:50,209: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:20:50,244: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:20:50,265: 	 Checking credentials
+DEBUG 2017-01-06 17:20:50,266: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:20:50,266: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:20:50,368: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41891
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:50,472: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41891
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:50,472: 	 Proxy valid for 11:38:11 hours
+DEBUG 2017-01-06 17:20:50,473: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:20:51,171: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:20:51,175: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:20:51,183: 	 Checking credentials
+DEBUG 2017-01-06 17:20:51,184: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:20:51,184: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:20:51,287: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41890
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:51,390: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41890
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:51,390: 	 Proxy valid for 11:38:10 hours
+DEBUG 2017-01-06 17:20:51,391: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:20:52,123: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:20:52,128: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:20:52,135: 	 Checking credentials
+DEBUG 2017-01-06 17:20:52,135: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:20:52,135: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:20:52,238: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41889
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:52,341: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41889
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:52,342: 	 Proxy valid for 11:38:09 hours
+DEBUG 2017-01-06 17:20:52,343: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:20:53,038: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:20:53,043: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:20:53,053: 	 Checking credentials
+DEBUG 2017-01-06 17:20:53,054: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:20:53,054: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:20:53,157: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41888
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:53,260: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41888
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:53,260: 	 Proxy valid for 11:38:08 hours
+DEBUG 2017-01-06 17:20:53,261: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:20:53,960: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:20:53,964: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:20:53,972: 	 Checking credentials
+DEBUG 2017-01-06 17:20:53,972: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:20:53,972: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:20:54,075: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41887
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:54,178: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41887
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:54,178: 	 Proxy valid for 11:38:07 hours
+DEBUG 2017-01-06 17:20:54,179: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:20:54,859: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:20:54,864: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:20:54,872: 	 Checking credentials
+DEBUG 2017-01-06 17:20:54,872: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:20:54,872: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:20:54,975: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41887
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:55,078: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41886
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:55,078: 	 Proxy valid for 11:38:07 hours
+DEBUG 2017-01-06 17:20:55,079: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:20:55,766: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:20:55,771: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:20:55,778: 	 Checking credentials
+DEBUG 2017-01-06 17:20:55,779: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:20:55,779: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:20:55,882: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41886
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:55,985: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41886
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:55,985: 	 Proxy valid for 11:38:06 hours
+DEBUG 2017-01-06 17:20:55,986: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:20:56,676: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:20:56,681: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:20:56,689: 	 Checking credentials
+DEBUG 2017-01-06 17:20:56,689: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:20:56,689: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:20:56,792: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41885
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:56,895: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41885
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:56,895: 	 Proxy valid for 11:38:05 hours
+DEBUG 2017-01-06 17:20:56,896: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:20:57,593: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:20:57,598: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:20:57,606: 	 Checking credentials
+DEBUG 2017-01-06 17:20:57,606: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:20:57,606: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:20:57,709: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41884
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:57,812: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41884
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:57,812: 	 Proxy valid for 11:38:04 hours
+DEBUG 2017-01-06 17:20:57,813: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:20:58,499: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:20:58,504: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:20:58,511: 	 Checking credentials
+DEBUG 2017-01-06 17:20:58,511: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:20:58,511: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:20:58,614: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41883
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:58,718: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41883
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:58,718: 	 Proxy valid for 11:38:03 hours
+DEBUG 2017-01-06 17:20:58,719: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:20:59,410: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:20:59,415: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:20:59,422: 	 Checking credentials
+DEBUG 2017-01-06 17:20:59,423: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:20:59,423: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:20:59,526: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41882
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:59,629: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41882
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:20:59,629: 	 Proxy valid for 11:38:02 hours
+DEBUG 2017-01-06 17:20:59,630: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:00,326: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:00,331: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:00,338: 	 Checking credentials
+DEBUG 2017-01-06 17:21:00,339: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:00,339: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:00,442: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41881
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:00,545: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41881
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:00,545: 	 Proxy valid for 11:38:01 hours
+DEBUG 2017-01-06 17:21:00,546: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:01,248: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:01,253: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:01,260: 	 Checking credentials
+DEBUG 2017-01-06 17:21:01,261: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:01,261: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:01,364: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41880
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:01,467: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41880
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:01,467: 	 Proxy valid for 11:38:00 hours
+DEBUG 2017-01-06 17:21:01,468: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:02,213: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:02,218: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:02,225: 	 Checking credentials
+DEBUG 2017-01-06 17:21:02,225: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:02,225: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:02,328: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41879
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:02,431: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41879
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:02,432: 	 Proxy valid for 11:37:59 hours
+DEBUG 2017-01-06 17:21:02,433: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:03,126: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:03,130: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:03,138: 	 Checking credentials
+DEBUG 2017-01-06 17:21:03,138: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:03,138: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:03,241: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41878
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:03,344: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41878
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:03,345: 	 Proxy valid for 11:37:58 hours
+DEBUG 2017-01-06 17:21:03,346: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:04,047: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:04,052: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:04,060: 	 Checking credentials
+DEBUG 2017-01-06 17:21:04,060: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:04,060: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:04,163: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41877
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:04,266: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41877
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:04,267: 	 Proxy valid for 11:37:57 hours
+DEBUG 2017-01-06 17:21:04,268: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:18,899: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:18,904: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:18,911: 	 Checking credentials
+DEBUG 2017-01-06 17:21:18,911: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:18,911: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:19,014: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41863
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:19,118: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41862
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:19,119: 	 Proxy valid for 11:37:43 hours
+DEBUG 2017-01-06 17:21:19,120: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:19,815: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:19,819: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:19,827: 	 Checking credentials
+DEBUG 2017-01-06 17:21:19,827: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:19,828: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:19,930: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41862
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:20,033: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41862
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:20,034: 	 Proxy valid for 11:37:42 hours
+DEBUG 2017-01-06 17:21:20,035: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:20,733: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:20,738: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:20,745: 	 Checking credentials
+DEBUG 2017-01-06 17:21:20,745: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:20,745: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:20,848: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41861
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:20,951: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41861
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:20,952: 	 Proxy valid for 11:37:41 hours
+DEBUG 2017-01-06 17:21:20,953: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:21,644: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:21,649: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:21,657: 	 Checking credentials
+DEBUG 2017-01-06 17:21:21,657: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:21,657: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:21,760: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41860
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:21,863: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41860
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:21,863: 	 Proxy valid for 11:37:40 hours
+DEBUG 2017-01-06 17:21:21,864: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:22,556: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:22,561: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:22,568: 	 Checking credentials
+DEBUG 2017-01-06 17:21:22,569: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:22,569: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:22,671: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41859
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:22,775: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41859
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:22,775: 	 Proxy valid for 11:37:39 hours
+DEBUG 2017-01-06 17:21:22,776: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:23,453: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:23,458: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:23,465: 	 Checking credentials
+DEBUG 2017-01-06 17:21:23,466: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:23,466: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:23,569: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41858
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:23,672: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41858
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:23,672: 	 Proxy valid for 11:37:38 hours
+DEBUG 2017-01-06 17:21:23,673: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:24,225: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:24,230: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:24,237: 	 Checking credentials
+DEBUG 2017-01-06 17:21:24,237: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:24,237: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:24,340: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41857
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:24,443: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41857
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:24,443: 	 Proxy valid for 11:37:37 hours
+DEBUG 2017-01-06 17:21:24,444: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:25,117: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:25,122: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:25,130: 	 Checking credentials
+DEBUG 2017-01-06 17:21:25,130: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:25,130: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:25,233: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41856
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:25,336: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41856
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:25,336: 	 Proxy valid for 11:37:36 hours
+DEBUG 2017-01-06 17:21:25,337: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:26,008: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:26,013: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:26,020: 	 Checking credentials
+DEBUG 2017-01-06 17:21:26,020: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:26,020: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:26,123: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41855
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:26,226: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41855
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:26,226: 	 Proxy valid for 11:37:35 hours
+DEBUG 2017-01-06 17:21:26,227: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:26,884: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:26,889: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:26,898: 	 Checking credentials
+DEBUG 2017-01-06 17:21:26,898: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:26,898: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:27,001: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41855
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:27,104: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41854
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:27,104: 	 Proxy valid for 11:37:35 hours
+DEBUG 2017-01-06 17:21:27,106: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:27,812: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:27,817: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:27,825: 	 Checking credentials
+DEBUG 2017-01-06 17:21:27,825: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:27,825: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:27,928: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41854
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:28,031: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41854
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:28,032: 	 Proxy valid for 11:37:34 hours
+DEBUG 2017-01-06 17:21:28,033: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:28,775: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:28,780: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:28,788: 	 Checking credentials
+DEBUG 2017-01-06 17:21:28,788: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:28,788: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:28,891: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41853
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:28,994: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41853
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:28,994: 	 Proxy valid for 11:37:33 hours
+DEBUG 2017-01-06 17:21:28,995: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:29,664: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:29,669: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:29,677: 	 Checking credentials
+DEBUG 2017-01-06 17:21:29,677: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:29,677: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:29,780: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41852
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:29,883: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41852
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:29,884: 	 Proxy valid for 11:37:32 hours
+DEBUG 2017-01-06 17:21:29,885: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:30,562: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:30,567: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:30,575: 	 Checking credentials
+DEBUG 2017-01-06 17:21:30,575: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:30,575: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:30,678: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41851
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:30,782: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41851
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:30,782: 	 Proxy valid for 11:37:31 hours
+DEBUG 2017-01-06 17:21:30,783: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-06 17:21:31,483: 	 Executing command: 'submit'
+DEBUG 2017-01-06 17:21:31,488: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-06 17:21:31,495: 	 Checking credentials
+DEBUG 2017-01-06 17:21:31,495: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-06 17:21:31,495: 	 Getting proxy life time left
+DEBUG 2017-01-06 17:21:31,598: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41850
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:31,701: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41850
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-06 17:21:31,701: 	 Proxy valid for 11:37:30 hours
+DEBUG 2017-01-06 17:21:31,702: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-07 08:35:13,606: 	 Executing command: 'submit'
+DEBUG 2017-01-07 08:35:13,626: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-07 08:35:13,632: 	 Checking credentials
+DEBUG 2017-01-07 08:35:13,633: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-07 08:35:13,633: 	 Getting proxy life time left
+DEBUG 2017-01-07 08:35:13,735: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41968
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:13,837: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41968
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:13,838: 	 Proxy valid for 11:39:28 hours
+DEBUG 2017-01-07 08:35:13,839: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-07 08:35:14,547: 	 Executing command: 'submit'
+DEBUG 2017-01-07 08:35:14,550: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-07 08:35:14,556: 	 Checking credentials
+DEBUG 2017-01-07 08:35:14,556: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-07 08:35:14,556: 	 Getting proxy life time left
+DEBUG 2017-01-07 08:35:14,658: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41967
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:14,760: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41967
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:14,761: 	 Proxy valid for 11:39:27 hours
+DEBUG 2017-01-07 08:35:14,761: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-07 08:35:15,996: 	 Executing command: 'submit'
+DEBUG 2017-01-07 08:35:16,000: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-07 08:35:16,007: 	 Checking credentials
+DEBUG 2017-01-07 08:35:16,007: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-07 08:35:16,007: 	 Getting proxy life time left
+DEBUG 2017-01-07 08:35:16,109: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41965
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:16,212: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41965
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:16,212: 	 Proxy valid for 11:39:25 hours
+DEBUG 2017-01-07 08:35:16,213: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-07 08:35:16,737: 	 Executing command: 'submit'
+DEBUG 2017-01-07 08:35:16,740: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-07 08:35:16,745: 	 Checking credentials
+DEBUG 2017-01-07 08:35:16,745: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-07 08:35:16,745: 	 Getting proxy life time left
+DEBUG 2017-01-07 08:35:16,847: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41965
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:16,949: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41965
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:16,949: 	 Proxy valid for 11:39:25 hours
+DEBUG 2017-01-07 08:35:16,951: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-07 08:35:17,374: 	 Executing command: 'submit'
+DEBUG 2017-01-07 08:35:17,376: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-07 08:35:17,381: 	 Checking credentials
+DEBUG 2017-01-07 08:35:17,381: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-07 08:35:17,381: 	 Getting proxy life time left
+DEBUG 2017-01-07 08:35:17,483: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41964
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:17,585: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41964
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:17,585: 	 Proxy valid for 11:39:24 hours
+DEBUG 2017-01-07 08:35:17,586: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-07 08:35:18,097: 	 Executing command: 'submit'
+DEBUG 2017-01-07 08:35:18,099: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-07 08:35:18,104: 	 Checking credentials
+DEBUG 2017-01-07 08:35:18,104: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-07 08:35:18,104: 	 Getting proxy life time left
+DEBUG 2017-01-07 08:35:18,206: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41963
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:18,308: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41963
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:18,309: 	 Proxy valid for 11:39:23 hours
+DEBUG 2017-01-07 08:35:18,310: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-07 08:35:18,772: 	 Executing command: 'submit'
+DEBUG 2017-01-07 08:35:18,776: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-07 08:35:18,782: 	 Checking credentials
+DEBUG 2017-01-07 08:35:18,783: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-07 08:35:18,783: 	 Getting proxy life time left
+DEBUG 2017-01-07 08:35:18,886: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41963
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:18,991: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41963
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:18,991: 	 Proxy valid for 11:39:23 hours
+DEBUG 2017-01-07 08:35:18,992: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-07 08:35:19,504: 	 Executing command: 'submit'
+DEBUG 2017-01-07 08:35:19,507: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-07 08:35:19,512: 	 Checking credentials
+DEBUG 2017-01-07 08:35:19,512: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-07 08:35:19,512: 	 Getting proxy life time left
+DEBUG 2017-01-07 08:35:19,614: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41962
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:19,717: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41962
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:19,717: 	 Proxy valid for 11:39:22 hours
+DEBUG 2017-01-07 08:35:19,718: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-07 08:35:20,282: 	 Executing command: 'submit'
+DEBUG 2017-01-07 08:35:20,285: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-07 08:35:20,291: 	 Checking credentials
+DEBUG 2017-01-07 08:35:20,291: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-07 08:35:20,291: 	 Getting proxy life time left
+DEBUG 2017-01-07 08:35:20,393: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41961
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:20,495: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41961
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:20,495: 	 Proxy valid for 11:39:21 hours
+DEBUG 2017-01-07 08:35:20,496: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-07 08:35:20,994: 	 Executing command: 'submit'
+DEBUG 2017-01-07 08:35:20,998: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-07 08:35:21,005: 	 Checking credentials
+DEBUG 2017-01-07 08:35:21,005: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-07 08:35:21,005: 	 Getting proxy life time left
+DEBUG 2017-01-07 08:35:21,107: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41960
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:21,210: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41960
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:21,210: 	 Proxy valid for 11:39:20 hours
+DEBUG 2017-01-07 08:35:21,211: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-07 08:35:21,696: 	 Executing command: 'submit'
+DEBUG 2017-01-07 08:35:21,700: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-07 08:35:21,704: 	 Checking credentials
+DEBUG 2017-01-07 08:35:21,705: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-07 08:35:21,705: 	 Getting proxy life time left
+DEBUG 2017-01-07 08:35:21,807: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41960
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:21,909: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41960
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:21,909: 	 Proxy valid for 11:39:20 hours
+DEBUG 2017-01-07 08:35:21,910: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-07 08:35:22,322: 	 Executing command: 'submit'
+DEBUG 2017-01-07 08:35:22,325: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-07 08:35:22,330: 	 Checking credentials
+DEBUG 2017-01-07 08:35:22,330: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-07 08:35:22,330: 	 Getting proxy life time left
+DEBUG 2017-01-07 08:35:22,432: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41959
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:22,534: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41959
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:22,534: 	 Proxy valid for 11:39:19 hours
+DEBUG 2017-01-07 08:35:22,535: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-07 08:35:23,069: 	 Executing command: 'submit'
+DEBUG 2017-01-07 08:35:23,071: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-07 08:35:23,076: 	 Checking credentials
+DEBUG 2017-01-07 08:35:23,076: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-07 08:35:23,076: 	 Getting proxy life time left
+DEBUG 2017-01-07 08:35:23,179: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41958
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:23,282: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41958
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:23,282: 	 Proxy valid for 11:39:18 hours
+DEBUG 2017-01-07 08:35:23,283: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-07 08:35:23,741: 	 Executing command: 'submit'
+DEBUG 2017-01-07 08:35:23,744: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-07 08:35:23,749: 	 Checking credentials
+DEBUG 2017-01-07 08:35:23,749: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-07 08:35:23,749: 	 Getting proxy life time left
+DEBUG 2017-01-07 08:35:23,851: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41958
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:23,953: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41958
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:23,953: 	 Proxy valid for 11:39:18 hours
+DEBUG 2017-01-07 08:35:23,954: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-07 08:35:56,754: 	 Executing command: 'status'
+DEBUG 2017-01-07 08:35:56,755: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-07 08:35:56,767: 	 Checking credentials
+DEBUG 2017-01-07 08:35:56,767: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-07 08:35:56,767: 	 Getting proxy life time left
+DEBUG 2017-01-07 08:35:56,869: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41925
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:56,972: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41925
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-07 08:35:56,972: 	 Proxy valid for 11:38:45 hours
+ERROR 2017-01-07 08:35:56,972: 	 Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_RPVStopStopToJets_UDD323_M-100v01
+ERROR 2017-01-07 08:35:56,973: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 160, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 146, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 321, in __init__
+    self.loadLocalCache(proxyOptsSetPlace)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 450, in loadLocalCache
+    raise ex
+CachefileNotFoundException: Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_RPVStopStopToJets_UDD323_M-100v01
+DEBUG 2017-01-08 10:25:25,038: 	 Executing command: 'submit'
+DEBUG 2017-01-08 10:25:25,082: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-08 10:25:25,106: 	 Checking credentials
+DEBUG 2017-01-08 10:25:25,107: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-08 10:25:25,107: 	 Getting proxy life time left
+DEBUG 2017-01-08 10:25:25,210: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 43056
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-08 10:25:25,313: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 43056
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-08 10:25:25,313: 	 Proxy valid for 11:57:36 hours
+DEBUG 2017-01-08 10:25:25,314: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-08 11:37:00,135: 	 Executing command: 'checkwrite'
+DEBUG 2017-01-08 11:37:00,136: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+ERROR 2017-01-08 11:37:00,138: 	 Error: Please specify the site where to check the write permissions. Use the --site option.
+ERROR 2017-01-08 11:37:00,138: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 160, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 146, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/checkwrite.py", line 22, in __init__
+    SubCommand.__init__(self, logger, cmdargs)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 257, in __init__
+    self.validateOptions()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/checkwrite.py", line 249, in validateOptions
+    raise ex
+MissingOptionException: [91mError[0m: Please specify the site where to check the write permissions. Use the --site option.
+DEBUG 2017-01-08 11:37:14,146: 	 Executing command: 'checkwrite'
+DEBUG 2017-01-08 11:37:14,146: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-08 11:37:14,168: 	 Checking credentials
+DEBUG 2017-01-08 11:37:14,169: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-08 11:37:14,169: 	 Getting proxy life time left
+DEBUG 2017-01-08 11:37:14,272: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42741
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-08 11:37:14,375: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42741
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-08 11:37:14,375: 	 Proxy valid for 11:52:21 hours
+DEBUG 2017-01-08 11:37:14,484: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-08 11:37:14,484: 	 Checking credentials
+DEBUG 2017-01-08 11:37:14,484: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-08 11:37:14,484: 	 Getting proxy life time left
+DEBUG 2017-01-08 11:37:14,587: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42741
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-08 11:37:14,690: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42741
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-08 11:37:14,690: 	 Proxy valid for 11:52:21 hours
+DEBUG 2017-01-08 11:37:14,793: 	 Executing : 
+ command : env X509_USER_PROXY=/tmp/x509up_u50722 voms-proxy-info -fqan
+ output : /cms/Role=NULL/Capability=NULL
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-08 11:37:14,794: 	 Command use: checkwrite
+DEBUG 2017-01-08 11:37:14,794: 	 Options use: ['--site', 'T3_US_Rutgers']
+DEBUG 2017-01-08 11:37:14,794: 	 Instance is None
+DEBUG 2017-01-08 11:37:14,794: 	 Server base url is None
+DEBUG 2017-01-08 11:37:14,855: 	 Service initialised ({'endpoint': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'key': '/tmp/x509up_u50722', 'maxcachereuse': 24.0, 'cachepath': '/tmp/.wmcore_cache__D4wQj/cmsweb.cern.ch', 'inputdata': {}, 'cert': '/tmp/x509up_u50722', 'timeout': 300, 'service_name': 'PhEDEx', 'requests': {'content_type': 'application/x-www-form-urlencoded', 'cacheduration': 0, 'host': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'accept_type': 'text/html', 'key': '/tmp/x509up_u50722', 'deleteCacheOnExit': <WMCore.Services.Requests.TempDirectory object at 0x7f89fd3c0a90>, 'endpoint_components': ParseResult(scheme='https', netloc='cmsweb.cern.ch', path='/phedex/datasvc/json/prod/', params='', query='', fragment=''), 'endpoint': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'pycurl': True, 'cachepath': '/tmp/.wmcore_cache__D4wQj/cmsweb.cern.ch', 'cert': '/tmp/x509up_u50722', 'timeout': 300, 'req_cache_path': '/tmp/.wmcore_cache__D4wQj/cmsweb.cern.ch/.cache', 'logger': <logging.Logger object at 0x7f89fd3a2e10>}, 'logger': <logging.Logger object at 0x7f89fd3a2e10>, 'cacheduration': 0, 'method': None, 'pycurl': True}):
+	 host: cmsweb.cern.ch, basepath: https://cmsweb.cern.ch/phedex/datasvc/json/prod/ (text/html)
+	 cache: /tmp/.wmcore_cache__D4wQj/cmsweb.cern.ch (duration 0 hours, max reuse 24.0 hours)
+INFO 2017-01-08 11:37:14,855: 	 Will check write permission in the default location /store/user/<username>
+INFO 2017-01-08 11:37:14,855: 	 Retrieving DN from proxy...
+INFO 2017-01-08 11:37:15,447: 	 DN is: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+INFO 2017-01-08 11:37:15,448: 	 Retrieving username from SiteDB...
+INFO 2017-01-08 11:37:17,419: 	 Username is: jsomalwa
+INFO 2017-01-08 11:37:17,419: 	 Validating LFN /store/user/jsomalwa...
+INFO 2017-01-08 11:37:17,419: 	 LFN /store/user/jsomalwa is valid.
+INFO 2017-01-08 11:37:17,460: 	 Will use `gfal-copy`, `gfal-rm` commands for checking write permissions
+INFO 2017-01-08 11:37:17,460: 	 Will check write permission in /store/user/jsomalwa on site T3_US_Rutgers
+DEBUG 2017-01-08 11:37:17,463: 	 getData: 
+	url: lfn2pfn
+	data: {'node': ['T3_US_Rutgers'], 'custodial': 'n', 'lfn': ['/store/user/jsomalwa/crab3checkwrite_20170108_113717/crab3checkwrite_20170108_113717.tmp'], 'protocol': 'srmv2'}
+INFO 2017-01-08 11:37:18,560: 	 
+Attempting to create (dummy) directory crab3checkwrite_20170108_113717 and copy (dummy) file crab3checkwrite_20170108_113717.tmp to /store/user/jsomalwa
+
+INFO 2017-01-08 11:37:18,565: 	 Executing command: env -i X509_USER_PROXY=/tmp/x509up_u50722 gfal-copy -p -v -t 180 file:///uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab3checkwrite_20170108_113717.tmp 'srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/crab3checkwrite_20170108_113717/crab3checkwrite_20170108_113717.tmp'
+INFO 2017-01-08 11:37:18,565: 	 Please wait...
+INFO 2017-01-08 11:37:20,428: 	 
+Successfully created directory crab3checkwrite_20170108_113717 and copied file crab3checkwrite_20170108_113717.tmp to /store/user/jsomalwa
+INFO 2017-01-08 11:37:20,428: 	 
+Attempting to delete file srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/crab3checkwrite_20170108_113717/crab3checkwrite_20170108_113717.tmp
+
+INFO 2017-01-08 11:37:20,428: 	 Executing command: env -i X509_USER_PROXY=/tmp/x509up_u50722 gfal-rm -v -t 180 'srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/crab3checkwrite_20170108_113717/crab3checkwrite_20170108_113717.tmp'
+INFO 2017-01-08 11:37:20,428: 	 Please wait...
+INFO 2017-01-08 11:37:20,840: 	 
+Successfully deleted file srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/crab3checkwrite_20170108_113717/crab3checkwrite_20170108_113717.tmp
+INFO 2017-01-08 11:37:20,840: 	 
+Attempting to delete directory srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/crab3checkwrite_20170108_113717/
+
+INFO 2017-01-08 11:37:20,841: 	 Executing command: env -i X509_USER_PROXY=/tmp/x509up_u50722 gfal-rm -r -v -t 180 'srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/crab3checkwrite_20170108_113717/'
+INFO 2017-01-08 11:37:20,841: 	 Please wait...
+INFO 2017-01-08 11:37:21,451: 	 
+Successfully deleted directory srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/crab3checkwrite_20170108_113717/
+INFO 2017-01-08 11:37:21,453: 	 
+Checkwrite Result:
+INFO 2017-01-08 11:37:21,453: 	 Success: Able to write in /store/user/jsomalwa on site T3_US_Rutgers
+DEBUG 2017-01-09 13:22:58,811: 	 Executing command: 'status'
+DEBUG 2017-01-09 13:22:58,812: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-09 13:22:58,829: 	 Checking credentials
+DEBUG 2017-01-09 13:22:58,829: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-09 13:22:58,829: 	 Getting proxy life time left
+DEBUG 2017-01-09 13:22:58,931: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 38652
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-09 13:22:59,033: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 38652
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-09 13:22:59,034: 	 Proxy valid for 10:44:12 hours
+ERROR 2017-01-09 13:22:59,034: 	 Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_RPVStopStopToJets_UDD323_M-100v01
+ERROR 2017-01-09 13:22:59,034: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 160, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 146, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 321, in __init__
+    self.loadLocalCache(proxyOptsSetPlace)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 450, in loadLocalCache
+    raise ex
+CachefileNotFoundException: Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_RPVStopStopToJets_UDD323_M-100v01
+DEBUG 2017-01-09 14:38:29,843: 	 Executing command: 'submit'
+DEBUG 2017-01-09 14:38:29,874: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-09 14:38:29,887: 	 Checking credentials
+DEBUG 2017-01-09 14:38:29,887: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-09 14:38:29,887: 	 Getting proxy life time left
+DEBUG 2017-01-09 14:38:29,989: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42927
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-09 14:38:30,092: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42926
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-09 14:38:30,092: 	 Proxy valid for 11:55:27 hours
+DEBUG 2017-01-09 14:38:30,093: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-09 19:20:44,488: 	 Executing command: 'resubmit'
+DEBUG 2017-01-09 19:20:44,488: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-09 19:20:44,613: 	 Checking credentials
+DEBUG 2017-01-09 19:20:44,613: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-09 19:20:44,613: 	 Getting proxy life time left
+DEBUG 2017-01-09 19:20:44,715: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 25992
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-09 19:20:44,817: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 25992
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-09 19:20:44,817: 	 Proxy valid for 07:13:12 hours
+ERROR 2017-01-09 19:20:44,818: 	 Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_WWTo4Q_13TeV-powhegv01
+ERROR 2017-01-09 19:20:44,818: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 160, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 146, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/resubmit.py", line 26, in __init__
+    SubCommand.__init__(self, logger, cmdargs)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 321, in __init__
+    self.loadLocalCache(proxyOptsSetPlace)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 450, in loadLocalCache
+    raise ex
+CachefileNotFoundException: Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_WWTo4Q_13TeV-powhegv01
+DEBUG 2017-01-09 19:21:05,833: 	 Executing command: 'resubmit'
+DEBUG 2017-01-09 19:21:05,834: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-09 19:21:05,848: 	 Checking credentials
+DEBUG 2017-01-09 19:21:05,848: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-09 19:21:05,848: 	 Getting proxy life time left
+DEBUG 2017-01-09 19:21:05,951: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 25971
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-09 19:21:06,053: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 25971
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-09 19:21:06,053: 	 Proxy valid for 07:12:51 hours
+ERROR 2017-01-09 19:21:06,054: 	 Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8v01
+ERROR 2017-01-09 19:21:06,054: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 160, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 146, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/resubmit.py", line 26, in __init__
+    SubCommand.__init__(self, logger, cmdargs)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 321, in __init__
+    self.loadLocalCache(proxyOptsSetPlace)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 450, in loadLocalCache
+    raise ex
+CachefileNotFoundException: Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8v01
+DEBUG 2017-01-10 08:17:00,412: 	 Executing command: 'status'
+DEBUG 2017-01-10 08:17:00,413: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-10 08:17:00,422: 	 Checking credentials
+DEBUG 2017-01-10 08:17:00,422: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-10 08:17:00,422: 	 Getting proxy life time left
+DEBUG 2017-01-10 08:17:00,525: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42766
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-10 08:17:00,628: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42766
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-10 08:17:00,628: 	 Proxy valid for 11:52:46 hours
+ERROR 2017-01-10 08:17:00,629: 	 Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_WWTo4Q_13TeV-powhegv01
+ERROR 2017-01-10 08:17:00,629: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 160, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 146, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 321, in __init__
+    self.loadLocalCache(proxyOptsSetPlace)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 450, in loadLocalCache
+    raise ex
+CachefileNotFoundException: Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_WWTo4Q_13TeV-powhegv01
+DEBUG 2017-01-10 08:17:11,939: 	 Executing command: 'status'
+DEBUG 2017-01-10 08:17:11,939: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-10 08:17:11,948: 	 Checking credentials
+DEBUG 2017-01-10 08:17:11,949: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-10 08:17:11,949: 	 Getting proxy life time left
+DEBUG 2017-01-10 08:17:12,052: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42754
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-10 08:17:12,155: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42754
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-10 08:17:12,155: 	 Proxy valid for 11:52:34 hours
+ERROR 2017-01-10 08:17:12,156: 	 Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8v01
+ERROR 2017-01-10 08:17:12,156: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 160, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 146, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 321, in __init__
+    self.loadLocalCache(proxyOptsSetPlace)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 450, in loadLocalCache
+    raise ex
+CachefileNotFoundException: Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8v01
+DEBUG 2017-01-10 08:24:03,263: 	 Executing command: 'status'
+DEBUG 2017-01-10 08:24:03,264: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-10 08:24:03,272: 	 Checking credentials
+DEBUG 2017-01-10 08:24:03,273: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-10 08:24:03,273: 	 Getting proxy life time left
+DEBUG 2017-01-10 08:24:03,375: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42343
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-10 08:24:03,478: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42343
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-10 08:24:03,479: 	 Proxy valid for 11:45:43 hours
+ERROR 2017-01-10 08:24:03,479: 	 Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_WWTo4Q_13TeV-powhegv01
+ERROR 2017-01-10 08:24:03,479: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 160, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 146, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 321, in __init__
+    self.loadLocalCache(proxyOptsSetPlace)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 450, in loadLocalCache
+    raise ex
+CachefileNotFoundException: Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_WWTo4Q_13TeV-powhegv01
+DEBUG 2017-01-10 08:24:11,207: 	 Executing command: 'status'
+DEBUG 2017-01-10 08:24:11,208: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-10 08:24:11,217: 	 Checking credentials
+DEBUG 2017-01-10 08:24:11,217: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-10 08:24:11,217: 	 Getting proxy life time left
+DEBUG 2017-01-10 08:24:11,320: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 42335
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-10 08:24:11,423: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 42335
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-10 08:24:11,423: 	 Proxy valid for 11:45:35 hours
+ERROR 2017-01-10 08:24:11,424: 	 Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8v01
+ERROR 2017-01-10 08:24:11,424: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 160, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 146, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 321, in __init__
+    self.loadLocalCache(proxyOptsSetPlace)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 450, in loadLocalCache
+    raise ex
+CachefileNotFoundException: Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8v01
+DEBUG 2017-01-11 11:58:46,738: 	 Executing command: 'submit'
+DEBUG 2017-01-11 11:58:46,768: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 11:58:46,775: 	 Checking credentials
+DEBUG 2017-01-11 11:58:46,775: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 11:58:46,775: 	 Getting proxy life time left
+DEBUG 2017-01-11 11:58:46,877: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41442
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:46,979: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41442
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:46,979: 	 Proxy valid for 11:30:42 hours
+DEBUG 2017-01-11 11:58:46,980: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-11 11:58:47,440: 	 Executing command: 'submit'
+DEBUG 2017-01-11 11:58:47,443: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 11:58:47,448: 	 Checking credentials
+DEBUG 2017-01-11 11:58:47,448: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 11:58:47,448: 	 Getting proxy life time left
+DEBUG 2017-01-11 11:58:47,550: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41441
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:47,653: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41441
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:47,653: 	 Proxy valid for 11:30:41 hours
+DEBUG 2017-01-11 11:58:47,653: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-11 11:58:48,058: 	 Executing command: 'submit'
+DEBUG 2017-01-11 11:58:48,061: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 11:58:48,066: 	 Checking credentials
+DEBUG 2017-01-11 11:58:48,066: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 11:58:48,066: 	 Getting proxy life time left
+DEBUG 2017-01-11 11:58:48,168: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41440
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:48,270: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41440
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:48,270: 	 Proxy valid for 11:30:40 hours
+DEBUG 2017-01-11 11:58:48,271: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-11 11:58:48,668: 	 Executing command: 'submit'
+DEBUG 2017-01-11 11:58:48,671: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 11:58:48,676: 	 Checking credentials
+DEBUG 2017-01-11 11:58:48,676: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 11:58:48,676: 	 Getting proxy life time left
+DEBUG 2017-01-11 11:58:48,778: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41440
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:48,880: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41440
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:48,880: 	 Proxy valid for 11:30:40 hours
+DEBUG 2017-01-11 11:58:48,881: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-11 11:58:49,284: 	 Executing command: 'submit'
+DEBUG 2017-01-11 11:58:49,287: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 11:58:49,292: 	 Checking credentials
+DEBUG 2017-01-11 11:58:49,293: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 11:58:49,293: 	 Getting proxy life time left
+DEBUG 2017-01-11 11:58:49,395: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41439
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:49,497: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41439
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:49,497: 	 Proxy valid for 11:30:39 hours
+DEBUG 2017-01-11 11:58:49,498: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-11 11:58:49,923: 	 Executing command: 'submit'
+DEBUG 2017-01-11 11:58:49,927: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 11:58:49,931: 	 Checking credentials
+DEBUG 2017-01-11 11:58:49,931: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 11:58:49,931: 	 Getting proxy life time left
+DEBUG 2017-01-11 11:58:50,033: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41439
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:50,135: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41438
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:50,135: 	 Proxy valid for 11:30:39 hours
+DEBUG 2017-01-11 11:58:50,136: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-11 11:58:50,537: 	 Executing command: 'submit'
+DEBUG 2017-01-11 11:58:50,539: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 11:58:50,544: 	 Checking credentials
+DEBUG 2017-01-11 11:58:50,544: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 11:58:50,544: 	 Getting proxy life time left
+DEBUG 2017-01-11 11:58:50,646: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41438
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:50,748: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41438
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:50,748: 	 Proxy valid for 11:30:38 hours
+DEBUG 2017-01-11 11:58:50,749: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-11 11:58:51,152: 	 Executing command: 'submit'
+DEBUG 2017-01-11 11:58:51,155: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 11:58:51,159: 	 Checking credentials
+DEBUG 2017-01-11 11:58:51,160: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 11:58:51,160: 	 Getting proxy life time left
+DEBUG 2017-01-11 11:58:51,261: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41437
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:51,364: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41437
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:51,364: 	 Proxy valid for 11:30:37 hours
+DEBUG 2017-01-11 11:58:51,364: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-11 11:58:51,781: 	 Executing command: 'submit'
+DEBUG 2017-01-11 11:58:51,784: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 11:58:51,788: 	 Checking credentials
+DEBUG 2017-01-11 11:58:51,789: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 11:58:51,789: 	 Getting proxy life time left
+DEBUG 2017-01-11 11:58:51,890: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41437
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:51,993: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41437
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:51,993: 	 Proxy valid for 11:30:37 hours
+DEBUG 2017-01-11 11:58:51,994: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-11 11:58:52,403: 	 Executing command: 'submit'
+DEBUG 2017-01-11 11:58:52,406: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 11:58:52,410: 	 Checking credentials
+DEBUG 2017-01-11 11:58:52,410: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 11:58:52,410: 	 Getting proxy life time left
+DEBUG 2017-01-11 11:58:52,512: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41436
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:52,614: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41436
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:52,614: 	 Proxy valid for 11:30:36 hours
+DEBUG 2017-01-11 11:58:52,615: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-11 11:58:53,019: 	 Executing command: 'submit'
+DEBUG 2017-01-11 11:58:53,021: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 11:58:53,026: 	 Checking credentials
+DEBUG 2017-01-11 11:58:53,026: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 11:58:53,026: 	 Getting proxy life time left
+DEBUG 2017-01-11 11:58:53,128: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41435
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:53,230: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41435
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:53,230: 	 Proxy valid for 11:30:35 hours
+DEBUG 2017-01-11 11:58:53,231: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-11 11:58:53,653: 	 Executing command: 'submit'
+DEBUG 2017-01-11 11:58:53,656: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 11:58:53,661: 	 Checking credentials
+DEBUG 2017-01-11 11:58:53,661: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 11:58:53,661: 	 Getting proxy life time left
+DEBUG 2017-01-11 11:58:53,763: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41435
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:53,865: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41435
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:53,865: 	 Proxy valid for 11:30:35 hours
+DEBUG 2017-01-11 11:58:53,866: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-11 11:58:54,274: 	 Executing command: 'submit'
+DEBUG 2017-01-11 11:58:54,277: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 11:58:54,281: 	 Checking credentials
+DEBUG 2017-01-11 11:58:54,281: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 11:58:54,281: 	 Getting proxy life time left
+DEBUG 2017-01-11 11:58:54,383: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41434
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:54,485: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41434
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:54,486: 	 Proxy valid for 11:30:34 hours
+DEBUG 2017-01-11 11:58:54,486: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-11 11:58:54,884: 	 Executing command: 'submit'
+DEBUG 2017-01-11 11:58:54,887: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 11:58:54,891: 	 Checking credentials
+DEBUG 2017-01-11 11:58:54,891: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 11:58:54,891: 	 Getting proxy life time left
+DEBUG 2017-01-11 11:58:54,993: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41434
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:55,095: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41433
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:55,095: 	 Proxy valid for 11:30:34 hours
+DEBUG 2017-01-11 11:58:55,096: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-11 11:58:55,522: 	 Executing command: 'submit'
+DEBUG 2017-01-11 11:58:55,525: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 11:58:55,529: 	 Checking credentials
+DEBUG 2017-01-11 11:58:55,529: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 11:58:55,529: 	 Getting proxy life time left
+DEBUG 2017-01-11 11:58:55,631: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41433
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:55,733: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41433
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 11:58:55,733: 	 Proxy valid for 11:30:33 hours
+DEBUG 2017-01-11 11:58:55,734: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
+DEBUG 2017-01-11 12:01:52,594: 	 Executing command: 'kill'
+DEBUG 2017-01-11 12:01:52,594: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 12:01:52,600: 	 Checking credentials
+DEBUG 2017-01-11 12:01:52,600: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 12:01:52,601: 	 Getting proxy life time left
+DEBUG 2017-01-11 12:01:52,703: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41256
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:01:52,806: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41256
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:01:52,806: 	 Proxy valid for 11:27:36 hours
+ERROR 2017-01-11 12:01:52,807: 	 Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_QCD_Pt_1800to2400v01
+ERROR 2017-01-11 12:01:52,807: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 160, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 146, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 321, in __init__
+    self.loadLocalCache(proxyOptsSetPlace)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 450, in loadLocalCache
+    raise ex
+CachefileNotFoundException: Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_QCD_Pt_1800to2400v01
+DEBUG 2017-01-11 12:02:31,480: 	 Executing command: 'kill'
+DEBUG 2017-01-11 12:02:31,480: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 12:02:31,486: 	 Checking credentials
+DEBUG 2017-01-11 12:02:31,486: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 12:02:31,488: 	 Getting proxy life time left
+DEBUG 2017-01-11 12:02:31,590: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41217
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:02:31,693: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41217
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:02:31,693: 	 Proxy valid for 11:26:57 hours
+ERROR 2017-01-11 12:02:31,693: 	 Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_QCD_Pt_1800to2400v01
+ERROR 2017-01-11 12:02:31,693: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 160, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 146, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 321, in __init__
+    self.loadLocalCache(proxyOptsSetPlace)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 450, in loadLocalCache
+    raise ex
+CachefileNotFoundException: Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_QCD_Pt_1800to2400v01
+DEBUG 2017-01-11 12:03:27,418: 	 Executing command: 'kill'
+DEBUG 2017-01-11 12:03:27,419: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 12:03:27,423: 	 Checking credentials
+DEBUG 2017-01-11 12:03:27,424: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 12:03:27,425: 	 Getting proxy life time left
+DEBUG 2017-01-11 12:03:27,527: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 41161
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:03:27,629: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 41161
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:03:27,629: 	 Proxy valid for 11:26:01 hours
+ERROR 2017-01-11 12:03:27,629: 	 Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_QCD_Pt_1800to2400v01
+ERROR 2017-01-11 12:03:27,629: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 160, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 146, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 321, in __init__
+    self.loadLocalCache(proxyOptsSetPlace)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 450, in loadLocalCache
+    raise ex
+CachefileNotFoundException: Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_QCD_Pt_1800to2400v01
+DEBUG 2017-01-11 12:45:39,879: 	 Executing command: 'status'
+DEBUG 2017-01-11 12:45:39,880: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 12:45:39,886: 	 Checking credentials
+DEBUG 2017-01-11 12:45:39,887: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 12:45:39,887: 	 Getting proxy life time left
+DEBUG 2017-01-11 12:45:39,989: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 38629
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:45:40,091: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 38628
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:45:40,092: 	 Proxy valid for 10:43:49 hours
+ERROR 2017-01-11 12:45:40,092: 	 Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_TTv01
+ERROR 2017-01-11 12:45:40,092: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 160, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 146, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 321, in __init__
+    self.loadLocalCache(proxyOptsSetPlace)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 450, in loadLocalCache
+    raise ex
+CachefileNotFoundException: Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_TTv01
+DEBUG 2017-01-11 12:50:06,469: 	 Executing command: 'checkwrite'
+DEBUG 2017-01-11 12:50:06,469: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+WARNING 2017-01-11 12:50:06,471: 	 Warning: 'crab checkwrite' command takes no arguments, 1 given. Ignoring arguments ['T3_US_Rutgers'].
+ERROR 2017-01-11 12:50:06,471: 	 Error: Please specify the site where to check the write permissions. Use the --site option.
+ERROR 2017-01-11 12:50:06,471: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 160, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 146, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/checkwrite.py", line 22, in __init__
+    SubCommand.__init__(self, logger, cmdargs)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 257, in __init__
+    self.validateOptions()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/checkwrite.py", line 249, in validateOptions
+    raise ex
+MissingOptionException: [91mError[0m: Please specify the site where to check the write permissions. Use the --site option.
+DEBUG 2017-01-11 12:50:12,505: 	 Executing command: 'checkwrite'
+DEBUG 2017-01-11 12:50:12,505: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 12:50:12,514: 	 Checking credentials
+DEBUG 2017-01-11 12:50:12,514: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 12:50:12,514: 	 Getting proxy life time left
+DEBUG 2017-01-11 12:50:12,616: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 38356
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:50:12,718: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 38356
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:50:12,718: 	 Proxy valid for 10:39:16 hours
+DEBUG 2017-01-11 12:50:12,824: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:50:12,824: 	 Checking credentials
+DEBUG 2017-01-11 12:50:12,824: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 12:50:12,824: 	 Getting proxy life time left
+DEBUG 2017-01-11 12:50:12,926: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 38356
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:50:13,028: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 38356
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:50:13,029: 	 Proxy valid for 10:39:16 hours
+DEBUG 2017-01-11 12:50:13,131: 	 Executing : 
+ command : env X509_USER_PROXY=/tmp/x509up_u50722 voms-proxy-info -fqan
+ output : /cms/Role=NULL/Capability=NULL
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:50:13,131: 	 Command use: checkwrite
+DEBUG 2017-01-11 12:50:13,131: 	 Options use: ['--site', 'T3_US_Rutgers']
+DEBUG 2017-01-11 12:50:13,131: 	 Instance is None
+DEBUG 2017-01-11 12:50:13,131: 	 Server base url is None
+DEBUG 2017-01-11 12:50:13,173: 	 Service initialised ({'endpoint': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'key': '/tmp/x509up_u50722', 'maxcachereuse': 24.0, 'cachepath': '/tmp/.wmcore_cache_T36EkE/cmsweb.cern.ch', 'inputdata': {}, 'cert': '/tmp/x509up_u50722', 'timeout': 300, 'service_name': 'PhEDEx', 'requests': {'content_type': 'application/x-www-form-urlencoded', 'cacheduration': 0, 'host': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'accept_type': 'text/html', 'key': '/tmp/x509up_u50722', 'deleteCacheOnExit': <WMCore.Services.Requests.TempDirectory object at 0x7fa4af2a8a90>, 'endpoint_components': ParseResult(scheme='https', netloc='cmsweb.cern.ch', path='/phedex/datasvc/json/prod/', params='', query='', fragment=''), 'endpoint': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'pycurl': True, 'cachepath': '/tmp/.wmcore_cache_T36EkE/cmsweb.cern.ch', 'cert': '/tmp/x509up_u50722', 'timeout': 300, 'req_cache_path': '/tmp/.wmcore_cache_T36EkE/cmsweb.cern.ch/.cache', 'logger': <logging.Logger object at 0x7fa4af28be10>}, 'logger': <logging.Logger object at 0x7fa4af28be10>, 'cacheduration': 0, 'method': None, 'pycurl': True}):
+	 host: cmsweb.cern.ch, basepath: https://cmsweb.cern.ch/phedex/datasvc/json/prod/ (text/html)
+	 cache: /tmp/.wmcore_cache_T36EkE/cmsweb.cern.ch (duration 0 hours, max reuse 24.0 hours)
+INFO 2017-01-11 12:50:13,173: 	 Will check write permission in the default location /store/user/<username>
+INFO 2017-01-11 12:50:13,173: 	 Retrieving DN from proxy...
+INFO 2017-01-11 12:50:13,568: 	 DN is: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+INFO 2017-01-11 12:50:13,569: 	 Retrieving username from SiteDB...
+INFO 2017-01-11 12:50:14,976: 	 Username is: jsomalwa
+INFO 2017-01-11 12:50:14,976: 	 Validating LFN /store/user/jsomalwa...
+INFO 2017-01-11 12:50:14,977: 	 LFN /store/user/jsomalwa is valid.
+INFO 2017-01-11 12:50:15,004: 	 Will use `gfal-copy`, `gfal-rm` commands for checking write permissions
+INFO 2017-01-11 12:50:15,004: 	 Will check write permission in /store/user/jsomalwa on site T3_US_Rutgers
+DEBUG 2017-01-11 12:50:15,007: 	 getData: 
+	url: lfn2pfn
+	data: {'node': ['T3_US_Rutgers'], 'custodial': 'n', 'lfn': ['/store/user/jsomalwa/crab3checkwrite_20170111_125015/crab3checkwrite_20170111_125015.tmp'], 'protocol': 'srmv2'}
+INFO 2017-01-11 12:50:16,044: 	 
+Attempting to create (dummy) directory crab3checkwrite_20170111_125015 and copy (dummy) file crab3checkwrite_20170111_125015.tmp to /store/user/jsomalwa
+
+INFO 2017-01-11 12:50:16,047: 	 Executing command: env -i X509_USER_PROXY=/tmp/x509up_u50722 gfal-copy -p -v -t 180 file:///uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab3checkwrite_20170111_125015.tmp 'srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/crab3checkwrite_20170111_125015/crab3checkwrite_20170111_125015.tmp'
+INFO 2017-01-11 12:50:16,047: 	 Please wait...
+INFO 2017-01-11 12:50:17,566: 	 
+Successfully created directory crab3checkwrite_20170111_125015 and copied file crab3checkwrite_20170111_125015.tmp to /store/user/jsomalwa
+INFO 2017-01-11 12:50:17,566: 	 
+Attempting to delete file srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/crab3checkwrite_20170111_125015/crab3checkwrite_20170111_125015.tmp
+
+INFO 2017-01-11 12:50:17,566: 	 Executing command: env -i X509_USER_PROXY=/tmp/x509up_u50722 gfal-rm -v -t 180 'srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/crab3checkwrite_20170111_125015/crab3checkwrite_20170111_125015.tmp'
+INFO 2017-01-11 12:50:17,567: 	 Please wait...
+INFO 2017-01-11 12:50:17,889: 	 
+Successfully deleted file srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/crab3checkwrite_20170111_125015/crab3checkwrite_20170111_125015.tmp
+INFO 2017-01-11 12:50:17,890: 	 
+Attempting to delete directory srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/crab3checkwrite_20170111_125015/
+
+INFO 2017-01-11 12:50:17,890: 	 Executing command: env -i X509_USER_PROXY=/tmp/x509up_u50722 gfal-rm -r -v -t 180 'srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/crab3checkwrite_20170111_125015/'
+INFO 2017-01-11 12:50:17,890: 	 Please wait...
+INFO 2017-01-11 12:50:18,363: 	 
+Successfully deleted directory srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/crab3checkwrite_20170111_125015/
+INFO 2017-01-11 12:50:18,364: 	 
+Checkwrite Result:
+INFO 2017-01-11 12:50:18,364: 	 Success: Able to write in /store/user/jsomalwa on site T3_US_Rutgers
+DEBUG 2017-01-11 12:50:26,311: 	 Executing command: 'checkwrite'
+DEBUG 2017-01-11 12:50:26,312: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 12:51:08,677: 	 Executing command: 'checkwrite'
+DEBUG 2017-01-11 12:51:08,678: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 12:51:08,690: 	 Checking credentials
+DEBUG 2017-01-11 12:51:08,690: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 12:51:08,690: 	 Getting proxy life time left
+DEBUG 2017-01-11 12:51:08,792: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 38300
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:51:08,894: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 38300
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:51:08,895: 	 Proxy valid for 10:38:20 hours
+DEBUG 2017-01-11 12:51:09,001: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:51:09,001: 	 Checking credentials
+DEBUG 2017-01-11 12:51:09,001: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 12:51:09,001: 	 Getting proxy life time left
+DEBUG 2017-01-11 12:51:09,103: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 38299
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:51:09,205: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 38299
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:51:09,205: 	 Proxy valid for 10:38:19 hours
+DEBUG 2017-01-11 12:51:09,307: 	 Executing : 
+ command : env X509_USER_PROXY=/tmp/x509up_u50722 voms-proxy-info -fqan
+ output : /cms/Role=NULL/Capability=NULL
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:51:09,307: 	 Command use: checkwrite
+DEBUG 2017-01-11 12:51:09,307: 	 Options use: ['--site', 'T3_US_Rutgers', '--lfn', '/store/user/jsomalwa/EOSArea/']
+DEBUG 2017-01-11 12:51:09,307: 	 Instance is None
+DEBUG 2017-01-11 12:51:09,307: 	 Server base url is None
+DEBUG 2017-01-11 12:51:09,311: 	 Service initialised ({'endpoint': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'key': '/tmp/x509up_u50722', 'maxcachereuse': 24.0, 'cachepath': '/tmp/.wmcore_cache_B8V1ps/cmsweb.cern.ch', 'inputdata': {}, 'cert': '/tmp/x509up_u50722', 'timeout': 300, 'service_name': 'PhEDEx', 'requests': {'content_type': 'application/x-www-form-urlencoded', 'cacheduration': 0, 'host': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'accept_type': 'text/html', 'key': '/tmp/x509up_u50722', 'deleteCacheOnExit': <WMCore.Services.Requests.TempDirectory object at 0x7f14f3af4a90>, 'endpoint_components': ParseResult(scheme='https', netloc='cmsweb.cern.ch', path='/phedex/datasvc/json/prod/', params='', query='', fragment=''), 'endpoint': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'pycurl': True, 'cachepath': '/tmp/.wmcore_cache_B8V1ps/cmsweb.cern.ch', 'cert': '/tmp/x509up_u50722', 'timeout': 300, 'req_cache_path': '/tmp/.wmcore_cache_B8V1ps/cmsweb.cern.ch/.cache', 'logger': <logging.Logger object at 0x7f14f3ad7e10>}, 'logger': <logging.Logger object at 0x7f14f3ad7e10>, 'cacheduration': 0, 'method': None, 'pycurl': True}):
+	 host: cmsweb.cern.ch, basepath: https://cmsweb.cern.ch/phedex/datasvc/json/prod/ (text/html)
+	 cache: /tmp/.wmcore_cache_B8V1ps/cmsweb.cern.ch (duration 0 hours, max reuse 24.0 hours)
+INFO 2017-01-11 12:51:09,311: 	 Validating LFN /store/user/jsomalwa/EOSArea/...
+INFO 2017-01-11 12:51:09,311: 	 Retrieving DN from proxy...
+INFO 2017-01-11 12:51:09,620: 	 DN is: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+INFO 2017-01-11 12:51:09,620: 	 Retrieving username from SiteDB...
+INFO 2017-01-11 12:51:10,972: 	 Username is: jsomalwa
+INFO 2017-01-11 12:51:10,972: 	 LFN /store/user/jsomalwa/EOSArea/ is valid.
+INFO 2017-01-11 12:51:10,977: 	 Will use `gfal-copy`, `gfal-rm` commands for checking write permissions
+INFO 2017-01-11 12:51:10,977: 	 Will check write permission in /store/user/jsomalwa/EOSArea/ on site T3_US_Rutgers
+DEBUG 2017-01-11 12:51:10,979: 	 getData: 
+	url: lfn2pfn
+	data: {'node': ['T3_US_Rutgers'], 'custodial': 'n', 'lfn': ['/store/user/jsomalwa/EOSArea//crab3checkwrite_20170111_125110/crab3checkwrite_20170111_125110.tmp'], 'protocol': 'srmv2'}
+INFO 2017-01-11 12:51:11,851: 	 
+Attempting to create (dummy) directory crab3checkwrite_20170111_125110 and copy (dummy) file crab3checkwrite_20170111_125110.tmp to /store/user/jsomalwa/EOSArea/
+
+INFO 2017-01-11 12:51:11,854: 	 Executing command: env -i X509_USER_PROXY=/tmp/x509up_u50722 gfal-copy -p -v -t 180 file:///uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab3checkwrite_20170111_125110.tmp 'srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOSArea//crab3checkwrite_20170111_125110/crab3checkwrite_20170111_125110.tmp'
+INFO 2017-01-11 12:51:11,854: 	 Please wait...
+INFO 2017-01-11 12:51:12,327: 	 Failed running copy command
+INFO 2017-01-11 12:51:12,327: 	   Stdout:
+    Copying 85 bytes file:///uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab3checkwrite_20170111_125110.tmp => srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOSArea//crab3checkwrite_20170111_125110/crab3checkwrite_20170111_125110.tmp
+    event: [1484160672151] BOTH   GFAL2:CORE:COPY	LIST:ENTER	
+    event: [1484160672151] BOTH   GFAL2:CORE:COPY	LIST:ITEM	file:///uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab3checkwrite_20170111_125110.tmp => srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOSArea//crab3checkwrite_20170111_125110/crab3checkwrite_20170111_125110.tmp
+    event: [1484160672151] BOTH   GFAL2:CORE:COPY	LIST:EXIT	
+    event: [1484160672188] BOTH   SRM	PREPARE:ENTER	
+    
+INFO 2017-01-11 12:51:12,328: 	   Stderr:
+    WARNING Transfer failed with: DESTINATION MAKE_PARENT srm-ifce err: Input/output error, err: [SE][Mkdir][SRM_FAILURE] httpg://ruhex-osgce.rutgers.edu:8443/srm/v2/server: srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOSArea//crab3checkwrite_20170111_125110: [/cms/jeans/EOS/crab3checkwrite_20170111_125110] is not in allowed list. Will not access it
+    
+    gfal-copy error: 5 (Input/output error) - DESTINATION MAKE_PARENT srm-ifce err: Input/output error, err: [SE][Mkdir][SRM_FAILURE] httpg://ruhex-osgce.rutgers.edu:8443/srm/v2/server: srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOSArea//crab3checkwrite_20170111_125110: [/cms/jeans/EOS/crab3checkwrite_20170111_125110] is not in allowed list. Will not access it
+    
+    
+INFO 2017-01-11 12:51:12,329: 	 
+Checkwrite Result:
+INFO 2017-01-11 12:51:12,329: 	 Unable to check write permission in /store/user/jsomalwa/EOSArea/ on site T3_US_Rutgers
+Please try again later or contact the site administrators sending them the 'crab checkwrite' output as printed above.
+INFO 2017-01-11 12:51:12,329: 	 Note: You cannot write to a site if you did not ask permission.
+DEBUG 2017-01-11 12:53:37,438: 	 Executing command: 'checkwrite'
+DEBUG 2017-01-11 12:53:37,439: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 12:53:37,456: 	 Checking credentials
+DEBUG 2017-01-11 12:53:37,456: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 12:53:37,457: 	 Getting proxy life time left
+DEBUG 2017-01-11 12:53:37,559: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 38151
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:53:37,661: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 38151
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:53:37,661: 	 Proxy valid for 10:35:51 hours
+DEBUG 2017-01-11 12:53:37,767: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:53:37,767: 	 Checking credentials
+DEBUG 2017-01-11 12:53:37,767: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 12:53:37,767: 	 Getting proxy life time left
+DEBUG 2017-01-11 12:53:37,869: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 38151
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:53:37,972: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 38151
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:53:37,972: 	 Proxy valid for 10:35:51 hours
+DEBUG 2017-01-11 12:53:38,074: 	 Executing : 
+ command : env X509_USER_PROXY=/tmp/x509up_u50722 voms-proxy-info -fqan
+ output : /cms/Role=NULL/Capability=NULL
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:53:38,074: 	 Command use: checkwrite
+DEBUG 2017-01-11 12:53:38,074: 	 Options use: ['--site', 'T3_US_Rutgers', '--lfn', '/store/user/jsomalwa/EOSArea/']
+DEBUG 2017-01-11 12:53:38,074: 	 Instance is None
+DEBUG 2017-01-11 12:53:38,074: 	 Server base url is None
+DEBUG 2017-01-11 12:53:38,109: 	 Service initialised ({'endpoint': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'key': '/tmp/x509up_u50722', 'maxcachereuse': 24.0, 'cachepath': '/tmp/.wmcore_cache_8X8fil/cmsweb.cern.ch', 'inputdata': {}, 'cert': '/tmp/x509up_u50722', 'timeout': 300, 'service_name': 'PhEDEx', 'requests': {'content_type': 'application/x-www-form-urlencoded', 'cacheduration': 0, 'host': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'accept_type': 'text/html', 'key': '/tmp/x509up_u50722', 'deleteCacheOnExit': <WMCore.Services.Requests.TempDirectory object at 0x7fce33622a90>, 'endpoint_components': ParseResult(scheme='https', netloc='cmsweb.cern.ch', path='/phedex/datasvc/json/prod/', params='', query='', fragment=''), 'endpoint': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'pycurl': True, 'cachepath': '/tmp/.wmcore_cache_8X8fil/cmsweb.cern.ch', 'cert': '/tmp/x509up_u50722', 'timeout': 300, 'req_cache_path': '/tmp/.wmcore_cache_8X8fil/cmsweb.cern.ch/.cache', 'logger': <logging.Logger object at 0x7fce33605e10>}, 'logger': <logging.Logger object at 0x7fce33605e10>, 'cacheduration': 0, 'method': None, 'pycurl': True}):
+	 host: cmsweb.cern.ch, basepath: https://cmsweb.cern.ch/phedex/datasvc/json/prod/ (text/html)
+	 cache: /tmp/.wmcore_cache_8X8fil/cmsweb.cern.ch (duration 0 hours, max reuse 24.0 hours)
+INFO 2017-01-11 12:53:38,110: 	 Validating LFN /store/user/jsomalwa/EOSArea/...
+INFO 2017-01-11 12:53:38,110: 	 Retrieving DN from proxy...
+INFO 2017-01-11 12:53:38,468: 	 DN is: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+INFO 2017-01-11 12:53:38,468: 	 Retrieving username from SiteDB...
+INFO 2017-01-11 12:53:39,860: 	 Username is: jsomalwa
+INFO 2017-01-11 12:53:39,860: 	 LFN /store/user/jsomalwa/EOSArea/ is valid.
+INFO 2017-01-11 12:53:39,869: 	 Will use `gfal-copy`, `gfal-rm` commands for checking write permissions
+INFO 2017-01-11 12:53:39,869: 	 Will check write permission in /store/user/jsomalwa/EOSArea/ on site T3_US_Rutgers
+DEBUG 2017-01-11 12:53:39,872: 	 getData: 
+	url: lfn2pfn
+	data: {'node': ['T3_US_Rutgers'], 'custodial': 'n', 'lfn': ['/store/user/jsomalwa/EOSArea//crab3checkwrite_20170111_125339/crab3checkwrite_20170111_125339.tmp'], 'protocol': 'srmv2'}
+INFO 2017-01-11 12:53:40,758: 	 
+Attempting to create (dummy) directory crab3checkwrite_20170111_125339 and copy (dummy) file crab3checkwrite_20170111_125339.tmp to /store/user/jsomalwa/EOSArea/
+
+INFO 2017-01-11 12:53:40,761: 	 Executing command: env -i X509_USER_PROXY=/tmp/x509up_u50722 gfal-copy -p -v -t 180 file:///uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab3checkwrite_20170111_125339.tmp 'srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOSArea//crab3checkwrite_20170111_125339/crab3checkwrite_20170111_125339.tmp'
+INFO 2017-01-11 12:53:40,761: 	 Please wait...
+INFO 2017-01-11 12:53:41,186: 	 Failed running copy command
+INFO 2017-01-11 12:53:41,186: 	   Stdout:
+    Copying 85 bytes file:///uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab3checkwrite_20170111_125339.tmp => srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOSArea//crab3checkwrite_20170111_125339/crab3checkwrite_20170111_125339.tmp
+    event: [1484160821033] BOTH   GFAL2:CORE:COPY	LIST:ENTER	
+    event: [1484160821033] BOTH   GFAL2:CORE:COPY	LIST:ITEM	file:///uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab3checkwrite_20170111_125339.tmp => srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOSArea//crab3checkwrite_20170111_125339/crab3checkwrite_20170111_125339.tmp
+    event: [1484160821033] BOTH   GFAL2:CORE:COPY	LIST:EXIT	
+    event: [1484160821068] BOTH   SRM	PREPARE:ENTER	
+    
+INFO 2017-01-11 12:53:41,186: 	   Stderr:
+    WARNING Transfer failed with: DESTINATION MAKE_PARENT srm-ifce err: Input/output error, err: [SE][Mkdir][SRM_FAILURE] httpg://ruhex-osgce.rutgers.edu:8443/srm/v2/server: srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOSArea//crab3checkwrite_20170111_125339: [/cms/jeans/EOSArea/crab3checkwrite_20170111_125339] is not in allowed list. Will not access it
+    
+    gfal-copy error: 5 (Input/output error) - DESTINATION MAKE_PARENT srm-ifce err: Input/output error, err: [SE][Mkdir][SRM_FAILURE] httpg://ruhex-osgce.rutgers.edu:8443/srm/v2/server: srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOSArea//crab3checkwrite_20170111_125339: [/cms/jeans/EOSArea/crab3checkwrite_20170111_125339] is not in allowed list. Will not access it
+    
+    
+INFO 2017-01-11 12:53:41,187: 	 
+Checkwrite Result:
+INFO 2017-01-11 12:53:41,187: 	 Unable to check write permission in /store/user/jsomalwa/EOSArea/ on site T3_US_Rutgers
+Please try again later or contact the site administrators sending them the 'crab checkwrite' output as printed above.
+INFO 2017-01-11 12:53:41,187: 	 Note: You cannot write to a site if you did not ask permission.
+DEBUG 2017-01-11 12:55:27,498: 	 Executing command: 'checkwrite'
+DEBUG 2017-01-11 12:55:27,499: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 12:55:27,514: 	 Checking credentials
+DEBUG 2017-01-11 12:55:27,514: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 12:55:27,514: 	 Getting proxy life time left
+DEBUG 2017-01-11 12:55:27,616: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 38041
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:55:27,718: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 38041
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:55:27,719: 	 Proxy valid for 10:34:01 hours
+DEBUG 2017-01-11 12:55:27,824: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:55:27,824: 	 Checking credentials
+DEBUG 2017-01-11 12:55:27,825: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 12:55:27,825: 	 Getting proxy life time left
+DEBUG 2017-01-11 12:55:27,927: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 38041
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:55:28,029: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 38041
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:55:28,029: 	 Proxy valid for 10:34:01 hours
+DEBUG 2017-01-11 12:55:28,131: 	 Executing : 
+ command : env X509_USER_PROXY=/tmp/x509up_u50722 voms-proxy-info -fqan
+ output : /cms/Role=NULL/Capability=NULL
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:55:28,132: 	 Command use: checkwrite
+DEBUG 2017-01-11 12:55:28,132: 	 Options use: ['--site', 'T3_US_Rutgers', '--lfn', '/store/user/jsomalwa/EOS']
+DEBUG 2017-01-11 12:55:28,132: 	 Instance is None
+DEBUG 2017-01-11 12:55:28,132: 	 Server base url is None
+DEBUG 2017-01-11 12:55:28,169: 	 Service initialised ({'endpoint': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'key': '/tmp/x509up_u50722', 'maxcachereuse': 24.0, 'cachepath': '/tmp/.wmcore_cache_HewK1h/cmsweb.cern.ch', 'inputdata': {}, 'cert': '/tmp/x509up_u50722', 'timeout': 300, 'service_name': 'PhEDEx', 'requests': {'content_type': 'application/x-www-form-urlencoded', 'cacheduration': 0, 'host': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'accept_type': 'text/html', 'key': '/tmp/x509up_u50722', 'deleteCacheOnExit': <WMCore.Services.Requests.TempDirectory object at 0x7f159f4b5ad0>, 'endpoint_components': ParseResult(scheme='https', netloc='cmsweb.cern.ch', path='/phedex/datasvc/json/prod/', params='', query='', fragment=''), 'endpoint': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'pycurl': True, 'cachepath': '/tmp/.wmcore_cache_HewK1h/cmsweb.cern.ch', 'cert': '/tmp/x509up_u50722', 'timeout': 300, 'req_cache_path': '/tmp/.wmcore_cache_HewK1h/cmsweb.cern.ch/.cache', 'logger': <logging.Logger object at 0x7f159f49be50>}, 'logger': <logging.Logger object at 0x7f159f49be50>, 'cacheduration': 0, 'method': None, 'pycurl': True}):
+	 host: cmsweb.cern.ch, basepath: https://cmsweb.cern.ch/phedex/datasvc/json/prod/ (text/html)
+	 cache: /tmp/.wmcore_cache_HewK1h/cmsweb.cern.ch (duration 0 hours, max reuse 24.0 hours)
+INFO 2017-01-11 12:55:28,169: 	 Validating LFN /store/user/jsomalwa/EOS...
+INFO 2017-01-11 12:55:28,169: 	 Retrieving DN from proxy...
+INFO 2017-01-11 12:55:28,535: 	 DN is: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+INFO 2017-01-11 12:55:28,535: 	 Retrieving username from SiteDB...
+INFO 2017-01-11 12:55:29,907: 	 Username is: jsomalwa
+INFO 2017-01-11 12:55:29,907: 	 LFN /store/user/jsomalwa/EOS is valid.
+INFO 2017-01-11 12:55:29,916: 	 Will use `gfal-copy`, `gfal-rm` commands for checking write permissions
+INFO 2017-01-11 12:55:29,916: 	 Will check write permission in /store/user/jsomalwa/EOS on site T3_US_Rutgers
+DEBUG 2017-01-11 12:55:29,918: 	 getData: 
+	url: lfn2pfn
+	data: {'node': ['T3_US_Rutgers'], 'custodial': 'n', 'lfn': ['/store/user/jsomalwa/EOS/crab3checkwrite_20170111_125529/crab3checkwrite_20170111_125529.tmp'], 'protocol': 'srmv2'}
+INFO 2017-01-11 12:55:30,800: 	 
+Attempting to create (dummy) directory crab3checkwrite_20170111_125529 and copy (dummy) file crab3checkwrite_20170111_125529.tmp to /store/user/jsomalwa/EOS
+
+INFO 2017-01-11 12:55:30,803: 	 Executing command: env -i X509_USER_PROXY=/tmp/x509up_u50722 gfal-copy -p -v -t 180 file:///uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab3checkwrite_20170111_125529.tmp 'srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOS/crab3checkwrite_20170111_125529/crab3checkwrite_20170111_125529.tmp'
+INFO 2017-01-11 12:55:30,803: 	 Please wait...
+INFO 2017-01-11 12:55:31,226: 	 Failed running copy command
+INFO 2017-01-11 12:55:31,226: 	   Stdout:
+    Copying 85 bytes file:///uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab3checkwrite_20170111_125529.tmp => srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOS/crab3checkwrite_20170111_125529/crab3checkwrite_20170111_125529.tmp
+    event: [1484160931086] BOTH   GFAL2:CORE:COPY	LIST:ENTER	
+    event: [1484160931086] BOTH   GFAL2:CORE:COPY	LIST:ITEM	file:///uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab3checkwrite_20170111_125529.tmp => srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOS/crab3checkwrite_20170111_125529/crab3checkwrite_20170111_125529.tmp
+    event: [1484160931086] BOTH   GFAL2:CORE:COPY	LIST:EXIT	
+    event: [1484160931123] BOTH   SRM	PREPARE:ENTER	
+    
+INFO 2017-01-11 12:55:31,226: 	   Stderr:
+    WARNING Transfer failed with: DESTINATION MAKE_PARENT srm-ifce err: Input/output error, err: [SE][Mkdir][SRM_FAILURE] httpg://ruhex-osgce.rutgers.edu:8443/srm/v2/server: srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOS/crab3checkwrite_20170111_125529: [/cms/jeans/data27/EOS/crab3checkwrite_20170111_125529] is not in allowed list. Will not access it
+    
+    gfal-copy error: 5 (Input/output error) - DESTINATION MAKE_PARENT srm-ifce err: Input/output error, err: [SE][Mkdir][SRM_FAILURE] httpg://ruhex-osgce.rutgers.edu:8443/srm/v2/server: srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOS/crab3checkwrite_20170111_125529: [/cms/jeans/data27/EOS/crab3checkwrite_20170111_125529] is not in allowed list. Will not access it
+    
+    
+INFO 2017-01-11 12:55:31,228: 	 
+Checkwrite Result:
+INFO 2017-01-11 12:55:31,228: 	 Unable to check write permission in /store/user/jsomalwa/EOS on site T3_US_Rutgers
+Please try again later or contact the site administrators sending them the 'crab checkwrite' output as printed above.
+INFO 2017-01-11 12:55:31,228: 	 Note: You cannot write to a site if you did not ask permission.
+DEBUG 2017-01-11 12:59:05,390: 	 Executing command: 'checkwrite'
+DEBUG 2017-01-11 12:59:05,391: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 12:59:05,406: 	 Checking credentials
+DEBUG 2017-01-11 12:59:05,406: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 12:59:05,406: 	 Getting proxy life time left
+DEBUG 2017-01-11 12:59:05,508: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 37823
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:59:05,611: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 37823
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:59:05,611: 	 Proxy valid for 10:30:23 hours
+DEBUG 2017-01-11 12:59:05,716: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:59:05,716: 	 Checking credentials
+DEBUG 2017-01-11 12:59:05,716: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 12:59:05,716: 	 Getting proxy life time left
+DEBUG 2017-01-11 12:59:05,818: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 37823
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:59:05,921: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 37823
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:59:05,921: 	 Proxy valid for 10:30:23 hours
+DEBUG 2017-01-11 12:59:06,023: 	 Executing : 
+ command : env X509_USER_PROXY=/tmp/x509up_u50722 voms-proxy-info -fqan
+ output : /cms/Role=NULL/Capability=NULL
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 12:59:06,023: 	 Command use: checkwrite
+DEBUG 2017-01-11 12:59:06,023: 	 Options use: ['--site', 'T3_US_Rutgers', '--lfn', '/store/user/jsomalwa/EOS']
+DEBUG 2017-01-11 12:59:06,023: 	 Instance is None
+DEBUG 2017-01-11 12:59:06,023: 	 Server base url is None
+DEBUG 2017-01-11 12:59:06,064: 	 Service initialised ({'endpoint': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'key': '/tmp/x509up_u50722', 'maxcachereuse': 24.0, 'cachepath': '/tmp/.wmcore_cache_IfOnhn/cmsweb.cern.ch', 'inputdata': {}, 'cert': '/tmp/x509up_u50722', 'timeout': 300, 'service_name': 'PhEDEx', 'requests': {'content_type': 'application/x-www-form-urlencoded', 'cacheduration': 0, 'host': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'accept_type': 'text/html', 'key': '/tmp/x509up_u50722', 'deleteCacheOnExit': <WMCore.Services.Requests.TempDirectory object at 0x7f64ad586ad0>, 'endpoint_components': ParseResult(scheme='https', netloc='cmsweb.cern.ch', path='/phedex/datasvc/json/prod/', params='', query='', fragment=''), 'endpoint': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'pycurl': True, 'cachepath': '/tmp/.wmcore_cache_IfOnhn/cmsweb.cern.ch', 'cert': '/tmp/x509up_u50722', 'timeout': 300, 'req_cache_path': '/tmp/.wmcore_cache_IfOnhn/cmsweb.cern.ch/.cache', 'logger': <logging.Logger object at 0x7f64ad56ce50>}, 'logger': <logging.Logger object at 0x7f64ad56ce50>, 'cacheduration': 0, 'method': None, 'pycurl': True}):
+	 host: cmsweb.cern.ch, basepath: https://cmsweb.cern.ch/phedex/datasvc/json/prod/ (text/html)
+	 cache: /tmp/.wmcore_cache_IfOnhn/cmsweb.cern.ch (duration 0 hours, max reuse 24.0 hours)
+INFO 2017-01-11 12:59:06,064: 	 Validating LFN /store/user/jsomalwa/EOS...
+INFO 2017-01-11 12:59:06,065: 	 Retrieving DN from proxy...
+INFO 2017-01-11 12:59:06,428: 	 DN is: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+INFO 2017-01-11 12:59:06,428: 	 Retrieving username from SiteDB...
+INFO 2017-01-11 12:59:07,811: 	 Username is: jsomalwa
+INFO 2017-01-11 12:59:07,812: 	 LFN /store/user/jsomalwa/EOS is valid.
+INFO 2017-01-11 12:59:07,821: 	 Will use `gfal-copy`, `gfal-rm` commands for checking write permissions
+INFO 2017-01-11 12:59:07,822: 	 Will check write permission in /store/user/jsomalwa/EOS on site T3_US_Rutgers
+DEBUG 2017-01-11 12:59:07,824: 	 getData: 
+	url: lfn2pfn
+	data: {'node': ['T3_US_Rutgers'], 'custodial': 'n', 'lfn': ['/store/user/jsomalwa/EOS/crab3checkwrite_20170111_125907/crab3checkwrite_20170111_125907.tmp'], 'protocol': 'srmv2'}
+INFO 2017-01-11 12:59:08,715: 	 
+Attempting to create (dummy) directory crab3checkwrite_20170111_125907 and copy (dummy) file crab3checkwrite_20170111_125907.tmp to /store/user/jsomalwa/EOS
+
+INFO 2017-01-11 12:59:08,721: 	 Executing command: env -i X509_USER_PROXY=/tmp/x509up_u50722 gfal-copy -p -v -t 180 file:///uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab3checkwrite_20170111_125907.tmp 'srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOS/crab3checkwrite_20170111_125907/crab3checkwrite_20170111_125907.tmp'
+INFO 2017-01-11 12:59:08,721: 	 Please wait...
+INFO 2017-01-11 12:59:09,150: 	 Failed running copy command
+INFO 2017-01-11 12:59:09,150: 	   Stdout:
+    Copying 85 bytes file:///uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab3checkwrite_20170111_125907.tmp => srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOS/crab3checkwrite_20170111_125907/crab3checkwrite_20170111_125907.tmp
+    event: [1484161149011] BOTH   GFAL2:CORE:COPY	LIST:ENTER	
+    event: [1484161149011] BOTH   GFAL2:CORE:COPY	LIST:ITEM	file:///uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab3checkwrite_20170111_125907.tmp => srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOS/crab3checkwrite_20170111_125907/crab3checkwrite_20170111_125907.tmp
+    event: [1484161149011] BOTH   GFAL2:CORE:COPY	LIST:EXIT	
+    event: [1484161149046] BOTH   SRM	PREPARE:ENTER	
+    
+INFO 2017-01-11 12:59:09,150: 	   Stderr:
+    WARNING Transfer failed with: DESTINATION MAKE_PARENT srm-ifce err: Input/output error, err: [SE][Mkdir][SRM_FAILURE] httpg://ruhex-osgce.rutgers.edu:8443/srm/v2/server: srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOS/crab3checkwrite_20170111_125907: [/cms/jeans/data27/EOS/crab3checkwrite_20170111_125907] is not in allowed list. Will not access it
+    
+    gfal-copy error: 5 (Input/output error) - DESTINATION MAKE_PARENT srm-ifce err: Input/output error, err: [SE][Mkdir][SRM_FAILURE] httpg://ruhex-osgce.rutgers.edu:8443/srm/v2/server: srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOS/crab3checkwrite_20170111_125907: [/cms/jeans/data27/EOS/crab3checkwrite_20170111_125907] is not in allowed list. Will not access it
+    
+    
+INFO 2017-01-11 12:59:09,151: 	 
+Checkwrite Result:
+INFO 2017-01-11 12:59:09,151: 	 Unable to check write permission in /store/user/jsomalwa/EOS on site T3_US_Rutgers
+Please try again later or contact the site administrators sending them the 'crab checkwrite' output as printed above.
+INFO 2017-01-11 12:59:09,151: 	 Note: You cannot write to a site if you did not ask permission.
+DEBUG 2017-01-11 13:00:47,320: 	 Executing command: 'checkwrite'
+DEBUG 2017-01-11 13:00:47,321: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 13:00:47,334: 	 Checking credentials
+DEBUG 2017-01-11 13:00:47,334: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 13:00:47,334: 	 Getting proxy life time left
+DEBUG 2017-01-11 13:00:47,436: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 37721
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 13:00:47,538: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 37721
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 13:00:47,538: 	 Proxy valid for 10:28:41 hours
+DEBUG 2017-01-11 13:00:47,644: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 13:00:47,644: 	 Checking credentials
+DEBUG 2017-01-11 13:00:47,644: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 13:00:47,644: 	 Getting proxy life time left
+DEBUG 2017-01-11 13:00:47,746: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 37721
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 13:00:47,848: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 37721
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 13:00:47,848: 	 Proxy valid for 10:28:41 hours
+DEBUG 2017-01-11 13:00:47,950: 	 Executing : 
+ command : env X509_USER_PROXY=/tmp/x509up_u50722 voms-proxy-info -fqan
+ output : /cms/Role=NULL/Capability=NULL
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 13:00:47,951: 	 Command use: checkwrite
+DEBUG 2017-01-11 13:00:47,951: 	 Options use: ['--site', 'T3_US_Rutgers', '--lfn', '/store/user/jsomalwa/']
+DEBUG 2017-01-11 13:00:47,951: 	 Instance is None
+DEBUG 2017-01-11 13:00:47,951: 	 Server base url is None
+DEBUG 2017-01-11 13:00:47,985: 	 Service initialised ({'endpoint': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'key': '/tmp/x509up_u50722', 'maxcachereuse': 24.0, 'cachepath': '/tmp/.wmcore_cache_Ukj9Rq/cmsweb.cern.ch', 'inputdata': {}, 'cert': '/tmp/x509up_u50722', 'timeout': 300, 'service_name': 'PhEDEx', 'requests': {'content_type': 'application/x-www-form-urlencoded', 'cacheduration': 0, 'host': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'accept_type': 'text/html', 'key': '/tmp/x509up_u50722', 'deleteCacheOnExit': <WMCore.Services.Requests.TempDirectory object at 0x7f26bd705ad0>, 'endpoint_components': ParseResult(scheme='https', netloc='cmsweb.cern.ch', path='/phedex/datasvc/json/prod/', params='', query='', fragment=''), 'endpoint': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'pycurl': True, 'cachepath': '/tmp/.wmcore_cache_Ukj9Rq/cmsweb.cern.ch', 'cert': '/tmp/x509up_u50722', 'timeout': 300, 'req_cache_path': '/tmp/.wmcore_cache_Ukj9Rq/cmsweb.cern.ch/.cache', 'logger': <logging.Logger object at 0x7f26bd6ebe50>}, 'logger': <logging.Logger object at 0x7f26bd6ebe50>, 'cacheduration': 0, 'method': None, 'pycurl': True}):
+	 host: cmsweb.cern.ch, basepath: https://cmsweb.cern.ch/phedex/datasvc/json/prod/ (text/html)
+	 cache: /tmp/.wmcore_cache_Ukj9Rq/cmsweb.cern.ch (duration 0 hours, max reuse 24.0 hours)
+INFO 2017-01-11 13:00:47,985: 	 Validating LFN /store/user/jsomalwa/...
+INFO 2017-01-11 13:00:47,985: 	 Retrieving DN from proxy...
+INFO 2017-01-11 13:00:48,361: 	 DN is: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+INFO 2017-01-11 13:00:48,361: 	 Retrieving username from SiteDB...
+INFO 2017-01-11 13:00:49,793: 	 Username is: jsomalwa
+INFO 2017-01-11 13:00:49,793: 	 LFN /store/user/jsomalwa/ is valid.
+INFO 2017-01-11 13:00:49,801: 	 Will use `gfal-copy`, `gfal-rm` commands for checking write permissions
+INFO 2017-01-11 13:00:49,801: 	 Will check write permission in /store/user/jsomalwa/ on site T3_US_Rutgers
+DEBUG 2017-01-11 13:00:49,805: 	 getData: 
+	url: lfn2pfn
+	data: {'node': ['T3_US_Rutgers'], 'custodial': 'n', 'lfn': ['/store/user/jsomalwa//crab3checkwrite_20170111_130049/crab3checkwrite_20170111_130049.tmp'], 'protocol': 'srmv2'}
+INFO 2017-01-11 13:00:50,734: 	 
+Attempting to create (dummy) directory crab3checkwrite_20170111_130049 and copy (dummy) file crab3checkwrite_20170111_130049.tmp to /store/user/jsomalwa/
+
+INFO 2017-01-11 13:00:50,737: 	 Executing command: env -i X509_USER_PROXY=/tmp/x509up_u50722 gfal-copy -p -v -t 180 file:///uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab3checkwrite_20170111_130049.tmp 'srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa//crab3checkwrite_20170111_130049/crab3checkwrite_20170111_130049.tmp'
+INFO 2017-01-11 13:00:50,737: 	 Please wait...
+INFO 2017-01-11 13:00:51,988: 	 
+Successfully created directory crab3checkwrite_20170111_130049 and copied file crab3checkwrite_20170111_130049.tmp to /store/user/jsomalwa/
+INFO 2017-01-11 13:00:51,988: 	 
+Attempting to delete file srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa//crab3checkwrite_20170111_130049/crab3checkwrite_20170111_130049.tmp
+
+INFO 2017-01-11 13:00:51,989: 	 Executing command: env -i X509_USER_PROXY=/tmp/x509up_u50722 gfal-rm -v -t 180 'srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa//crab3checkwrite_20170111_130049/crab3checkwrite_20170111_130049.tmp'
+INFO 2017-01-11 13:00:51,989: 	 Please wait...
+INFO 2017-01-11 13:00:52,324: 	 
+Successfully deleted file srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa//crab3checkwrite_20170111_130049/crab3checkwrite_20170111_130049.tmp
+INFO 2017-01-11 13:00:52,325: 	 
+Attempting to delete directory srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa//crab3checkwrite_20170111_130049/
+
+INFO 2017-01-11 13:00:52,325: 	 Executing command: env -i X509_USER_PROXY=/tmp/x509up_u50722 gfal-rm -r -v -t 180 'srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa//crab3checkwrite_20170111_130049/'
+INFO 2017-01-11 13:00:52,325: 	 Please wait...
+INFO 2017-01-11 13:00:52,800: 	 
+Successfully deleted directory srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa//crab3checkwrite_20170111_130049/
+INFO 2017-01-11 13:00:52,804: 	 
+Checkwrite Result:
+INFO 2017-01-11 13:00:52,804: 	 Success: Able to write in /store/user/jsomalwa/ on site T3_US_Rutgers
+DEBUG 2017-01-11 13:02:32,967: 	 Executing command: 'kill'
+DEBUG 2017-01-11 13:02:32,968: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 13:02:32,973: 	 Checking credentials
+DEBUG 2017-01-11 13:02:32,973: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 13:02:32,975: 	 Getting proxy life time left
+DEBUG 2017-01-11 13:02:33,076: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 37615
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 13:02:33,178: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 37615
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 13:02:33,179: 	 Proxy valid for 10:26:55 hours
+ERROR 2017-01-11 13:02:33,179: 	 Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_TTv01
+ERROR 2017-01-11 13:02:33,179: 	 Caught exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 160, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/bin/crab", line 146, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 321, in __init__
+    self.loadLocalCache(proxyOptsSetPlace)
+  File "/cvmfs/cms.cern.ch/crab3/slc6_amd64_gcc493/cms/crabclient/3.3.1611-comp3/lib/python2.7/site-packages/CRABClient/Commands/SubCommand.py", line 450, in loadLocalCache
+    raise ex
+CachefileNotFoundException: Cannot find .requestcache file in CRAB project directory /uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab_projects/crab_TTv01
+DEBUG 2017-01-11 13:20:00,537: 	 Executing command: 'checkwrite'
+DEBUG 2017-01-11 13:20:00,537: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-11 13:20:00,548: 	 Checking credentials
+DEBUG 2017-01-11 13:20:00,548: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 13:20:00,548: 	 Getting proxy life time left
+DEBUG 2017-01-11 13:20:00,650: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 43174
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 13:20:00,752: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 43174
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 13:20:00,753: 	 Proxy valid for 11:59:34 hours
+DEBUG 2017-01-11 13:20:00,858: 	 Executing : 
+ command : openssl x509 -in ~/.globus/usercert.pem -subject -noout
+ output : subject= /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 13:20:00,858: 	 Checking credentials
+DEBUG 2017-01-11 13:20:00,858: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-11 13:20:00,858: 	 Getting proxy life time left
+DEBUG 2017-01-11 13:20:00,960: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 43174
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 13:20:01,062: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 43174
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 13:20:01,062: 	 Proxy valid for 11:59:34 hours
+DEBUG 2017-01-11 13:20:01,164: 	 Executing : 
+ command : env X509_USER_PROXY=/tmp/x509up_u50722 voms-proxy-info -fqan
+ output : /cms/Role=NULL/Capability=NULL
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-11 13:20:01,164: 	 Command use: checkwrite
+DEBUG 2017-01-11 13:20:01,164: 	 Options use: ['--site', 'T3_US_Rutgers', '--lfn', '/store/user/jsomalwa/EOS']
+DEBUG 2017-01-11 13:20:01,164: 	 Instance is None
+DEBUG 2017-01-11 13:20:01,164: 	 Server base url is None
+DEBUG 2017-01-11 13:20:01,197: 	 Service initialised ({'endpoint': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'key': '/tmp/x509up_u50722', 'maxcachereuse': 24.0, 'cachepath': '/tmp/.wmcore_cache_hTIGEo/cmsweb.cern.ch', 'inputdata': {}, 'cert': '/tmp/x509up_u50722', 'timeout': 300, 'service_name': 'PhEDEx', 'requests': {'content_type': 'application/x-www-form-urlencoded', 'cacheduration': 0, 'host': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'accept_type': 'text/html', 'key': '/tmp/x509up_u50722', 'deleteCacheOnExit': <WMCore.Services.Requests.TempDirectory object at 0x7f4349074ad0>, 'endpoint_components': ParseResult(scheme='https', netloc='cmsweb.cern.ch', path='/phedex/datasvc/json/prod/', params='', query='', fragment=''), 'endpoint': 'https://cmsweb.cern.ch/phedex/datasvc/json/prod/', 'pycurl': True, 'cachepath': '/tmp/.wmcore_cache_hTIGEo/cmsweb.cern.ch', 'cert': '/tmp/x509up_u50722', 'timeout': 300, 'req_cache_path': '/tmp/.wmcore_cache_hTIGEo/cmsweb.cern.ch/.cache', 'logger': <logging.Logger object at 0x7f434905ae50>}, 'logger': <logging.Logger object at 0x7f434905ae50>, 'cacheduration': 0, 'method': None, 'pycurl': True}):
+	 host: cmsweb.cern.ch, basepath: https://cmsweb.cern.ch/phedex/datasvc/json/prod/ (text/html)
+	 cache: /tmp/.wmcore_cache_hTIGEo/cmsweb.cern.ch (duration 0 hours, max reuse 24.0 hours)
+INFO 2017-01-11 13:20:01,197: 	 Validating LFN /store/user/jsomalwa/EOS...
+INFO 2017-01-11 13:20:01,198: 	 Retrieving DN from proxy...
+INFO 2017-01-11 13:20:01,516: 	 DN is: /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=jsomalwa/CN=640078/CN=Jean Somalwar
+INFO 2017-01-11 13:20:01,517: 	 Retrieving username from SiteDB...
+INFO 2017-01-11 13:20:02,880: 	 Username is: jsomalwa
+INFO 2017-01-11 13:20:02,880: 	 LFN /store/user/jsomalwa/EOS is valid.
+INFO 2017-01-11 13:20:02,889: 	 Will use `gfal-copy`, `gfal-rm` commands for checking write permissions
+INFO 2017-01-11 13:20:02,889: 	 Will check write permission in /store/user/jsomalwa/EOS on site T3_US_Rutgers
+DEBUG 2017-01-11 13:20:02,892: 	 getData: 
+	url: lfn2pfn
+	data: {'node': ['T3_US_Rutgers'], 'custodial': 'n', 'lfn': ['/store/user/jsomalwa/EOS/crab3checkwrite_20170111_132002/crab3checkwrite_20170111_132002.tmp'], 'protocol': 'srmv2'}
+INFO 2017-01-11 13:20:03,865: 	 
+Attempting to create (dummy) directory crab3checkwrite_20170111_132002 and copy (dummy) file crab3checkwrite_20170111_132002.tmp to /store/user/jsomalwa/EOS
+
+INFO 2017-01-11 13:20:03,868: 	 Executing command: env -i X509_USER_PROXY=/tmp/x509up_u50722 gfal-copy -p -v -t 180 file:///uscms_data/d3/jsomalwa/80XGeneration/12-21-16/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/crab3checkwrite_20170111_132002.tmp 'srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOS/crab3checkwrite_20170111_132002/crab3checkwrite_20170111_132002.tmp'
+INFO 2017-01-11 13:20:03,868: 	 Please wait...
+INFO 2017-01-11 13:20:05,169: 	 
+Successfully created directory crab3checkwrite_20170111_132002 and copied file crab3checkwrite_20170111_132002.tmp to /store/user/jsomalwa/EOS
+INFO 2017-01-11 13:20:05,169: 	 
+Attempting to delete file srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOS/crab3checkwrite_20170111_132002/crab3checkwrite_20170111_132002.tmp
+
+INFO 2017-01-11 13:20:05,169: 	 Executing command: env -i X509_USER_PROXY=/tmp/x509up_u50722 gfal-rm -v -t 180 'srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOS/crab3checkwrite_20170111_132002/crab3checkwrite_20170111_132002.tmp'
+INFO 2017-01-11 13:20:05,169: 	 Please wait...
+INFO 2017-01-11 13:20:05,541: 	 
+Successfully deleted file srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOS/crab3checkwrite_20170111_132002/crab3checkwrite_20170111_132002.tmp
+INFO 2017-01-11 13:20:05,541: 	 
+Attempting to delete directory srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOS/crab3checkwrite_20170111_132002/
+
+INFO 2017-01-11 13:20:05,542: 	 Executing command: env -i X509_USER_PROXY=/tmp/x509up_u50722 gfal-rm -r -v -t 180 'srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOS/crab3checkwrite_20170111_132002/'
+INFO 2017-01-11 13:20:05,542: 	 Please wait...
+INFO 2017-01-11 13:20:06,064: 	 
+Successfully deleted directory srm://ruhex-osgce.rutgers.edu:8443/srm/v2/server?SFN=/cms/se/phedex/store/user/jsomalwa/EOS/crab3checkwrite_20170111_132002/
+INFO 2017-01-11 13:20:06,066: 	 
+Checkwrite Result:
+INFO 2017-01-11 13:20:06,066: 	 Success: Able to write in /store/user/jsomalwa/EOS on site T3_US_Rutgers
+DEBUG 2017-01-27 12:59:36,670: 	 Executing command: 'submit'
+DEBUG 2017-01-27 12:59:36,677: 	 Found CRAB cache file /uscms/home/jsomalwa/.crab3
+DEBUG 2017-01-27 12:59:36,693: 	 Checking credentials
+DEBUG 2017-01-27 12:59:36,693: 	 Found proxy file /tmp/x509up_u50722
+DEBUG 2017-01-27 12:59:36,693: 	 Getting proxy life time left
+DEBUG 2017-01-27 12:59:36,796: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -timeleft
+ output : 39525
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-27 12:59:36,899: 	 Executing : 
+ command : voms-proxy-info -file /tmp/x509up_u50722 -actimeleft
+ output : 39525
+
+ error: 
+ retcode : 0
+DEBUG 2017-01-27 12:59:36,899: 	 Proxy valid for 10:58:45 hours
+DEBUG 2017-01-27 12:59:36,900: 	 Will use CRAB Analysis plugin (i.e. will run an analysis job type).
