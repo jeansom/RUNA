@@ -41,18 +41,11 @@ def labels( name, camp, X=0.92, Y=0.50, align='right', listSel=[] ):
 
 	if 'cutDijet' in name: listSel = [ 'jet p_{T} > 150 GeV', 'jet |#eta| < 2.4', 'numJets > 1' ] 
 	elif 'presel' in name: listSel = [ 'Preselection' ] 
-	#elif 'cutEffTrigger' in name: listSel = [ 'jet p_{T} > 150 GeV', 'jet |#eta| < 2.4', 'numJets > 1', 'HT > 900 GeV' ] 
+	elif 'cutEffTrigger' in name: listSel = [ 'Preselection' ] 
 	elif 'cutHT' in name: listSel = [ 'numJets > 1', 'p_{T}^{j1} = 500 GeV',  'p_{T}^{j2} = 450 GeV' ] 
 	elif 'cutTau21' in name: listSel = [ 'numJets > 1', 'p_{T}^{j1} = 500 GeV',  'p_{T}^{j2} = 450 GeV', '#tau_{21} < 0.6']
-	elif 'cutCosTheta' in name: listSel = [ 'numJets > 1', 'p_{T}^{j1} = 500 GeV',  'p_{T}^{j2} = 450 GeV', '#tau_{21} < 0.6', '|cos(#theta*)| < 0.2']
 	elif 'cutMassAsym' in name: listSel = [ 'numJets > 1', 'p_{T}^{j1} = 500 GeV',  'p_{T}^{j2} = 450 GeV', '#tau_{21} < 0.6', '|cos(#theta*)| < 0.2', 'A < 0.1' ]
-	elif 'cutCosThetaMassAsym' in name: listSel = [ 'HT > 900 GeV', '1st jet pt > 500 GeV', '2nd jet pt > 450 GeV', 'numJets > 1', '#tau_{21} < 0.6', '|cos(#theta*)| < 0.2','A < 0.1' ]
-	elif 'NOMassCutCosTheta' in name: listSel = [ camp,  'HT > 900 GeV', 'numJets > 1','A > 0.1', '#tau_{31} < 0.4', '|cos(#theta*)| < 0.3']
-	elif 'CR' in name: listSel = [ 'Control Region',  'HT > 900 GeV', 'numJets > 1','A > 0.1', '#tau_{31} < 0.4', '|cos(#theta*)| < 0.3']
-	#elif 'cutDEta' in name: listSel = [ camp,  'HT > 900 GeV', 'numJets > 1','A < 0.1, #tau_{21} < 0.5', '|cos(#theta*)| < 0.3', '#Delta #eta (j^{1},j^{2}) > 1']
-	#elif 'cutSubjetPtRatio' in name: listSel = [ camp,  'HT > 900 GeV', 'numJets > 1','A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3']
-	elif 'cutBtagAfterSubjetPtRatio' in name: listSel = [ camp,  'HT > 800 GeV', 'numJets > 1','A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3', '1 btag CSVM']
-	elif 'Standard' in name: listSel = [ camp, 'HT > 800 GeV', 'numJets > 1', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3']
+	elif 'cutDeltaEtaDijet' in name: listSel = [ 'Preselection', '#tau_{21}^{j1,j2} < 0.45', 'Mass_{asym} < 0.1', '|#eta_{j1}-#eta_{j2}|<1.5' ]
 	elif 'PFHT800' in name: listSel = [ camp, 'PFHT800', 'HT > 800 GeV', 'numJets > 1', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3']
 	elif 'Brock' in name: listSel = [ camp, 'HT > 1600 TeV', 'HT > 800 GeV', 'numJets > 1', 'A < 0.1', '|cos(#theta*)| < 0.3', 'subjet pt ratio > 0.3']
 	elif 'cutTau31' in name: listSel = [ camp, 'HT > 800 GeV', 'numJets > 1', 'A < 0.1', '|cos(#theta*)| < 0.3', '#tau_{31} < 0.4']
@@ -65,9 +58,9 @@ def labels( name, camp, X=0.92, Y=0.50, align='right', listSel=[] ):
 	#elif 'rigger' in name: listSel = [ 'pp #rightarrow #tilde{t}(jj) #tilde{t}(jj), M(#tilde{t}) = 100 GeV', 'NO Trigger' ] 
 	elif 'cut4Jet' in name: listSel = [ camp, 'jet p_{T} > 50 GeV', 'jet |#eta| < 2.4', 'numJets > 3' ] 
 	elif 'cut4JetPt' in name: listSel = [ camp, 'jet p_{T} > 50 GeV', 'jet |#eta| < 2.4', 'numJets > 3', 'HT > 800 GeV' ] 
-	elif 'cutBestPair' in name: listSel = [ camp, 'numJets > 3', 'HT > 800 GeV', 'dR_{dijet}' ] 
+	elif 'cutBestPair' in name: listSel = [ 'Preselection', 'dR_{dijet}' ] 
 	elif 'cutMassRes' in name: listSel = [ camp, 'numJets > 3', 'HT > 800 GeV', 'dR_{dijet}', 'mass balance < 0.1' ] 
-	elif 'cutDelta' in name: listSel = [ 'numJets > 3', 'HT > 800 GeV', '4th jet pt > 80 GeV', 'min dR_{dijet}', 'A < 0.2', '| #Delta #eta_{dijet}| < 0.75', '#Delta > 180 GeV' ]
+	elif 'cutDelta' in name: listSel = [ 'Preselection', 'min dR_{dijet}', 'A < 0.2', '| #Delta #eta_{dijet}| < 1.2', '#Delta > 100 GeV' ]
 	elif 'cutDeltaMassPairDEta' in name: listSel = [ camp,  'HT > 800 GeV', 'numJets = 4', '#Delta > 300 GeV', 'mass balance < 0.1', '#Delta #eta (j^{1},j^{2}) < 1']
 	elif 'cutDeltaRMassPairDEta' in name: listSel = [ camp,  'HT > 800 GeV', 'numJets = 4', 'dR_{dijet} < 1.5', 'mass balance < 0.1', '#Delta #eta (j^{1},j^{2}) < 1']
 	elif 'cutEtaBand' in name: listSel = [ camp, 'dR_{dijet}', 'mass balance < 0.1', '#Delta < 300 GeV', '| #eta_1 - #eta_2| < 1' ] 
@@ -93,7 +86,8 @@ def labelAxis(name, histo, Grom ):
 	elif 'jet2PrunedMass' in name: histo.GetXaxis().SetTitle( '2nd Leading Pruned Jet Mass [GeV]' )
 	elif 'jet2FilteredMass' in name: histo.GetXaxis().SetTitle( '2nd Leading Filtered Jet Mass [GeV]' )
 	elif 'jet2SoftDropMass' in name: histo.GetXaxis().SetTitle( '2nd Leading Soft Drop Jet Mass [GeV]' )
-	elif 'prunedMassAsym' in name: histo.GetXaxis().SetTitle( 'Mass Asymmetry (A)' )
+	elif 'prunedMassAsym' in name: histo.GetXaxis().SetTitle( 'M_{Asym}' )
+	elif 'massAsym' in name: histo.GetXaxis().SetTitle( 'M_{Asym}' )
 	elif ('jet1CosThetaStar' in name) or ('cosThetaStar1' in name ): histo.GetXaxis().SetTitle( 'cos(#theta *)_{1}' )
 	elif ('jet2CosThetaStar' in name) or ('cosThetaStar2' in name ): histo.GetXaxis().SetTitle( 'cos(#theta *)_{2}' )
 	elif 'jetEta' in name: histo.GetXaxis().SetTitle( 'Jet #eta' )

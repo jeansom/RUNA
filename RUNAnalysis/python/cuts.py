@@ -2,75 +2,10 @@
 from collections import OrderedDict
 
 selection = OrderedDict()
-selection[ 'Dibosons' ] = [ 
-		[ 'prunedMassAsym', 0.65 ], [ 'jet1Tau21', 0.455 ], [ 'jet2Tau21', 0.455 ], [ 'jet1Tau31', 0.35 ], [ 'jet2Tau31', 0.35 ] 
-		]
 
-selection[ 'RPVStopStopToJets_UDD312_M-80' ] = [ 
+selection[ 'CHSpruned' ] = [ 
 		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] 
 		]
-selection[ 'RPVStopStopToJets_UDD312_M-90' ] = [ 
+selection[ 'PUPPIsoftDrop' ] = [ 
 		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] 
 		]
-selection[ 'RPVStopStopToJets_UDD312_M-100' ] = [ 
-		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] 
-		]
-
-selection[ 'RPVStopStopToJets_UDD312_M-110' ] = [ 
-		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] 
-		]
-selection[ 'RPVStopStopToJets_UDD312_M-120' ] = [ 
-		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] 
-		]
-selection[ 'RPVStopStopToJets_UDD312_M-130' ] = [ 
-		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] 
-		]
-selection[ 'RPVStopStopToJets_UDD312_M-140' ] = [ 
-		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] 
-		]
-selection[ 'RPVStopStopToJets_UDD312_M-150' ] = [ 
-		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] 
-		]
-
-selection[ 'RPVStopStopToJets_UDD312_M-170' ] = [ 
-		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] 
-		]
-selection[ 'RPVStopStopToJets_UDD312_M-180' ] = [ 
-		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] 
-		]
-selection[ 'RPVStopStopToJets_UDD312_M-190' ] = [ 
-		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] 
-		]
-selection[ 'RPVStopStopToJets_UDD312_M-200' ] = [ 
-		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] 
-		]
-selection[ 'RPVStopStopToJets_UDD312_M-210' ] = [ 
-		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] 
-		]
-selection[ 'RPVStopStopToJets_UDD312_M-220' ] = [ 
-		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] 
-		]
-selection[ 'RPVStopStopToJets_UDD312_M-230' ] = [ 
-		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] 
-		]
-selection[ 'RPVStopStopToJets_UDD312_M-240' ] = [ 
-		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] 
-		]
-selection[ 'RPVStopStopToJets_UDD312_M-300' ] = [ 
-		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] 
-		]
-		
-selection[ 'RPVStopStopToJets_UDD312_M-350' ] = [ 
-		[ 'jet1Tau21', 0.45 ], [ 'jet2Tau21', 0.45 ], [ 'prunedMassAsym', 0.10 ], [ 'deltaEtaDijet', 1.5 ] 
-		]
-selection[ 'RPVStopStopToJets_UDD323_M-100' ] = [ 
-		[ 'jet1Tau21', ['jet1Tau21'], '<', 1, 0.60 ], [ 'jet2Tau21', ['jet2Tau21'], '<', 1, 0.60 ], [ 'prunedMassAsym', ['prunedMassAsym'], '<', 1, 0.10 ], [ 'deltaEtaDijet', ['deltaEtaDijet'], '<', 1, 1.0 ], [ 'btagJet1', ['subjet11btagCSVv2', 'subjet12btagCSVv2'], '>', 1, 0.800 ], [ 'btagJet2', ['subjet21btagCSVv2', 'subjet22btagCSVv2'], '>', 1, 0.800 ], [ 'jet1Tau32', ['jet1Tau32'], '>', 1, 0.51 ], [ 'jet2Tau32', ['jet2Tau32'], '>', 1, 0.51 ]
-		]
-		
-#selection[ 'RPVStopStopToJets_UDD323_M-100' ] = [ 
-#		[ 'jet1Tau21', ['jet1Tau21'], '<', 1, 0.60 ], [ 'jet2Tau21', ['jet2Tau21'], '<', 1, 0.60 ], [ 'prunedMassAsym', ['prunedMassAsym'], '<', 1, 0.10 ], [ 'deltaEtaDijet', ['deltaEtaDijet'], '<', 1, 1.0 ]
-#		]
-
-#selection[ 'RPVStopStopToJets_UDD323_M-100' ] = [ 
-#		[ 'jet1Tau21', ['jet1Tau21'], '<', 1, 0.60 ], [ 'jet2Tau21', ['jet2Tau21'], '<', 1, 0.60 ], [ 'prunedMassAsym', ['prunedMassAsym'], '<', 1, 0.10 ], [ 'deltaEtaDijet', ['deltaEtaDijet'], '<', 1, 1.0 ], [ 'btagJet1', ['subjet11btagCSVv2', 'subjet12btagCSVv2'], '>', 1, 0.800 ], [ 'btagJet2', ['subjet21btagCSVv2', 'subjet22btagCSVv2'], '>', 1, 0.800 ]
-#		]

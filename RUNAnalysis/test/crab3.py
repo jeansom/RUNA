@@ -4,140 +4,174 @@
 ##################################################################
 
 from CRABClient.UserUtilities import config
+import argparse, sys
 from httplib import HTTPException
+from CRABAPI.RawCommand import crabCommand
+from multiprocessing import Process
 import glob
 
 config = config()
-
-version = 'v06'
-
 config.General.requestName = ''
 config.General.workArea = 'crab_projects'
 
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'RUNFullAnalysis_cfg.py'
 #config.JobType.psetName = 'RUNBoostedResolutionCalc_cfg.py'
-config.JobType.allowUndistributedCMSSW = True
+#config.JobType.allowUndistributedCMSSW = True
 
 config.Data.inputDataset = ''
 config.Data.inputDBS = 'https://cmsweb.cern.ch/dbs/prod/phys03/DBSReader'
+config.Data.splitting = 'LumiBased'
 config.Data.publication = False
-config.Data.ignoreLocality = True
-supportFiles = glob.glob('supportFiles/*')
-config.JobType.inputFiles = supportFiles
+#config.Data.ignoreLocality = True
 
 #config.Site.storageSite = 'T3_US_FNALLPC'
 config.Site.storageSite = 'T3_US_Rutgers'
-config.Data.outLFNDirBase = '/store/user/algomez/myArea/EOS/'
+config.Data.outLFNDirBase = '/store/user/jsomalwa/EOSArea/B2GAnaFW_80X_V2p4'
 
 def submit(config):
 	try:
 		crabCommand('submit', config = config)
+		#crabCommand('submit', '--wait', config = config)
 	except HTTPException, hte:
 		print 'Cannot execute commend'
 		print hte.headers
 
+
+
+#######################################################################################
 if __name__ == '__main__':
 
-	from CRABAPI.RawCommand import crabCommand
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-s', '--sample', action='store', default='all', dest='sample', help='Sample to process. Example: QCD, RPV, TTJets.' )
+	parser.add_argument('-v', '--version', action='store', default='v01p0', dest='version', help='Version: v01, v02.' )
 
-	Samples = [ 
-			#'/JetHT/jkarancs-B2GAnaFW_76X_V1p1_Run2015D-16Dec2015-v1-69b00753dd36562e8813bc06510c861e/USER',
-#			'/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/jkarancs-B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1-bf3ef703e3bdb5dcc5320cf3ff6ce74d/USER',
-#			'/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/jkarancs-B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1-bf3ef703e3bdb5dcc5320cf3ff6ce74d/USER',
-#			'/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/jkarancs-B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1-bf3ef703e3bdb5dcc5320cf3ff6ce74d/USER',
-#			'/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/jkarancs-B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1-bf3ef703e3bdb5dcc5320cf3ff6ce74d/USER',
-#			'/QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/jkarancs-B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1-bf3ef703e3bdb5dcc5320cf3ff6ce74d/USER',
-			
-#			'/QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/QCD_Pt_470to600_TuneCUETP8M1_13TeV_pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/QCD_Pt_800to1000_TuneCUETP8M1_13TeV_pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/QCD_Pt_1400to1800_TuneCUETP8M1_13TeV_pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/QCD_Pt_1800to2400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/QCD_Pt_2400to3200_TuneCUETP8M1_13TeV_pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
+	try: args = parser.parse_args()
+	except:
+		parser.print_help()
+		sys.exit(0)
 
-#			'/TT_TuneCUETP8M1_13TeV-powheg-pythia8/vorobiev-B2GAnaFW_RunIIFall15MiniAODv2_25ns_v76x_v1p2-bf3ef703e3bdb5dcc5320cf3ff6ce74d/USER',
-#			'/WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/WWTo4Q_4f_13TeV_amcatnloFXFX_madspin_pythia8/jkarancs-B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1-bf3ef703e3bdb5dcc5320cf3ff6ce74d/USER',
-#			'/WZ_TuneCUETP8M1_13TeV-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/ZJetsToQQ_HT600toInf_13TeV-madgraph/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8/jkarancs-B2GAnaFW_76X_V1p1_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1-bf3ef703e3bdb5dcc5320cf3ff6ce74d/USER',
+	Samples = {}
 
+	Samples[ 'JetHTB' ] = [ '/JetHT/algomez-Run2016B-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'JetHTC' ] = [ '/JetHT/algomez-Run2016C-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'JetHTD' ] = [ '/JetHT/algomez-Run2016D-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'JetHTE' ] = [ '/JetHT/algomez-Run2016E-PromptReco-v2_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8E' ]
+	Samples[ 'JetHTF' ] = [ '/JetHT/algomez-Run2016F-PromptReco-v1_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8F' ]
+	Samples[ 'JetHTG' ] = [ '/JetHT/algomez-Run2016G-PromptReco-v1_B2GAnaFW_80X_V2p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8p2' ]
+	Samples[ 'JetHTH' ] = [ '/JetHT/algomez-Run2016H-PromptReco-v2_B2GAnaFW_80X_V2p01p1-3e507461fd667ac6961fa4af5b123b09/USER', 10, 'Spring16_25nsV8p2' ]
 
-
-#			######## Centrally produced
-			'/RPVStopStopToJets_UDD312_M-80_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p1p2-6ff2d2372798a32b31bae3809d51b58e/USER',
-			'/RPVStopStopToJets_UDD312_M-90_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-			'/RPVStopStopToJets_UDD312_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-			'/RPVStopStopToJets_UDD312_M-110_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-			'/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-			'/RPVStopStopToJets_UDD312_M-130_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-			'/RPVStopStopToJets_UDD312_M-140_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-			'/RPVStopStopToJets_UDD312_M-150_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-
-			'/RPVStopStopToJets_UDD312_M-170_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-			'/RPVStopStopToJets_UDD312_M-180_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-			'/RPVStopStopToJets_UDD312_M-190_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-
-			'/RPVStopStopToJets_UDD312_M-210_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-			'/RPVStopStopToJets_UDD312_M-220_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',	
-			'/RPVStopStopToJets_UDD312_M-230_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p1-6ff2d2372798a32b31bae3809d51b58e/USER',
-			'/RPVStopStopToJets_UDD312_M-240_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p1-6ff2d2372798a32b31bae3809d51b58e/USER',
-
+	Samples[ 'QCDHT300' ] = [ '/QCD_HT300to500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/algomez-RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1_B2GAnaFW_80X_V2p1-edbed0685401a5848e7d61871b3a63d8/USER', 30, 'Spring16_25nsV8BCD' ]
+	Samples[ 'QCDHT500' ] = [ '/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/algomez-RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1_B2GAnaFW_80X_V2p1-edbed0685401a5848e7d61871b3a63d8/USER', 30, 'Spring16_25nsV8BCD' ]
+	Samples[ 'QCDHT700' ] = [ '/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/grauco-B2GAnaFW_80X_V2p1-edbed0685401a5848e7d61871b3a63d8/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'QCDHT1000' ] = [ '/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/grauco-B2GAnaFW_80X_V2p1-edbed0685401a5848e7d61871b3a63d8/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'QCDHT1500' ] = [ '/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/grauco-B2GAnaFW_80X_V2p1-edbed0685401a5848e7d61871b3a63d8/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'QCDHT2000' ] = [ '/QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/grauco-B2GAnaFW_80X_V2p1-edbed0685401a5848e7d61871b3a63d8/USER', 10, 'Spring16_25nsV8BCD' ]
+	
+#	Samples[ 'QCDPt120' ] = [ '/QCD_Pt_120to170_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+#	Samples[ 'QCDPt170' ] = [ '/QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+#	Samples[ 'QCDPt300' ] = [ '/QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+#	Samples[ 'QCDPt470' ] = [ '/QCD_Pt_470to600_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+#	Samples[ 'QCDPt600' ] = [ '/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+#	Samples[ 'QCDPt800' ] = [ '/QCD_Pt_800to1000_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+#	Samples[ 'QCDPt1000' ] = [ '/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+#	Samples[ 'QCDPt1400' ] = [ '/QCD_Pt_1400to1800_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+#	Samples[ 'QCDPt1800' ] = [ '/QCD_Pt_1800to2400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+#	Samples[ 'QCDPt2400' ] = [ '/QCD_Pt_2400to3200_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+#	Samples[ 'QCDPt3200' ] = [ '/QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
 #
-			'/RPVStopStopToJets_UDD312_M-300_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-			'/RPVStopStopToJets_UDD312_M-350_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/RPVStopStopToJets_UDD312_M-400_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/RPVStopStopToJets_UDD312_M-450_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/RPVStopStopToJets_UDD312_M-500_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/RPVStopStopToJets_UDD312_M-550_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/RPVStopStopToJets_UDD312_M-600_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/RPVStopStopToJets_UDD312_M-650_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/RPVStopStopToJets_UDD312_M-700_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#
-#			'/RPVStopStopToJets_UDD312_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#
-#			'/RPVStopStopToJets_UDD312_M-900_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
-#			'/RPVStopStopToJets_UDD312_M-950_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
+	Samples[ 'QCDHerwig' ] = [ '/QCD_Pt-15to7000_TuneCUETHS1_Flat_13TeV_herwigpp/algomez-RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_B2GAnaFW_80X_V2p1-edbed0685401a5848e7d61871b3a63d8/USER', 10, 'Spring16_25nsV8BCD' ]
+
+#	Samples[ 'WZ' ] = [ '/WZ_TuneCUETP8M1_13TeV-pythia8/algomez-RunIISpring16MiniAODv2_B2GAnaFW_80x_V1p0-4e74e3854bbd13b3866f4a57304f402f/USER', '10', 'Spring16_25nsV8BCD' ]
+#	Samples[ 'TTJets' ] = [ '/TT_TuneCUETP8M1_13TeV-powheg-pythia8/grauco-B2GAnaFW_80X_V2p1-edbed0685401a5848e7d61871b3a63d8/USER', 100, 'Spring16_25nsV8BCD' ]
+#	Samples[ 'WJets' ] = [ '/WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/eschmitz-RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_B2GAnaFW_80X_V2p1-edbed0685401a5848e7d61871b3a63d8/USER', 10, 'Spring16_25nsV8BCD' ]
+#	Samples[ 'ZJets' ] = [ '/ZJetsToQQ_HT600toInf_13TeV-madgraph/eschmitz-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+#	Samples[ 'WWJets' ] = [ '/WWTo4Q_13TeV-powheg/algomez-RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_B2GAnaFW_80X_V2p1-edbed0685401a5848e7d61871b3a63d8/USER', 10, 'Spring16_25nsV8BCD' ]
+#	Samples[ 'ZZJets' ] = [ '/ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8/algomez-RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_B2GAnaFW_80X_V2p1-edbed0685401a5848e7d61871b3a63d8/USER', 100, 'Spring16_25nsV8BCD' ]
 
 
-			######## UDD323
-			#'/RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8-600000events/algomez-RunIIFall15MiniAODv2-PU25nsData2015v1_B2GAnaFW_v76x_v2p0-6ff2d2372798a32b31bae3809d51b58e/USER',
+	Samples[ 'QCDPt120' ] = [ '', 10, 'Summer16_25nsV8BCD' ]
+	Samples[ 'QCDPt170' ] = [ '/QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1_B2GAnaFW_80X_V2p04-6b29e1707fe76ab19c1ba543e7f6f24b/USER', 10, 'Summer16_25nsV8BCD' ]
+	Samples[ 'QCDPt300' ] = [ '/QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1_B2GAnaFW_80X_V2p4-9705383e86c3aabba8a30865b5958dd7/USER', 10, 'Summer16_25nsV8BCD' ]
+	Samples[ 'QCDPt470' ] = [ '/QCD_Pt_470to600_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISummer16MiniAODv2-PUMoriond17_backup_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1_B2GAnaFW_80X_V2p04-6b29e1707fe76ab19c1ba543e7f6f24b/USER', 10, 'Summer16_25nsV8BCD' ]
+	Samples[ 'QCDPt600' ] = [ '/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISummer16MiniAODv2-PUMoriond17_backup_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1_B2GAnaFW_80X_V2p4-9705383e86c3aabba8a30865b5958dd7/USER', 10, 'Summer16_25nsV8BCD' ]
+	Samples[ 'QCDPt800' ] = [ '/QCD_Pt_800to1000_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1_B2GAnaFW_80X_V2p4-9705383e86c3aabba8a30865b5958dd7/USER', 10, 'Summer16_25nsV8BCD' ]
+	Samples[ 'QCDPt1000' ] = [ '/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1_B2GAnaFW_80X_V2p4-9705383e86c3aabba8a30865b5958dd7/USER', 10, 'Summer16_25nsV8BCD' ]
+	Samples[ 'QCDPt1400' ] = [ '/QCD_Pt_1400to1800_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1_B2GAnaFW_80X_V2p4-9705383e86c3aabba8a30865b5958dd7/USER', 10, 'Summer16_25nsV8BCD' ]
+	Samples[ 'QCDPt1800' ] = [ '/QCD_Pt_1800to2400_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1_B2GAnaFW_80X_V2p4-9705383e86c3aabba8a30865b5958dd7/USER', 10, 'Summer16_25nsV8BCD' ]
+	Samples[ 'QCDPt2400' ] = [ '/QCD_Pt_2400to3200_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1_B2GAnaFW_80X_V2p4-9705383e86c3aabba8a30865b5958dd7/USER', 10, 'Summer16_25nsV8BCD' ]
+	Samples[ 'QCDPt3200' ] = [ '/QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8/algomez-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v3_B2GAnaFW_80X_V2p4-9705383e86c3aabba8a30865b5958dd7/USER', 10, 'Summer16_25nsV8BCD' ]
+	Samples[ 'TTJets' ] = [ '/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/algomez-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1_B2GAnaFW_80X_V2p4-9705383e86c3aabba8a30865b5958dd7/USER', 100, 'Summer16_25nsV8BCD' ]
+	Samples[ 'WJets' ] = [ '/WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/algomez-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1_B2GAnaFW_80X_V2p4-9705383e86c3aabba8a30865b5958dd7/USER', 10, 'Summer16_25nsV8BCD' ]
+	#Samples[ 'ZJets' ] = [ '', 10, 'Summer16_25nsV8BCD' ]
+	Samples[ 'WWJets' ] = [ '/WWTo4Q_13TeV-powheg/algomez-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1_B2GAnaFW_80X_V2p4-9705383e86c3aabba8a30865b5958dd7/USER', 10, 'Summer16_25nsV8BCD' ]
+	Samples[ 'ZZJets' ] = [ '/ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8/algomez-RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1_B2GAnaFW_80X_V2p4-6b29e1707fe76ab19c1ba543e7f6f24b/USER', 100, 'Summer16_25nsV8BCD' ]
 
-
-			]
 
 	
-	from multiprocessing import Process
-	for dataset in Samples:
-		config.Data.inputDataset = dataset
-		if 'JetHT' in dataset: 
-			procName = dataset.split('/')[1]+dataset.split('/')[2].replace('algomez-','')+'_'+version
-			config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Reprocessing/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON_Silver_v2.txt'
-			#config.Data.lumiMask = 'crab_projects/crab_JetHTjkarancs-B2GAnaFW_76X_V1p1_Run2015D-16Dec2015-v1-69b00753dd36562e8813bc06510c861e__v04/results/notFinishedLumis.json'
-			config.JobType.pyCfgParams = [ 'PROC='+procName, 'local=0', 'jecVersion=Fall15_25nsV2' ]
-			config.Data.splitting = 'LumiBased'
-			config.Data.unitsPerJob = 5
+	Samples[ 'RPV80' ] = [ '/RPVStopStopToJets_UDD312_M-80_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV90' ] = [ '/RPVStopStopToJets_UDD312_M-90_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV100' ] = [ '/RPVStopStopToJets_UDD312_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV110' ] = [ '/RPVStopStopToJets_UDD312_M-110_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV120' ] = [ '/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV140' ] = [ '/RPVStopStopToJets_UDD312_M-140_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV150' ] = [ '/RPVStopStopToJets_UDD312_M-150_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV170' ] = [ '/RPVStopStopToJets_UDD312_M-170_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV180' ] = [ '/RPVStopStopToJets_UDD312_M-180_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV190' ] = [ '/RPVStopStopToJets_UDD312_M-190_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV230' ] = [ '/RPVStopStopToJets_UDD312_M-230_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV240' ] = [ '/RPVStopStopToJets_UDD312_M-240_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV300' ] = [ '/RPVStopStopToJets_UDD312_M-300_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV350' ] = [ '/RPVStopStopToJets_UDD312_M-350_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV400' ] = [ '/RPVStopStopToJets_UDD312_M-400_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV450' ] = [ '/RPVStopStopToJets_UDD312_M-450_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV500' ] = [ '/RPVStopStopToJets_UDD312_M-500_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV550' ] = [ '/RPVStopStopToJets_UDD312_M-550_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV600' ] = [ '/RPVStopStopToJets_UDD312_M-600_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV650' ] = [ '/RPVStopStopToJets_UDD312_M-650_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV700' ] = [ '/RPVStopStopToJets_UDD312_M-700_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV750' ] = [ '/RPVStopStopToJets_UDD312_M-750_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV800' ] = [ '/RPVStopStopToJets_UDD312_M-800_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV900' ] = [ '/RPVStopStopToJets_UDD312_M-900_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV1100' ] = [ '/RPVStopStopToJets_UDD312_M-1100_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV1200' ] = [ '/RPVStopStopToJets_UDD312_M-1200_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV1300' ] = [ '/RPVStopStopToJets_UDD312_M-1300_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1-3435c96292394b4f7f0ff1725e305a15/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV100UDD323' ] = [ '/RPVStopStopToJets_UDD323_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/jsomalwa-jsomalwa-Moriond17_MINIAODSIM-0b8c51c13c712fe6e73a79b549018f23_B2GAnaFW_80X_V2p4_1-efa4fae90a8aa1f496541116245159cf/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV180UDD323' ] = [ '/RPVStopStopToJets_UDD323_M-180_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-algomez-Moriond17_MINIAODSIM-0b8c51c13c712fe6e73a79b549018f23_B2GAnaFW_80X_V2p4-f26a70c592cd7dee8a453f88e3c18547/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV300UDD323' ] = [ '/RPVStopStopToJets_UDD323_M-300_TuneCUETP8M1_13TeV-madgraph-pythia8/evah-evah-Moriond17_MINIAODSIM-0b8c51c13c712fe6e73a79b549018f23_B2GAnaFW_80X_V2p4-efa4fae90a8aa1f496541116245159cf/USER', 10, 'Spring16_25nsV8BCD' ]
+	Samples[ 'RPV400UDD323' ] = [ '/RPVStopStopToJets_UDD323_M-400_TuneCUETP8M1_13TeV-madgraph-pythia8/algomez-algomez-Moriond17_MINIAODSIM-0b8c51c13c712fe6e73a79b549018f23_B2GAnaFW_80X_V2p4-f26a70c592cd7dee8a453f88e3c18547/USER', 10, 'Spring16_25nsV8BCD' ]
+	
+	processingSamples = {}
+	if 'all' in args.sample: 
+		for sam in Samples: processingSamples[ sam ] = Samples[ sam ]
+	else:
+		for sam in Samples: 
+			if sam.startswith( args.sample ): processingSamples[ sam ] = Samples[ sam ]
 
-		elif 'RPV' in dataset: 
-			config.Data.splitting = 'LumiBased'
-			config.Data.unitsPerJob = 3
-			procName = dataset.split('/')[1].split('_TuneCUETP8M1')[0]+dataset.split('/')[2].replace( dataset.split('/')[2].split('-')[0] , '').split('-')[1]+'_'+dataset.split('/')[2].replace(dataset.split('/')[2].split('-')[0], '').split('-')[2]+version
-			#procName = dataset.split('/')[1].split('_TuneCUETP8M1')[0]+'ResolCalc'+version
-			config.JobType.pyCfgParams = [ 'PROC='+procName, 'local=0', 'systematics=1', 'jecVersion=Fall15_25nsV2', 'namePUFile=PileupData2015D_JSON_latest.root' ]
-		else: 
-			config.Data.splitting = 'LumiBased'
-			config.Data.unitsPerJob = 100
-			#procName = dataset.split('/')[1].replace('_TuneCUETP8M1_13TeV-madgraphMLM-pythia8','').replace('_TuneCUETP8M1_13TeV_pythia8','').replace('13TeV_amcatnloFXFX_madspin_pythia8','')+dataset.split('/')[2].replace('jkarancs', '').split('-')[1]+'_'+dataset.split('/')[2].replace('jkarancs', '').split('-')[2]+version
-			#procName = dataset.split('/')[1].split('_TuneCUETP8M1')[0].replace('13TeV_amcatnloFXFX_madspin_pythia8','')+version+'p1'
-			procName = dataset.split('/')[1].split('_TuneCUETP8M1')[0].replace('13TeV_amcatnloFXFX_madspin_pythia8','')+version
-			config.JobType.pyCfgParams = [ 'PROC='+procName, 'local=0', 'jecVersion=Fall15_25nsV2', 'namePUFile=PileupData2015D_JSON_latest.root' ]
-			#config.Data.lumiMask = 'crab_projects/crab_QCD_Pt_300to470_v04/results/failedLumis.json'
+	if len(processingSamples)==0: print 'No sample found. \n Have a nice day :)'
+		
+	for sam in processingSamples:
+		dataset = processingSamples[sam][0]
+		jecVersion = processingSamples[sam][2]
+		supportFiles = glob.glob('supportFiles/'+jecVersion+'*txt')
+		supportFiles = supportFiles + glob.glob('supportFiles/*.csv')
+		config.Data.inputDataset = dataset
+		config.Data.unitsPerJob = processingSamples[sam][1]
+		if 'JetHT' in dataset: 
+			procName = dataset.split('/')[1]+dataset.split('/')[2].split('-')[1]+'_'+args.version
+			config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt'
+			config.JobType.pyCfgParams = [ 'PROC='+procName, 'jecVersion='+jecVersion ]
+
+		else:
+			pileUpFile = 'PileupData2016BCDEFGH_271036-283685_69200.root'
+			supportFiles = supportFiles+glob.glob('supportFiles/'+pileUpFile)
+			procName = dataset.split('/')[1].split('_TuneCUETP8M1')[0]+args.version
+			config.JobType.pyCfgParams = ( [ 'PROC='+procName, 'systematics='+('0' if 'RPV' in sam else '0'), 'jecVersion='+jecVersion, 'namePUFile='+pileUpFile ] )
+
+		config.JobType.inputFiles =  supportFiles
 		config.General.requestName = procName
+		print config
+		print '|--- Submmiting sample: ', procName
 		p = Process(target=submit, args=(config,))
 		p.start()
 		p.join()
