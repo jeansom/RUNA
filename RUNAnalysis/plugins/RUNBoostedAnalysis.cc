@@ -133,15 +133,17 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 		      jet1CosThetaStar = -9999, //jet2CosThetaStar = -9999, 
 		      deltaEtaDijet = -9999,
 		      jet1Tau21 = -9999, jet1Tau31 = -9999, jet1Tau32 = -9999,
-		      jet2Tau21 = -9999, jet2Tau31 = -9999, jet2Tau32 = -9999;
+   		      jet2Tau21 = -9999, jet2Tau31 = -9999, jet2Tau32 = -9999,
+		      genPartonPt1 = -9999, genPartonMass1 = -9999, genPartonID1 = -9999, genPartonDau11ID = -9999, genPartonDau12ID = -9999,
+		      genPartonPt2 = -9999, genPartonMass2 = -9999, genPartonID2 = -9999, genPartonDau21ID = -9999, genPartonDau22ID = -9999;
 		      //jet1SubjetPtRatio = -999, jet2SubjetPtRatio = -999, jet1SubjetMass21Ratio = -999, jet1Subjet112MassRatio = -999, jet1Subjet1JetMassRatio = - 999, jet1Subjet212MassRatio = - 999, jet1Subjet2JetMassRatio = - 999,
 		      //jet2SubjetMass21Ratio = -999, jet2Subjet112MassRatio = -999, jet2Subjet1JetMassRatio = - 999, jet2Subjet212MassRatio = - 999, jet2Subjet2JetMassRatio = - 999, 
 		      //cosPhi13412 = -9999, cosPhi31234 = -9999,
 		      //dalitzY1 = -9999, dalitzY2 = -9999, dalitzY3 = -9999, dalitzY4 = -9999, dalitzY5 = -9999, dalitzY6 = -9999, 
 		      //dalitzX1 = -9999, dalitzX2 = -9999, dalitzX3 = -9999, dalitzX4 = -9999, dalitzX5 = -9999, dalitzX6 = -9999;
-  vector<float> scaleWeights, pdfWeights, alphaWeights, genPartonPt, genPartonMass, genPartonID, genPartonDau0ID, genPartonDau1ID;
+                vector<float> scaleWeights, pdfWeights, alphaWeights;
 
-		EDGetTokenT<vector<float>> jetAK4Pt_;
+                EDGetTokenT<vector<float>> jetAK4Pt_;
 		EDGetTokenT<vector<float>> jetAK4Eta_;
 		EDGetTokenT<vector<float>> jetAK4Phi_;
 		EDGetTokenT<vector<float>> jetAK4E_;
@@ -178,7 +180,7 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 		EDGetTokenT<vector<int>> puNumInt_;
 		EDGetTokenT<unsigned int> lumi_;
 		EDGetTokenT<unsigned int> run_;
-		EDGetTokenT<ULong64_t> event_;
+                EDGetTokenT<ULong64_t> event_;
 		EDGetTokenT<GenEventInfoProduct> generator_;
 		EDGetTokenT<LHEEventProduct> extLHEProducer_;
 
@@ -208,15 +210,15 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 		EDGetTokenT<vector<float>> subjetCMVAv2_;
 
 		EDGetTokenT<vector<float>> subjetFlavor_;
-		EDGetTokenT<vector<float>> jetFlavor_;
+  EDGetTokenT<vector<float>> jetFlavor_;
 
                 //EDGetTokenT<vector<float>> genPartPt_;
-                //EDGetTokenT<vector<float>> genPartMass_;
+                //EDGetTokenT<vector<float>> genPartass_;
 		//EDGetTokenT<vector<float>> genPartID_;
 
 		//EDGetTokenT<vector<float>> genPartDau0ID_;
 		//EDGetTokenT<vector<float>> genPartDau1ID_;
-                EDGetTokenT<vector<reco::GenParticle>> genPart_;
+  EDGetTokenT<vector<reco::GenParticle>> genPart_;
 
 };
 
@@ -616,19 +618,25 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	//for (size_t i = 0; i < genPartID->size(); i++) genPartonID.push_back((*genPartID)[i]);
 	//for (size_t i = 0; i < genPartDau0ID->size(); i++) genPartonDau0ID.push_back((*genPartDau0ID)[i]);
 	//for (size_t i = 0; i < genPartDau1ID->size(); i++) genPartonDau1ID.push_back((*genPartDau1ID)[i]);
-	for (size_t i = 0; i < genPart->size(); i++) {
+	//	for (size_t i = 0; i < genPart->size(); i++) {
 	  cout << 0 << endl;
-	  genPartonPt.push_back(((*genPart)[i]).pt());
-	  genPartonID.push_back(((*genPart)[i]).pdgId());
-	  genPartonMass.push_back(((*genPart)[i]).mass());
+	  //	  genPartonPt.push_back(((*genPart)[i]).pt());
+	  //	  genPartonID.push_back(((*genPart)[i]).pdgId());
+	  //	  genPartonMass.push_back(((*genPart)[i]).mass());
+	  genPartonPt1 = (*genPart)[0].pt();
+	  genPartonPt2 = (*genPart)[1].pt();
+	  genPartonMass1 = (*genPart)[0].mass();
+	  genPartonMass2 = (*genPart)[1].mass();
+	  genPartonID1 = (*genPart)[0].pdgId();
+	  genPartonID2 = (*genPart)[1].pdgId();
 	  cout << 1 << endl;
-	  if (((*genPart)[i]).numberOfDaughters() > 0 ) genPartonDau0ID.push_back(((*genPart)[i]).daughter(0)->pdgId());
-	  else if  (((*genPart)[i]).numberOfDaughters() < 1 ) genPartonDau0ID.push_back(-999);
-	  cout << 2 << endl;
-	  if (((*genPart)[i]).numberOfDaughters() > 1 ) genPartonDau1ID.push_back(((*genPart)[i]).daughter(1)->pdgId());
-	  else if  (((*genPart)[i]).numberOfDaughters() < 2 ) genPartonDau1ID.push_back(-999);
-	  cout << 3 << endl;
-	}
+
+	  if (((*genPart)[0]).numberOfDaughters() > 0 ) genPartonDau11ID = (*genPart)[0].daughter(0)->pdgId();
+	  if (((*genPart)[0]).numberOfDaughters() > 1 ) genPartonDau12ID = (*genPart)[0].daughter(1)->pdgId();
+	  if (((*genPart)[1]).numberOfDaughters() > 0 ) genPartonDau21ID = (*genPart)[1].daughter(0)->pdgId();
+	  if (((*genPart)[1]).numberOfDaughters() > 1 ) genPartonDau22ID = (*genPart)[1].daughter(1)->pdgId();
+
+	  //	}
 
 	/// Applying kinematic, trigger and jet ID
 	cutmap["Processed"] += 1;
@@ -1455,11 +1463,16 @@ void RUNBoostedAnalysis::beginJob() {
 		RUNAtree->Branch( "jet2Tau31", &jet2Tau31, "jet2Tau31/F" );
 		RUNAtree->Branch( "jet2Tau32", &jet2Tau32, "jet2Tau32/F" );	
 
-		RUNAtree->Branch( "genPartPt", &genPartonPt, "genPartonPt/F" );
-		RUNAtree->Branch( "genPartMass", &genPartonMass, "genPartonMass/F" );
-		RUNAtree->Branch( "genPartID", &genPartonID, "genPartonID/F" );
-		RUNAtree->Branch( "genPartDau0ID", &genPartonDau0ID, "genPartonDau0ID/F" );
-		RUNAtree->Branch( "genPartDau1ID", &genPartonDau1ID, "genPartonDau1ID/F" );
+		RUNAtree->Branch( "genPartPt1", &genPartonPt1, "genPartonPt1/F" );
+		RUNAtree->Branch( "genPartMass1", &genPartonMass1, "genPartonMass1/F" );
+		RUNAtree->Branch( "genPartID1", &genPartonID1, "genPartonID1/F" );
+		RUNAtree->Branch( "genPartDau11ID", &genPartonDau11ID, "genPartonDau11ID/F" );
+		RUNAtree->Branch( "genPartDau12ID", &genPartonDau12ID, "genPartonDau12ID/F" );
+		RUNAtree->Branch( "genPartPt2", &genPartonPt2, "genPartonPt2/F" );
+		RUNAtree->Branch( "genPartMass2", &genPartonMass2, "genPartonMass2/F" );
+		RUNAtree->Branch( "genPartID2", &genPartonID2, "genPartonID2/F" );
+		RUNAtree->Branch( "genPartDau21ID", &genPartonDau21ID, "genPartonDau21ID/F" );
+		RUNAtree->Branch( "genPartDau22ID", &genPartonDau22ID, "genPartonDau22ID/F" );
 
 		//RUNAtree->Branch( "jet1SubjetPtRatio", &jet1SubjetPtRatio, "jet1SubjetPtRatio/F" );
 		//RUNAtree->Branch( "jet2SubjetPtRatio", &jet2SubjetPtRatio, "jet2SubjetPtRatio/F" );
