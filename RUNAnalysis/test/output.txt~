@@ -1,0 +1,316 @@
+PuTTY X11 proxy: unable to connect to forwarded X server: Network error: Connection refused
+Error in <TGClient::TGClient>: can't open display "localhost:12.0", switching to batch mode...
+ In case you run from a remote ssh session, reconnect with ssh -Y
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterCBDCMVAv2DATA/PullPlotDivMetricAfterCBDCMVAv2DATA.png has been created
+TCanvas::Constructor:0: RuntimeWarning: Deleting canvas with same name: C
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterCBDCMVAv2DATA/PullPlotQuadMetricAfterCBDCMVAv2DATA.png has been created
+TCanvas::Constructor:0: RuntimeWarning: Deleting canvas with same name: C
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterCBDCMVAv2DATA/PullPlotMetricAfterCBDCMVAv2DATA.png has been created
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterCBDCMVAv2DATA/sumPull.png has been created
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterCBDCMVAv2DATA/avePull.png has been created
+here
+-1.60602786784
+0.397816895553
+-2.07268970301
+0.765222435705
+0
+1
+-52.4255950432
+-127.063436528
+-140.394426213
+ FCN=35.4491 FROM MIGRAD    STATUS=CONVERGED      33 CALLS          34 TOTAL
+                     EDM=7.64986e-23    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -2.14805e-01   3.73062e-01   4.82476e-04  -7.36350e-11
+   2  p1          -7.37992e-04   1.85426e-03   2.39808e-06  -1.48148e-08
+ FCN=34.3922 FROM MIGRAD    STATUS=CONVERGED      33 CALLS          34 TOTAL
+                     EDM=1.93479e-23    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -2.57410e-01   3.82159e-01   4.00196e-04   4.43871e-11
+   2  p1          -1.35917e-04   1.77528e-03   1.85908e-06   9.55505e-09
+ FCN=21.5244 FROM MIGRAD    STATUS=CONVERGED      34 CALLS          35 TOTAL
+                     EDM=1.54866e-22    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -5.14583e-02   2.33730e-01   1.39936e-04  -1.90411e-10
+   2  p1           1.04782e-04   7.99845e-04   4.78875e-07  -3.70944e-08
+ FCN=27.6033 FROM MIGRAD    STATUS=CONVERGED      44 CALLS          45 TOTAL
+                     EDM=3.06133e-21    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -1.54872e-01   3.05840e-01   3.47814e-05   2.55360e-10
+   2  p1           4.75529e-04   9.43585e-04   1.07308e-07   1.65538e-07
+ FCN=32.3839 FROM MIGRAD    STATUS=CONVERGED      35 CALLS          36 TOTAL
+                     EDM=5.91094e-21    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -1.90430e+00   5.21260e-01   2.92504e-04  -4.25105e-10
+   2  p1           6.26195e-03   1.90573e-03   1.06940e-06  -1.66108e-07
+ FCN=25.7563 FROM MIGRAD    STATUS=CONVERGED      35 CALLS          36 TOTAL
+                     EDM=7.14573e-22    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -4.29032e-01   2.96618e-01   1.44517e-04  -2.45833e-10
+   2  p1           1.22439e-03   9.71451e-04   4.73308e-07  -3.75307e-08
+ FCN=13.8225 FROM MIGRAD    STATUS=CONVERGED      33 CALLS          34 TOTAL
+                     EDM=1.20187e-23    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           6.31706e-03   6.42461e-02   6.21759e-05   1.42849e-10
+   2  p1          -5.94655e-05   3.41217e-04   3.30222e-07   2.68964e-08
+ FCN=9.54311 FROM MIGRAD    STATUS=CONVERGED      36 CALLS          37 TOTAL
+                     EDM=9.95125e-23    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -5.49384e-02   1.61453e-01   6.11639e-05   3.63032e-10
+   2  p1           1.68002e-04   5.91608e-04   2.24121e-07   9.90735e-08
+ FCN=5.44917 FROM MIGRAD    STATUS=CONVERGED      36 CALLS          37 TOTAL
+                     EDM=5.8573e-23    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -2.83800e-02   9.40362e-02   2.79756e-05   4.76225e-10
+   2  p1           7.83349e-05   3.62505e-04   1.07845e-07   1.23536e-07
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterCBDCMVAv2DATA/PullPlotFitAfterCBDCMVAv2DATA.png has been created
+-127.063436528
+sum1: -52.4255950432
+sum5: -127.063436528
+sum6: -140.394426213
+PuTTY X11 proxy: unable to connect to forwarded X server: Network error: Connection refused
+Error in <TGClient::TGClient>: can't open display "localhost:12.0", switching to batch mode...
+ In case you run from a remote ssh session, reconnect with ssh -Y
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterBCDCMVAv2DATA/PullPlotDivMetricAfterBCDCMVAv2DATA.png has been created
+TCanvas::Constructor:0: RuntimeWarning: Deleting canvas with same name: C
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterBCDCMVAv2DATA/PullPlotQuadMetricAfterBCDCMVAv2DATA.png has been created
+TCanvas::Constructor:0: RuntimeWarning: Deleting canvas with same name: C
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterBCDCMVAv2DATA/PullPlotMetricAfterBCDCMVAv2DATA.png has been created
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterBCDCMVAv2DATA/sumPull.png has been created
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterBCDCMVAv2DATA/avePull.png has been created
+here
+-2.46671733675
+0.382517581049
+-1.86454553464
+1
+0
+1
+-44.4601070136
+-101.263475379
+-138.82652951
+ FCN=33.3619 FROM MIGRAD    STATUS=CONVERGED      34 CALLS          35 TOTAL
+                     EDM=7.89323e-23    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -6.56357e-01   4.35222e-01   3.81852e-04  -9.30390e-11
+   2  p1           1.91995e-03   1.72691e-03   1.51515e-06  -2.34480e-08
+ FCN=32.4534 FROM MIGRAD    STATUS=CONVERGED      33 CALLS          34 TOTAL
+                     EDM=1.67361e-22    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -3.51049e-01   2.96294e-01   3.31405e-04   5.36008e-11
+   2  p1           6.46782e-04   1.21780e-03   1.36211e-06   2.60824e-08
+ FCN=25.8105 FROM MIGRAD    STATUS=CONVERGED      34 CALLS          35 TOTAL
+                     EDM=1.75387e-23    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -1.47364e-02   2.15802e-01   1.84459e-04   6.74108e-11
+   2  p1          -1.05034e-04   7.66032e-04   6.54772e-07   1.35647e-08
+ FCN=25.9939 FROM MIGRAD    STATUS=CONVERGED      33 CALLS          34 TOTAL
+                     EDM=1.87929e-22    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           2.03326e-01   2.84659e-01   3.23160e-04  -8.24524e-11
+   2  p1          -1.38327e-03   1.39732e-03   1.58632e-06  -3.35940e-09
+ FCN=38.2438 FROM MIGRAD    STATUS=CONVERGED      34 CALLS          35 TOTAL
+                     EDM=2.48628e-21    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -5.51936e-01   3.47814e-01   2.72412e-04  -3.26042e-10
+   2  p1           1.67174e-03   1.20956e-03   9.47340e-07  -3.75020e-08
+ FCN=19.2056 FROM MIGRAD    STATUS=CONVERGED      33 CALLS          34 TOTAL
+                     EDM=8.26168e-24    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           2.10501e-04   5.19181e-02   5.81958e-05   1.52619e-10
+   2  p1          -3.17987e-05   2.17108e-04   3.00000e-07   2.96059e-08
+ FCN=11.1035 FROM MIGRAD    STATUS=CONVERGED      35 CALLS          36 TOTAL
+                     EDM=3.56445e-22    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           2.35290e-03   5.02883e-02   4.05974e-05  -3.28166e-10
+   2  p1          -4.88676e-05   2.68122e-04   2.16453e-07   4.10332e-08
+ FCN=10.7232 FROM MIGRAD    STATUS=CONVERGED      36 CALLS          37 TOTAL
+                     EDM=5.27438e-22    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -7.68881e-02   1.45888e-01   6.24236e-05   7.82553e-10
+   2  p1           2.23116e-04   5.23053e-04   2.23807e-07   2.38110e-07
+ FCN=3.62184 FROM MIGRAD    STATUS=CONVERGED      38 CALLS          39 TOTAL
+                     EDM=1.21399e-23    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -2.68169e-02   7.60842e-02   2.02170e-05   1.64746e-10
+   2  p1           7.65833e-05   2.96255e-04   7.87205e-08   2.82067e-08
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterBCDCMVAv2DATA/PullPlotFitAfterBCDCMVAv2DATA.png has been created
+-101.263475379
+sum1: -44.4601070136
+sum5: -101.263475379
+sum6: -138.82652951
+PuTTY X11 proxy: unable to connect to forwarded X server: Network error: Connection refused
+Error in <TGClient::TGClient>: can't open display "localhost:12.0", switching to batch mode...
+ In case you run from a remote ssh session, reconnect with ssh -Y
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterCBDCSVv2DATA/PullPlotDivMetricAfterCBDCSVv2DATA.png has been created
+TCanvas::Constructor:0: RuntimeWarning: Deleting canvas with same name: C
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterCBDCSVv2DATA/PullPlotQuadMetricAfterCBDCSVv2DATA.png has been created
+TCanvas::Constructor:0: RuntimeWarning: Deleting canvas with same name: C
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterCBDCSVv2DATA/PullPlotMetricAfterCBDCSVv2DATA.png has been created
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterCBDCSVv2DATA/sumPull.png has been created
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterCBDCSVv2DATA/avePull.png has been created
+here
+-0.913035459597
+0.58109810655
+-1.62205273814
+0.427806950511
+0.241277809442
+0.429586276337
+-43.4204726787
+-112.83174155
+-125.463340717
+ FCN=37.8221 FROM MIGRAD    STATUS=CONVERGED      33 CALLS          34 TOTAL
+                     EDM=2.79344e-22    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           1.66533e-02   2.71611e-01   3.95595e-04  -4.49034e-11
+   2  p1          -8.13873e-04   1.43755e-03   2.09376e-06   8.48404e-09
+ FCN=35.5473 FROM MIGRAD    STATUS=CONVERGED      33 CALLS          34 TOTAL
+                     EDM=2.38977e-24    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -5.22663e-02   1.67723e-01   2.72559e-04   0.00000e+00
+   2  p1          -7.76613e-04   9.91073e-04   1.61055e-06   2.20591e-09
+ FCN=21.591 FROM MIGRAD    STATUS=CONVERGED      34 CALLS          35 TOTAL
+                     EDM=4.16056e-22    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           6.68625e-02   1.66944e-01   1.11104e-04  -1.59882e-10
+   2  p1          -2.25658e-04   5.79494e-04   3.85663e-07  -9.21195e-08
+ FCN=31.3979 FROM MIGRAD    STATUS=CONVERGED      38 CALLS          39 TOTAL
+                     EDM=2.10947e-23    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -1.57417e-01   3.27359e-01   3.18923e-04   5.56987e-11
+   2  p1          -1.76999e-04   1.35325e-03   1.31838e-06   1.34738e-08
+ FCN=26.9199 FROM MIGRAD    STATUS=CONVERGED      34 CALLS          35 TOTAL
+                     EDM=3.00431e-22    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -6.68301e-01   3.57168e-01   2.83569e-04  -6.26428e-11
+   2  p1           2.00844e-03   1.40123e-03   1.11249e-06   1.59674e-09
+ FCN=19.1303 FROM MIGRAD    STATUS=CONVERGED      38 CALLS          39 TOTAL
+                     EDM=7.29048e-20    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -5.34788e-01   2.59962e-01   5.45731e-05  -1.52985e-08
+   2  p1           1.63108e-03   8.08933e-04   1.69817e-07  -4.86409e-06
+ FCN=11.6589 FROM MIGRAD    STATUS=CONVERGED      33 CALLS          34 TOTAL
+                     EDM=6.45542e-23    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           7.48996e-03   7.15033e-02   6.10675e-05  -2.18163e-10
+   2  p1          -5.20419e-05   3.71375e-04   3.17173e-07  -1.40015e-08
+ FCN=9.13351 FROM MIGRAD    STATUS=CONVERGED      33 CALLS          34 TOTAL
+                     EDM=2.19252e-23    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -2.32583e-02   1.13566e-01   6.67292e-05  -6.65509e-11
+   2  p1           4.31585e-05   4.38123e-04   3.00000e-07  -2.96059e-08
+ FCN=4.09551 FROM MIGRAD    STATUS=CONVERGED      36 CALLS          37 TOTAL
+                     EDM=8.25606e-24    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -2.17340e-02   9.07798e-02   2.57735e-05   1.72305e-10
+   2  p1           5.62585e-05   3.64671e-04   1.03534e-07   4.28929e-08
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterCBDCSVv2DATA/PullPlotFitAfterCBDCSVv2DATA.png has been created
+-112.83174155
+sum1: -43.4204726787
+sum5: -112.83174155
+sum6: -125.463340717
+PuTTY X11 proxy: unable to connect to forwarded X server: Network error: Connection refused
+Error in <TGClient::TGClient>: can't open display "localhost:12.0", switching to batch mode...
+ In case you run from a remote ssh session, reconnect with ssh -Y
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterBCDCSVv2DATA/PullPlotDivMetricAfterBCDCSVv2DATA.png has been created
+TCanvas::Constructor:0: RuntimeWarning: Deleting canvas with same name: C
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterBCDCSVv2DATA/PullPlotQuadMetricAfterBCDCSVv2DATA.png has been created
+TCanvas::Constructor:0: RuntimeWarning: Deleting canvas with same name: C
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterBCDCSVv2DATA/PullPlotMetricAfterBCDCSVv2DATA.png has been created
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterBCDCSVv2DATA/sumPull.png has been created
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterBCDCSVv2DATA/avePull.png has been created
+here
+-2.90393628936
+0.42360815521
+-2.04191293045
+0.730427193297
+0
+1
+-36.9043471466
+-88.8167034776
+-122.028768886
+ FCN=36.504 FROM MIGRAD    STATUS=CONVERGED      33 CALLS          34 TOTAL
+                     EDM=1.97353e-22    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -8.85015e-02   3.42300e-01   4.20680e-04  -4.22258e-11
+   2  p1          -2.62025e-04   1.63396e-03   2.00811e-06   3.53837e-09
+ FCN=36.7691 FROM MIGRAD    STATUS=CONVERGED      35 CALLS          36 TOTAL
+                     EDM=5.7199e-21    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -1.01527e+00   4.35878e-01   2.26393e-04   1.41234e-09
+   2  p1           3.44368e-03   1.60952e-03   8.35978e-07   3.82479e-07
+ FCN=24.3011 FROM MIGRAD    STATUS=CONVERGED      34 CALLS          35 TOTAL
+                     EDM=1.04141e-21    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           3.04057e-02   1.48013e-01   8.64162e-05   3.08337e-10
+   2  p1          -1.18862e-04   5.00847e-04   3.00000e-07   0.00000e+00
+ FCN=24.4414 FROM MIGRAD    STATUS=CONVERGED      38 CALLS          39 TOTAL
+                     EDM=9.32324e-23    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -3.07731e-01   3.50883e-01   3.02873e-04   8.79754e-11
+   2  p1           3.82323e-04   1.55332e-03   1.34079e-06   1.32486e-08
+ FCN=30.0948 FROM MIGRAD    STATUS=CONVERGED      33 CALLS          34 TOTAL
+                     EDM=1.03495e-22    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -5.67518e-02   1.45124e-01   1.49462e-04   1.78276e-10
+   2  p1           1.07163e-04   6.09855e-04   6.28083e-07   5.65644e-08
+ FCN=15.3212 FROM MIGRAD    STATUS=CONVERGED      38 CALLS          39 TOTAL
+                     EDM=1.11311e-20    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -9.63553e-02   1.67102e-01   3.46167e-05   8.33869e-09
+   2  p1           2.86247e-04   5.16796e-04   1.07059e-07   2.73774e-06
+ FCN=11.5385 FROM MIGRAD    STATUS=CONVERGED      33 CALLS          34 TOTAL
+                     EDM=3.36843e-24    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           2.92289e-03   5.12868e-02   4.48362e-05  -9.90471e-11
+   2  p1          -5.08148e-05   2.70811e-04   3.00000e-07  -1.48030e-08
+ FCN=10.8604 FROM MIGRAD    STATUS=CONVERGED      35 CALLS          36 TOTAL
+                     EDM=3.66404e-24    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -8.89400e-03   6.66380e-02   4.80404e-05  -9.24408e-11
+   2  p1           7.11841e-06   2.76734e-04   1.99502e-07  -2.22599e-08
+ FCN=2.32126 FROM MIGRAD    STATUS=CONVERGED      38 CALLS          39 TOTAL
+                     EDM=1.1935e-22    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0          -1.09049e-02   6.53704e-02   1.50176e-05  -2.21785e-10
+   2  p1           2.76009e-05   2.62806e-04   6.03744e-08  -1.10334e-07
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterBCDCSVv2DATA/PullPlotFitAfterBCDCSVv2DATA.png has been created
+-88.8167034776
+sum1: -36.9043471466
+sum5: -88.8167034776
+sum6: -122.028768886

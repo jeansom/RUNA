@@ -1,0 +1,20 @@
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterCBDCMVAv2DATA/PullPlotFitAfterCBDCMVAv2DATA.png has been created
+-127.063436528
+sum1: -52.4255950432
+sum5: -127.063436528
+sum6: -140.394426213
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterBCDCMVAv2DATA/PullPlotFitAfterBCDCMVAv2DATA.png has been created
+-101.263475379
+sum1: -44.4601070136
+sum5: -101.263475379
+sum6: -138.82652951
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterCBDCSVv2DATA/PullPlotFitAfterCBDCSVv2DATA.png has been created
+-112.83174155
+sum1: -43.4204726787
+sum5: -112.83174155
+sum6: -125.463340717
+Info in <TCanvas::Print>: png file outputs//AfterThetaPull12617/AfterBCDCSVv2DATA/PullPlotFitAfterBCDCSVv2DATA.png has been created
+-88.8167034776
+***sum1: -36.9043471466
+***sum5: -88.8167034776
+***sum6: -122.028768886
