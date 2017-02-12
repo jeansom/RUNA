@@ -532,8 +532,7 @@ void RUNBoostedResolutionCalc::analyze(const Event& iEvent, const EventSetup& iS
 
 			if( TMath::Abs( (*jetEta)[i] ) > 2.4 ) continue;
 
-			string typeOfJetID = "tightLepVetoJetID";
-			bool jetId = jetID( (*jetEta)[i], (*jetE)[i], (*jecFactor)[i], (*neutralHadronEnergy)[i], (*neutralEmEnergy)[i], (*chargedHadronEnergy)[i], (*muonEnergy)[i], (*chargedEmEnergy)[i], (*chargedHadronMultiplicity)[i], (*neutralHadronMultiplicity)[i], typeOfJetID ); 
+			bool idL = jetID( (*jetEta)[i], (*jetE)[i], (*jecFactor)[i], (*neutralHadronEnergy)[i], (*neutralEmEnergy)[i], (*chargedHadronEnergy)[i], (*muonEnergy)[i], (*chargedEmEnergy)[i], (*chargedHadronMultiplicity)[i], (*neutralHadronMultiplicity)[i], (*chargedMultiplicity)[i] ); 
 
 			if( (*jetPt)[i] < 50 ) continue; // just to reduce time
 
@@ -545,7 +544,7 @@ void RUNBoostedResolutionCalc::analyze(const Event& iEvent, const EventSetup& iS
 			double sysJEC = 0;
 			corrJet = rawJet* ( JEC + sysJEC  );
 
-			if( corrJet.Pt() > 150 && jetId ) { 
+			if( corrJet.Pt() > 150 && idL ) { 
 
 				HT += corrJet.Pt();
 				++numberJets;

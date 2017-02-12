@@ -12,10 +12,10 @@ writeExtraText = True
 extraText   = "Preliminary"
 extraTextFont = 52 
 
-lumiTextSize     = 0.6
+lumiTextSize     = 0.4
 lumiTextOffset   = 0.2
 
-cmsTextSize      = 0.70
+cmsTextSize      = 0.55
 cmsTextOffset    = 0.0
 
 relPosX    = 0.12
@@ -24,7 +24,7 @@ relExtraDY = 1.2
 
 extraOverCmsTextSize  = 0.70
 
-lumi_13TeV = "20.1 fb^{-1}"
+lumi_13TeV = "2.6 fb^{-1}"
 lumi_8TeV  = "19.7 fb^{-1}" 
 lumi_7TeV  = "5.1 fb^{-1}"
 
