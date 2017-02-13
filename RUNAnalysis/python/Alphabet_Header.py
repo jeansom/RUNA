@@ -28,7 +28,6 @@ def AlphabetSlicer( plot, bins, cut, which, center ):
     eyh = [] # error above y values
 
     for b in bins: # Loop through the bins (along x axis, should contain gap for signal region)
-#        print str(b)
         passed = 0 # Number of events which passed cut in bin b
         failed = 0 # Number of events which failed cut in bin b
         for i in range( plot.GetNbinsX() ):
@@ -53,16 +52,9 @@ def AlphabetSlicer( plot, bins, cut, which, center ):
         if failed < 0:
             failed = 0
 
-#        print str(passed) + " pass"
-#        print str(failed) + " fail"
-        
         ep = math.sqrt( passed ) # Error on passed
         ef = math.sqrt( failed ) # Error on failed
         
-        ##################################
-        ####### SKIPPED CONDITIONS #######
-        ##################################
-
         if passed == 0 and failed == 0:
 #            print "bin not filled: passed = 0 and failed = 0"
             continue
@@ -73,7 +65,7 @@ def AlphabetSlicer( plot, bins, cut, which, center ):
 #            print "bin not filled: passed = 0"
             continue
 
-        err = (passed/(failed))*(ep/passed+ef/failed)
+        err = (passed/(failed))*(ep/passed+ef/failed) # Error on ratio
 
         x.append( (float( (b[0]+b[1])/2. - center ) ) ) # X value = bin center - center
         exl.append( float( (b[1]-b[0])/2. ) ) # X low error = bin width
@@ -82,11 +74,11 @@ def AlphabetSlicer( plot, bins, cut, which, center ):
         y.append( float(passed/failed) ) # Y value = pass/fail
         eyh.append( float(err) ) # See error calculation above
 
-        # Low y error
-        if (passed/failed) - err > 0.:
-            eyl.append(float(err))
-        else:
-            eyl.append( float(passed/failed) )
+        # Lower error on ratio
+        if (passed/failed) - err > 0.: # If err is not greater than the ratio
+            eyl.append(float(err)) # The lower error is also err
+        else: # Otherwise
+            eyl.append( float(passed/failed) ) # The lower error is just the ratio --> brings it to 0, not below
         
     # Creates TGraphAsymmErrors with x values, y values, and errors
     if len(x) > 0:
@@ -95,8 +87,20 @@ def AlphabetSlicer( plot, bins, cut, which, center ):
         G = TGraphAsymmErrors()
 
     return G
-
+# Version of AlphabetSlicer with root default errors
+############ DO NOT USE!!! INCORRECT!!! ############
+#### BPlot: a plot of the B region
+#### DPlot: a plot of the D region
+#### bins: the bins for the ratio plot
 def AlphabetDivide( BPlot, DPlot, bins ):
+    
+    print "-------------------------------------------------------------------"
+    print "-------------------------------------------------------------------"
+    print "-------------------------------------------------------------------"
+    print "--------WHY ARE YOU USING THIS IT DOES NOT WORK!!!!!!!!!!!!--------"
+    print "-------------------------------------------------------------------"
+    print "-------------------------------------------------------------------"
+    print "-------------------------------------------------------------------"
 
     rebin = BPlot.GetNbinsX()
     rebin = rebin/(len(bins))

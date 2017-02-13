@@ -24,14 +24,14 @@ relExtraDY = 1.2
 
 extraOverCmsTextSize  = 0.70
 
-lumi_13TeV = "2.6 fb^{-1}"
+lumi_13TeV = "36.6/15 fb^{-1}"
 lumi_8TeV  = "19.7 fb^{-1}" 
 lumi_7TeV  = "5.1 fb^{-1}"
 
 drawLogo      = False
 
 def CMS_lumi(pad,  iPeriod,  iPosX ):
-    outOfFrame    = False
+    outOfFrame    = True
     if(iPosX/10==0 ): outOfFrame = True
 
     alignY_=3

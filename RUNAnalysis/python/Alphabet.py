@@ -33,8 +33,8 @@ class Alphabet:
     #### Dist_Minus: Samples to subtract for background estimation
     def __init__( self, name, Dist_Plus, Dist_Minus ):
         self.name = name
-        self.DP = Dist_Plus
-        self.DM = Dist_Minus
+        self.DP = Dist_Plus # Distributions to add in bkg est
+        self.DM = Dist_Minus # Distributions to subtract in bkg est
         
     # Makes basic ABCD plot using Dist_Plus - Dist_Minus
     #### var_array: [ x var, y var, x n bins, x min, x max, y n bins, y min, y max ]
@@ -42,13 +42,13 @@ class Alphabet:
     def MakeABCDRegions( self, var_array, presel ):
         self.PABCD = TH2F( "added_ABCD_" + self.name, "", var_array[2], var_array[3], var_array[4], var_array[5], var_array[6], var_array[7] ) # ABCD Plot to add
         self.MABCD = TH2F( "subbed_ABCD_" + self.name, "", var_array[2], var_array[3], var_array[4], var_array[5], var_array[6], var_array[7] ) # ABCD Plot to subtract
-        for i in self.DP:
+        for i in self.DP: # Adds all the ABCD plots for the plus distributions
             quick2dplot( i.File, i.Tree, self.PABCD, var_array[0], var_array[1], presel, i.Weight )
-        for i in self.DM:
+        for i in self.DM: # Adds all the ABCD plots for the minus distributions
             quick2dplot( i.File, i.Tree, self.MABCD, var_array[0], var_array[1], presel, i.Weight )
 
         self.ABCD = self.PABCD.Clone( "ABCD_" + self.name ) #Final ABCD Plot
-        self.ABCD.Add( self.MABCD, -1. )
+        self.ABCD.Add( self.MABCD, -1. ) # Subtracts minus ABCD Plots from plus ABCD Plots
         
     # Creates the B and D plot
     # The variable that defines the B and D regions is on the Y Axis
@@ -57,39 +57,35 @@ class Alphabet:
     #### presel: Set of cuts to apply as preselection before defining B vs D, includes the inverse of the cut that defines B vs A
     def SetRegions( self, var_array, presel, tagB, tagD ):
         self.X = var_array[0] # variable to bin the fit in
-        self.Pplots = TH2F( "added" + self.name, "", var_array[2], var_array[3], var_array[4], var_array[5], var_array[6], var_array[7] ) # Plot with the samples to add for the bkg est
-        self.Mplots = TH2F( "subbed" + self.name, "", var_array[2], var_array[3], var_array[4], var_array[5], var_array[6], var_array[7] ) # Plot with the samples to subtract for the bkg est
-        self.PplotsB = TH1F( "addedB" + self.name, "", var_array[2], var_array[3], var_array[4] ) # Plot with the samples to add for the bkg est
-        self.MplotsB = TH1F( "subbedB" + self.name, "", var_array[2], var_array[3], var_array[4] ) # Plot with the samples to subtract for the bkg est
-        self.PplotsD = TH1F( "addedD" + self.name, "", var_array[2], var_array[3], var_array[4] ) # Plot with the samples to add for the bkg est
-        self.MplotsD = TH1F( "subbedD" + self.name, "", var_array[2], var_array[3], var_array[4] ) # Plot with the samples to subtract for the bkg est
+        self.Pplots = TH2F( "added" + self.name, "", var_array[2], var_array[3], var_array[4], var_array[5], var_array[6], var_array[7] ) # Plot with the samples to add for the bkg est, 2D
+        self.Mplots = TH2F( "subbed" + self.name, "", var_array[2], var_array[3], var_array[4], var_array[5], var_array[6], var_array[7] ) # Plot with the samples to subtract for the bkg est, 2D
+        self.PplotsB = TH1F( "addedB" + self.name, "", var_array[2], var_array[3], var_array[4] ) # Plot with the samples to add for the bkg est, B
+        self.MplotsB = TH1F( "subbedB" + self.name, "", var_array[2], var_array[3], var_array[4] ) # Plot with the samples to subtract for the bkg est, B
+        self.PplotsD = TH1F( "addedD" + self.name, "", var_array[2], var_array[3], var_array[4] ) # Plot with the samples to add for the bkg est, D
+        self.MplotsD = TH1F( "subbedD" + self.name, "", var_array[2], var_array[3], var_array[4] ) # Plot with the samples to subtract for the bkg est, D
 
         # Actual making of plots
-        for i in self.DP:
-#            print "here"
+        for i in self.DP: # Adds all the plus distributions together in self.Pplots
             quick2dplot( i.File, i.Tree, self.Pplots, var_array[0], var_array[1], presel, i.weight )
             quickplot( i.File, i.Tree, self.PplotsB, var_array[0], tagB, i.weight )
             quickplot( i.File, i.Tree, self.PplotsD, var_array[0],  tagD, i.weight )
-        for j in self.DM:
+        for j in self.DM: # Adds all the minus distributions together in self.Mplots
             quick2dplot( j.File, j.Tree, self.Mplots, var_array[0], var_array[1], presel, j.weight )
             quickplot( j.File, j.Tree, self.MplotsB, var_array[0], tagB, j.weight )
             quickplot( j.File, j.Tree, self.MplotsD, var_array[0], tagD, j.weight )
         
         self.TwoDPlot = self.Pplots.Clone( "TwoDPlot_"+self.name) #Final 2D plot
-        self.TwoDPlot.Add( self.Mplots, -1. )
+        self.TwoDPlot.Add( self.Mplots, -1. ) # Subtracts minus plots from plus plots
 
 #        self.QuantileProfiles = GetQuantileProfiles( self.TwoDPlot, .1, "test" )
 
-        self.BPlot = self.PplotsB.Clone( "BPlot_"+self.name )
-        self.BPlot.Add( self.MplotsB, -1. )
+        self.BPlot = self.PplotsB.Clone( "BPlot_"+self.name ) # Final B Plot
+        self.BPlot.Add( self.MplotsB, -1. ) # Subtracts minus B plots from plus B plots
 
-        self.DPlot = self.PplotsD.Clone( "DPlot_"+self.name )
-        self.DPlot.Add( self.MplotsD, -1. )
+        self.DPlot = self.PplotsD.Clone( "DPlot_"+self.name ) # Final D Plot
+        self.DPlot.Add( self.MplotsD, -1. ) # Subtracts minus D plots from plus D plots
 
 
-    ############################################################
-    ########### SKIPPED TRUTHBINS - WHAT ARE THEY? #############
-    ############################################################
     # Fits the ratio B/D to a function of form FIT
     #### cut: cut which defines B vs D
     #### bins: bins to measure B/D in 
@@ -170,6 +166,3 @@ class Alphabet:
             self.hists_EST_SUB_UP.append( temphistU )
             self.hists_EST_SUB_DN.append( temphistD )
             self.hists_ATAG_SUB.append( temphistA )
-
-        
-    

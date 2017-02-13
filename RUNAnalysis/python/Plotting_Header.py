@@ -69,7 +69,7 @@ def FindAndSetMax( someset, log=True ):
     print maximum
     for j in someset: # Sets Maximum, Minimum
         if log:
-            j.SetMaximum(maximum*2.35)
+            j.SetMaximum(maximum*10)
             j.SetMinimum(1)
 
         else: 

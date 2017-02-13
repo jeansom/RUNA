@@ -246,16 +246,14 @@ class SigmoidFit:
     # Makes the fit function with error up and error down
     def Converter(self, fitter):
         D = "exp( [1] + [2]*x*x*x )"
-        Q = "(1/([0] + "+D+"))^(4)"
-#        dfa = Q+"*"+Q
-#        dfb = dfa+"*"+D
-#        dfc = dfb+"*x*x*x"
-#        err1 = (dfa+"*"+dfa+"*[3]*[3]") + "+" + (dfb+"*"+dfb+"*[4]*[4]") + "+" + (dfc+"*"+dfc+"*[4]*[4]")
-#        err2 = (dfa+"*"+dfb+"*[6]") + "+" + (dfa+"*"+dfc+"*[7]") + "+" + (dfb+"*"+dfc+"*[8]")
-#        errTerm = "math.sqrt(" + err1 + "+" + "2*" + err2 + ")"
-        errTerm = "( " + Q + " * ([3]^2 + " + D + "^2 * ([4]^2 + [5]^2*x^6 + 2*[8]*x^3 ) + " + D + " * (2*[6] + 2*[7]*x^3) ))^0.5"
-        self.ErrUp = TF1("SigmoidFitErrorUp"+self.name, "(([0]+ exp([1] + [2]*x*x*x))^(-1) + " + errTerm + ")",self.rm,self.rp)
-#        self.ErrUp = TF1("SigmoidFitErrorUp"+self.name, Q + "+" + errTerm,self.rm,self.rp)
+        Q = "(1/([0] + "+D+"))"
+        dfa = Q+"*"+Q
+        dfb = dfa+"*"+D
+        dfc = dfb+"*x*x*x"
+        err1 = dfa+"*"+dfa+"*[3]*[3]" + "+" + dfb+"*"+dfb+"*[4]*[4]" + "+" + dfc+"*"+dfc+"*[5]*[5]"
+        err2 = dfa+"*"+dfb+"*[6]" + "+" + dfa+"*"+dfc+"*[7]" + "+" + dfb+"*"+dfc+"*[8]"
+        errTerm = "sqrt(" + err1 + "+" + "2*" + err2 + ")"
+        self.ErrUp = TF1("SigmoidFitErrorUp"+self.name, Q + "+" + errTerm,self.rm,self.rp)
         self.ErrUp.SetParameter(0, self.fit.GetParameter(0))
         self.ErrUp.SetParameter(1, self.fit.GetParameter(1))
         self.ErrUp.SetParameter(2, self.fit.GetParameter(2))
@@ -266,8 +264,7 @@ class SigmoidFit:
         self.ErrUp.SetParameter(7, fitter.GetCovarianceMatrixElement(0,2))
         self.ErrUp.SetParameter(8, fitter.GetCovarianceMatrixElement(1,2))
 
-#        self.ErrDn = TF1("SigmoidFitErrorDn"+self.name,  Q + " - " + errTerm,self.rm,self.rp)
-        self.ErrDn = TF1("SigmoidFitErrorDn"+self.name,  "(([0]+ exp([1] + [2]*x*x*x))^(-1) - " + errTerm + ")",self.rm,self.rp)
+        self.ErrDn = TF1("SigmoidFitErrorDn"+self.name,  Q + " - " + errTerm,self.rm,self.rp)
         self.ErrDn.SetParameter(0, self.fit.GetParameter(0))
         self.ErrDn.SetParameter(1, self.fit.GetParameter(1))
         self.ErrDn.SetParameter(2, self.fit.GetParameter(2))
@@ -283,21 +280,15 @@ class SigmoidFit:
     #### center: The x-var is recentered about the middle of the blinded region. This tells where to recenter to. Can be left as 0.
     def MakeConvFactor(self, var, center):
         X = var + "-" + str(center)
-        self.ConvFact = "( (({0:6.53f}) + exp( ({1:6.53f}) + ({2:6.53f})*({3})*({3})*({3})))**(-1) )".format(self.ErrUp.GetParameter(0),self.ErrUp.GetParameter(1),self.ErrUp.GetParameter(2),X)
-        D = "exp( ({0:6.53f}) + ({1:6.53f})*({2})*({2})*({2}) )".format( self.ErrUp.GetParameter(1), self.ErrUp.GetParameter(2), X )
-        Q = (" 1/((({0:6.53f}) + "+D+")**4) ").format( self.ErrUp.GetParameter(0) )
-        self.ErrTerm = ("sqrt( " + Q + " * (({3:6.53f})*({3:6.53f}) + " + D + " * " + D + " * (({4:6.53f})*({4:6.53}) + ({5:6.53f})*({5:6.53})*({9})*({9})*({9})*({9})*({9})*({9}) + 2*({8:6.53f})*({9})*({9})*({9}) ) + " + D + " * (2*({6:6.53f}) + 2*({7:6.53f})*({9})*({9})*({9})) ))").format(self.ErrUp.GetParameter(0),self.ErrUp.GetParameter(1),self.ErrUp.GetParameter(2),self.ErrUp.GetParameter(3),self.ErrUp.GetParameter(4),self.ErrUp.GetParameter(5),self.ErrUp.GetParameter(6),self.ErrUp.GetParameter(7),self.ErrUp.GetParameter(8),X)
-        for i in xrange(0,9):
-            print self.ErrUp.GetParameter(i)
-#        prunedMassAve=100
-#        print "D"
-#        print eval(D)
-#        print "Q"
-#        print eval(Q)
-        
+        D = ("(exp( ({0:6.53f}) + ({1:6.53f})*({2})*({2})*({2}) ))").format( self.ErrUp.GetParameter(1), self.ErrUp.GetParameter(2), X )
+        Q = (" 1/((({0:6.53f}) + "+D+")) ").format( self.ErrUp.GetParameter(0) )
+        dfa = ("("+Q+"*"+Q+")")
+        dfb = ("("+dfa+"*"+D+")")
+        dfc = ("("+dfb+"*{0}*{0}*{0})").format(X)
+        self.ConvFact = "("+Q+")"
+        err1 = ("("+dfa+"*"+dfa+"*({0:6.53f})*({0:6.53f})" + "+" + dfb+"*"+dfb+"*({1:6.53f})*({1:6.53f})" + "+" + dfc+"*"+dfc+"*({2:6.53f})*({2:6.53f}))").format(self.ErrUp.GetParameter(3),self.ErrUp.GetParameter(4),self.ErrUp.GetParameter(5))
+        err2 = ("("+dfa+"*"+dfb+"*({0:6.53f})" + "+" + dfa+"*"+dfc+"*({1:6.53f})" + "+" + dfb+"*"+dfc+"*({2:6.53f}))").format(self.ErrUp.GetParameter(6),self.ErrUp.GetParameter(7),self.ErrUp.GetParameter(8))
+        self.ErrTerm = "sqrt(" + "(" + err1 + ") +" + "(2*(" + err2 + ")))"
+
         self.ConvFactUp = "("+self.ConvFact + " + " +  self.ErrTerm+")"
-        self.ConvFactDn = self.ConvFact + " - " + self.ErrTerm
-#        print "ErrTerm"
-#        print eval(self.ErrTerm)
-#        print "ConvFact"
-#        print eval(self.ConvFact)
+        self.ConvFactDn = "("+self.ConvFact + " - " + self.ErrTerm+")"
