@@ -26,6 +26,7 @@ from RUNA.RUNAnalysis.Plotting import *
 gStyle.SetOptStat(0)
 C = TCanvas( "C", "", 800, 800 )
 
+'''
 FILE = TFile.Open("outputs//BeforeThetaQCD/21174CMVAv2BCDDATA//LIM_FEEDb1t1.root")
 chan__QCD__TTAlphaScale__up = FILE.Get("b1t1__QCD__TTAlphaScale__up").Clone()
 chan__QCD__TTScale__up = FILE.Get("b1t1__QCD__TTScale__up").Clone()
@@ -98,12 +99,17 @@ jet1Top = "((jet1Tau32>0.51&jet2Tau32<0.51))"
 jet2Top = "((jet1Tau32<0.51&jet2Tau32>0.51))"
 jet1btag = "((jet1btagCSVv2>0.800&jet2btagCSVv2<0.800))"
 jet2btag = "((jet1btagCSVv2<0.800&jet2btagCSVv2>0.800))"
-
-TT_nowt = chan__QCD.Clone()
+'''
+TT_nowt = TH1D( "TT_nowt", "", 29, 60, 350 )
 TT_nowt.Reset()
 TT_wt = TT_nowt.Clone()
-quickplot("RootFiles/RUNAnalysis_TTJets_RunIIFall15MiniAODv2_v76x_v2p0_v05.root", "BoostedAnalysisPlots/RUNATree", TT_nowt, "prunedMassAve", "jet1Tau21<0.6&jet2Tau21<0.6&deltaEtaDijet<1.0&prunedMassAsym<0.1", "lumiWeight*puWeight*2666")
-quickplot("RootFiles/RUNAnalysis_TTJets_RunIIFall15MiniAODv2_v76x_v2p0_v05.root", "BoostedAnalysisPlots/RUNATree", TT_wt, "prunedMassAve", "jet1Tau21<0.6&jet2Tau21<0.6&deltaEtaDijet<1.0&prunedMassAsym<0.1", "lumiWeight*puWeight*2666*1.06*exp(-0.0005*HT/2)")
+
+TopPtSF1 = "exp(0.0615-0.0005*genPartPt1)"
+TopPtSF2 = "exp(0.0615-0.0005*genPartPt2)"
+TopPtWeight = "sqrt("+TopPtSF1+"*"+TopPtSF2+")"
+
+quickplot("80XRootFiles/RUNBoostedAnalysis_TT_TuneCUETP8M2T4_13TeV-powheg-pythia8v04.root", "BoostedAnalysisPlots/RUNATree", TT_nowt, "prunedMassAve", "jet1Tau21<0.6&jet2Tau21<0.6&deltaEtaDijet<1.0&prunedMassAsym<0.1", "lumiWeight*puWeight*2666")
+quickplot("80XRootFiles/RUNBoostedAnalysis_TT_TuneCUETP8M2T4_13TeV-powheg-pythia8v04.root", "BoostedAnalysisPlots/RUNATree", TT_wt, "prunedMassAve", "jet1Tau21<0.6&jet2Tau21<0.6&deltaEtaDijet<1.0&prunedMassAsym<0.1", "lumiWeight*puWeight*2666*"+TopPtWeight)
 TT_nowt.SetLineColor(kRed)
 TT_nowt.GetXaxis().SetTitle("Pruned Average Mass [GeV]")
 TT_nowt.GetYaxis().SetTitle("Events / " + str(TT_nowt.GetBinWidth(1)))

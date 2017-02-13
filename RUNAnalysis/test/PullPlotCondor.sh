@@ -52,35 +52,35 @@ chan=$(($1))
 #	then
 #	    ./PullPlotMaker.sh $c 1 1 0 1
 #	fi
-#if [ $chan -lt 40 ];
-#then
-#    echo "Over"
-if [ $chan -lt 10 ];
+if [ $chan -lt 40 ];
+then
+    echo "Over"
+elif [ $chan -lt 50 ];
 then
     c=$(($chan%10))
         if [ $c -lt 9 ];
 	then
-	    ./PullPlotMaker.sh $c 0 0 1 1
+	    ./PullPlotMaker.sh $c 0 0 0 1
 	fi
-elif [ $chan -lt 20 ];
+elif [ $chan -lt 60 ];
 then
     c=$(($chan%10))
         if [ $c -lt 9 ];
 	then
-	    ./PullPlotMaker.sh $c 1 0 1 1
+	    ./PullPlotMaker.sh $c 1 0 0 1
 	fi
-elif [ $chan -lt 30 ];
+elif [ $chan -lt 70 ];
 then
     c=$(($chan%10))
         if [ $c -lt 9 ];
 	then
-	    ./PullPlotMaker.sh $c 0 1 1 1
+	    ./PullPlotMaker.sh $c 0 1 0 1
 	fi
-elif [ $chan -lt 40 ];
+elif [ $chan -lt 80 ];
 then
     c=$(($chan%10))
         if [ $c -lt 9 ];
 	then
-	    ./PullPlotMaker.sh $c 1 1 1 1
+	    ./PullPlotMaker.sh $c 1 1 0 1
 	fi
 fi

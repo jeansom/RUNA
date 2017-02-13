@@ -11,29 +11,43 @@ if [ $1 -lt 10 ];
 then
     chan=$(($1%10))
     if [ $chan -lt 9 ];
-    then
-	python ThetaFileMakerQCD.py -c $chan -m CMVAv2MBCDDATAAFTER -d /BeforeThetaQCD/2817After$chan -b 10
+    then 
+	python ThetaFileMakerQCD.py -c $chan -m CSVv2M_CBDMC -d /21217PtRewt/BeforeTheta/$chan -b 10
     fi
 elif [ $1 -lt 20 ]; 
 then
     chan=$(($1%10))
     if [ $chan -lt 9 ];
     then
-	python ThetaFileMakerQCD.py -c $chan -m CSVv2MBCDDATAAFTER -d /BeforeThetaQCD/2817After$chan -b 10
+	python ThetaFileMakerQCD.py -c $chan -m CSVv2M_BCDMC -d /21217PtRewt/BeforeTheta/$chan -b 10
     fi
 elif [ $1 -lt 30 ]; 
 then
     chan=$(($1%10))
     if [ $chan -lt 9 ];
     then
-	python ThetaFileMakerQCD.py -c $chan -m CMVAv2MCBDDATAAFTER -d /BeforeThetaQCD/2817After$chan -b 10
+	python ThetaFileMakerQCD.py -c $chan -m CMVAv2M_CBDMC -d /21217PtRewt/BeforeTheta/$chan -b 10
     fi
 elif [ $1 -lt 40 ]; 
 then
     chan=$(($1%10))
     if [ $chan -lt 9 ];
     then
-	python ThetaFileMakerQCD.py -c $chan -m CSVv2MCBDDATAAFTER -d /BeforeThetaQCD/2817After$chan -b 10
+	python ThetaFileMakerQCD.py -c $chan -m CMVAv2M_BCDMC -d /21217PtRewt/BeforeTheta/$chan -b 10
     fi
+#elif [ $1 -lt 50 ]; 
+#then
+#    chan=$(($1%10))
+#    if [ $chan -lt 9 ];
+#    then
+#	python ThetaFileMakerQCD.py -c $chan -m CMVAv2TCBDMC -d /21217PtRewt/BeforeTheta/$chan
+#    fi
+#elif [ $1 -lt 60 ]; 
+#then
+#    chan=$(($1%10))
+#    if [ $chan -lt 9 ];
+#    then
+#	python ThetaFileMakerQCD.py -c $chan -m CMVAv2TBCDMC -d /21217PtRewt/BeforeTheta/$chan
+#    fi
 fi
     

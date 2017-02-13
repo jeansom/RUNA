@@ -10,7 +10,7 @@ eval `scramv1 runtime -sh`
 #    $4 is MC or DATA (0 = MC, 1 = DATA)
 #    $5 is plot (0 = True, 1 = False)
 
-str="Before"
+str=""
 
 if [ $2 -eq "0" ];
 then
@@ -38,10 +38,10 @@ then
 fi
 if [ $5 -eq "0" ];
 then
-    python PullPlotMaker.py -c $1 -p_t -m $str -d "/ThetaPullBefore/29172Before"$1
+    python PullPlotMaker.py -c $1 -p_t -m $str -d "/2417/BeforeTheta/Chan"$1
 fi
 if [ $5 -eq "1" ];
 then 
     echo $str
-    python PullPlotMaker.py -c $1 -p_f -m $str -d "/ThetaPullBefore/29172Before"$1
+    python PullPlotMaker.py -c $1 -p_f -m $str -d "/2417/BeforeTheta/Chan"$1
 fi

@@ -61,8 +61,18 @@ def makeTable( BkgSamples, SigSamples, treename, varList, mass, window, cutsList
 	    cuts[ var[0] ] = cutVar
     possCombs( 0, varList, cuts, combinations, cutlist )
 
-    outputTextFile = 'OptimizationFiles/RPVStopStopToJets_UDD323_Signal_Bkg_'+str(mass)+'81216_'+BTAG+'.csv'
-    output = open( outputTextFile, 'wt' )
+    if "CMVA" in BTAG and "9432" in BTAG:
+	    outputTextFile = 'OptimizationFiles/RPVStopStopToJets_UDD323_Signal_Bkg_CMVAv2T'+str(mass)+'13017.csv'
+	    output = open( outputTextFile, 'wt' )
+    elif "CMVA" in BTAG and "4432" in BTAG:
+	    outputTextFile = 'OptimizationFiles/RPVStopStopToJets_UDD323_Signal_Bkg_CMVAv2M'+str(mass)+'13017.csv'
+	    output = open( outputTextFile, 'wt' )    
+    elif "CSV" in BTAG and "8484" in BTAG:
+	    outputTextFile = 'OptimizationFiles/RPVStopStopToJets_UDD323_Signal_Bkg_CSVv2M'+str(mass)+'13017.csv'
+	    output = open( outputTextFile, 'wt' )
+    else:
+	    outputTextFile = 'OptimizationFiles/RPVStopStopToJets_UDD323_Signal_Bkg_CSVv2T'+str(mass)+'13017.csv'
+	    output = open( outputTextFile, 'wt' )
 
     writer = csv.writer(output, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
@@ -74,16 +84,16 @@ def makeTable( BkgSamples, SigSamples, treename, varList, mass, window, cutsList
     Sig = []
     SigTableScaled = {}
     SigScaled = []
-    
+    C=[]    
     for sigSample in SigSamples:
 	    for k in xrange( len(combinations) ):
 		    Sig.append(0)		    
 		    SigScaled.append(0)
 		    
     
-	    scale = "2666*lumiWeight*puWeight"
+	    scale = "36600*1521.11/259991*puWeight"
 	    
-	    cut = "prunedMassAve>("+str(mass)+"-"+str(window)+")&prunedMassAve<("+str(mass)+"+"+str(window)+")"
+	    cut = "prunedMassAve>("+str(mass)+"-"+str(window)+")&prunedMassAve<("+str(mass)+"+"+str(window)+")&"+BTAG
 
 	    n = .1	    
 	    for k in xrange( len(combinations) ):
@@ -94,12 +104,14 @@ def makeTable( BkgSamples, SigSamples, treename, varList, mass, window, cutsList
 		    cuts = cut
 		    for j in xrange( len(combinations[k]) ):
 			    cuts = cuts+"&"+varList[j][0]+"<"+str(combinations[k][j])
+		    print "i am here"
 		    print cuts
 		    sigScaled = TH1D( "signalScaled"+str(k), "", 1000, 0, 1000 )
 		    sig = TH1D( "signal"+str(k), "", 1000, 0, 1000 )
 		    
-		    quickplot( SigSamples[ sigSample ], treename, sigScaled, "prunedMassAve", cuts, scale )
-		    quickplot( SigSamples[ sigSample ], treename, sig, "prunedMassAve", cuts, "1" )
+		    quickplot( SigSamples[ sigSample ], treename, sigScaled, "prunedMassAve", "("+cuts+")", scale )
+		    quickplot( SigSamples[ sigSample ], treename, sig, "prunedMassAve", "("+cuts+")", "1" )
+
 		    Sig[ k ] = sig.Integral( 0,2000 )
 		    SigScaled[ k ] = sigScaled.Integral( 0, 2000 )
 	    SigTable[ sigSample ] = tuple( Sig )
@@ -117,9 +129,9 @@ def makeTable( BkgSamples, SigSamples, treename, varList, mass, window, cutsList
 		    BkgScaled.append(0)
 		    
     
-	    scale = "2666*lumiWeight*puWeight"
+	    scale = "36600*lumiWeight*puWeight"
 	    
-	    cut = "prunedMassAve>("+str(mass)+"-"+str(window)+")&prunedMassAve<("+str(mass)+"+"+str(window)+")"
+	    cut = "prunedMassAve>("+str(mass)+"-"+str(window)+")&prunedMassAve<("+str(mass)+"+"+str(window)+")&"+BTAG
 	    
 	    n = 0.1	    
 	    for k in xrange( len(combinations) ):
@@ -130,6 +142,7 @@ def makeTable( BkgSamples, SigSamples, treename, varList, mass, window, cutsList
 		    for j in xrange( len(combinations[k]) ):
 			    cuts = cuts+"&"+varList[j][0]+"<"+str(combinations[k][j])
 
+		    print cuts
 		    bkgScaled = TH1D( "bkgnalScaled"+str(k), "", 1000, 0, 1000 )
 		    bkg = TH1D( "bkgnal"+str(k), "", 1000, 0, 1000 )
 
@@ -169,9 +182,19 @@ def makeTable( BkgSamples, SigSamples, treename, varList, mass, window, cutsList
 			    print str(SigTableScaled[ sig ][k]/sqrt( totalBkgTable[k] ) ) + "\t\t\t" + str( combinations[k] )
 			    Sig_SqrtB.append( SigTableScaled[ sig ][k]/sqrt( totalBkgTable[k] ) )
     Sig_SqrtB.sort()
-
-    file = TFile( "OptimizationFiles/Optimized.root", "RECREATE" )
-    file.cd()
+    
+    if "CMVAv2" in BTAG and "9432" in BTAG:
+	    file = TFile( "OptimizationFiles/OptimizedCMVAv2T13017.root", "RECREATE" )
+	    file.cd()
+    elif "CMVAv2" in BTAG:
+	    file = TFile( "OptimizationFiles/OptimizedCMVAv2M13017.root", "RECREATE" )
+	    file.cd()
+    elif "CSV" in BTAG and "9535" in BTAG:
+	    file = TFile( "OptimizationFiles/OptimizedCSVv2T13017.root", "RECREATE" )
+	    file.cd()
+    else:
+	    file = TFile( "OptimizationFiles/OptimizedCSVv2M13017.root", "RECREATE" )
+	    file.cd()
     OptimizedCuts = TH1F( "OptimizedCuts", "Optimized Cuts", len(combinations)+2, 0, len(combinations)+1 )
     for k in xrange(len(Sig_SqrtB)):
 	    OptimizedCuts.Fill(k+1,Sig_SqrtB[k])
@@ -229,19 +252,18 @@ if __name__ == '__main__':
 	qcd = args.QCD
 
 	if args.batchSys: folder = '/cms/gomez/archiveEOS/Archive/763patch2/v5/'
-	else: folder = 'RootFiles/'
+	else: folder = '80XRootFiles/'
 
 	bkgSamples = OrderedDict()
-	bkgSamples[ 'QCD'+qcd+'All' ] = [ folder+'/RUNAnalysis_QCD'+qcd+'All_RunIIFall15MiniAODv2_v76x_v2p0_v05.root', kBlue-4 ]
-	bkgSamples[ 'TTJets' ] = [ folder+'/RUNAnalysis_TTJets_RunIIFall15MiniAODv2_v76x_v2p0_v05.root', kGreen ]
-	bkgSamples[ 'WJetsToQQ' ] = [ folder+'/RUNAnalysis_WJetsToQQ_RunIIFall15MiniAODv2_v76x_v2p0_v05.root', kMagenta ]
-	bkgSamples[ 'ZJetsToQQ' ] = [ folder+'/RUNAnalysis_ZJetsToQQ_RunIIFall15MiniAODv2_v76x_v2p0_v05.root', kOrange ]
-	bkgSamples[ 'WWTo4Q' ] = [ folder+'/RUNAnalysis_WWTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_v05.root', kMagenta+2 ]
-	bkgSamples[ 'ZZTo4Q' ] = [ folder+'/RUNAnalysis_ZZTo4Q_RunIIFall15MiniAODv2_v76x_v2p0_v05.root', kOrange+2 ]
-	bkgSamples[ 'WZ' ] = [ folder+'/RUNAnalysis_WZ_RunIIFall15MiniAODv2_v76x_v2p0_v05.root', kCyan ]
+	bkgSamples[ 'QCD'+qcd+'All' ] = [ folder+'/RUNAnalysis_QCDPtAll_Moriond17_80X_V2p4_v05.root', kBlue-4 ]
+	bkgSamples[ 'TTJets' ] = [ folder+'/RUNAnalysis_TT_TuneCUETP8M2T4_Moriond17_80X_V2p4_v05.root', kGreen ]
+	bkgSamples[ 'WJetsToQQ' ] = [ folder+'/RUNAnalysis_WJetsToQQ_Moriond17_80X_V2p4_v05.root', kMagenta ]
+#	bkgSamples[ 'ZJetsToQQ' ] = [ folder+'/RUNBoostedAnalysis_ZJetsToQQ_HT600toInf_13TeV-madgraphv01.root', kOrange ]
+#	bkgSamples[ 'WWTo4Q' ] = [ folder+'/RUNBoostedAnalysis_WWTo4Q_13TeV-powhegv01.root', kMagenta+2 ]
+#	bkgSamples[ 'ZZTo4Q' ] = [ folder+'/RUNBoostedAnalysis_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8v01.root', kOrange+2 ]
 
 	sigSamples = {}
-	sigSamples[ 'RPVSt'+str(mass) ] = folder+'/RUNAnalysis_RPVStopStopToJets_UDD323_M-'+str(mass)+'_RunIISummer16MiniAODv2_v76x_v2p0_v05.root'
+	sigSamples[ 'RPVSt'+str(mass) ] = folder+'/RUNBoostedAnalysis_RPVStopStopToJets_UDD323_M-'+str(mass)+'v01.root'
 #	sigSamples[ 'RPVSt'+str(mass) ] = folder+'/RUNAnalysis_RPVStopStopToJets_UDD312_M-'+str(mass)+'_RunIIFall15MiniAODv2_v76x_v2p0_v05.root'
 	#sigSamples[ 'WWTo4Q' ] = folder+'/RUNAnalysis_WWTo4Q_13TeV-powheg_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
 	#sigSamples[ 'ZZTo4Q' ] = folder+'/RUNAnalysis_ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISpring15MiniAODv2-74X_Asympt25ns_v09_v03.root'
@@ -279,16 +301,16 @@ if __name__ == '__main__':
 #		[ 'Boosted', "deltaEtaDijet", 50, 0., 5., True, 0.4, 0.6 ],
 #		[ 'Boosted', "jet1SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
 #		[ 'Boosted', "jet2SubjetPtRatio", 20, 0., 1., True, 0., 0  ],
-		[ 'Boosted', "prunedMassAsym", 20, 0.1, 0.2, True, 0.1 ],
+#		[ 'Boosted', "prunedMassAsym", 20, 0.05, 0.15, True, 0.05 ],
 		#[ 'Boosted', "jet1CosThetaStar", 20, 0., 1, True, 0. ],
 		#[ 'Boosted', "jet2CosThetaStar", 20, 0., 1, True, 0. ],
-		[ 'Boosted', "jet1Tau21", 20, 0.45, 0.65, True, .15 ],
-		[ 'Boosted', "jet2Tau21", 20, 0.45, 0.65, True, .15 ],
+		[ 'Boosted', "jet1Tau21", 6, 0.45, 0.65, True, .15 ],
+		[ 'Boosted', "jet2Tau21", 6, 0.45, 0.65, True, .15 ],
 		#[ 'Boosted', "jet1Tau31", 20, 0., 1., True, 0. ],
 		#[ 'Boosted', "jet2Tau31", 20, 0., 1., True, 0. ],
 		#[ 'Boosted', "jet1Tau32", 20, 0., 1., True, 0. ],
 		#[ 'Boosted', "jet2Tau32", 20, 0., 1., True, 0. ],
-		#[ 'Boosted', "deltaEtaDijet", 50, 0.5, 1.5, True, .5 ],
+#		[ 'Boosted', "deltaEtaDijet", 50, 0.5, 1.5, True, .5 ],
 		#[ 'Boosted', "jet1SubjetPtRatio", 20, 0., 1., True, 0. ],
 		#[ 'Boosted', "jet2SubjetPtRatio", 20, 0., 1., True, 0. ],
 	]
@@ -297,16 +319,18 @@ if __name__ == '__main__':
 	cuts = [ x[1:] for x in var if ( ( version in x[0] ) and ( x[6]!=x[3] ) ) ]      
 
 	if args.num == 0:
-		p0 = Process( target=makeTable, args=( bkgSamples, sigSamples, treename, variables, mass, 10, cuts, "oneJetL" ) )
+#		p0 = Process( target=makeTable, args=( bkgSamples, sigSamples, treename, variables, mass, 10, cuts, "(jet1btagCSVv2>0.8484&jet2btagCSVv2>0.8484)&(jet1Tau32>0.51&jet2Tau32>0.51)" ) )
+		p0 = Process( target=makeTable, args=( bkgSamples, sigSamples, treename, variables, mass, 10, cuts, "(jet1btagCSVv2>0.8484&jet2btagCSVv2>0.8484)&(prunedMassAsym<0.1)&(deltaEtaDijet<1.0)&(jet1Tau32>0.51&jet2Tau32>0.51)" ) )
 		print "oneJetL"
 	if args.num == 1:
-		p0 = Process( target=makeTable, args=( bkgSamples, sigSamples, treename, variables, mass, 10, cuts, "oneJetM" ) )
+#		p0 = Process( target=makeTable, args=( bkgSamples, sigSamples, treename, variables, mass, 10, cuts,  "(jet1btagCMVAv2>0.4432&jet2btagCMVAv2>0.4432)&(jet1Tau32>0.51&jet2Tau32>0.51)" ) )
+		p0 = Process( target=makeTable, args=( bkgSamples, sigSamples, treename, variables, mass, 10, cuts,  "(jet1btagCMVAv2>0.9432&jet2btagCMVAv2>0.9432)&(prunedMassAsym<0.1)&(deltaEtaDijet<1.0)&(jet1Tau32>0.51&jet2Tau32>0.51)" ) )
 		print "oneJetM"
 	if args.num == 2:
-		p0 = Process( target=makeTable, args=( bkgSamples, sigSamples, treename, variables, mass, 10, cuts, "oneJetT" ) )
+		p0 = Process( target=makeTable, args=( bkgSamples, sigSamples, treename, variables, mass, 10, cuts, "(jet1btagCMVAv2>0.4432&jet2btagCMVAv2>0.4432)&(prunedMassAsym<0.1)&(deltaEtaDijet<1.0)&(jet1Tau32>0.51&jet2Tau32>0.51)" ) )
 		print "oneJetT"
 	if args.num == 3:
-		p0 = Process( target=makeTable, args=( bkgSamples, sigSamples, treename, variables, mass, 10, cuts, "oneSubjetL" ) )	
+		p0 = Process( target=makeTable, args=( bkgSamples, sigSamples, treename, variables, mass, 10, cuts, "(jet1btagCSVv2>0.9535&jet2btagCSVv2>0.9535)&(prunedMassAsym<0.1)&(deltaEtaDijet<1.0)&(jet1Tau32>0.51&jet2Tau32>0.51)" ) )	
 		print "oneSubjetL"
 	if args.num == 4:
 		p0 = Process( target=makeTable, args=( bkgSamples, sigSamples, treename, variables, mass, 10, cuts, "oneSubjetM" ) )	

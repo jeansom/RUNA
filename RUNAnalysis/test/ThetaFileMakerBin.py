@@ -130,16 +130,16 @@ def ThetaFileMaker( chan, chanCuts, bins, minBin, maxBin, Xcut, Ycut, isMC=True 
     MakeFitPlots( EstMassBin, FMassBin, binsMassBin, "prunedMassAve", Xcut[0], var_arrayMass, presel+"&"+chanCutsTemp, Ycut[0]+">"+Ycut[1], cutsB, cutsD, cut, 0, "", "", "outputsBin/Mass"+chan, False ) # Gets initial chi2 and ndf for initial bin width
     Ei = chi2.sf( EstMassBin.Fit.fit.GetChisquare(), EstMassBin.Fit.fit.GetNDF() ) # Calculates initial "energy", or how good the fit is
     for i in xrange(1,temp/dtemp): # Loops through, decreasing the temperature each time
-
-        maxsubdbin = (15-binWidth) # min value of dBinWidth before binWidth < 15
         dBinWidth=int(random.random()*10+1)*pow(-1,int(random.random()*2)) # How much to vary the bin width by, between 1 and 10, can be positive or negative
-
-        while dBinWidth < maxsubdbin: # Don't want binWidth < 15, pick new dBinWidth
-            dBinWidth=int(random.random()*10+1)*pow(-1,int(random.random()*2)) # How much to vary the bin width by, between 1 and 10, can be positive or negative
         binWidthtemp = binWidth+dBinWidth # Neighboring point to try
+        if binWidthtemp < 15: # Stop bin width from getting too small
+            binWidthtemp=25
+            temp = temp + 2*dtemp # Could theoretically cause an endless loop, hasn't happened yet
 
         NBins = int(((350-50))/binWidthtemp) # Just some stuff for the MakeFitPlots function below
+        del binsMassBin[:]
         binsMassBin = []
+        print binMassBin
         var_arrayMass = [ "prunedMassAve", Xcut[0], NBins, 50., 350., Xcut [2], Xcut[3], Xcut[4] ] # For making B,D plot # Just some stuff for the MakeFitPlots function below
         for i in xrange( 0, NBins ): # Just some stuff for the MakeFitPlots function below
             binsMassBin.append( [ var_arrayMass[3]+binWidthtemp*i, var_arrayMass[3]+binWidthtemp*(i+1) ] ) # Just some stuff for the MakeFitPlots function below

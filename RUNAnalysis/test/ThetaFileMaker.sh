@@ -12,28 +12,28 @@ then
     chan=$(($1%10))
     if [ $chan -lt 9 ];
     then
-	python ThetaFileMaker.py -c $chan -m CSVv2CBDMC -d /BeforeTheta/12417CSVv2CBDMC$chan/
+	python ThetaFileMaker.py -c $chan -m CSVv2CBDMC -d 12417CSVv2CBDMC$chan/
     fi
 elif [ $1 -lt 20 ]; 
 then
     chan=$(($1%10))
     if [ $chan -lt 9 ];
     then
-	python ThetaFileMaker.py -c $chan -m CSVv2BCDMC -d /BeforeTheta/12417CSVv2BCDMC$chan/
+	python ThetaFileMaker.py -c $chan -m CSVv2BCDMC -d 12417CSVv2BCDMC$chan/
     fi
 elif [ $1 -lt 30 ]; 
 then
     chan=$(($1%10))
     if [ $chan -lt 9 ];
     then
-	python ThetaFileMaker.py -c $chan -m CMVAv2CBDMC -d /BeforeTheta/12417CMVAv2CBDMC$chan/
+	python ThetaFileMaker.py -c $chan -m CMVAv2CBDMC -d 12417CMVAv2CBDMC$chan/
     fi
 elif [ $1 -lt 40 ]; 
 then
     chan=$(($1%10))
     if [ $chan -lt 9 ];
     then
-	python ThetaFileMaker.py -c $chan -m CMVAv2BCDMC -d /BeforeTheta/12417CMVAv2BCDMC$chan/
+	python ThetaFileMaker.py -c $chan -m CMVAv2BCDMC -d 12417CMVAv2BCDMC$chan/
     fi
 fi
     
