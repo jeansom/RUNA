@@ -100,7 +100,7 @@ def rootFitter( inFile, hist, scale, fitFunctions, minX, maxX, rebinX, plot, log
 	print '|----> Creating histograms from bin', minBinX, '(', rawHisto.GetBinLowEdge(minBinX),') to ', maxBinX, '(', rawHisto.GetBinLowEdge(maxBinX),')'
 	for ibin in range( minBinX, maxBinX ):
 		tmpBinContent.append( rawHisto.GetBinContent(ibin) / rebinX )
-		tmpBinError.append( rawHisto.GetBinError(ibin) / rebinX )
+		tmpBinError.append( ( rawHisto.GetBinError(ibin) if ( rawHisto.GetBinContent(ibin) > 0 ) else 1.8 ) / rebinX )
 		#print rawHisto.GetBinLowEdge( ibin ), rawHisto.GetBinContent(ibin) , rebinX, rawHisto.GetBinError(ibin)
 
 	binContents = np.array(tmpBinContent)
@@ -175,11 +175,14 @@ def histoFunctionFit( nameHisto, initFitFunction, parameters, parErrors, massBin
 		fitFunction.SetParError( i, parErrors[fitFunction.GetName()][i] )
 
 	histoFit = TH1D( nameHisto, nameHisto, len(massBin) , minX, maxX)
-	histoFit.Sumw2()
+	histoFit.Sumw2(False)
 
 	for ibin in range( 0, len(massBin)):
 		histoFit.SetBinContent( ibin, massBin[ibin] )
+		#histoFit.SetBinError( ibin, ( massBinErr[ibin] if ( massBin[ibin] > 0 ) else 1.8 ) )
 		histoFit.SetBinError( ibin, massBinErr[ibin] )
+
+	histoFit.SetBinErrorOption(TH1.kPoisson)
 			
 	histoFit.Fit( fitFunction, "ELLSR", "", minX, maxX )
 
@@ -270,7 +273,7 @@ def FitterCombination( inFileData, inFileBkg, inFileSignal, hist, scale, bkgFunc
 		legend.AddEntry( hMain, 'Data', 'ep' )
 		legend.AddEntry( mainP4, 'Fit to data', 'l' )
 		hMCQCD, qcdMCP4 = histoFunctionFit( 'QCD'+args.qcd+'All', bkgFunction[0][0], bkgParameters, bkgParErrors, bkgpoints, bkgpointsErr, minX, maxX )
-		legend.AddEntry( qcdMCP4, 'Fit to MC QCD pythia', 'l' )
+		#legend.AddEntry( qcdMCP4, 'Fit to MC QCD pythia', 'l' )
 
 		if isinstance( inFileSignal, TFile):
 			Bkg2Parameters = rootFitter( inFileSignal, 
@@ -328,8 +331,9 @@ def FitterCombination( inFileData, inFileBkg, inFileSignal, hist, scale, bkgFunc
 	hMain.GetXaxis().SetTitle( histYaxis )
 	hMain.GetYaxis().SetTitleOffset(1.2);
 	hMain.SetTitle("")
+	hMain.SetMarkerStyle(20)
 	#hMain.SetMaximum( 1.5 * hMain.GetMaximum() )
-	hMain.Draw()
+	hMain.Draw('E0')
 	hMain.GetXaxis().SetRangeUser( minX, maxXPlot  )
 	mainP4.SetLineColor(kBlack)
 	mainP4.Draw("same")
@@ -338,11 +342,11 @@ def FitterCombination( inFileData, inFileBkg, inFileSignal, hist, scale, bkgFunc
 	mainP4.SetLineColor(kBlue-4)
 	mainP4.Draw("same")
 	if runData:
-		qcdMCP4.SetLineColor( kMagenta )
-		qcdMCP4.Draw("same")	
-		if isinstance( inFileSignal, TFile):
-			qcdHTMCP4.SetLineColor( kViolet )
-			qcdHTMCP4.Draw("same")	
+		#qcdMCP4.SetLineColor( kMagenta )
+		#qcdMCP4.Draw("same")	
+		#if isinstance( inFileSignal, TFile):
+		#	qcdHTMCP4.SetLineColor( kViolet )
+		#	qcdHTMCP4.Draw("same")	
 		legend.Draw("same")
 	CMS_lumi.relPosX = 0.13
 	CMS_lumi.cmsTextSize = 0.60
@@ -399,7 +403,9 @@ def createCards( dataFile, bkgFile, inFileSignal, hist, scale, bkgFunctions, min
 
 	########## Fitting background and taking parameters
 	print '|----> Background'
-	#bkgFuncParameters = rootFitter( bkgFile, hist+('QCD'+args.qcd+'All' if args.miniTree else ''), scale, bkgFunctions, minX, maxX, rebinX, True)
+	'''
+	bkgFuncParameters = rootFitter( bkgFile, hist+('QCD'+args.qcd+'All' if args.miniTree else ''), scale/10, bkgFunctions, minX, maxX, rebinX, True)
+	'''
 	bkgFuncParameters = rootFitter( dataFile, 
 			hist+('JetHT_Run2016' if args.miniTree else ''), 
 			1, 
@@ -430,8 +436,11 @@ def createCards( dataFile, bkgFile, inFileSignal, hist, scale, bkgFunctions, min
 
 	########### Starting signal fits
 	if ( args.mass > 0 ): listMass = [ args.mass ]
-	else: listMass = range( 300, 700, 50 )
+	else: listMass = range( 300, 800, 50 ) + [ 240, 900 ]
 
+	listAcceptance = []
+	listAccepError = []
+	listMass.sort()
 	for imass in listMass:
 
 		######## Fitting signal and extracting parameters
@@ -468,6 +477,26 @@ def createCards( dataFile, bkgFile, inFileSignal, hist, scale, bkgFunctions, min
 		sigAcc = round( signalGaus.Integral( imass-massWindow, imass+massWindow ), 2 )
 		print '|----> Signal events:', sigAcc
 
+		eventsInAccep = sigAcc / ( scaleFactor( 'RPVStopStopToJets_'+args.decay+'_M-'+str( imass ) )* scale ) ### because sigAcc is scaled
+		totalEvents = search( dictEvents, 'RPVStopStopToJets_'+args.decay+'_M-'+str( imass ) )[0]
+		failedEvents = totalEvents - eventsInAccep
+		accXeff = eventsInAccep / totalEvents 
+		accXeffErr = TMath.Sqrt( (1/failedEvents) + (1/eventsInAccep) ) * failedEvents * eventsInAccep / TMath.Power( ( totalEvents ), 2 )
+		listAcceptance.append( accXeff ) 
+		listAccepError.append( accXeffErr )
+
+
+		'''
+		if args.jesUnc:
+			print ' |---> Adding JES'
+			hSigSyst['JESUp'] = hSignal.Clone()
+			hSigSyst['JESDown'] = hSignal.Clone()
+
+		if args.jerUnc:
+			print ' |---> Adding JER'
+			hSigSyst['JERUp'] = hSignal.Clone()
+			hSigSyst['JERDown'] = hSignal.Clone()
+		'''
 		#hBkg = inFileBkg.Get(hist)
 		#hData = hBkg.Clone()
 		#hData.Add( hSignal )
@@ -570,9 +599,48 @@ def createCards( dataFile, bkgFile, inFileSignal, hist, scale, bkgFunctions, min
 		for bF in bkgFuncParameters[0]:
 			for par in range( 1, len(bkgFuncParameters[0][bF]) ):
 				datacard.write( bF+'p'+str(par)+'\tparam\t'+str(bkgFuncParameters[0][bF][par])+'\t'+str(bkgFuncParameters[1][bF][par])+'\n' )
-				datacard.write( bF+'p'+str(par)+'\tflatParam\n')
+				#datacard.write( bF+'p'+str(par)+'\tflatParam\n')
+		datacard.write("lumi\tlnN\t1.062\t-\n")
+		datacard.write("trigger\tlnN\t1.05\t-\n")
+		datacard.write("sigSigma\tparam\t"+str(SignalParameters[0]['gaus'][1])+'\t'+str(SignalParameters[1]['gaus'][1])+"\n")
+		datacard.write("sigMean\tparam\t"+str(SignalParameters[0]['gaus'][2])+'\t'+str(SignalParameters[1]['gaus'][2])+"\n")
+		#datacard.write("# SigNormPDF   lnN    1.0300       - \n")
+		datacard.write("SigNormJES\tlnN\t1.02\t-\n")
+		datacard.write("SigNormJER\tlnN\t1.10\t-\n")
+		#datacard.write("# SigNormPU   lnN    1.0300        - \n")
+		#datacard.write("# SigNormISR   lnN    1.1000        - \n")
+		#datacard.write("# SigNormBtag   lnN    1.0000       - -\n")
 		datacard.close()
 		print '|----> Datacard created:', datacard
+	
+	if 'Limit' in args.process:
+
+		print '|----> Creating acceptance plots'
+		print listMass, listAcceptance, listAccepError
+		accXeffGraph = TGraphErrors(len(listMass), array('d',listMass), array('d',listAcceptance), array('d',[0]*len(listMass)), array('d',listAccepError) )
+		canAccep = TCanvas('canAccep', 'canAccep',  10, 10, 750, 500 )
+		canAccep.SetLogy()
+
+		accXeffGraph.SetLineColor(kRed)
+		accXeffGraph.SetLineWidth(2)
+		accXeffGraph.SetMarkerStyle(8)
+		#legend.AddEntry( accXeffGraph, '#tau_{21} < 0.45', 'l' )
+
+		accXeffGraph.Draw("ap")
+		accXeffGraph.GetYaxis().SetTitle( 'Acceptance #times efficiency' )
+		accXeffGraph.GetXaxis().SetTitle( "Stop mass [GeV]" )
+		accXeffGraph.GetYaxis().SetTitleOffset( 0.8 )
+		accXeffGraph.GetYaxis().SetRangeUser( 0.0001, 0.1  )
+
+		#legend.Draw()
+		CMS_lumi.extraText = "Simulation Preliminary"
+		CMS_lumi.lumi_13TeV = ''
+		CMS_lumi.relPosX = 0.12
+		CMS_lumi.CMS_lumi(canAccep, 4, 0)
+		canAccep.SaveAs( 'Plots/signalAcceptance_massAve_'+args.cut+'_ResolvedAnalysis_'+args.version+'.'+args.extension )
+		del canAccep
+
+
 
 def doftest( RSS1, RSS2, NDF1, NDF2, nPar1, nPar2, nBinsFit):
 	"""docstring for doftest"""
@@ -585,7 +653,7 @@ def doftest( RSS1, RSS2, NDF1, NDF2, nPar1, nPar2, nBinsFit):
 	CL = 1 - Fdistr.Integral( 0.00000001, Fvalue )
 	altCL =  1. - TMath.FDistI( Fvalue, nPar2-nPar1, nBinsFit-nPar2 )
 
-	return [ Fvalue, CL, altCL, Fdist ]
+	return [ RSS1, RSS2, Fvalue, CL, altCL, Fdist ]
 
 	
 
@@ -621,9 +689,129 @@ def FisherTest( dataFile, hist, bkgFunctions, minX, maxX, rebinX ):
 	dictFtest = OrderedDict()
 	for key1, key2 in combinations(dictPullResChi2NDF.keys(), r = 2):
 		dictFtest[ key1+'_'+key2 ] = doftest( dictPullResChi2NDF[ key1 ][2], dictPullResChi2NDF[ key2 ][2], dictPullResChi2NDF[ key1 ][3], dictPullResChi2NDF[ key2 ][3], dictDataAndFunc[ key1 ][1].GetNpar(),  dictDataAndFunc[ key2 ][1].GetNpar(), len(fitParameters[2]) )
-		print '|----> Ftest for ', key1, 'and', key2, ':', dictFtest[ key1+'_'+key2 ]
+		print '|----> Ftest for ', key1, 'and', key2, ':', dictFtest[ key1+'_'+key2 ], 'Residual1, Residual2, Fvalue, CL, altCL, Fdist'
 		
 
+def drawBiasTest( listMasses, folderRootfiles ):
+	"""docstring for plotLimits"""
+	
+	dictTest = {}
+	dictTestHisto = {}
+	listMeans1 = []
+	listMeans2 = []
+	listMeans3 = []
+	listMeansErr1 = []
+	listMeansErr2 = []
+	listMeansErr3 = []
+	for mass in listMasses:
+		
+		for t in [ 1, 2, 3]:
+			dictTest[ mass+t ] = TChain( 'tree_fit_sb' )
+			dictTest[ mass+t ].Add( folderRootfiles+'mlfit_RPVStopStopToJets_UDD312_M-'+str(mass)+'_Resolved_delta_BiasTest_v02p1_Index0ToIndex'+str(t)+'.root') 
+			dictTestHisto[ mass+t ] = TH1F( 'h'+str(mass)+str(t),  'h'+str(mass)+str(t), 16, -4, 4 )
+			dictTest[ mass+t ].Draw( "(mu-1)/muErr>>h"+str(mass)+str(t))
+			
+			dictTestHisto[ mass+t ].SetMarkerSize(2)
+			dictTestHisto[ mass+t ].SetLineWidth(2)
+			dictTestHisto[ mass+t ].SetStats(True)
+			dictTestHisto[ mass+t ].Fit("gaus")
+
+		c = TCanvas("c"+str(mass), "c"+str(mass), 800, 600)
+		c.cd()
+		gStyle.SetOptFit(1)
+		dictTestHisto[ mass+1 ].SetLineColor(kBlue)
+		dictTestHisto[ mass+1 ].GetFunction("gaus").SetLineColor(kBlue)
+		listMeans1.append( dictTestHisto[ mass+1 ].GetFunction("gaus").GetParameter( 1 ) )
+		listMeansErr1.append( dictTestHisto[ mass+1 ].GetFunction("gaus").GetParError( 1 ) )
+
+		dictTestHisto[ mass+2 ].SetLineColor(kRed)
+		dictTestHisto[ mass+2 ].GetFunction("gaus").SetLineColor(kRed)
+		listMeans2.append( dictTestHisto[ mass+2 ].GetFunction("gaus").GetParameter( 1 ) )
+		listMeansErr2.append( dictTestHisto[ mass+2 ].GetFunction("gaus").GetParError( 1 ) )
+
+		dictTestHisto[ mass+3 ].SetLineColor(8)
+		dictTestHisto[ mass+3 ].GetFunction("gaus").SetLineColor(8)
+		listMeans3.append( dictTestHisto[ mass+3 ].GetFunction("gaus").GetParameter( 1 ) )
+		listMeansErr3.append( dictTestHisto[ mass+3 ].GetFunction("gaus").GetParError( 1 ) )
+
+		dictTestHisto[ mass+1 ].Draw("es")
+		dictTestHisto[ mass+2 ].Draw("e sames")
+		dictTestHisto[ mass+3 ].Draw("e sames")
+
+		c.Update()
+		st1 = dictTestHisto[ mass+1 ].GetListOfFunctions().FindObject("stats")
+		st1.SetX1NDC(.75)
+		st1.SetX2NDC(.95)
+		st1.SetY1NDC(.75)
+		st1.SetY2NDC(.95)
+		st1.SetTextColor(kBlue)
+		st2 = dictTestHisto[ mass+2 ].GetListOfFunctions().FindObject("stats")
+		st2.SetX1NDC(.75)
+		st2.SetX2NDC(.95)
+		st2.SetY1NDC(.55)
+		st2.SetY2NDC(.75)
+		st2.SetTextColor(kRed)
+		st3 = dictTestHisto[ mass+3 ].GetListOfFunctions().FindObject("stats")
+		st3.SetX1NDC(.75)
+		st3.SetX2NDC(.95)
+		st3.SetY1NDC(.35)
+		st3.SetY2NDC(.55)
+		st3.SetTextColor(8)
+		c.Modified()
+		c.SaveAs( 'Plots/BiasTest_'+str(mass)+'_ResolvedAnalysis.'+args.extension )
+
+
+
+	masses = array( 'd', listMasses )	
+	massesErr = array( 'd', [0]*len(listMasses) )	
+	meanTest1 = array( 'd', listMeans1 )
+	meanErrTest1 = array( 'd', listMeansErr1 )
+	meanTest2 = array( 'd', listMeans2 )
+	meanErrTest2 = array( 'd', listMeansErr2 )
+	meanTest3 = array( 'd', listMeans3 )
+	meanErrTest3 = array( 'd', listMeansErr3 )
+	
+	graphTest1 = TGraphErrors( len( masses), masses, meanTest1, massesErr, meanErrTest1 )
+	graphTest2 = TGraphErrors( len( masses), masses, meanTest2, massesErr, meanErrTest2 )
+	graphTest3 = TGraphErrors( len( masses), masses, meanTest3, massesErr, meanErrTest3 )
+
+	c1 = TCanvas("c1"+str(mass), "c1"+str(mass), 800, 600)
+	c1.cd()
+
+	legend = TLegend(.70,.70,.90,.88)
+	legend.SetTextSize(0.025)
+	legend.SetBorderSize(0)
+	legend.SetFillColor(0)
+	legend.SetFillStyle(0)
+	legend.SetTextFont(42)
+	#legend.SetHeader('95% CL upper limits')
+
+	graphTest1.GetXaxis().SetTitle("Resonance mass [GeV]")
+	graphTest1.GetYaxis().SetTitle("Means")
+	graphTest1.GetYaxis().SetTitleOffset(1.1)
+	graphTest1.GetYaxis().SetRangeUser(-0.4,0.4)
+	graphTest1.SetMarkerStyle(21)
+	graphTest1.SetMarkerColor(kBlue)
+	graphTest2.SetMarkerStyle(21)
+	graphTest2.SetMarkerColor(kRed)
+	graphTest3.SetMarkerStyle(21)
+	graphTest3.SetMarkerColor(8)
+	#graph_exp_2sigma.GetXaxis().SetNdivisions(1005)
+
+	graphTest1.Draw("AP")
+	graphTest2.Draw("P")
+	graphTest3.Draw("P")
+
+	legend.AddEntry(graphTest1,"Compare function1","lp")
+	legend.AddEntry(graphTest2,"Compare function2","lp")
+	legend.AddEntry(graphTest3,"Compare function3","lp")
+    	legend.Draw()
+
+	CMS_lumi.relPosX = 0.13
+	CMS_lumi.CMS_lumi(c, 4, 0)
+
+	#c1.SetLogy()
+	c1.SaveAs( 'Plots/BiasTest_MeanValues_ResolvedAnalysis.'+args.extension)
 
 ##########################################################
 ##########################################################
@@ -905,18 +1093,19 @@ if __name__ == '__main__':
 		rebinX = 2
 
 	outputDir = "Plots/"
-	signalFile =  TFile.Open(filePrefix+'_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)+'_80X_V2p1_'+args.version+'.root')
-	bkgFile = TFile.Open(filePrefix+'_QCD'+args.qcd+'All_80X_V2p1_'+args.version+'.root')
-	bkgFile2 = TFile.Open(filePrefix+'_QCDHTAll_80X_V2p1_'+args.version+'.root')
-	bkgFile3 = TFile.Open(filePrefix+'_QCDHerwigAll_80X_V2p1_'+args.version+'.root')
-	#dataFile = TFile.Open(filePrefix+'_JetHT_Run2016C_V2p1_'+args.version+'.root')
-	dataFile = TFile.Open(filePrefix+'_JetHT_Run2016_V2p1_'+args.version+'.root')
+	#signalFile =  TFile.Open(filePrefix+'_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)+'_80X_V2p1_'+args.version+'.root')
+	signalFile =  TFile.Open(filePrefix+'_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)+'_80X_V2p1_v02p1.root')
+	bkgFile = TFile.Open(filePrefix+'_QCD'+args.qcd+'All_Moriond17_80X_V2p4_'+args.version+'.root')
+	bkgFile2 = TFile.Open(filePrefix+'_QCDHTAll_Moriond17_80X_V2p4_'+args.version+'.root')
+	bkgFile3 = TFile.Open(filePrefix+'_QCDHerwigAll_Moriond17_80X_V2p4_'+args.version+'.root')
+	#dataFile = TFile.Open(filePrefix+'_JetHT_Run2016C_V2p4_'+args.version+'.root')
+	dataFile = TFile.Open(filePrefix+'_JetHT_Run2016_V2p4_'+args.version+'.root')
 	
 
 	###### Input parameters
 	histYaxis = "Average dijet mass [GeV]"
 	minFit = 200
-	maxFit = 750
+	maxFit = 1200
 	CMS_lumi.lumi_13TeV = str( round( (args.lumi/1000.), 1 ) )+" fb^{-1}"
 	CMS_lumi.extraText = "Preliminary Simulation"
 
@@ -969,7 +1158,7 @@ if __name__ == '__main__':
 			scale, 
 			#[fitFunctions['dijet']], 
 			#[fitFunctions['atlas']], 
-			[fitFunctions['P4']], 
+			[fitFunctions['P3']], 
 			#[fitFunctions['expoPoli']],
 			minFit, maxFit, rebinX, True ))
 
@@ -978,21 +1167,23 @@ if __name__ == '__main__':
 		p = Process( target=rootFitter, args=( signalFile, hist, scale, [fitFunctions['gaus']], args.mass-50, args.mass+50, rebinX, True, False ) ) 
 
 	elif 'Limit' in args.process:
-		p = Process( target=createCards, args=( dataFile, #bkgFile 
+		p = Process( target=createCards, args=( dataFile, #bkgFile, 
 			bkgFile, 
-			filePrefix+'_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)+'_80X_V2p1_'+args.version+'.root', 
+			#filePrefix+'_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)+'_80X_V2p1_'+args.version+'.root', 
+			filePrefix+'_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)+'_80X_V2p1_v02p1.root', 
 			hist, 
 			scale, 
-			[fitFunctions['P4']], 
+			[fitFunctions['P3']], 
 			minFit, maxFit, 1 ) )
 
 	elif 'Bias' in args.process:
 		p = Process( target=createCards, args=( dataFile, 
 			bkgFile, 
-			filePrefix+'_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)+'_80X_V2p1_'+args.version+'.root', 
+			#filePrefix+'_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)+'_80X_V2p1_'+args.version+'.root', 
+			filePrefix+'_RPVStopStopToJets_'+args.decay+'_M-'+str(args.mass)+'_80X_V2p1_v02p1.root', 
 			hist, 
 			scale, 
-			[ fitFunctions['P4'], fitFunctions['atlas'], fitFunctions['expoPoli'], fitFunctions['dijet'] ], 
+			[ fitFunctions['P3'], fitFunctions['atlas'], fitFunctions['expoPoli'], fitFunctions['dijet'] ], 
 			minFit, maxFit, 1 ) )
 
 	elif 'Fisher' in args.process:
@@ -1000,6 +1191,10 @@ if __name__ == '__main__':
 			hist, 
 			[ fitFunctions['P2'], fitFunctions['P3'], fitFunctions['P4'], fitFunctions['P5'] ], 
 			minFit, maxFit, 10 ) )
+
+	elif 'biasDraw' in args.process: 
+		p = Process( target=drawBiasTest, args=( range(300, 700, 50 ),
+			'/afs/cern.ch/work/a/algomez/RPVStops/CMSSW_8_0_20/src/RUNA/RUNStatistics/test/' ) )
 
 	p.start()
 	p.join()
