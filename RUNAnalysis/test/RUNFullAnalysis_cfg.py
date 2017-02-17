@@ -33,26 +33,26 @@ options.register('systematics',
 		"Run systematics, default false."
 		)
 options.register('jecVersion', 
-		'supportFiles/Fall15_25nsV2',
+		'Fall15_25nsV2',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
 		"Version of the analysis to run. (Full, Resolved, Boosted)"
 		)
 options.register('namePUFile', 
-		'supportFiles/PileupData2015D_JSON_latest.root',
+		'PileupData2016BCDEFGH_ReReco_69200.root',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
 		"namePUFile"
 		)
 options.register('CSVFile', 
-		'supportFiles/CSVv2_Moriond17_B_H.csv',
+		'CSVv2_Moriond17_B_H.csv',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
 		"CSVFile"
 		)
 
 options.register('cMVAFile', 
-		'supportFiles/cMVAv2_Moriond17_B_H.csv',
+		'cMVAv2_Moriond17_B_H.csv',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
 		"cMVAFile"
@@ -104,7 +104,7 @@ ResolvedTriggers = [  'HLT_PFHT800', 'HLT_PFHT900', 'HLT_PFHT750_4Jet', 'HLT_PFH
 
 process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNResolvedAnalysis',
 		cutAK4jetPt 		= cms.double( 80.0 ),	# default 80.0
-		cutAK4HT 		= cms.double( 850.0 ),	# default 800.0
+		cutAK4HT 		= cms.double( 900.0 ),	# default 800.0
 		cutAK4MassAsym		= cms.double( 0.1 ),	# default 0.2
 		cutDelta 		= cms.double( 200 ),	# default 180.0
 		cutDeltaEtaDijetSyst	= cms.double( 1.0 ),	# default .75
