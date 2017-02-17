@@ -26,6 +26,7 @@
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHERunInfoProduct.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -38,6 +39,7 @@
 
 using namespace edm;
 using namespace std;
+using namespace reco;
 
 //
 // constants, enums and typedefs
@@ -76,6 +78,7 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 		map< string, double > cutmap;
 
 		bool isData;
+		bool isTTbar;
 		bool LHEcont;
 		bool mkTree;
 		bool sortInTau21;
@@ -89,6 +92,7 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 		string dataPUFile;
 		string jecVersion;
 		string btagCSVFile;
+		string btagMVAFile;
 		TString systematics;
 
 		vector<string> triggerPass, triggerNamesList;
@@ -107,11 +111,13 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 		      puWeight = -999, genWeight = -999, lumiWeight = -999, pdfWeight = -999, MET = -999,
 		      jet1Pt = -999, jet1Eta = -999, jet1Phi = -999, jet1E = -999, jet1btagCSVv2 = -9999, jet1btagCMVAv2 = -9999, jet1btagDoubleB = -9999,
 		      jet2Pt = -999, jet2Eta = -999, jet2Phi = -999, jet2E = -999, jet2btagCSVv2 = -9999, jet2btagCMVAv2 = -9999, jet2btagDoubleB = -9999,
-		      jet1btagSF = 1, jet2btagSF = 1,
+		      jet1btagCSVv2SF = 1, jet2btagCSVv2SF = 1, jet1btagCMVAv2SF = 1, jet2btagCMVAv2SF = 1,
 		      subjet11Pt = -999, subjet11Eta = -999, subjet11Phi = -999, subjet11E = -999, subjet11btagCSVv2 = -9999, subjet11btagCMVAv2 = -9999, 
 		      subjet12Pt = -999, subjet12Eta = -999, subjet12Phi = -999, subjet12E = -999, subjet12btagCSVv2 = -9999, subjet12btagCMVAv2 = -9999, 
 		      subjet21Pt = -999, subjet21Eta = -999, subjet21Phi = -999, subjet21E = -999, subjet21btagCSVv2 = -9999, subjet21btagCMVAv2 = -9999, 
 		      subjet22Pt = -999, subjet22Eta = -999, subjet22Phi = -999, subjet22E = -999, subjet22btagCSVv2 = -9999, subjet22btagCMVAv2 = -9999,
+		      genPartonPt1 = -999, genPartonMass1 = -999, genPartonDau11ID = -999, genPartonDau12ID = -999, 
+		      genPartonPt2 = -999, genPartonMass2 = -999, genPartonDau21ID = -999, genPartonDau22ID = -999, 
 		      //massAve = -9999, massAsym = -9999, 
 		      jet1PrunedMass = -9999, jet2PrunedMass = -9999,
 		      jet1SoftDropMass = -9999, jet2SoftDropMass = -9999,
@@ -130,6 +136,8 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 		      //dalitzX1 = -9999, dalitzX2 = -9999, dalitzX3 = -9999, dalitzX4 = -9999, dalitzX5 = -9999, dalitzX6 = -9999;
 		vector<float> scaleWeights, pdfWeights, alphaWeights;
 
+
+		/// Jets
 		EDGetTokenT<vector<float>> jetAK4Pt_;
 		EDGetTokenT<vector<float>> jetAK4Eta_;
 		EDGetTokenT<vector<float>> jetAK4Phi_;
@@ -172,6 +180,7 @@ class RUNBoostedAnalysis : public EDAnalyzer {
 		EDGetTokenT<unsigned int> run_;
 		EDGetTokenT<ULong64_t> event_;
 		EDGetTokenT<GenEventInfoProduct> generator_;
+		EDGetTokenT<GenParticleCollection> genParticles_;
 		EDGetTokenT<LHEEventProduct> extLHEProducer_;
 
 		// Trigger
@@ -260,6 +269,7 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 	run_(consumes<unsigned int>(iConfig.getParameter<InputTag>("Run"))),
 	event_(consumes<ULong64_t>(iConfig.getParameter<InputTag>("Event"))),
 	generator_(consumes<GenEventInfoProduct>(iConfig.getParameter<InputTag>("generator"))),
+	genParticles_(consumes<GenParticleCollection>(iConfig.getParameter<InputTag>("genParticles"))),
 	extLHEProducer_(consumes<LHEEventProduct>(iConfig.getParameter<InputTag>("extLHEProducer"))),
 	// Trigger
 	triggerPrescale_(consumes<vector<int>>(iConfig.getParameter<InputTag>("triggerPrescale"))),
@@ -300,6 +310,7 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 	cutTau21 	= iConfig.getParameter<double>("cutTau21");
 	cutDeltaEtaDijet= iConfig.getParameter<double>("cutDeltaEtaDijet");
 	isData 		= iConfig.getParameter<bool>("isData");
+	isTTbar 	= iConfig.getParameter<bool>("isTTbar");
 	LHEcont 	= iConfig.getParameter<bool>("LHEcont");
 	mkTree 		= iConfig.getParameter<bool>("mkTree");
 	sortInTau21	= iConfig.getParameter<bool>("sortInTau21");
@@ -308,6 +319,7 @@ RUNBoostedAnalysis::RUNBoostedAnalysis(const ParameterSet& iConfig):
 	PUMethod 	= iConfig.getParameter<string>("PUMethod");
 	jecVersion 	= iConfig.getParameter<string>("jecVersion");
 	btagCSVFile 	= iConfig.getParameter<string>("btagCSVFile");
+	btagMVAFile 	= iConfig.getParameter<string>("btagMVAFile");
 	systematics 	= iConfig.getParameter<string>("systematics");
 	triggerPass 	= iConfig.getParameter<vector<string>>("triggerPass");
 
@@ -559,6 +571,9 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 	Handle<vector<float> > eleLoose;
 	iEvent.getByToken(eleLoose_, eleLoose);
 
+	Handle< GenParticleCollection > genParticles;
+	iEvent.getByToken( genParticles_, genParticles );
+
 	////// Muon veto
 	if ( muonPt->size() > 0 ) {
 		for (size_t m = 0; m < muonPt->size(); m++) {
@@ -578,6 +593,35 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 				//LogWarning("ele") << (*elePt)[m] << " " << (*eleEta)[m] << " " << (*eleLoose)[m] ;
 				elesPt->push_back( (*elePt)[m] );
 				numEle++;
+			}
+		}
+	}
+	///////////////////////////////////////////////////*/
+	
+	
+	////// TTbar genInfo (all this piece of code is SPECIFIC for ttbar
+	if (isTTbar) {
+
+		for( const auto & p : *genParticles ) {  
+
+			if( p.status() == 22 ) {
+
+				const reco::Candidate * mother = p.mother();
+				if( p.pdgId() == 6 ) { 
+					genPartonPt1 = p.pt();
+					genPartonMass1 = p.mass();
+				}
+				if( p.pdgId() == -6 ) { 
+					genPartonPt2 = p.pt();
+					genPartonMass2 = p.mass();
+				}
+				if( (mother->pdgId() == 6) && ( TMath::Abs(p.pdgId()) == 24 )){
+					//LogWarning("pat") << p.pdgId();
+					genPartonDau11ID = p.pdgId();
+				}
+				if( (mother->pdgId() == 6) && ( TMath::Abs(p.pdgId()) == 5 )) genPartonDau12ID = p.pdgId();
+				if( (mother->pdgId() == -6) && ( TMath::Abs(p.pdgId()) == 24 )) genPartonDau21ID = p.pdgId();
+				if( (mother->pdgId() == -6) && ( TMath::Abs(p.pdgId()) == 5 )) genPartonDau22ID = p.pdgId();
 			}
 		}
 	}
@@ -870,13 +914,13 @@ void RUNBoostedAnalysis::analyze(const Event& iEvent, const EventSetup& iSetup) 
 				if ( systematics.Contains("BtagUp") ) sysType = "up";
 				else if ( systematics.Contains("BtagDown") ) sysType = "down";
 				else sysType = "central";
-				string measurementType = "lt";
+				string measurementTypeCSV = "comb";
+				string measurementTypeCMVA = "ttbar";
 
-				if (jet1btagCSVv2 > 0.8) {   
-					jet1btagSF = btagSF ( btagCSVFile, JETS[0].p4.Pt(), JETS[0].p4.Eta(), JETS[0].hadronFlavour, sysType, measurementType );
-					//LogWarning("btag") << j1btagSF << " " << j1.hadronFlavour;
-				}
-				if (jet2btagCSVv2 > 0.8) jet2btagSF = btagSF ( btagCSVFile, JETS[1].p4.Pt(), JETS[1].p4.Eta(), JETS[1].hadronFlavour, sysType, measurementType );
+				jet1btagCSVv2SF = btagSF(btagCSVFile, JETS[0].p4.Pt(), JETS[0].p4.Eta(), JETS[0].hadronFlavour, sysType, measurementTypeCSV );
+				jet2btagCSVv2SF = btagSF(btagCSVFile, JETS[1].p4.Pt(), JETS[1].p4.Eta(), JETS[1].hadronFlavour, sysType, measurementTypeCSV );
+				jet1btagCMVAv2SF = btagSF(btagMVAFile, JETS[0].p4.Pt(), JETS[0].p4.Eta(), JETS[0].hadronFlavour, sysType, measurementTypeCMVA );
+				jet2btagCMVAv2SF = btagSF(btagMVAFile, JETS[1].p4.Pt(), JETS[1].p4.Eta(), JETS[1].hadronFlavour, sysType, measurementTypeCMVA );
 			}
 			///////////////////////////////////////////
 
@@ -1219,7 +1263,8 @@ void RUNBoostedAnalysis::beginJob() {
 		RUNAtree->Branch( "jet1btagCSVv2", &jet1btagCSVv2, "jet1btagCSVv2/F" );
 		RUNAtree->Branch( "jet1btagCMVAv2", &jet1btagCMVAv2, "jet1btagCMVAv2/F" );
 		RUNAtree->Branch( "jet1btagDoubleB", &jet1btagDoubleB, "jet1btagDoubleB/F" );
-		RUNAtree->Branch( "jet1btagSF", &jet1btagSF, "jet1btagSF/F" );
+		RUNAtree->Branch( "jet1btagCSVv2SF", &jet1btagCSVv2SF, "jet1btagCSVv2SF/F" );
+		RUNAtree->Branch( "jet1btagCMVAv2SF", &jet1btagCMVAv2SF, "jet1btagCMVAv2SF/F" );
 		RUNAtree->Branch( "jet2Pt", &jet2Pt, "jet2Pt/F" );
 		RUNAtree->Branch( "jet2Eta", &jet2Eta, "jet2Eta/F" );
 		RUNAtree->Branch( "jet2Phi", &jet2Phi, "jet2Phi/F" );
@@ -1229,7 +1274,8 @@ void RUNBoostedAnalysis::beginJob() {
 		RUNAtree->Branch( "jet2btagCSVv2", &jet2btagCSVv2, "jet2btagCSVv2/F" );
 		RUNAtree->Branch( "jet2btagCMVAv2", &jet2btagCMVAv2, "jet2btagCMVAv2/F" );
 		RUNAtree->Branch( "jet2btagDoubleB", &jet2btagDoubleB, "jet2btagDoubleB/F" );
-		RUNAtree->Branch( "jet2btagSF", &jet2btagSF, "jet2btagSF/F" );
+		RUNAtree->Branch( "jet2btagCSVv2SF", &jet2btagCSVv2SF, "jet2btagCSVv2SF/F" );
+		RUNAtree->Branch( "jet2btagCMVAv2SF", &jet2btagCMVAv2SF, "jet2btagCMVAv2SF/F" );
 		RUNAtree->Branch( "subjet11Pt", &subjet11Pt, "subjet11Pt/F" );
 		RUNAtree->Branch( "subjet11Eta", &subjet11Eta, "subjet11Eta/F" );
 		RUNAtree->Branch( "subjet11Phi", &subjet11Phi, "subjet11Phi/F" );
@@ -1466,13 +1512,15 @@ void RUNBoostedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descr
 	edm::ParameterSetDescription desc;
 
 	desc.add<bool>("isData", false);
+	desc.add<bool>("isTTbar", false);
 	desc.add<bool>("LHEcont", false);
 	desc.add<bool>("mkTree", false);
 	desc.add<bool>("sortInTau21", false);
 	desc.add<bool>("sortInMass", false);
 	desc.add<string>("dataPUFile", "supportFiles/PileupData2015D_JSON_latest.root");
 	desc.add<string>("jecVersion", "supportFiles/Fall15_25nsV2");
-	desc.add<string>("btagCSVFile", "supportFiles/subjet_CSVv2_ichep.csv");
+	desc.add<string>("btagCSVFile", "supportFiles/CSVv2_Moriond17_B_H.csv");
+	desc.add<string>("btagMVAFile", "supportFiles/cMVAv2_Moriond17_B_H.csv");
 	desc.add<string>("systematics", "None");
 	desc.add<string>("PUMethod", "chs");
 	desc.add<double>("scale", 1);
@@ -1488,8 +1536,9 @@ void RUNBoostedAnalysis::fillDescriptions(edm::ConfigurationDescriptions & descr
 	desc.add<InputTag>("Lumi", 	InputTag("eventInfo:evtInfoLumiBlock"));
 	desc.add<InputTag>("Run", 	InputTag("eventInfo:evtInfoRunNumber"));
 	desc.add<InputTag>("Event", 	InputTag("eventInfo:evtInfoEventNumber"));
-	desc.add<InputTag>("generator", 	InputTag("generator"));
+	desc.add<InputTag>("generator", InputTag("generator"));
 	desc.add<InputTag>("extLHEProducer", 	InputTag("externalLHEProducer"));
+	desc.add<InputTag>("genParticles", 	InputTag("filteredPrunedGenParticles"));
 	desc.add<InputTag>("bunchCross", 	InputTag("eventUserData:puBX"));
 	desc.add<InputTag>("rho", 	InputTag("vertexInfo:rho"));
 	desc.add<InputTag>("puNumInt", 	InputTag("eventUserData:puNInt"));

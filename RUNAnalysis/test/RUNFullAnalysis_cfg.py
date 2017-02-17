@@ -45,17 +45,17 @@ options.register('namePUFile',
 		"namePUFile"
 		)
 options.register('CSVFile', 
-		'supportFiles/CSVv2_ichep.csv',
+		'supportFiles/CSVv2_Moriond17_B_H.csv',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
 		"CSVFile"
 		)
 
-options.register('subjetCSVFile', 
-		'supportFiles/subjet_CSVv2_ichep.csv',
+options.register('cMVAFile', 
+		'supportFiles/cMVAv2_Moriond17_B_H.csv',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
-		"subjetCSVFile"
+		"cMVAFile"
 		)
 
 
@@ -76,7 +76,9 @@ else:
 			#'/store/user/grauco/B2GAnaFW/B2GAnaFW_80X_V2p1/TT_TuneCUETP8M1_13TeV-powheg-pythia8/B2GAnaFW_80X_V2p1/161021_085128/0000/B2GEDMNtuple_10.root',
 			#'/store/group/phys_b2g/B2GAnaFW_80X_V2p1/JetHT/Run2016C/JetHT/Run2016C-PromptReco-v2_B2GAnaFW_80X_V2p1/161013_132254/0000/B2GEDMNtuple_10.root',
 			#'/store/user/jsomalwa/B2GAnaFW_80X_V2p1/RPVStopStopToJets_UDD312_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISpring16MiniAODv2/RPVStopStopToJets_UDD312_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1/161018_211211/0000/B2GEDMNtuple_1.root',
-			'/store/group/phys_b2g/B2GAnaFW_80X_V2p3/JetHT/Run2016C/JetHT/Run2016C-23Sep2016-v1_B2GAnaFW_80X_V2p3/161216_220503/0000/B2GEDMNtuple_10.root',
+			#'/store/group/phys_b2g/B2GAnaFW_80X_V2p3/JetHT/Run2016C/JetHT/Run2016C-23Sep2016-v1_B2GAnaFW_80X_V2p3/161216_220503/0000/B2GEDMNtuple_10.root',
+			'/store/group/phys_b2g/B2GAnaFW_80X_V2p4/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv2/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1_B2GAnaFW_80X_V2p4/161222_110143/0000/B2GEDMNtuple_736.root',
+
 
 	    )
 	)
@@ -130,7 +132,13 @@ process.ResolvedAnalysisPlotsJERDown = process.ResolvedAnalysisPlots.clone( syst
 
 ##############################
 #####   Boosted analysis
-BoostedTriggers =  [ 'HLT_PFHT800', 'HLT_PFHT900', 'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFHT750_TrimMass50', 'HLT_PFJet450' ] 
+BoostedTriggers =  [ 'HLT_PFHT800', 
+			'HLT_PFHT900', 
+			'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFHT750_TrimMass50',
+			'HLT_AK8PFJet360_TrimMass30', 'HLT_PFJet450',
+			'HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p20',
+			'HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p087',
+			'HLT_AK8DiPFJet300_200_TrimMass30_BTagCSV_p20' ] 
 
 process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		#cutAK8jetPt 		= cms.double( 150.0 ),	# default 150.0
@@ -142,7 +150,9 @@ process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		dataPUFile		= cms.string( options.namePUFile  ),
 		jecVersion		= cms.string( options.jecVersion ),
 		isData			= cms.bool( isData ),
-		btagCSVFile		= cms.string( options.subjetCSVFile  ),
+		isTTbar			= cms.bool( True if 'TTJets' in NAME else False ),
+		btagCSVFile		= cms.string( options.CSVFile  ),
+		btagMVAFile		= cms.string( options.cMVAFile  ),
 		LHEcont			= cms.bool( True if 'QCD_Pt' in NAME else False ), ## logic is oposite
 		scale 			= cms.double( SF ),
 		mkTree			= cms.bool( True ),
