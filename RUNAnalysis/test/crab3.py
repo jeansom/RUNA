@@ -201,8 +201,6 @@ if __name__ == '__main__':
 			config.JobType.pyCfgParams = [ 'PROC='+procName, 'jecVersion='+jecVersion ] 
 
 		else:
-			pileUpFile = ''
-			supportFiles = supportFiles+glob.glob('supportFiles/'+pileUpFile)
 			procName = dataset.split('/')[1].split('_TuneCUETP8M1')[0]+args.version
 			config.JobType.pyCfgParams = ( [ 'PROC='+procName, 'systematics='+('1' if 'RPV' in sam else '0'), 'jecVersion='+jecVersion ] )
 
