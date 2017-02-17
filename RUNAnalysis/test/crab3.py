@@ -45,8 +45,6 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-s', '--sample', action='store', default='all', dest='sample', help='Sample to process. Example: QCD, RPV, TTJets.' )
 	parser.add_argument('-v', '--version', action='store', default='v01p0', dest='version', help='Version: v01, v02.' )
-	parser.add_argument('-B', '--btagCSVFile', action='store', default='CSVv2_ichep.csv', dest='btagCSVFile', help='BtagCSVFile: CSVv2_ichep.csv.' )
-	parser.add_argument('-b', '--subjetbtagCSVFile', action='store', default='subjet_CSVv2_ichep.csv', dest='subjetbtagCSVFile', help='subjetBtagCSVFile: CSVv2_ichep.csv.' )
 
 	try: args = parser.parse_args()
 	except:
@@ -194,19 +192,17 @@ if __name__ == '__main__':
 	for sam in processingSamples:
 		dataset = processingSamples[sam][0]
 		jecVersion = processingSamples[sam][2]
-		supportFiles = glob.glob('supportFiles/'+jecVersion+'_*txt') + glob.glob('supportFiles/'+args.btagCSVFile )+ glob.glob('supportFiles/'+args.subjetbtagCSVFile )
+		supportFiles = glob.glob('supportFiles/'+jecVersion+'_*txt') + glob.glob('supportFiles/*csv')
 		config.Data.inputDataset = dataset
 		config.Data.unitsPerJob = processingSamples[sam][1]
 		if 'JetHT' in dataset: 
 			procName = dataset.split('/')[1]+dataset.split('/')[2].replace( dataset.split('/')[2].split('-')[0], '').split('_')[0]+processingSamples[sam][3]+'_'+args.version
 			config.Data.lumiMask = '/afs/cern.ch/work/a/algomez/RPVStops/CMSSW_8_0_20/src/RUNA/RUNAnalysis/test/supportFiles/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON'+processingSamples[sam][3]+'.txt'
-			config.JobType.pyCfgParams = [ 'PROC='+procName, 'jecVersion='+jecVersion, 'CSVFile='+args.btagCSVFile, 'subjetCSVFile='+args.subjetbtagCSVFile ]
+			config.JobType.pyCfgParams = [ 'PROC='+procName, 'jecVersion='+jecVersion ] 
 
 		else:
-			pileUpFile = 'PileupData2016BCDEFGH_271036-283685_69200.root'
-			supportFiles = supportFiles+glob.glob('supportFiles/'+pileUpFile)
 			procName = dataset.split('/')[1].split('_TuneCUETP8M1')[0]+args.version
-			config.JobType.pyCfgParams = ( [ 'PROC='+procName, 'systematics='+('0' if 'RPV' in sam else '0'), 'jecVersion='+jecVersion, 'namePUFile='+pileUpFile, 'CSVFile='+args.btagCSVFile, 'subjetCSVFile='+args.subjetbtagCSVFile ] )
+			config.JobType.pyCfgParams = ( [ 'PROC='+procName, 'systematics='+('1' if 'RPV' in sam else '0'), 'jecVersion='+jecVersion ] )
 
 		config.JobType.inputFiles =  supportFiles
 		config.General.requestName = procName
