@@ -72,12 +72,10 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 		fileNames = cms.untracked.vstring(
-			#'/store/user/grauco/B2GAnaFW/B2GAnaFW_80X_V2p1/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_80X_V2p1/161018_070036/0000/B2GEDMNtuple_1.root',
-			#'/store/user/grauco/B2GAnaFW/B2GAnaFW_80X_V2p1/TT_TuneCUETP8M1_13TeV-powheg-pythia8/B2GAnaFW_80X_V2p1/161021_085128/0000/B2GEDMNtuple_10.root',
-			#'/store/group/phys_b2g/B2GAnaFW_80X_V2p1/JetHT/Run2016C/JetHT/Run2016C-PromptReco-v2_B2GAnaFW_80X_V2p1/161013_132254/0000/B2GEDMNtuple_10.root',
-			#'/store/user/jsomalwa/B2GAnaFW_80X_V2p1/RPVStopStopToJets_UDD312_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISpring16MiniAODv2/RPVStopStopToJets_UDD312_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1/161018_211211/0000/B2GEDMNtuple_1.root',
+			'/store/user/jsomalwa/B2GAnaFW_80X_V2p1/RPVStopStopToJets_UDD312_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISpring16MiniAODv2/RPVStopStopToJets_UDD312_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1/161018_211211/0000/B2GEDMNtuple_1.root',
+			#'/store/user/algomez/RPVStopStopToJets_UDD323_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1_B2GAnaFW_80X_V2p4/170131_140142/0000/B2GEDMNtuple_5.root',
 			#'/store/group/phys_b2g/B2GAnaFW_80X_V2p3/JetHT/Run2016C/JetHT/Run2016C-23Sep2016-v1_B2GAnaFW_80X_V2p3/161216_220503/0000/B2GEDMNtuple_10.root',
-			'/store/group/phys_b2g/B2GAnaFW_80X_V2p4/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv2/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1_B2GAnaFW_80X_V2p4/161222_110143/0000/B2GEDMNtuple_736.root',
+			#'/store/group/phys_b2g/B2GAnaFW_80X_V2p4/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv2/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1_B2GAnaFW_80X_V2p4/161222_110143/0000/B2GEDMNtuple_736.root',
 
 
 	    )
@@ -156,6 +154,13 @@ process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		LHEcont			= cms.bool( True if 'QCD_Pt' in NAME else False ), ## logic is oposite
 		scale 			= cms.double( SF ),
 		mkTree			= cms.bool( True ),
+		jetTrimmedMass 		= cms.InputTag('jetsAK8CHS:jetAK8CHStrimmedMass'+('' if '312' in NAME else 'CHS')),
+		jetSoftDropMass		= cms.InputTag('jetsAK8CHS:jetAK8CHSsoftDropMass'+('' if '312' in NAME else 'CHS')),
+		jetPrunedMass 		= cms.InputTag('jetsAK8CHS:jetAK8CHSprunedMass'+('' if '312' in NAME else 'CHS')),
+		jetFilteredMass		= cms.InputTag('jetsAK8CHS:jetAK8CHSfilteredMass'+('' if '312' in NAME else 'CHS')),
+		jetTau1 		= cms.InputTag('jetsAK8CHS:jetAK8CHStau1'+('' if '312' in NAME else 'CHS')),
+		jetTau2 		= cms.InputTag('jetsAK8CHS:jetAK8CHStau2'+('' if '312' in NAME else 'CHS')),
+		jetTau3 		= cms.InputTag('jetsAK8CHS:jetAK8CHStau3'+('' if '312' in NAME else 'CHS')),
 )
 
 #process.BoostedAnalysisPlotsSortInMass = process.BoostedAnalysisPlots.clone( sortInMass = cms.bool( True ), mkTree = cms.bool( False ) )
