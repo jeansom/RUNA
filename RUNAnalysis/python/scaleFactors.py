@@ -206,7 +206,7 @@ dictEvents = {
 
 def search(DICT, searchFor):
 	for k in DICT:
-		if searchFor in k:
+		if searchFor == k:
 			return DICT[k]
 	return None
 
