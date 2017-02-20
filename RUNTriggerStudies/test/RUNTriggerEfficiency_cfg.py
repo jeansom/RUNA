@@ -78,6 +78,8 @@ process.ResolvedTriggerEfficiencyPFHT650WideJetMJJ900 = process.ResolvedTriggerE
 		triggerPass = cms.vstring( [ 'HLT_PFHT650_WideJetMJJ900DEtaJJ1p5', 'HLT_PFHT650_WideJetMJJ950DEtaJJ1p5' ] ) )
 process.ResolvedTriggerEfficiencyPFJet450 = process.ResolvedTriggerEfficiency.clone( 
 		triggerPass = cms.vstring( [  'HLT_PFHT800', 'HLT_PFHT900', 'HLT_PFHT750_4Jet', 'HLT_PFHT800_4Jet50', 'HLT_PFJet450' ] ) )
+process.ResolvedTriggerEfficiencySeveralTriggers = process.ResolvedTriggerEfficiency.clone( 
+		triggerPass = cms.vstring( [  'HLT_PFHT800', 'HLT_PFHT900', 'HLT_PFHT750_4Jet', 'HLT_PFHT800_4Jet50', 'HLT_PFJet450', 'HLT_PFHT650_WideJetMJJ900DEtaJJ1p5', 'HLT_PFHT650_WideJetMJJ950DEtaJJ1p5' ] ) )
 ############################################################
 
 
@@ -241,6 +243,7 @@ if 'Resolved' in options.version:
 	process.p += process.ResolvedTriggerEfficiency
 	process.p += process.ResolvedTriggerEfficiencyPFHT7504Jet
 	process.p += process.ResolvedTriggerEfficiencyPFHT800
+	process.p += process.ResolvedTriggerEfficiencyPFHT650WideJetMJJ900 
 	process.p += process.ResolvedTriggerEfficiencyPFJet450
 
 elif 'Boosted' in options.version:
@@ -284,6 +287,7 @@ else:
 	process.p += process.ResolvedTriggerEfficiencyPFHT7504Jet
 	process.p += process.ResolvedTriggerEfficiencyPFHT800
 	process.p += process.ResolvedTriggerEfficiencyPFJet450
+	process.p += process.ResolvedTriggerEfficiencyPFHT650WideJetMJJ900 
 	process.p += process.BoostedTriggerEfficiency
 	process.p += process.BoostedTriggerEfficiencyPFHT800
 	process.p += process.BoostedTriggerEfficiencyAK8PFHT700TrimMass50

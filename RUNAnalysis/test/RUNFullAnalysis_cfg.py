@@ -33,29 +33,29 @@ options.register('systematics',
 		"Run systematics, default false."
 		)
 options.register('jecVersion', 
-		'supportFiles/Fall15_25nsV2',
+		'Fall15_25nsV2',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
 		"Version of the analysis to run. (Full, Resolved, Boosted)"
 		)
 options.register('namePUFile', 
-		'supportFiles/PileupData2015D_JSON_latest.root',
+		'PileupData2016BCDEFGH_ReReco_69200.root',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
 		"namePUFile"
 		)
 options.register('CSVFile', 
-		'supportFiles/CSVv2_ichep.csv',
+		'CSVv2_Moriond17_B_H.csv',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
 		"CSVFile"
 		)
 
-options.register('subjetCSVFile', 
-		'supportFiles/subjet_CSVv2_ichep.csv',
+options.register('cMVAFile', 
+		'cMVAv2_Moriond17_B_H.csv',
 		VarParsing.multiplicity.singleton,
 		VarParsing.varType.string,
-		"subjetCSVFile"
+		"cMVAFile"
 		)
 
 
@@ -72,10 +72,11 @@ if options.local:
 else:
 	process.source = cms.Source("PoolSource",
 		fileNames = cms.untracked.vstring(
-			#'/store/user/grauco/B2GAnaFW/B2GAnaFW_80X_V2p1/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/B2GAnaFW_80X_V2p1/161018_070036/0000/B2GEDMNtuple_1.root',
-			#'/store/user/grauco/B2GAnaFW/B2GAnaFW_80X_V2p1/TT_TuneCUETP8M1_13TeV-powheg-pythia8/B2GAnaFW_80X_V2p1/161021_085128/0000/B2GEDMNtuple_10.root',
-			#'/store/group/phys_b2g/B2GAnaFW_80X_V2p1/JetHT/Run2016C/JetHT/Run2016C-PromptReco-v2_B2GAnaFW_80X_V2p1/161013_132254/0000/B2GEDMNtuple_10.root',
 			'/store/user/jsomalwa/B2GAnaFW_80X_V2p1/RPVStopStopToJets_UDD312_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISpring16MiniAODv2/RPVStopStopToJets_UDD312_M-100_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1_B2GAnaFW_80X_V2p1/161018_211211/0000/B2GEDMNtuple_1.root',
+			#'/store/user/algomez/RPVStopStopToJets_UDD323_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1_B2GAnaFW_80X_V2p4/170131_140142/0000/B2GEDMNtuple_5.root',
+			#'/store/group/phys_b2g/B2GAnaFW_80X_V2p3/JetHT/Run2016C/JetHT/Run2016C-23Sep2016-v1_B2GAnaFW_80X_V2p3/161216_220503/0000/B2GEDMNtuple_10.root',
+			#'/store/group/phys_b2g/B2GAnaFW_80X_V2p4/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv2/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1_B2GAnaFW_80X_V2p4/161222_110143/0000/B2GEDMNtuple_736.root',
+
 
 	    )
 	)
@@ -101,7 +102,7 @@ ResolvedTriggers = [  'HLT_PFHT800', 'HLT_PFHT900', 'HLT_PFHT750_4Jet', 'HLT_PFH
 
 process.ResolvedAnalysisPlots = cms.EDAnalyzer('RUNResolvedAnalysis',
 		cutAK4jetPt 		= cms.double( 80.0 ),	# default 80.0
-		cutAK4HT 		= cms.double( 850.0 ),	# default 800.0
+		cutAK4HT 		= cms.double( 900.0 ),	# default 800.0
 		cutAK4MassAsym		= cms.double( 0.1 ),	# default 0.2
 		cutDelta 		= cms.double( 200 ),	# default 180.0
 		cutDeltaEtaDijetSyst	= cms.double( 1.0 ),	# default .75
@@ -129,7 +130,13 @@ process.ResolvedAnalysisPlotsJERDown = process.ResolvedAnalysisPlots.clone( syst
 
 ##############################
 #####   Boosted analysis
-BoostedTriggers =  [ 'HLT_PFHT800', 'HLT_PFHT900', 'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFHT750_TrimMass50', 'HLT_PFJet450' ] 
+BoostedTriggers =  [ 'HLT_PFHT800', 
+			'HLT_PFHT900', 
+			'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50', 'HLT_AK8PFHT750_TrimMass50',
+			'HLT_AK8PFJet360_TrimMass30', 'HLT_PFJet450',
+			'HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p20',
+			'HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p087',
+			'HLT_AK8DiPFJet300_200_TrimMass30_BTagCSV_p20' ] 
 
 process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		#cutAK8jetPt 		= cms.double( 150.0 ),	# default 150.0
@@ -141,10 +148,19 @@ process.BoostedAnalysisPlots = cms.EDAnalyzer('RUNBoostedAnalysis',
 		dataPUFile		= cms.string( options.namePUFile  ),
 		jecVersion		= cms.string( options.jecVersion ),
 		isData			= cms.bool( isData ),
-		btagCSVFile		= cms.string( options.subjetCSVFile  ),
+		isTTbar			= cms.bool( True if 'TTJets' in NAME else False ),
+		btagCSVFile		= cms.string( options.CSVFile  ),
+		btagMVAFile		= cms.string( options.cMVAFile  ),
 		LHEcont			= cms.bool( True if 'QCD_Pt' in NAME else False ), ## logic is oposite
 		scale 			= cms.double( SF ),
 		mkTree			= cms.bool( True ),
+		jetTrimmedMass 		= cms.InputTag('jetsAK8CHS:jetAK8CHStrimmedMass'+('' if '312' in NAME else 'CHS')),
+		jetSoftDropMass		= cms.InputTag('jetsAK8CHS:jetAK8CHSsoftDropMass'+('' if '312' in NAME else 'CHS')),
+		jetPrunedMass 		= cms.InputTag('jetsAK8CHS:jetAK8CHSprunedMass'+('' if '312' in NAME else 'CHS')),
+		jetFilteredMass		= cms.InputTag('jetsAK8CHS:jetAK8CHSfilteredMass'+('' if '312' in NAME else 'CHS')),
+		jetTau1 		= cms.InputTag('jetsAK8CHS:jetAK8CHStau1'+('' if '312' in NAME else 'CHS')),
+		jetTau2 		= cms.InputTag('jetsAK8CHS:jetAK8CHStau2'+('' if '312' in NAME else 'CHS')),
+		jetTau3 		= cms.InputTag('jetsAK8CHS:jetAK8CHStau3'+('' if '312' in NAME else 'CHS')),
 )
 
 #process.BoostedAnalysisPlotsSortInMass = process.BoostedAnalysisPlots.clone( sortInMass = cms.bool( True ), mkTree = cms.bool( False ) )
