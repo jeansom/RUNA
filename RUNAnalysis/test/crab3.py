@@ -133,18 +133,18 @@ if __name__ == '__main__':
 		config.Data.inputDataset = dataset
 		config.Data.unitsPerJob = processingSamples[sam][1]
 		if 'JetHT' in dataset: 
-			procName = dataset.split('/')[1]+dataset.split('/')[2].split('-')[1]+'_'+args.version
+			procName = dataset.split('/')[1]+dataset.split('/')[2].split('-')[1]
 			config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt'
 			config.JobType.pyCfgParams = [ 'PROC='+procName, 'jecVersion='+jecVersion, 'CSVFile='+args.btagCSVFile ]
 
 		else:
 			pileUpFile = 'PileupData2016BCDEFGH_271036-283685_69200.root'
 			supportFiles = supportFiles+glob.glob('supportFiles/'+pileUpFile)
-			procName = dataset.split('/')[1].split('_TuneCUETP8M1')[0]+args.version
+			procName = dataset.split('/')[1].split('_TuneCUETP8M1')[0]
 			config.JobType.pyCfgParams = ( [ 'PROC='+procName, 'systematics='+('0' if 'RPV' in sam else '0'), 'jecVersion='+jecVersion, 'namePUFile='+pileUpFile, 'CSVFile='+args.btagCSVFile ] )
 
 		config.JobType.inputFiles =  supportFiles
-		config.General.requestName = procName
+		config.General.requestName = procName+'_'+args.version
 		print config
 		print '|--- Submmiting sample: ', procName
 		p = Process(target=submit, args=(config,))
