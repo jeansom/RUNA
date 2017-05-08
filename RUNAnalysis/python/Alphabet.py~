@@ -160,7 +160,7 @@ class Alphabet:
             quickplot( i.File, i.Tree, temphist, variable, tag, i.weight )
             print self.X
             quick2dplot( i.File, i.Tree, temphist2DN, variable, self.X, antitag, "("+i.weight+")" )
-            print self.y
+            
             for j in xrange(1,(temphist2DN.GetXaxis().GetNbins()+1)):
                 for k in xrange(1,(temphist2DN.GetYaxis().GetNbins()+1)):
                     rhoVal = temphist2DN.GetYaxis().GetBinCenter(k)

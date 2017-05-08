@@ -134,8 +134,10 @@ def FindAndSetMax( someset, log=True ):
     for i in someset: # Finds Maximum
         if isinstance( i, ROOT.TH1 ): i.SetStats(0)
         t = i.GetMaximum()
+        print t
         if t > maximum:
             maximum = t
+    print maximum
     for j in someset: # Sets Maximum, Minimum
         if log:
             j.SetMaximum(maximum*2)

@@ -158,7 +158,6 @@ def AlphabetFitter( G, F, fitter, bins, truthbins ):
         fitValues = []
         bins2 = truthbins+bins
         for i in xrange(0,len(bins2)):
-            print "here"
             binCenter = (bins2[i][0]+bins2[i][1])/2
             print binCenter
             listBinCenter.append(float(binCenter))

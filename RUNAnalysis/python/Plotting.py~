@@ -287,12 +287,9 @@ def MakeEstPlots( Est, variable, varTitle, binBoundaries, antitag, tag, var1, Es
     N1.GetYaxis().SetTitle("events")
     N1.GetXaxis().SetTitle( varTitle )
 
-    print "Integral 125-150"
-    print N.Integral(N.FindBin(125), N.FindBin(150))
-    print V.Integral(V.FindBin(125), V.FindBin(150))
-    print "Integral 200-275"
-    print N.Integral(N.FindBin(200), N.FindBin(275))
-    print V.Integral(V.FindBin(200), V.FindBin(275))
+    print "Integral 50-75"
+    print N.Integral(N.FindBin(50), N.FindBin(75))
+    print V.Integral(V.FindBin(50), V.FindBin(75))
 
 
 #    FindAndSetMax( [ N, V ], False ) # Set maximum and minimum of all the plots
