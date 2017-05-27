@@ -2,6 +2,7 @@
 The code ThetaFileMakerQCD26MassSplit.py is the basic ABCD estimate. Run it using ThetaFileMakerDATA26Mass.sh.
 To run it for preselection only:
 ```
+chmod 777 ThetaFileMakerDATA26Mass.sh
 ./ThetaFileMakerDATA26Mass.sh 9
 ```
 The argument defines which channel to run in and how to scale the resonant backgrounds. 
