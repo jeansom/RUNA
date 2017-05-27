@@ -200,7 +200,7 @@ class Alphabet:
             temphistU = TH1F( "Hist_SUB_UP"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries))
             temphistD = TH1F( "Hist_SUB_DOWN"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries))
             temphistA = TH1F( "Hist_SUB_ATAG"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries))
-            temphist2DN = TH2F( "Hist2D_VAL"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries), len(self.rhoBinBoundaries)-1, array('d',rhoBinBoundaries))
+            temphist2DN = TH2F( "Hist2D_VAL"+self.name+"_"+i.name, "", len(binBoundaries)-1, array('d',binBoundaries), len(rhoBinBoundaries)-1, array('d',rhoBinBoundaries))
             quickplot( i.File, i.Tree, temphist, variable, tag, i.weight )
             quick2dplot( i.File, i.Tree, temphist2DN, variable, self.X, antitag, "("+i.weight+")" )
 
