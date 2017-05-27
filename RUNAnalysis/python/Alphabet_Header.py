@@ -118,3 +118,4 @@ def AlphabetFitter( G, F, fitter, bins, truthbins ):
 	F.ConvFactDn = TGraph( len(fitValues), array('d', listBinCenter ), numpy.subtract( fitValues, fitErrors ) )
         F.ErrUp = F.ConvFactUp.Clone()
         F.ErrDn = F.ConvFactDn.Clone()
+        return fitValues, fitErrors  
