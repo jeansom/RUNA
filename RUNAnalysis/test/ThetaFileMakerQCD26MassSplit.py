@@ -266,7 +266,7 @@ else:
     sys.exit(0)
 
 # The T and W scales
-TTNorm = "( (1.06)*1.00*/1.00*(1+0.5*" + str(scaleTT) + "+0.5*" + str(scaleTTErr) + ") )" # TTBar normalization
+TTNorm = "( (1.06)*1.00/1.00*(1+0.5*" + str(scaleTT) + "+0.5*" + str(scaleTTErr) + ") )" # TTBar normalization
 TTAlpha = "exp( (-0.0005*(HT/2))*(1-.5*" + str(scaleAlpha) + "-.5*" + str(scaleAlphaErr) + ") )" # Alpha NOTE: subtracting = adding because -0.0005
 
 TTScaleStrNorm = "(1.06*exp( (-0.0005*(HT/2)) ))"
