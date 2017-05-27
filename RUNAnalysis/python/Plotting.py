@@ -495,6 +495,7 @@ def MakeEstPlots( Est, variable, varTitle, binBoundaries, antitag, tag, var1, Es
     Tm1.Draw("same")
     Pull_norm.Draw("same")
     pull.cd()
+    pull.SetGrid()
     Pull2.GetXaxis().SetTitle("")
     Pull2.Draw("E0")
     T1.Draw("same")
