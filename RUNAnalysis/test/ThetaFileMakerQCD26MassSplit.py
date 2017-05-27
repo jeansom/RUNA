@@ -193,12 +193,6 @@ if "T" in args.log:
 else:
     log = False
 
-
-##### DELETE BEFORE UPLOADING #####
-if scale > 2 and scale < 9: sys.exit(0)
-if int(channel) > 4: sys.exit(0)
-os.mkdir("outputs/"+directory+method)
-
 # Defines amount to scale each background by, the theta results. For scale == 9, MAKE SURE THE ERROR (2nd value in each array) IS 0
 if scale == 1:
     scaleName = "__TTScale__up"
