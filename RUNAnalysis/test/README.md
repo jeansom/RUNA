@@ -27,7 +27,23 @@ In ThetaFileMakerDATA26Mass.sh:
 * Alphabet_Header.py: Calculates the TF
 * CMS_lumi.py: Draws the CMS logo and that kind of stuff
 
-## Running New Estimate 2.0
+## Running the simultaneous optimization
+Run using 
+```
+python RUNOptimizationTCuts.py
+```
+
+Change L198-210, L79, and L118 as appropriate for your purposes.
+Change the variable names in the trees that are different in your trees.
+
+## For debugging ThetaFileMakerQCD26MassSplit.py
+The script SimpleBkgEst.py is a fairly straightforward way to run the background est and can be used to debug ThetaFileMakerQCD26MassSplit.py. It is relatively simple and self-explanatory.
+Run using
+```
+python SimpleBkgEst.py
+```
+
+## Running New Estimate 2.0 (Memory problems, won't run)
 Use the code ABCDEF_Est.py. Just run 
 ```
 python ABCDEF_Est.py
@@ -44,18 +60,3 @@ Make sure to change L52-59 to the cuts you want and to change L138-174 as needed
 
 > Disclaimer: This code has memory problems, I think, so sorry if it doesn't work all the time.
 
-## Running the simultaneous optimization
-Run using 
-```
-python RUNOptimizationTCuts.py
-```
-
-Change L198-210, L79, and L118 as appropriate for your purposes.
-Change the variable names in the trees that are different in your trees.
-
-## For debugging ThetaFileMakerQCD26MassSplit.py
-The script SimpleBkgEst.py is a fairly straightforward way to run the background est and can be used to debug ThetaFileMakerQCD26MassSplit.py. It is relatively simple and self-explanatory.
-Run using
-```
-python SimpleBkgEst.py
-```
