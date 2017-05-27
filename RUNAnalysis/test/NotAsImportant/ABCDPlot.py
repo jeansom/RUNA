@@ -1,0 +1,767 @@
+#!/usr/bin/env python
+
+import os
+import math
+from array import array
+import optparse
+import ROOT
+from ROOT import *
+import scipy
+
+from RUNA.RUNAnalysis.Plotting_Header import *
+from RUNA.RUNAnalysis.CorrPlotter_Header import *
+from RUNA.RUNAnalysis.Distribution_Header import *
+import RUNA.RUNAnalysis.CMS_lumi as CMS_lumi 
+from RUNA.RUNAnalysis.scaleFactors import *
+
+gROOT.SetBatch()
+gStyle.SetOptStat(0)
+def ABCDPlot(SAMPLESADD, SAMPLESSUB, VARX, VARY, PRES, NAME, TITLE ):
+    C = TCanvas("C","", 800,800)
+    PABCD = TH2F( "added_ABCD_"+NAME, "", VARX[1], VARX[2], VARX[3], VARY[1], VARY[2], VARY[3] )
+    MABCD = TH2F( "added_ABCD_"+NAME, "", VARX[1], VARX[2], VARX[3], VARY[1], VARY[2], VARY[3] )
+    for i in SAMPLESADD:
+        quick2dplot( i.File, i.Tree, PABCD, VARX[0], VARY[0], PRES, i.weight )
+    for i in SAMPLESSUB:
+        quick2dplot( i.File, i.Tree, MABCD, VARX[0], VARY[0], PRES, i.weight )
+    print 4
+    ABCD = PABCD.Clone("ABCD_"+NAME)
+    ABCD.GetXaxis().SetTitle(TITLE[0])
+    ABCD.GetYaxis().SetTitle(TITLE[1])
+    ABCD.GetYaxis().SetTitleOffset(ABCD.GetYaxis().GetTitleOffset()*1.3)
+    print 3
+
+#    if "Tau21" in VARY[0] or "Tau21" in VARX[0]:
+#        profX = GetQuantileProfiles( ABCD, 0.0373370489491, "CutVal" )
+#    elif "prunedMassAsym" in VARY[0] or "prunedMassAsym" in VARX[0]:
+#        profX = GetQuantileProfiles( ABCD, 0.0911602985203, "CutVal" )
+#    elif "deltaEtaDijet" in VARY[0] or "deltaEtaDijet" in VARX[0]:
+#        profX = GetQuantileProfiles( ABCD, 0.708584981644, "CutVal" )
+#    else:
+#        profX = quickprofiles("prof", ABCD)[0]
+
+#    profX.SetLineWidth(2)
+#    profX.SetLineColor(kRed)
+    print 1    
+    TX = TLine( VARX[4], VARY[2], VARX[4], VARY[3] )
+    TY = TLine( VARX[2], VARY[4], VARX[3], VARY[4] )
+    TX.SetLineWidth(2)
+    TX.SetLineColor(kBlack)
+    TY.SetLineWidth(2)
+    TY.SetLineColor(kBlack)
+    print 2
+    ABCD.Draw("COL")
+    CMS_lumi.extraText = "Simulation Preliminary"
+    CMS_lumi.relPosX = 0.16
+    CMS_lumi.CMS_lumi(C, 4, 0)    
+    C.RedrawAxis()
+#    profX.Draw("SAMEHIST")
+    '''
+    EA = 0
+    EB = 0
+    EC = 0
+    ED = 0
+    for binX in xrange(1, ABCD.GetXaxis().GetNbins()+1):
+        for binY in xrange(1, ABCD.GetYaxis().GetNbins()+1):
+            binCenterX = ABCD.GetXaxis().GetBinCenter(binX) < VARX[4]
+            binCenterY = ABCD.GetYaxis().GetBinCenter(binY) < VARY[4]
+            
+            if binCenterX and binCenterY: EA = EA+ABCD.GetBinContent(binX, binY)
+            if binCenterX and not binCenterY: EB = EB+ABCD.GetBinContent(binX, binY)
+            if not binCenterX and binCenterY: EC = EC+ABCD.GetBinContent(binX, binY)
+            if not binCenterX and not binCenterY: ED = ED+ABCD.GetBinContent(binX, binY)
+
+    LA = TLatex( 0.2, 0.55, "A Events: " + str( round(EA,2) ) )
+    LB = TLatex( 0.2, 0.6, "B Events: " + str( round(EB,2) ) )
+    LC = TLatex( 0.55, 0.55, "C Events: " + str( round(EC,2) ) )
+    LD = TLatex( 0.55, 0.6, "D Events: " + str( round(ED,2) ) )
+        
+    LA.SetNDC()
+    LB.SetNDC()
+    LC.SetNDC()
+    LD.SetNDC()
+    LA.SetTextFont(42)
+    LB.SetTextFont(42)
+    LC.SetTextFont(42)
+    LD.SetTextFont(42)
+    LA.SetTextSize(0.04)
+    LB.SetTextSize(0.04)
+    LC.SetTextSize(0.04)
+    LD.SetTextSize(0.04)
+    '''
+    print 5
+    C.SaveAs("TCutPlots/ABCD_"+NAME+".png")
+
+def ABCDMassPlot(SAMPLESADD, SAMPLESSUB, VARX, VARY, PRES, NAME, TITLE ):
+    PMassA = TH1F( "PAveMassA_"+NAME, "", 40, 0, 400 )
+    PMassB = TH1F( "PAveMassB_"+NAME, "", 40, 0, 400 )
+    PMassC = TH1F( "PAveMassC_"+NAME, "", 40, 0, 400 )
+    PMassD = TH1F( "PAveMassD_"+NAME, "", 40, 0, 400 )
+    MMassA = TH1F( "MAveMassA_"+NAME, "", 40, 0, 400 )
+    MMassB = TH1F( "MAveMassB_"+NAME, "", 40, 0, 400 )
+    MMassC = TH1F( "MAveMassC_"+NAME, "", 40, 0, 400 )
+    MMassD = TH1F( "MAveMassD_"+NAME, "", 40, 0, 400 )
+    
+    for i in SAMPLESADD:
+        quickplot( i.File, i.Tree, PMassA, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym<0.1)", i.weight )
+        quickplot( i.File, i.Tree, PMassB, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym<0.1)", i.weight )
+        quickplot( i.File, i.Tree, PMassC, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym>0.1)", i.weight )
+        quickplot( i.File, i.Tree, PMassD, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym>0.1)", i.weight )
+
+    for i in SAMPLESSUB:
+        quickplot( i.File, i.Tree, MMassA, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym<0.1)", i.weight )
+        quickplot( i.File, i.Tree, MMassB, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym<0.1)", i.weight )
+        quickplot( i.File, i.Tree, MMassC, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym>0.1)", i.weight )
+        quickplot( i.File, i.Tree, MMassD, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym>0.1)", i.weight )
+
+    MassA = PMassA.Clone("MassA")
+    MassA.Add(MMassA, -1)
+    MassB = PMassB.Clone("MassB")
+    MassB.Add(MMassB, -1)
+    MassC = PMassC.Clone("MassC")
+    MassC.Add(MMassC, -1)
+    MassD = PMassD.Clone("MassD")
+    MassD.Add(MMassD, -1)
+
+    MassA.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassA.GetYaxis().SetTitle("N Events/10 GeV")
+    MassA.GetYaxis().SetTitleOffset(1.8)
+    MassB.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassB.GetYaxis().SetTitle("N Events/10 GeV")
+    MassB.GetYaxis().SetTitleOffset(1.8)
+    MassC.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassC.GetYaxis().SetTitle("N Events/10 GeV")
+    MassC.GetYaxis().SetTitleOffset(2.0)
+    MassD.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassD.GetYaxis().SetTitle("N Events/10 GeV")
+    MassD.GetYaxis().SetTitleOffset(1.8)
+    
+    gStyle.SetOptStat(0)
+    C1 = TCanvas("C1","",800,800)
+    C1.Divide(2,2)
+    C1.cd(1)
+    MassB.Draw("hist")
+    B = TLatex( 0.3, 0.5, "B" )
+    B.SetNDC()
+    B.SetTextFont(42)
+    B.SetTextSize(0.04)
+    B.Draw("same")
+    BN = TLatex( 0.55, 0.6, "N Events = "+str( round(MassB.Integral(0,100000), 0) ) )
+    BN.SetNDC()
+    BN.SetTextFont(42)
+    BN.SetTextSize(0.04)
+    BN.Draw("same")
+    C1.cd(2)
+    MassD.Draw("hist")
+    D = TLatex( 0.3, 0.5, "D" )
+    D.SetNDC()
+    D.SetTextFont(42)
+    D.SetTextSize(0.04)
+    D.Draw("same")
+    DN = TLatex( 0.55, 0.6, "N Events = "+str( round(MassD.Integral(0,100000), 0) ) )
+    DN.SetNDC()
+    DN.SetTextFont(42)
+    DN.SetTextSize(0.04)
+    DN.Draw("same")
+    C1.cd(3)
+    MassA.Draw("hist")
+    A = TLatex( 0.3, 0.5, "A" )
+    A.SetNDC()
+    A.SetTextFont(42)
+    A.SetTextSize(0.04)
+    A.Draw("same")
+    AN = TLatex( 0.55, 0.6, "N Events = "+str( round(MassA.Integral(0,100000), 0) ) )
+    AN.SetNDC()
+    AN.SetTextFont(42)
+    AN.SetTextSize(0.04)
+    AN.Draw("same")
+    C1.cd(4)
+    MassC.Draw("hist")
+    C = TLatex( 0.3, 0.5, "C" )
+    C.SetNDC()
+    C.SetTextFont(42)
+    C.SetTextSize(0.04)
+    C.Draw("same")
+    CN = TLatex( 0.55, 0.6, "N Events = "+str( round(MassC.Integral(0,100000), 0) ) )
+    CN.SetNDC()
+    CN.SetTextFont(42)
+    CN.SetTextSize(0.04)
+    CN.Draw("same")
+    C1.SaveAs("TCutPlots/MassAveABCD.png")
+
+def MassPlotSup( QCDRes, QCD, PRES, NAME ):
+    PMassNoResA = TH1F( "PAveMassNoResA_"+NAME, "", 40, 0, 400 )
+    PMassNoResB = TH1F( "PAveMassNoResB_"+NAME, "", 40, 0, 400 )
+    PMassNoResC = TH1F( "PAveMassNoResC_"+NAME, "", 40, 0, 400 )
+    PMassNoResD = TH1F( "PAveMassNoResD_"+NAME, "", 40, 0, 400 )
+    MMassNoResA = TH1F( "MAveMassNoResA_"+NAME, "", 40, 0, 400 )
+    MMassNoResB = TH1F( "MAveMassNoResB_"+NAME, "", 40, 0, 400 )
+    MMassNoResC = TH1F( "MAveMassNoResC_"+NAME, "", 40, 0, 400 )
+    MMassNoResD = TH1F( "MAveMassNoResD_"+NAME, "", 40, 0, 400 )
+    
+    quickplot( QCD.File, QCD.Tree, PMassNoResA, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym<0.1)", QCD.weight )
+    quickplot( QCD.File, QCD.Tree, PMassNoResB, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym<0.1)", QCD.weight )
+    quickplot( QCD.File, QCD.Tree, PMassNoResC, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym>0.1)", QCD.weight )
+    quickplot( QCD.File, QCD.Tree, PMassNoResD, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym>0.1)", QCD.weight )
+    
+    MassNoResA = PMassNoResA.Clone("MassNoResA")
+    MassNoResA.Add(MMassNoResA, -1)
+    MassNoResB = PMassNoResB.Clone("MassNoResB")
+    MassNoResB.Add(MMassNoResB, -1)
+    MassNoResC = PMassNoResC.Clone("MassNoResC")
+    MassNoResC.Add(MMassNoResC, -1)
+    MassNoResD = PMassNoResD.Clone("MassNoResD")
+    MassNoResD.Add(MMassNoResD, -1)
+
+    MassNoResA.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassNoResA.GetYaxis().SetTitle("N Events/10 GeV")
+    MassNoResA.GetYaxis().SetTitleOffset(1.8)
+    MassNoResA.SetLineColor(kBlack)
+    MassNoResB.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassNoResB.GetYaxis().SetTitle("N Events/10 GeV")
+    MassNoResB.GetYaxis().SetTitleOffset(1.8)
+    MassNoResB.SetLineColor(kBlack)
+    MassNoResC.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassNoResC.GetYaxis().SetTitle("N Events/10 GeV")
+    MassNoResC.GetYaxis().SetTitleOffset(2.0)
+    MassNoResC.SetLineColor(kBlack)
+    MassNoResD.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassNoResD.GetYaxis().SetTitle("N Events/10 GeV")
+    MassNoResD.GetYaxis().SetTitleOffset(1.8)
+    MassNoResD.SetLineColor(kBlack)
+
+    PMassResA = TH1F( "PAveMassResA_"+NAME, "", 40, 0, 400 )
+    PMassResB = TH1F( "PAveMassResB_"+NAME, "", 40, 0, 400 )
+    PMassResC = TH1F( "PAveMassResC_"+NAME, "", 40, 0, 400 )
+    PMassResD = TH1F( "PAveMassResD_"+NAME, "", 40, 0, 400 )
+    MMassResA = TH1F( "MAveMassResA_"+NAME, "", 40, 0, 400 )
+    MMassResB = TH1F( "MAveMassResB_"+NAME, "", 40, 0, 400 )
+    MMassResC = TH1F( "MAveMassResC_"+NAME, "", 40, 0, 400 )
+    MMassResD = TH1F( "MAveMassResD_"+NAME, "", 40, 0, 400 )
+    
+    quickplot( QCDRes.File, QCDRes.Tree, PMassResA, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym<0.1)", QCDRes.weight )
+    quickplot( QCDRes.File, QCDRes.Tree, PMassResB, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym<0.1)", QCDRes.weight )
+    quickplot( QCDRes.File, QCDRes.Tree, PMassResC, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym>0.1)", QCDRes.weight )
+    quickplot( QCDRes.File, QCDRes.Tree, PMassResD, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym>0.1)", QCDRes.weight )
+    
+    MassResA = PMassResA.Clone("MassResA")
+    MassResA.Add(MMassResA, -1)
+    MassResB = PMassResB.Clone("MassResB")
+    MassResB.Add(MMassResB, -1)
+    MassResC = PMassResC.Clone("MassResC")
+    MassResC.Add(MMassResC, -1)
+    MassResD = PMassResD.Clone("MassResD")
+    MassResD.Add(MMassResD, -1)
+
+    MassResA.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassResA.GetYaxis().SetTitle("N Events/10 GeV")
+    MassResA.SetLineColor(kRed)
+    MassResA.GetYaxis().SetTitleOffset(2)
+    MassResB.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassResB.GetYaxis().SetTitle("N Events/10 GeV")
+    MassResB.GetYaxis().SetTitleOffset(2)
+    MassResB.SetLineColor(kRed)
+    MassResC.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassResC.GetYaxis().SetTitle("N Events/10 GeV")
+    MassResC.GetYaxis().SetTitleOffset(2.0)
+    MassResC.SetLineColor(kRed)
+    MassResD.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassResD.GetYaxis().SetTitle("N Events/10 GeV")
+    MassResD.GetYaxis().SetTitleOffset(2.0)
+    MassResD.SetLineColor(kRed)
+            
+    FindAndSetMax( [MassResA, MassNoResA], False )
+    FindAndSetMax( [MassResB, MassNoResB], False )
+    FindAndSetMax( [MassResC, MassNoResC], False )
+    FindAndSetMax( [MassResD, MassNoResD], False )
+
+    C1 = TCanvas("C1","",800,800)
+    C1.Divide(2,2)
+    C1.cd(1)
+    MassResB.Draw("hist")
+    MassNoResB.Draw("histsame")
+    B = TLatex( 0.3, 0.5, "B" )
+    B.SetNDC()
+    B.SetTextFont(42)
+    B.SetTextSize(0.04)
+    B.Draw("same")
+    BN = TLatex( 0.4, 0.6, "#color[2]{No Res. Veto}, Res. Veto")
+    BN.SetNDC()
+    BN.SetTextFont(42)
+    BN.SetTextSize(0.04)
+    BN.Draw("same")
+    C1.cd(2)
+    MassResD.Draw("hist")
+    MassNoResD.Draw("histsame")
+    D = TLatex( 0.3, 0.5, "D" )
+    D.SetNDC()
+    D.SetTextFont(42)
+    D.SetTextSize(0.04)
+    D.Draw("same")
+    DN = TLatex( 0.4, 0.6, "#color[2]{No Res. Veto}, Res. Veto")
+    DN.SetNDC()
+    DN.SetTextFont(42)
+    DN.SetTextSize(0.04)
+    DN.Draw("same")
+    C1.cd(3)
+    MassResA.Draw("hist")
+    MassNoResA.Draw("histsame")
+    A = TLatex( 0.3, 0.5, "A" )
+    A.SetNDC()
+    A.SetTextFont(42)
+    A.SetTextSize(0.04)
+    A.Draw("same")
+    AN = TLatex( 0.4, 0.6, "#color[2]{No Res. Veto}, Res. Veto")
+    AN.SetNDC()
+    AN.SetTextFont(42)
+    AN.SetTextSize(0.04)
+    AN.Draw("same")
+    C1.cd(4)
+    MassResC.Draw("hist")
+    MassNoResC.Draw("histsame")
+    C = TLatex( 0.3, 0.5, "C" )
+    C.SetNDC()
+    C.SetTextFont(42)
+    C.SetTextSize(0.04)
+    C.Draw("same")
+    CN = TLatex( 0.4, 0.6, "#color[2]{No Res. Veto}, Res. Veto")
+    CN.SetNDC()
+    CN.SetTextFont(42)
+    CN.SetTextSize(0.04)
+    CN.Draw("same")
+    C1.SaveAs("TCutPlots/MassAveABCDSup_"+NAME+".png")
+
+def MassPlotSub( QCDRes, QCD, PRES, NAME ):
+    MassNoResA = TH1F( "PAveMassNoResA_"+NAME, "", 40, 0, 400 )
+    MassNoResB = TH1F( "PAveMassNoResB_"+NAME, "", 40, 0, 400 )
+    MassNoResC = TH1F( "PAveMassNoResC_"+NAME, "", 40, 0, 400 )
+    MassNoResD = TH1F( "PAveMassNoResD_"+NAME, "", 40, 0, 400 )
+    
+    quickplot( QCD.File, QCD.Tree, MassNoResA, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym<0.1)", QCD.weight )
+    quickplot( QCD.File, QCD.Tree, MassNoResB, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym<0.1)", QCD.weight )
+    quickplot( QCD.File, QCD.Tree, MassNoResC, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym>0.1)", QCD.weight )
+    quickplot( QCD.File, QCD.Tree, MassNoResD, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym>0.1)", QCD.weight )
+    
+    MassNoResA.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassNoResA.GetYaxis().SetTitle("N Events/10 GeV")
+    MassNoResA.GetYaxis().SetTitleOffset(1.8)
+    MassNoResA.SetLineColor(kBlack)
+    MassNoResB.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassNoResB.GetYaxis().SetTitle("N Events/10 GeV")
+    MassNoResB.GetYaxis().SetTitleOffset(1.8)
+    MassNoResB.SetLineColor(kBlack)
+    MassNoResC.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassNoResC.GetYaxis().SetTitle("N Events/10 GeV")
+    MassNoResC.GetYaxis().SetTitleOffset(2.0)
+    MassNoResC.SetLineColor(kBlack)
+    MassNoResD.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassNoResD.GetYaxis().SetTitle("N Events/10 GeV")
+    MassNoResD.GetYaxis().SetTitleOffset(1.8)
+    MassNoResD.SetLineColor(kBlack)
+
+    PMassResA = TH1F( "PAveMassResA_"+NAME, "", 40, 0, 400 )
+    PMassResB = TH1F( "PAveMassResB_"+NAME, "", 40, 0, 400 )
+    PMassResC = TH1F( "PAveMassResC_"+NAME, "", 40, 0, 400 )
+    PMassResD = TH1F( "PAveMassResD_"+NAME, "", 40, 0, 400 )
+    MMassResA = TH1F( "MAveMassResA_"+NAME, "", 40, 0, 400 )
+    MMassResB = TH1F( "MAveMassResB_"+NAME, "", 40, 0, 400 )
+    MMassResC = TH1F( "MAveMassResC_"+NAME, "", 40, 0, 400 )
+    MMassResD = TH1F( "MAveMassResD_"+NAME, "", 40, 0, 400 )
+    
+    quickplot( QCDRes.File, QCDRes.Tree, PMassResA, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym<0.1)", QCDRes.weight )
+    quickplot( QCDRes.File, QCDRes.Tree, PMassResB, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym<0.1)", QCDRes.weight )
+    quickplot( QCDRes.File, QCDRes.Tree, PMassResC, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym>0.1)", QCDRes.weight )
+    quickplot( QCDRes.File, QCDRes.Tree, PMassResD, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym>0.1)", QCDRes.weight )
+    
+    MassResA = PMassResA.Clone("MassResA")
+    MassResA.Add(MMassResA, -1)
+    MassResB = PMassResB.Clone("MassResB")
+    MassResB.Add(MMassResB, -1)
+    MassResC = PMassResC.Clone("MassResC")
+    MassResC.Add(MMassResC, -1)
+    MassResD = PMassResD.Clone("MassResD")
+    MassResD.Add(MMassResD, -1)
+
+    MassResA.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassResA.GetYaxis().SetTitle("N Events/10 GeV")
+    MassResA.SetLineColor(kRed)
+    MassResA.GetYaxis().SetTitleOffset(1.8)
+    MassResB.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassResB.GetYaxis().SetTitle("N Events/10 GeV")
+    MassResB.GetYaxis().SetTitleOffset(1.8)
+    MassResB.SetLineColor(kRed)
+    MassResC.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassResC.GetYaxis().SetTitle("N Events/10 GeV")
+    MassResC.GetYaxis().SetTitleOffset(2.0)
+    MassResC.SetLineColor(kRed)
+    MassResD.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassResD.GetYaxis().SetTitle("N Events/10 GeV")
+    MassResD.GetYaxis().SetTitleOffset(1.8)
+    MassResD.SetLineColor(kRed)
+            
+    MassResA.Add(MassNoResA, -1)
+    MassResB.Add(MassNoResB, -1)
+    MassResC.Add(MassNoResC, -1)
+    MassResD.Add(MassNoResD, -1)
+
+    C1 = TCanvas("C1","",800,800)
+    C1.Divide(2,2)
+    C1.cd(1)
+    MassResB.Draw("hist")
+    B = TLatex( 0.3, 0.5, "B" )
+    B.SetNDC()
+    B.SetTextFont(42)
+    B.SetTextSize(0.04)
+    B.Draw("same")
+    C1.cd(2)
+    MassResD.Draw("hist")
+    D = TLatex( 0.3, 0.5, "D" )
+    D.SetNDC()
+    D.SetTextFont(42)
+    D.SetTextSize(0.04)
+    D.Draw("same")
+    C1.cd(3)
+    MassResA.Draw("hist")
+    A = TLatex( 0.3, 0.5, "A" )
+    A.SetNDC()
+    A.SetTextFont(42)
+    A.SetTextSize(0.04)
+    A.Draw("same")
+    C1.cd(4)
+    MassResC.Draw("hist")
+    C = TLatex( 0.3, 0.5, "C" )
+    C.SetNDC()
+    C.SetTextFont(42)
+    C.SetTextSize(0.04)
+    C.Draw("same")
+    C1.SaveAs("TCutPlots/MassAveABCDSub"+NAME+".png")
+
+def DATAMC( DATA, QCD, TT, WJ, PRES, NAME ):
+    PMassA = TH1F( "PAveMassA_"+NAME, "", 40, 0, 400 )
+    PMassB = TH1F( "PAveMassB_"+NAME, "", 40, 0, 400 )
+    PMassC = TH1F( "PAveMassC_"+NAME, "", 40, 0, 400 )
+    PMassD = TH1F( "PAveMassD_"+NAME, "", 40, 0, 400 )
+    MMassA = TH1F( "MAveMassA_"+NAME, "", 40, 0, 400 )
+    MMassB = TH1F( "MAveMassB_"+NAME, "", 40, 0, 400 )
+    MMassC = TH1F( "MAveMassC_"+NAME, "", 40, 0, 400 )
+    MMassD = TH1F( "MAveMassD_"+NAME, "", 40, 0, 400 )
+    QMassA = TH1F( "QAveMassA_"+NAME, "", 40, 0, 400 )
+    QMassB = TH1F( "QAveMassB_"+NAME, "", 40, 0, 400 )
+    QMassC = TH1F( "QAveMassC_"+NAME, "", 40, 0, 400 )
+    QMassD = TH1F( "QAveMassD_"+NAME, "", 40, 0, 400 )
+
+    
+
+    quickplot( DATA.File, DATA.Tree, PMassA, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym<0.1)", DATA.weight )
+    quickplot( DATA.File, DATA.Tree, PMassB, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym<0.1)", DATA.weight )
+    quickplot( DATA.File, DATA.Tree, PMassC, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym>0.1)", DATA.weight )
+    quickplot( DATA.File, DATA.Tree, PMassD, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym>0.1)", DATA.weight )    
+    quickplot( QCD.File, QCD.Tree, QMassA, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym<0.1)", QCD.weight )
+    quickplot( QCD.File, QCD.Tree, QMassB, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym<0.1)", QCD.weight )
+    quickplot( QCD.File, QCD.Tree, QMassC, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym>0.1)", QCD.weight )
+    quickplot( QCD.File, QCD.Tree, QMassD, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym>0.1)", QCD.weight )
+    quickplot( TT.File, TT.Tree, MMassA, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym<0.1)", TT.weight )
+    quickplot( TT.File, TT.Tree, MMassB, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym<0.1)", TT.weight )
+    quickplot( TT.File, TT.Tree, MMassC, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym>0.1)", TT.weight )
+    quickplot( TT.File, TT.Tree, MMassD, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym>0.1)", TT.weight )
+    quickplot( WJ.File, WJ.Tree, MMassA, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym<0.1)", WJ.weight )
+    quickplot( WJ.File, WJ.Tree, MMassB, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym<0.1)", WJ.weight )
+    quickplot( WJ.File, WJ.Tree, MMassC, "prunedMassAve", PRES+"&(deltaEtaDijet<1.0&prunedMassAsym>0.1)", WJ.weight )
+    quickplot( WJ.File, WJ.Tree, MMassD, "prunedMassAve", PRES+"&(deltaEtaDijet>1.0&prunedMassAsym>0.1)", WJ.weight )
+    
+    MassA = PMassA.Clone("DMassA")
+    QMassA.Add(MMassA)
+    MassB = PMassB.Clone("DMassB")
+    QMassB.Add(MMassB)    
+    MassC = PMassC.Clone("DMassC")
+    QMassC.Add(MMassC)
+    MassD = PMassD.Clone("DMassD")
+    QMassD.Add(MMassD)
+
+    MassA.Divide(QMassA)
+    MassB.Divide(QMassB)
+    MassC.Divide(QMassC)
+    MassD.Divide(QMassD)
+
+    MassA.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassA.GetYaxis().SetTitle("Data/MC")
+    MassA.GetYaxis().SetTitleOffset(1.8)
+    MassB.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassB.GetYaxis().SetTitle("Data/MC")
+    MassB.GetYaxis().SetTitleOffset(1.8)
+    MassC.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassC.GetYaxis().SetTitle("Data/MC")
+    MassC.GetYaxis().SetTitleOffset(2.0)
+    MassD.GetXaxis().SetTitle("Average Pruned Mass [GeV]")
+    MassD.GetYaxis().SetTitle("Data/MC")
+    MassD.GetYaxis().SetTitleOffset(1.8)
+
+    gStyle.SetOptStat(0)
+    C1 = TCanvas("C1","",800,800)
+    C1.Divide(2,2)
+    C1.cd(1)
+    MassB.Draw("hist")
+    B = TLatex( 0.3, 0.5, "B" )
+    B.SetNDC()
+    B.SetTextFont(42)
+    B.SetTextSize(0.04)
+    B.Draw("same")
+    C1.cd(2)
+    MassD.Draw("hist")
+    D = TLatex( 0.3, 0.5, "D" )
+    D.SetNDC()
+    D.SetTextFont(42)
+    D.SetTextSize(0.04)
+    D.Draw("same")
+    C1.cd(3)
+    MassA.Draw("hist")
+    A = TLatex( 0.3, 0.5, "A" )
+    A.SetNDC()
+    A.SetTextFont(42)
+    A.SetTextSize(0.04)
+    A.Draw("same")
+    C1.cd(4)
+    MassC.Draw("hist")
+    C = TLatex( 0.3, 0.5, "C" )
+    C.SetNDC()
+    C.SetTextFont(42)
+    C.SetTextSize(0.04)
+    C.Draw("same")
+    C1.SaveAs("TCutPlots/DATAMCABCD_"+NAME+".png")
+
+def DATAMCStack( DATA, QCD, TT, WJ, PRES, NAME ):
+    QMassA = TH1F( "QMassA_"+NAME, "", 80, 0, 400 )
+    QMassB = TH1F( "QMassB_"+NAME, "", 80, 0, 400 )
+    QMassC = TH1F( "QMassC_"+NAME, "", 80, 0, 400 )
+    QMassD = TH1F( "QMassD_"+NAME, "", 80, 0, 400 )
+
+    TMassA = TH1F( "TMassA_"+NAME, "", 80, 0, 400 )
+    TMassB = TH1F( "TMassB_"+NAME, "", 80, 0, 400 )
+    TMassC = TH1F( "TMassC_"+NAME, "", 80, 0, 400 )
+    TMassD = TH1F( "TMassD_"+NAME, "", 80, 0, 400 )
+
+    WMassA = TH1F( "WMassA_"+NAME, "", 80, 0, 400 )
+    WMassB = TH1F( "WMassB_"+NAME, "", 80, 0, 400 )
+    WMassC = TH1F( "WMassC_"+NAME, "", 80, 0, 400 )
+    WMassD = TH1F( "WMassD_"+NAME, "", 80, 0, 400 )
+
+    DATAMassA = TH1F( "DATAMassA_"+NAME, "", 80, 0, 400 )
+    DATAMassB = TH1F( "DATAMassB_"+NAME, "", 80, 0, 400 )
+    DATAMassC = TH1F( "DATAMassC_"+NAME, "", 80, 0, 400 )
+    DATAMassD = TH1F( "DATAMassD_"+NAME, "", 80, 0, 400 )
+
+    quickplot( DATA.File, DATA.Tree, DATAMassA, "prunedMassAve", PRES+"&(deltaEtaDijet<1.5&prunedMassAsym<0.1)", DATA.weight )
+    quickplot( DATA.File, DATA.Tree, DATAMassB, "prunedMassAve", PRES+"&(deltaEtaDijet>1.5&prunedMassAsym<0.1)", DATA.weight )
+    quickplot( DATA.File, DATA.Tree, DATAMassC, "prunedMassAve", PRES+"&(deltaEtaDijet<1.5&prunedMassAsym>0.1)", DATA.weight )
+    quickplot( DATA.File, DATA.Tree, DATAMassD, "prunedMassAve", PRES+"&(deltaEtaDijet>1.5&prunedMassAsym>0.1)", DATA.weight )    
+
+    quickplot( TT.File, TT.Tree, TMassA, "prunedMassAve", PRES+"&(deltaEtaDijet<1.5&prunedMassAsym<0.1)", TT.weight )
+    quickplot( TT.File, TT.Tree, TMassB, "prunedMassAve", PRES+"&(deltaEtaDijet>1.5&prunedMassAsym<0.1)", TT.weight )
+    quickplot( TT.File, TT.Tree, TMassC, "prunedMassAve", PRES+"&(deltaEtaDijet<1.5&prunedMassAsym>0.1)", TT.weight )
+    quickplot( TT.File, TT.Tree, TMassD, "prunedMassAve", PRES+"&(deltaEtaDijet>1.5&prunedMassAsym>0.1)", TT.weight )    
+
+    quickplot( WJ.File, WJ.Tree, WMassA, "prunedMassAve", PRES+"&(deltaEtaDijet<1.5&prunedMassAsym<0.1)", WJ.weight )
+    quickplot( WJ.File, WJ.Tree, WMassB, "prunedMassAve", PRES+"&(deltaEtaDijet>1.5&prunedMassAsym<0.1)", WJ.weight )
+    quickplot( WJ.File, WJ.Tree, WMassC, "prunedMassAve", PRES+"&(deltaEtaDijet<1.5&prunedMassAsym>0.1)", WJ.weight )
+    quickplot( WJ.File, WJ.Tree, WMassD, "prunedMassAve", PRES+"&(deltaEtaDijet>1.5&prunedMassAsym>0.1)", WJ.weight )    
+
+    for i in QCD:
+        quickplot( i.File, i.Tree, QMassA, "prunedMassAve", PRES+"&(deltaEtaDijet<1.5&prunedMassAsym<0.1)", i.weight )
+        quickplot( i.File, i.Tree, QMassB, "prunedMassAve", PRES+"&(deltaEtaDijet>1.5&prunedMassAsym<0.1)", i.weight )
+        quickplot( i.File, i.Tree, QMassC, "prunedMassAve", PRES+"&(deltaEtaDijet<1.5&prunedMassAsym>0.1)", i.weight )
+        quickplot( i.File, i.Tree, QMassD, "prunedMassAve", PRES+"&(deltaEtaDijet>1.5&prunedMassAsym>0.1)", i.weight )
+
+    MCA = THStack("MCA","")
+    MCB = THStack("MCB","")
+    MCC = THStack("MCC","")
+    MCD = THStack("MCD","")
+
+    QMassA.SetLineColor(kBlack)
+    QMassA.SetFillColor(kBlue)
+    QMassB.SetLineColor(kBlack)
+    QMassB.SetFillColor(kBlue)
+    QMassC.SetLineColor(kBlack)
+    QMassC.SetFillColor(kBlue)
+    QMassD.SetLineColor(kBlack)
+    QMassD.SetFillColor(kBlue)
+
+    TMassA.SetLineColor(kBlack)
+    TMassA.SetFillColor(2)
+    TMassB.SetLineColor(kBlack)
+    TMassB.SetFillColor(2)
+    TMassC.SetLineColor(kBlack)
+    TMassC.SetFillColor(2)
+    TMassD.SetLineColor(kBlack)
+    TMassD.SetFillColor(2)
+
+    WMassA.SetLineColor(kBlack)
+    WMassA.SetFillColor(8)
+    WMassB.SetLineColor(kBlack)
+    WMassB.SetFillColor(8)
+    WMassC.SetLineColor(kBlack)
+    WMassC.SetFillColor(8)
+    WMassD.SetLineColor(kBlack)
+    WMassD.SetFillColor(8)
+
+    MCA.Add(WMassA)
+    MCA.Add(TMassA)
+    MCA.Add(QMassA)
+    MCB.Add(WMassB)
+    MCB.Add(TMassB)
+    MCB.Add(QMassB)
+    MCC.Add(WMassC)
+    MCC.Add(TMassC)
+    MCC.Add(QMassC)
+    MCD.Add(WMassD)
+    MCD.Add(TMassD)
+    MCD.Add(QMassD)
+
+    DATAMassA.SetLineColor(kBlack)
+    DATAMassA.SetMarkerColor(1)
+    DATAMassA.SetMarkerStyle(20)
+    DATAMassB.SetLineColor(kBlack)
+    DATAMassB.SetMarkerColor(1)
+    DATAMassB.SetMarkerStyle(20)
+    DATAMassC.SetLineColor(kBlack)
+    DATAMassC.SetMarkerColor(1)
+    DATAMassC.SetMarkerStyle(20)
+    DATAMassD.SetLineColor(kBlack)
+    DATAMassD.SetMarkerColor(1)
+    DATAMassD.SetMarkerStyle(20)
+    
+    C = TCanvas("C", "", 800, 800)
+    MCA.Draw()
+    MCA.GetXaxis().SetTitle("Average Pruned Mass")
+    MCA.GetYaxis().SetTitle("Events")
+    MCA.GetYaxis().SetTitleOffset(1.8)
+    MCB.Draw()
+    MCB.GetXaxis().SetTitle("Average Pruned Mass")
+    MCB.GetYaxis().SetTitle("Events")
+    MCB.GetYaxis().SetTitleOffset(1.8)
+    MCC.Draw()
+    MCC.GetXaxis().SetTitle("Average Pruned Mass")
+    MCC.GetYaxis().SetTitle("Events")
+    MCC.GetYaxis().SetTitleOffset(1.8)
+    MCD.Draw()
+    MCD.GetXaxis().SetTitle("Average Pruned Mass")
+    MCD.GetYaxis().SetTitle("Events")
+    MCD.GetYaxis().SetTitleOffset(1.8)
+
+    FindAndSetMax( [MCA, DATAMassA], False )
+    FindAndSetMax( [MCB, DATAMassB], False )
+    FindAndSetMax( [MCC, DATAMassC], False )
+    FindAndSetMax( [MCD, DATAMassD], False )
+
+    CMS_lumi.extraText = "Simulation Preliminary"
+    CMS_lumi.relPosX = 0.14
+
+    C.Clear()
+    C.Divide(2,2)
+    C.cd(1)
+    MCB.Draw("hist")
+    DATAMassB.Draw("E0Same")
+    B = TLatex( 0.3, 0.5, "B" )
+    B.SetNDC()
+    B.SetTextFont(42)
+    B.SetTextSize(0.04)
+    B.Draw("same")
+    CMS_lumi.CMS_lumi(gPad, 4, 0)
+    C.cd(2)
+    MCD.Draw("hist")
+    DATAMassD.Draw("E0Same")
+    D = TLatex( 0.3, 0.5, "D" )
+    D.SetNDC()
+    D.SetTextFont(42)
+    D.SetTextSize(0.04)
+    D.Draw("same")
+    CMS_lumi.CMS_lumi(gPad, 4, 0)
+    C.cd(3)
+    MCA.Draw("hist")
+    DATAMassA.Draw("E0Same")
+    A = TLatex( 0.3, 0.5, "A" )
+    A.SetNDC()
+    A.SetTextFont(42)
+    A.SetTextSize(0.04)
+    A.Draw("same")
+    CMS_lumi.CMS_lumi(gPad, 4, 0)
+    C.cd(4)
+    MCC.Draw("hist")
+    DATAMassC.Draw("E0Same")
+    C1 = TLatex( 0.3, 0.5, "C" )
+    C1.SetNDC()
+    C1.SetTextFont(42)
+    C1.SetTextSize(0.04)
+    C1.Draw("same")
+
+    C.RedrawAxis()
+
+    C.SaveAs("TCutPlots/DATAMCComp_"+NAME+".png")
+
+weight = "(36555.21/15*lumiWeight*puWeight)"
+
+# The T and W scales
+scaleTT=0
+scaleAlpha=0
+scaleW=0
+TTNorm = "( (1.56)*(1+.2*"+str(scaleTT)+"))" # The scale that determines the nominal TTBar normalization
+TTAlpha = "exp( (-0.0005*(HT/2))*(1-.2*" + str(scaleAlpha) + ") )" # The scale that determines the nominal alpha NOTE: subtracting = adding because -0.0005
+TTScaleStr = "(" + TTNorm + "*" + TTAlpha + ")" # Total string to scale TT by, norm*alpha
+WScaleStr = "(1+.2*"+str(scaleW)+")" # The scale that determines the nominal W normalization
+
+
+DATARes = DIST( "DATA", "v08/RUNAnalysis_JetHT_Run2016_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree", "1" )
+#DATA = DIST( "DATA", "ResVetoRootFiles/ResVeto_32017__RUNAnalysis_JetHT_Run2016_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree", "1" )
+DATARes12 = DIST( "DATA", "v08/RUNAnalysis_JetHT_Run2016_80X_V2p4_v08_cut15.root", "BoostedAnalysisPlotsPuppi/RUNATree", "1" )
+DATA12 = DIST( "DATA", "ResVetoRootFiles/ResVeto_32017__RUNAnalysis_JetHT_Run2016_80X_V2p4_v08_cut15.root", "BoostedAnalysisPlotsPuppi/RUNATree", "1" )
+#QCD = DIST( "QCD", "ResVetoRootFiles/ResVeto_32017__RUNAnalysis_QCDHTAll_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree", ".85*"+weight )
+QCDRes = DIST( "QCDRes", "v08/RUNAnalysis_QCDHTAll_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree", ".85*"+weight )
+	
+QCD1000to1400 = DIST( "QCD1000to1400", "v08/RUNAnalysis_QCDPt1000to1400_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree", ".85*puWeight*36555.21/15*"+str(scaleFactor("QCD_Pt_1000to1400" )))
+QCD1400to1800 = DIST( "QCD1400to1800", "v08/RUNAnalysis_QCDPt1400to1800_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree", ".85*puWeight*36555.21/15*"+str(scaleFactor("QCD_Pt_1400to1800" )))
+QCD170to300 = DIST( "QCD170to300", "v08/RUNAnalysis_QCDPt170to300_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree", ".85*puWeight*36555.21/15*"+str(scaleFactor("QCD_Pt_170to300" )))
+QCD1800to2400 = DIST( "QCD1800to2400", "v08/RUNAnalysis_QCDPt1800to2400_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree", ".85*puWeight*36555.21/15*"+str(scaleFactor("QCD_Pt_1800to2400" )))
+QCD2400to3200 = DIST( "QCD2400to3200", "v08/RUNAnalysis_QCDPt2400to3200_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree", ".85*puWeight*36555.21/15*"+str(scaleFactor("QCD_Pt_2400to3200" )))
+QCD300to470 = DIST( "QCD300to470", "v08/RUNAnalysis_QCDPt300to470_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree", ".85*puWeight*36555.21/15*"+str(scaleFactor("QCD_Pt_300to470" )))
+QCD3200toInf = DIST( "QCD3200toInf", "v08/RUNAnalysis_QCDPt3200toInf_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree", ".85*puWeight*36555.21/15*"+str(scaleFactor("QCD_Pt_3200toInf" )))
+QCD470to600 = DIST( "QCD470to600", "v08/RUNAnalysis_QCDPt470to600_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree", ".85*puWeight*36555.21/15*"+str(scaleFactor("QCD_Pt_470to600" )))
+QCD600to800 = DIST( "QCD600to800", "v08/RUNAnalysis_QCDPt600to800_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree", ".85*puWeight*36555.21/15*"+str(scaleFactor("QCD_Pt_600to800" )))
+QCD800to1000 = DIST( "QCD800to1000", "v08/RUNAnalysis_QCDPt800to1000_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree", ".85*puWeight*36555.21/15*"+str(scaleFactor("QCD_Pt_800to1000" )))
+
+QCDHT = DIST( "QCDHT", "v08/RUNAnalysis_QCDHTAll_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree", ".67*puWeight*36555.21/15*lumiWeight")
+QCDPT = DIST( "QCDHT", "v08/RUNAnalysis_QCDPtAll_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree", ".62*puWeight*36555.21/15*lumiWeight")
+	
+TTJets = DIST( "TTJets", "ResVetoRootFiles/ResVeto_32017__RUNAnalysis_TT_PtRewt_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree", "("+weight+"*"+TTScaleStr+")" )
+Sig120 = DIST( "Sig", "v08/Signals/RUNAnalysis_RPVStopStopToJets_UDD323_M-120_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree", "puWeight*689.799/746680*100" )
+WJets = DIST( "WJets", "ResVetoRootFiles/ResVeto_32017__RUNAnalysis_WJetsToQQ_80X_V2p4_v08.root", "BoostedAnalysisPlotsPuppi/RUNATree",  "("+weight+"*"+WScaleStr+")" )
+TTJetsRes = DIST( "TTJetsRes", "80XRootFilesUpdated/RUNAnalysis_TT_PtRewt_80X_V2p3_v06.root", "BoostedAnalysisPlotsPuppi/RUNATree", "("+weight+"*"+TTScaleStr+")" )
+WJetsRes = DIST( "WJetsRes", "80XRootFilesUpdated/RUNAnalysis_WJetsToQQ_80X_V2p3_v06.root", "BoostedAnalysisPlotsPuppi/RUNATree",  "(36555.21/15*puWeight*"+WScaleStr+")" )
+SIG = DIST( "SIG", "80XRootFilesUpdated/Signals/RUNAnalysis_RPVStopStopToJets_UDD323_M-120_80X_V2p3_v06.root", "BoostedAnalysisPlotsPuppi/RUNATree", "36555.21/15*puWeight*"+str(scaleFactor("RPVStopStopToJets_UDD323_M-120")))
+#SAMPLESADD = [ Sig120 ]
+
+SAMPLESSUB = [ ]
+rho = "(log((jet1PrunedMass*jet1PrunedMass)/(jet1Pt*jet1Pt))+log((jet2PrunedMass*jet2PrunedMass)/(jet2Pt*jet2Pt)))"
+rhoCut = "(0>"+rho+"&-5.5<"+rho+")"
+VARX = ["prunedMassAsym", 100, 0., 1., 0.1]
+VARY = ["deltaEtaDijet", 100, 0., 5., 1.5] 
+PRES = "jet1Tau21<0.45&jet2Tau21<0.45&numJets==2"
+NAME = "NoRhoCut"
+TITLE = [ "Mass Asymmetry", "Delta Eta Dijet" ]
+QCDResList = [ QCD170to300, QCD300to470, QCD470to600, QCD600to800, QCD800to1000, QCD1000to1400, QCD1400to1800, QCD1800to2400, QCD2400to3200, QCD3200toInf ]
+
+jet1Rho = "log((jet1PrunedMass*jet1PrunedMass)/(jet1Pt))"
+jet2Rho = "log((jet2PrunedMass*jet2PrunedMass)/(jet2Pt))"
+jet1Tau21DDT = "(jet1Tau21 + 7.65e-02*"+jet1Rho+")"
+jet2Tau21DDT = "(jet2Tau21 + 7.65e-02*"+jet2Rho+")"
+tau21 = "jet1Tau21<0.45&jet2Tau21<0.45&numJets==2"
+zerobtag = "(jet1btagCSVv2<0.8484&jet2btagCSVv2<0.8484)"
+onebtag = "((jet1btagCSVv2<0.8484&jet2btagCSVv2>0.8484)||(jet1btagCSVv2>0.8484&jet2btagCSVv2<0.8484))"
+twobtag = "(jet1btagCSVv2>0.8484&jet2btagCSVv2>0.8484)"
+
+zeroTop = "(jet1Tau32>0.67&jet2Tau32>.67)"
+oneTop = "((jet1Tau32<=0.67&jet2Tau32>=0.67)||(jet1Tau32>0.67&jet2Tau32<0.67))"
+twoTop = "(jet1Tau32<0.67&jet2Tau32<0.67)"
+QCDResList = [DATARes]
+
+ABCDPlot(QCDResList, [TTJetsRes, WJetsRes], ["deltaEtaDijet", 50, 0., 5., 0.], ["prunedMassAsym", 50, 0., 1., 0.], PRES, "QCD", ["Mass Asymmetry", "Delta Eta Dijet"] )
+#for CHAN in [ ["pres", "&1."], ["b0t0", "&"+zerobtag+"&"+zeroTop], ["b1t0", "&"+onebtag+"&"+zeroTop], ["b2t0", "&"+twobtag+"&"+zeroTop], ["b0t1", "&"+zerobtag+"&"+oneTop], ["b1t1", "&"+onebtag+"&"+oneTop], ["b2t1", "&"+twobtag+"&"+oneTop], ["b0t2", "&"+zerobtag+"&"+twoTop], ["b1t2", "&"+onebtag+"&"+twoTop], ["b2t2", "&"+twobtag+"&"+twoTop] ]:
+#    ABCDPlot(QCDResList, [TTJetsRes, WJetsRes], ["deltaEtaDijet", 50, 0., 5., 0.], ["prunedMassAsym", 50, 0., 1., 0.], PRES+CHAN[1], "QCD_"+CHAN[0], ["Mass Asymmetry", "Delta Eta Dijet"] )
